@@ -1,0 +1,90 @@
+{
+  "version": "v3.10.0",
+  "name": "PoapFactory",
+  "bytecode": "0301405c01030c1001402cd3e82c3ac2b4170cce011600160116021603160416051606160716081609160a1406414c50480002130d64160b130164170e170d160cd1a2a0006bce00160d160ec1170fa0000d2aa10005160f1605160c60160f02",
+  "codeHash": "ca51464ed1bfb9e2ff94694960d199a3d8e37ef52bfa20eadf882d0d3c7db874",
+  "fieldsSig": {
+    "names": [
+      "collectionTemplateId",
+      "poapTemplateId",
+      "numMintedCollection"
+    ],
+    "types": [
+      "ByteVec",
+      "ByteVec",
+      "U256"
+    ],
+    "isMutable": [
+      false,
+      false,
+      true
+    ]
+  },
+  "eventsSig": [
+    {
+      "name": "EventCreated",
+      "fieldNames": [
+        "contractId",
+        "eventName",
+        "organizer"
+      ],
+      "fieldTypes": [
+        "ByteVec",
+        "ByteVec",
+        "Address"
+      ]
+    }
+  ],
+  "functions": [
+    {
+      "name": "mintNewCollection",
+      "paramNames": [
+        "collectionUri",
+        "nftUri",
+        "maxSupply",
+        "mintStartAt",
+        "mintEndAt",
+        "eventName",
+        "description",
+        "organizer",
+        "location",
+        "eventStartAt",
+        "eventEndAt",
+        "totalSupply"
+      ],
+      "paramTypes": [
+        "ByteVec",
+        "ByteVec",
+        "U256",
+        "U256",
+        "U256",
+        "ByteVec",
+        "ByteVec",
+        "Address",
+        "ByteVec",
+        "U256",
+        "U256",
+        "U256"
+      ],
+      "paramIsMutable": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "returnTypes": [
+        "ByteVec"
+      ]
+    }
+  ],
+  "constants": [],
+  "enums": []
+}

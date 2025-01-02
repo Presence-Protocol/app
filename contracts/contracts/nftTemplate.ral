@@ -1,0 +1,81 @@
+import "std/nft_interface"
+
+Contract PoapNFT(
+  collectionId: ByteVec,
+  nftIndex: U256,
+  uri: ByteVec,
+  eventName: ByteVec,
+  description: ByteVec,
+  organizer: Address,
+  location: ByteVec,
+  eventStartAt: U256,
+  eventEndAt: U256
+) implements IDynamicNFT {
+  
+  pub fn getTokenUri() -> ByteVec {
+    return uri
+  }
+
+  pub fn getCollectionIndex() -> (ByteVec, U256) {
+    return collectionId, nftIndex
+  }
+
+  pub fn getNFTIndex() -> U256 {
+    return nftIndex
+  }
+
+    // DynamicNFT methods
+
+  pub fn getName() -> ByteVec {
+    return eventName
+  }
+
+  pub fn getDescription() -> ByteVec {
+    return description
+  }
+
+  pub fn getImage() -> ByteVec {
+      return b``
+  }
+
+
+  pub fn getTraits() -> [Trait; 6] {
+
+    return [
+        Trait {
+            traitType: b`Event Name`,
+            value: eventName
+        },
+        Trait {
+            traitType: b`Description`,
+            value: description
+        },
+        Trait {
+            traitType: b`Organizer`,
+            value: addressToContractId!(organizer)
+        },
+        Trait {
+            traitType: b`Location`,
+            value: location
+        },
+        Trait {
+            traitType: b`Event Start At`,
+            value: u256ToString!(eventStartAt)
+        },
+        Trait {
+            traitType: b`Event End At`,
+            value: u256ToString!(eventEndAt)
+        }
+    ]
+  }
+
+  pub fn getTraitCount() -> U256 {
+    return 6
+  }
+
+  pub fn getTraitAtIndex(index: U256) -> Trait {
+      return getTraits()[index]
+  }
+
+
+}

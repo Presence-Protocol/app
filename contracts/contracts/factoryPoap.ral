@@ -1,0 +1,57 @@
+Contract PoapFactory(
+    collectionTemplateId: ByteVec,
+    poapTemplateId: ByteVec,
+    mut numMintedCollection: U256
+){
+
+    event EventCreated(contractId: ByteVec, eventName: ByteVec, organizer: Address)
+
+
+    @using(preapprovedAssets = true, checkExternalCaller = false, updateFields = true)
+    pub fn mintNewCollection(
+        collectionUri: ByteVec,
+        nftUri: ByteVec,
+        maxSupply: U256,
+        mintStartAt: U256,
+        mintEndAt: U256,
+
+        //event properties
+        eventName: ByteVec,
+        description: ByteVec,
+        organizer: Address,
+        location: ByteVec,
+        eventStartAt: U256,
+        eventEndAt: U256,
+    
+        totalSupply: U256) -> (ByteVec){
+            let caller = callerAddress!()
+
+            let (initialImmState, initialMutState) = PoapCollection.encodeFields!(poapTemplateId,
+                collectionUri,
+                nftUri,
+                maxSupply,
+                mintStartAt,
+                mintEndAt,
+                eventName,
+                description,
+                organizer,
+                location,
+                eventStartAt,
+                eventEndAt,
+            
+                totalSupply)
+        
+            let contractId = copyCreateSubContract!{caller -> ALPH: minimalContractDeposit!()}(u256To32Byte!(numMintedCollection),    
+                collectionTemplateId,
+                initialImmState,
+                initialMutState
+            )
+
+            numMintedCollection = numMintedCollection + 1
+            emit EventCreated(contractId, eventName, caller)
+
+            return contractId
+        
+        }
+
+}

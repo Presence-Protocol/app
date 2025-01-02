@@ -1,0 +1,17 @@
+[
+  {
+    "name": "Trait",
+    "fieldNames": [
+      "traitType",
+      "value"
+    ],
+    "fieldTypes": [
+      "ByteVec",
+      "ByteVec"
+    ],
+    "isMutable": [
+      false,
+      false
+    ]
+  }
+]

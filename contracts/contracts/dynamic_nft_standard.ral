@@ -1,0 +1,22 @@
+import "std/nft_interface"
+
+struct Trait {
+    traitType: ByteVec,
+    value: ByteVec
+}
+
+@std(id = #000301)
+Interface IDynamicNFT extends INFT {
+    // Emit when any metadata field changes
+    event MetadataUpdated()
+
+    pub fn getName() -> ByteVec
+
+    pub fn getDescription() -> ByteVec
+
+    pub fn getImage() -> ByteVec
+
+    pub fn getTraitCount() -> U256
+
+    pub fn getTraitAtIndex(index: U256) -> Trait
+}

@@ -1,0 +1,84 @@
+import "std/nft_collection_interface"
+Contract PoapCollection(
+    nftTemplateId: ByteVec,
+    collectionUri: ByteVec,
+    nftUri: ByteVec,
+    maxSupply: U256,
+    mintStartAt: U256,
+    mintEndAt: U256,
+
+    //event properties
+    eventName: ByteVec,
+    description: ByteVec,
+    organizer: Address,
+    location: ByteVec,
+    eventStartAt: U256,
+    eventEndAt: U256,
+
+    mut totalSupply: U256
+  ) implements INFTCollection {
+
+    event PoapMinted(contractId: ByteVec, nftIndex: U256, caller: Address)
+
+    enum ErrorCodes {
+      IncorrectTokenIndex = 0
+      NFTNotFound = 1
+      NFTNotPartOfCollection = 2
+      MaxSupplyReached = 3
+      MintEnded = 4
+      MintNotStarted = 5
+    }
+
+   @using(preapprovedAssets = true, updateFields = true, checkExternalCaller = false)
+   pub fn mint() -> (ByteVec) {
+     assert!(totalSupply < maxSupply, ErrorCodes.MaxSupplyReached)
+     assert!(blockTimeStamp!() >= mintStartAt, ErrorCodes.MintNotStarted)
+     assert!(blockTimeStamp!() <= mintEndAt, ErrorCodes.MintEnded)
+
+     let caller = callerAddress!()
+
+     let (initialImmState, initialMutState) = PoapNFT.encodeFields!(selfContractId!(), totalSupply, nftUri, eventName, description, organizer, location, eventStartAt, eventEndAt)
+ 
+     let contractId = copyCreateSubContractWithToken!{caller -> ALPH: minimalContractDeposit!()}(
+         toByteVec!(totalSupply),
+         nftTemplateId,
+         initialImmState,
+         initialMutState,
+         1,
+         caller
+     )
+
+      emit PoapMinted(contractId, totalSupply, caller)
+
+     totalSupply = totalSupply + 1
+
+     return contractId
+   }
+
+ // collection png https://arweave.net/hoxK8xC9wRjD_6HiOzhdY2jW0ZnJoF2f0N4FcSLXqzQ
+ // collection json https://arweave.net/Z1HAdT_PGnxPLct4-u7l1Zl_h4DNdxzKev7tCDAEflc
+
+    pub fn getCollectionUri() -> ByteVec {
+        return collectionUri
+    }
+    
+    pub fn totalSupply() -> U256 {
+        return totalSupply
+    }
+
+
+    pub fn nftByIndex(index: U256) -> INFT {
+        checkCaller!(index < totalSupply(), ErrorCodes.IncorrectTokenIndex)
+    
+        let nftTokenId = subContractId!(toByteVec!(index))
+        assert!(contractExists!(nftTokenId), ErrorCodes.NFTNotFound)
+    
+        return INFT(nftTokenId)
+    }
+
+    pub fn validateNFT(nftId: ByteVec, nftIndex: U256) -> () {
+        let expectedTokenContract =  nftByIndex(nftIndex)
+        assert!(nftId == contractId!(expectedTokenContract), ErrorCodes.NFTNotPartOfCollection)
+    }
+
+}

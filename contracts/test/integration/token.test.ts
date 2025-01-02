@@ -1,45 +1,247 @@
-import { web3, DUST_AMOUNT } from '@alephium/web3'
-import { testNodeWallet } from '@alephium/web3-test'
+import { web3, DUST_AMOUNT, stringToHex, MINIMAL_CONTRACT_DEPOSIT, addressFromContractId, hexToString } from '@alephium/web3'
+import { expectAssertionError, testNodeWallet } from '@alephium/web3-test'
 import { deployToDevnet } from '@alephium/cli'
-import { TokenFaucet, Withdraw } from '../../artifacts/ts'
+import { PoapFactory, PoapCollection, PoapCollectionInstance, PoapNFT } from '../../artifacts/ts'
+import { PrivateKeyWallet } from '@alephium/web3-wallet'
+import { getCollectionPath, getRandomSigner } from '../utils'
 
 describe('integration tests', () => {
+  const defaultGroup = 0
+
   beforeAll(async () => {
     web3.setCurrentNodeProvider('http://127.0.0.1:22973', undefined, fetch)
   })
+  
+  let minter: PrivateKeyWallet
 
-  it('should withdraw on devnet', async () => {
+  beforeEach(async () => {
+    minter = await getRandomSigner(defaultGroup)
+  })
+
+
+  it('deploy collection', async () => {
     const signer = await testNodeWallet()
     const deployments = await deployToDevnet()
+    const factory = deployments.getInstance(PoapFactory)
 
-    // Test with all of the addresses of the wallet
-    for (const account of await signer.getAccounts()) {
-      const testAddress = account.address
-      await signer.setSelectedAccount(testAddress)
-      const testGroup = account.group
+    expect(factory).toBeDefined()
 
-      const faucet = deployments.getInstance(TokenFaucet, testGroup)
-      if (faucet === undefined) {
-        console.log(`The contract is not deployed on group ${account.group}`)
-        continue
-      }
-
-      expect(faucet.groupIndex).toEqual(testGroup)
-      const initialState = await faucet.fetchState()
-      const initialBalance = initialState.fields.balance
-
-      // Call `withdraw` function 10 times
-      for (let i = 0; i < 10; i++) {
-        await faucet.transact.withdraw({
-          signer: signer,
-          attoAlphAmount: DUST_AMOUNT * 3n,
-          args: { amount: 1n }
-        })
-
-        const newState = await faucet.fetchState()
-        const newBalance = newState.fields.balance
-        expect(newBalance).toEqual(initialBalance - BigInt(i) - 1n)
-      }
+    if (!factory) {
+      throw new Error('Factory is undefined')
     }
+
+    await factory.transact.mintNewCollection({
+      args: {
+        collectionUri: stringToHex('https://arweave.net/Z1HAdT_PGnxPLct4-u7l1Zl_h4DNdxzKev7tCDAEflc'),
+        nftUri: stringToHex('https://fjfjf.com/afjhd'),
+        maxSupply: 10n,
+        mintStartAt: 1735823531000n,
+        mintEndAt: 1672665131000n,
+        eventName: stringToHex('Test 1'),
+        description: stringToHex('First poap test'),
+        organizer: (await signer.getSelectedAccount()).address,
+        location: stringToHex('Online'),
+        eventStartAt: 1735823531000n,
+        eventEndAt: 1735823531000n,
+        totalSupply: 0n
+      },
+      signer: signer,
+      attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT
+    })
+
+    const factoryState = await PoapFactory.at(factory.address).fetchState()
+    expect(factoryState.fields.numMintedCollection).toBe(1n)
+
+    const poapCollectionMinted = getCollectionPath(factory.contractId, 0n)
+
+    let state = await PoapCollection.at(addressFromContractId(poapCollectionMinted)).fetchState()
+    expect(hexToString(state.fields.eventName)).toBe('Test 1')
+    expect(state.fields.maxSupply).toBe(10n)
+
   }, 20000)
+
+  it('Mint poap', async () => {
+    const signer = await testNodeWallet()
+    const deployments = await deployToDevnet()
+    const factory = deployments.getInstance(PoapFactory)
+
+    expect(factory).toBeDefined()
+
+    if (!factory) {
+      throw new Error('Factory is undefined')
+    } 
+    
+    await factory.transact.mintNewCollection({
+      args: {
+        collectionUri: stringToHex('https://arweave.net/Z1HAdT_PGnxPLct4-u7l1Zl_h4DNdxzKev7tCDAEflc'),
+        nftUri: stringToHex('https://fjfjf.com/afjhd'),
+        maxSupply: 10n,
+        mintStartAt: 1735823531000n,
+        mintEndAt: 1893595576000n,
+        eventName: stringToHex('Test 1'),
+        description: stringToHex('First poap test'),
+        organizer: (await signer.getSelectedAccount()).address,
+        location: stringToHex('Online'),
+        eventStartAt: 1735823531000n,
+        eventEndAt: 1735823531000n,
+        totalSupply: 0n
+      },
+      signer: signer,
+      attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT
+    })
+    
+    const poapCollectionMinted = getCollectionPath(factory.contractId, 0n)
+
+    const collection = PoapCollection.at(addressFromContractId(poapCollectionMinted))
+
+    await collection.transact.mint({
+      signer: minter,
+      attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT   
+    })
+    
+    expect((await collection.view.totalSupply()).returns).toBe(1n)
+
+    // get Poap    
+    const poap = PoapNFT.at(addressFromContractId((await collection.view.nftByIndex({ args: { index: 0n } })).returns))
+    const poapState = await poap.fetchState()
+    expect(hexToString(poapState.fields.eventName)).toBe('Test 1')
+
+    console.log((await poap.view.getImage()).returns)
+
+  }, 20000)
+
+
+  it('Mint poap more than supply', async () => {
+    const signer = await testNodeWallet()
+    const deployments = await deployToDevnet()
+    const factory = deployments.getInstance(PoapFactory)
+
+    expect(factory).toBeDefined()
+
+    if (!factory) {
+      throw new Error('Factory is undefined')
+    } 
+    
+    await factory.transact.mintNewCollection({
+      args: {
+        collectionUri: stringToHex('https://arweave.net/Z1HAdT_PGnxPLct4-u7l1Zl_h4DNdxzKev7tCDAEflc'),
+        nftUri: stringToHex('https://fjfjf.com/afjhd'),
+        maxSupply: 1n,
+        mintStartAt: 1735823531000n,
+        mintEndAt: 1893595576000n,
+        eventName: stringToHex('Test 1'),
+        description: stringToHex('First poap test'),
+        organizer: (await signer.getSelectedAccount()).address,
+        location: stringToHex('Online'),
+        eventStartAt: 1735823531000n,
+        eventEndAt: 1735823531000n,
+        totalSupply: 0n
+      },
+      signer: signer,
+      attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT
+    })
+    
+    const poapCollectionMinted = getCollectionPath(factory.contractId, 0n)
+
+    const collection = PoapCollection.at(addressFromContractId(poapCollectionMinted))
+
+    await collection.transact.mint({
+      signer: minter,
+      attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT   
+    })
+    
+    expect((await collection.view.totalSupply()).returns).toBe(1n)
+
+    await expectAssertionError(collection.transact.mint({
+      signer: minter,
+      attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT   
+    }),addressFromContractId(poapCollectionMinted), 3)
+
+  }, 20000)
+
+
+  it('Mint poap before start', async () => {
+    const signer = await testNodeWallet()
+    const deployments = await deployToDevnet()
+    const factory = deployments.getInstance(PoapFactory)
+
+    expect(factory).toBeDefined()
+
+    if (!factory) {
+      throw new Error('Factory is undefined')
+    } 
+    
+    await factory.transact.mintNewCollection({
+      args: {
+        collectionUri: stringToHex('https://arweave.net/Z1HAdT_PGnxPLct4-u7l1Zl_h4DNdxzKev7tCDAEflc'),
+        nftUri: stringToHex('https://fjfjf.com/afjhd'),
+        maxSupply: 1n,
+        mintStartAt: BigInt(Date.now() + 4 * 1000),
+        mintEndAt: 1893595576000n,
+        eventName: stringToHex('Test 1'),
+        description: stringToHex('First poap test'),
+        organizer: (await signer.getSelectedAccount()).address,
+        location: stringToHex('Online'),
+        eventStartAt: 1735823531000n,
+        eventEndAt: 1735823531000n,
+        totalSupply: 0n
+
+      },
+      signer: signer,
+      attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT
+    })
+    
+    const poapCollectionMinted = getCollectionPath(factory.contractId, 0n)
+
+    const collection = PoapCollection.at(addressFromContractId(poapCollectionMinted))
+    
+    await expectAssertionError(collection.transact.mint({
+      signer: minter,
+      attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT   
+    }),addressFromContractId(poapCollectionMinted), 5)
+
+  }, 20000)
+
+  it('Mint poap after end', async () => {
+    const signer = await testNodeWallet()
+    const deployments = await deployToDevnet()
+    const factory = deployments.getInstance(PoapFactory)
+
+    expect(factory).toBeDefined()
+
+    if (!factory) {
+      throw new Error('Factory is undefined')
+    } 
+    
+    await factory.transact.mintNewCollection({
+      args: {
+        collectionUri: stringToHex('https://arweave.net/Z1HAdT_PGnxPLct4-u7l1Zl_h4DNdxzKev7tCDAEflc'),
+        nftUri: stringToHex('https://fjfjf.com/afjhd'),
+        maxSupply: 1n,
+        mintStartAt: BigInt(Date.now()-60*1000),
+        mintEndAt: BigInt(Date.now()-4*1000),
+        eventName: stringToHex('Test 1'),
+        description: stringToHex('First poap test'),
+        organizer: (await signer.getSelectedAccount()).address,
+        location: stringToHex('Online'),
+        eventStartAt: 1735823531000n,
+        eventEndAt: 1735823531000n,
+        totalSupply: 0n
+      },
+      signer: signer,
+      attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT
+    })
+    
+    const poapCollectionMinted = getCollectionPath(factory.contractId, 0n)
+
+    const collection = PoapCollection.at(addressFromContractId(poapCollectionMinted))
+    
+    await expectAssertionError(collection.transact.mint({
+      signer: minter,
+      attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT   
+    }),addressFromContractId(poapCollectionMinted), 4)
+
+  }, 20000)
+
 })
+
