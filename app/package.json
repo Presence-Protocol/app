@@ -10,8 +10,8 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@alephium/web3": "^1.8.5",
-    "@alephium/web3-react": "^1.8.5",
+    "@alephium/web3": "^1.11.1",
+    "@alephium/web3-react": "^1.11.1",
     "my-contracts": "0.1.0",
     "next": "^14.2.15",
     "react": "^18.3.1",
