@@ -1,7 +1,6 @@
 Contract PoapFactory(
     collectionTemplateId: ByteVec,
     poapTemplateId: ByteVec,
-    presenceTokenId: ByteVec,
     mut numMintedCollection: U256
 ){
 

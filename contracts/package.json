@@ -31,9 +31,9 @@
     "@alephium/web3-wallet": "^1.11.1"
   },
   "devDependencies": {
-    "@alephium/cli": "^1.8.5",
-    "@alephium/web3-test": "^1.8.5",
-    "@alephium/web3-wallet": "^1.8.5",
+    "@alephium/cli": "^1.11.1",
+    "@alephium/web3-test": "^1.11.1",
+    "@alephium/web3-wallet": "^1.11.1",
     "@types/jest": "^27.5.1",
     "@types/node": "^16.18.23",
     "@typescript-eslint/eslint-plugin": "^5.57.0",

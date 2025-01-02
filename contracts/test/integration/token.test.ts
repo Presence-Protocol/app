@@ -106,7 +106,7 @@ describe('integration tests', () => {
     const poapState = await poap.fetchState()
     expect(hexToString(poapState.fields.eventName)).toBe('Test 1')
 
-    console.log((await poap.view.getImage()).returns)
+    console.log((await poap.view.getTraits()))
 
   }, 20000)
 
