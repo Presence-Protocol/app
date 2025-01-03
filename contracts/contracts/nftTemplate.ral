@@ -52,7 +52,7 @@ Contract PoapNFT(
         },
         Trait {
             traitType: b`Organizer`,
-            value: addressToContractId!(organizer)
+            value: toByteVec!(organizer)
         },
         Trait {
             traitType: b`Location`,
