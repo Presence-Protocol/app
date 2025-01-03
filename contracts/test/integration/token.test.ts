@@ -52,7 +52,14 @@ describe('integration tests', () => {
     const factoryState = await PoapFactory.at(factory.address).fetchState()
     expect(factoryState.fields.numMintedCollection).toBe(1n)
 
-    const poapCollectionMinted = getCollectionPath(factory.contractId, 0n)
+    // Check that event is emitted
+    const { events } = await web3
+    .getCurrentNodeProvider()
+    .events.getEventsContractContractaddress(factory.address, { start: 0 })
+    expect(events.length).toEqual(1)
+
+    const creationEvent = events[0]
+    const poapCollectionMinted = creationEvent.fields[0].value as string
 
     let state = await PoapCollection.at(addressFromContractId(poapCollectionMinted)).fetchState()
     expect(hexToString(state.fields.eventName)).toBe('Test 1')
@@ -89,9 +96,16 @@ describe('integration tests', () => {
       signer: signer,
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT
     })
-    
-    const poapCollectionMinted = getCollectionPath(factory.contractId, 0n)
 
+    // Check that event is emitted
+    const { events } = await web3
+    .getCurrentNodeProvider()
+    .events.getEventsContractContractaddress(factory.address, { start: 0 })
+    expect(events.length).toEqual(1)
+
+    const creationEvent = events[0]
+    const poapCollectionMinted = creationEvent.fields[0].value as string
+    
     const collection = PoapCollection.at(addressFromContractId(poapCollectionMinted))
 
     await collection.transact.mint({
@@ -141,7 +155,14 @@ describe('integration tests', () => {
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT
     })
     
-    const poapCollectionMinted = getCollectionPath(factory.contractId, 0n)
+    // Check that event is emitted
+    const { events } = await web3
+    .getCurrentNodeProvider()
+    .events.getEventsContractContractaddress(factory.address, { start: 0 })
+    expect(events.length).toEqual(1)
+
+    const creationEvent = events[0]
+    const poapCollectionMinted = creationEvent.fields[0].value as string
 
     const collection = PoapCollection.at(addressFromContractId(poapCollectionMinted))
 
@@ -190,8 +211,14 @@ describe('integration tests', () => {
       signer: signer,
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT
     })
-    
-    const poapCollectionMinted = getCollectionPath(factory.contractId, 0n)
+    // Check that event is emitted
+    const { events } = await web3
+    .getCurrentNodeProvider()
+    .events.getEventsContractContractaddress(factory.address, { start: 0 })
+    expect(events.length).toEqual(1)
+
+    const creationEvent = events[0]
+    const poapCollectionMinted = creationEvent.fields[0].value as string
 
     const collection = PoapCollection.at(addressFromContractId(poapCollectionMinted))
     
@@ -232,7 +259,14 @@ describe('integration tests', () => {
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT
     })
     
-    const poapCollectionMinted = getCollectionPath(factory.contractId, 0n)
+    // Check that event is emitted
+    const { events } = await web3
+    .getCurrentNodeProvider()
+    .events.getEventsContractContractaddress(factory.address, { start: 0 })
+    expect(events.length).toEqual(1)
+
+    const creationEvent = events[0]
+    const poapCollectionMinted = creationEvent.fields[0].value as string
 
     const collection = PoapCollection.at(addressFromContractId(poapCollectionMinted))
     

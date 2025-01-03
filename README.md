@@ -1,62 +1,25 @@
-# My Next.js dApp with pages router
+# Presence protocol
 
-This template monorepo was designed to provide a developer-friendly experience to Alephium ecosystem newcomers. It is split into 2 parts:
+## Metadata format
 
-- app: contains the Next.js frontend part of the dApp
-- contracts: contains the dApp contracts
+To be able to show the POAP, the organizer needs to add a json file following the NFT format the chain is using.
 
-It uses **yarn workspaces** to manage both app and contract projects from the monorepo root.
-
-## Local development
-
-To get started quickly, follow these steps:
-
-### Set up a devnet
-
-Start a local devnet for testing and development. Please refer to the [Getting Started documentation](https://docs.alephium.org/full-node/getting-started#devnet).
-
-### Install dependencies
-
-```
-yarn install
+### Collection
+```json
+{
+  "name": "Alephium meetup",
+  "description": "One of the many",
+  "image": "<image file>"
+}
 ```
 
-### Compile the contracts
 
+
+### POAP
+
+```json
+{
+  "name": "Alephium meetup",
+  "image": "<image file>"
+}
 ```
-yarn compile
-```
-
-### Deploy the contracts
-
-```
-yarn deploy
-```
-
-### Build the contracts package
-
-```
-yarn build:contracts
-```
-
-### Run the app
-
-```
-yarn dev
-```
-
-### Install an Alephium wallet
-
-Download an [Alephium wallet](https://alephium.org/#wallets), and connect it to your devnet dApp.
-
-## Testnet, Mainnet, and More
-
-You could use yarn workspace to run commands in the contracts or app directory.
-
-```
-yarn <my-contracts|my-dapp> <command>
-```
-
-You could also get some testnet tokens from the [Faucet](https://docs.alephium.org/infrastructure/public-services/#testnet-faucet).
-
-To learn more about smart contract development on Alephium, take a look at the [documentation](https://docs.alephium.org/dapps/).

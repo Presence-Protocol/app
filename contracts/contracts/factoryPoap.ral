@@ -41,7 +41,7 @@ Contract PoapFactory(
             
                 totalSupply)
         
-            let contractId = copyCreateSubContract!{caller -> ALPH: minimalContractDeposit!()}(u256To32Byte!(numMintedCollection),    
+            let contractId = copyCreateContract!{caller -> ALPH: minimalContractDeposit!()}(    
                 collectionTemplateId,
                 initialImmState,
                 initialMutState
