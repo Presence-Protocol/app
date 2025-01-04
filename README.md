@@ -2,7 +2,7 @@
 
 ## Metadata format
 
-Based on `IDynamicNFT`
+Based on [IDynamicNFT](https://github.com/Deadrare/ANS/blob/main/contract/contracts/dynamic_nft/dynamic_nft_standard.ral)
 
 ```
 Trait {
