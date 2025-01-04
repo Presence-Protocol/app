@@ -4,7 +4,7 @@
 
 Based on `IDynamicNFT`
 
-```json
+```
 Trait {
     traitType: b`Event Name`,
     value: eventName
