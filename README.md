@@ -2,7 +2,36 @@
 
 ## Metadata format
 
-To be able to show the POAP, the organizer needs to add a json file following the NFT format the chain is using.
+Based on `IDynamicNFT`
+
+```json
+Trait {
+    traitType: b`Event Name`,
+    value: eventName
+},
+Trait {
+    traitType: b`Description`,
+    value: description
+},
+Trait {
+    traitType: b`Organizer`,
+    value: toByteVec!(organizer)
+},
+Trait {
+    traitType: b`Location`,
+    value: location
+},
+Trait {
+    traitType: b`Event Start At`,
+    value: u256ToString!(eventStartAt)
+},
+Trait {
+    traitType: b`Event End At`,
+    value: u256ToString!(eventEndAt)
+}
+```
+
+To be able to show the POAP on NFT platforms, explorer and wallets, the organizer needs to add a json file following the NFT format the chain is using.
 
 ### Collection
 ```json
