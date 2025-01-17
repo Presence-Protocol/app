@@ -7,6 +7,8 @@ export default function NewMint() {
   const [description, setDescription] = useState('');
   const [amount, setAmount] = useState(0);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -21,9 +23,9 @@ export default function NewMint() {
 
   return (
     <section>
-      <div className="mx-auto 2xl:border-x-2 border-black">
-        <div className="relative justify-center max-h-full overflow-hidden lg:px-0 md:px-12 grid lg:grid-cols-5 h-screen lg:divide-x-2 divide-black">
-          <div className="hidden bg-lila-500 lg:col-span-2 lg:block lg:flex-1 lg:relative sm:contents">
+      <div className="mx-auto">
+      <div className="relative justify-center max-h-[calc(100vh-82px)] lg:max-h-[calc(100vh-82px)] md:max-h-[calc(100vh-58px)] overflow-hidden lg:px-0 md:px-12 grid lg:grid-cols-5 h-screen lg:divide-x-2 divide-black">
+      <div className="hidden bg-lila-500 lg:col-span-2 lg:block lg:flex-1 lg:relative sm:contents">
             <div className="absolute inset-0 object-cover w-full h-full bg-lila-300">
               <div className="w-full h-full flex flex-col items-center justify-center">
                 <div className="w-full max-w-lg p-8 text-center">
@@ -52,7 +54,7 @@ export default function NewMint() {
           <div className="relative z-10 flex flex-col flex-1 px-4 py-10 bg-white-500 lg:py-24 md:flex-none md:px-28 sm:justify-center lg:col-span-3">
             <div className="w-full mx-auto md:px-0 sm:px-4 text-center">
               <h2 className="text-2xl lg:text-4xl font-semibold text-black max-w-4xl">
-                Create New Presence POAP
+                Create New Presence Event
               </h2>
               {/* <p className="mt-4 xl:text-xl tracking-wide text-black">
                 Create a new POAP for your event, community or yourself!
@@ -92,18 +94,48 @@ export default function NewMint() {
                     </div>
                   </div>
 
-                  <div className="border-2 border-black divide-black shadow rounded-xl overflow-hidden">
-                    <div>
-                      <label htmlFor="amount" className="sr-only">Amount</label>
-                      <input
-                        id="amount"
-                        type="number"
-                        min="1"
-                        placeholder="Number of POAPs to mint"
-                        value={amount || ''}
-                        onChange={(e) => setAmount(parseInt(e.target.value) || 0)}
-                        className="block w-full px-3 py-4 text-xl text-black border-2 border-transparent appearance-none placeholder-black border-black focus:border-black focus:bg-lila-500 focus:outline-none focus:ring-black sm:text-sm"
-                      />
+                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                    <div className="border-2 border-black divide-black shadow rounded-xl overflow-hidden">
+                      <div>
+                        <label htmlFor="amount" className="sr-only">Amount</label>
+                        <input
+                          id="amount"
+                          type="number"
+                          min="1"
+                          placeholder="Number of POAPs to mint"
+                          value={amount || ''}
+                          onChange={(e) => setAmount(parseInt(e.target.value) || 0)}
+                          className="block w-full px-3 py-4 text-xl text-black border-2 border-transparent appearance-none placeholder-black border-black focus:border-black focus:bg-lila-500 focus:outline-none focus:ring-black sm:text-sm"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="border-2 border-black divide-black shadow rounded-xl overflow-hidden">
+                      <div>
+                        <label htmlFor="startDate" className="sr-only">Start Date</label>
+                        <input
+                          id="startDate"
+                          type="date"
+                          placeholder="Start Date"
+                          value={startDate}
+                          onChange={(e) => setStartDate(e.target.value)}
+                          className="block w-full px-3 py-4 text-xl text-black border-2 border-transparent appearance-none placeholder-black border-black focus:border-black focus:bg-lila-500 focus:outline-none focus:ring-black sm:text-sm"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="border-2 border-black divide-black shadow rounded-xl overflow-hidden">
+                      <div>
+                        <label htmlFor="endDate" className="sr-only">End Date</label>
+                        <input
+                          id="endDate"
+                          type="date"
+                          placeholder="End Date"
+                          value={endDate}
+                          onChange={(e) => setEndDate(e.target.value)}
+                          className="block w-full px-3 py-4 text-xl text-black border-2 border-transparent appearance-none placeholder-black border-black focus:border-black focus:bg-lila-500 focus:outline-none focus:ring-black sm:text-sm"
+                        />
+                      </div>
                     </div>
                   </div>
 
