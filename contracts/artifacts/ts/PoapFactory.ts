@@ -64,6 +64,7 @@ export namespace PoapFactoryTypes {
       params: CallContractParams<{
         collectionUri: HexString;
         nftUri: HexString;
+        imageSvg: HexString;
         maxSupply: bigint;
         mintStartAt: bigint;
         mintEndAt: bigint;
@@ -103,6 +104,7 @@ export namespace PoapFactoryTypes {
       params: SignExecuteContractMethodParams<{
         collectionUri: HexString;
         nftUri: HexString;
+        imageSvg: HexString;
         maxSupply: bigint;
         mintStartAt: bigint;
         mintEndAt: bigint;
@@ -152,6 +154,7 @@ class Factory extends ContractFactory<
         {
           collectionUri: HexString;
           nftUri: HexString;
+          imageSvg: HexString;
           maxSupply: bigint;
           mintStartAt: bigint;
           mintEndAt: bigint;
@@ -195,8 +198,8 @@ class Factory extends ContractFactory<
 export const PoapFactory = new Factory(
   Contract.fromJson(
     PoapFactoryContractJson,
-    "=11-1+d=189-1+9=60+16037e020000=20",
-    "7ff502d9503312735f76ab1c5c4b27dd1c85a4c2c6455bf598f7f584191b830a",
+    "",
+    "fa3807ef793cc05380aad483485be8097b15fd3f753c1617c25c58f4cb08d161",
     AllStructs
   )
 );

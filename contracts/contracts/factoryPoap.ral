@@ -12,6 +12,7 @@ Contract PoapFactory(
     pub fn mintNewCollection(
         collectionUri: ByteVec,
         nftUri: ByteVec,
+        imageSvg: ByteVec,
         maxSupply: U256,
         mintStartAt: U256,
         mintEndAt: U256,
@@ -30,6 +31,7 @@ Contract PoapFactory(
             let (initialImmState, initialMutState) = PoapCollection.encodeFields!(poapTemplateId,
                 collectionUri,
                 nftUri,
+                imageSvg,
                 maxSupply,
                 mintStartAt,
                 mintEndAt,

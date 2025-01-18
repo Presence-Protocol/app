@@ -1,8 +1,8 @@
 {
   "version": "v3.11.1",
   "name": "PoapFactory",
-  "bytecode": "03024059408701030c1001402ad3e82c3ac2b4170cce011600160116021603160416051606160716081609160a1406414c50480002130d64160b130164170e170d160cd1a2ce00160d160eaf170fa0000d2aa10005160f1605160c60160f02010301040017d3f652052cb417011601d1a216010d0d1600010417020c0d16000101170306160216001603160161",
-  "codeHash": "d9a5f9096f3d9c0af600d3b8bb17422c55cd2ec9a5353fcaf0efa5e7266a527e",
+  "bytecode": "0302405b408901030d1101402bd3022507c0b4170dce011600160116021603160416051606160716081609160a160b1406414c50480002130e64160c130164170f170e160dd1a2ce00160e160faf1710a0000d2aa1000516101606160d60161002010301040017d3f652052cb417011601d1a216010d0d1600010417020c0d16000101170306160216001603160161",
+  "codeHash": "fa3807ef793cc05380aad483485be8097b15fd3f753c1617c25c58f4cb08d161",
   "fieldsSig": {
     "names": [
       "collectionTemplateId",
@@ -56,6 +56,7 @@
       "paramNames": [
         "collectionUri",
         "nftUri",
+        "imageSvg",
         "maxSupply",
         "mintStartAt",
         "mintEndAt",
@@ -70,6 +71,7 @@
       "paramTypes": [
         "ByteVec",
         "ByteVec",
+        "ByteVec",
         "U256",
         "U256",
         "U256",
@@ -82,6 +84,7 @@
         "U256"
       ],
       "paramIsMutable": [
+        false,
         false,
         false,
         false,

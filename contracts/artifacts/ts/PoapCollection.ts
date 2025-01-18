@@ -43,6 +43,7 @@ export namespace PoapCollectionTypes {
     nftTemplateId: HexString;
     collectionUri: HexString;
     nftUri: HexString;
+    imageSvg: HexString;
     maxSupply: bigint;
     mintStartAt: bigint;
     mintEndAt: bigint;
@@ -222,7 +223,7 @@ export const PoapCollection = new Factory(
   Contract.fromJson(
     PoapCollectionContractJson,
     "",
-    "c067f3380f6735f6dab9dca58f3f796dfb897358c436bc69354a3b17c0421077",
+    "e51406d6d51ce3c8521c3786880fb4663f37f100b366e5e4b68688742c06a97f",
     AllStructs
   )
 );

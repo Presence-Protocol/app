@@ -3,6 +3,7 @@ Contract PoapCollection(
     nftTemplateId: ByteVec,
     collectionUri: ByteVec,
     nftUri: ByteVec,
+    imageSvg: ByteVec,
     maxSupply: U256,
     mintStartAt: U256,
     mintEndAt: U256,
@@ -40,7 +41,7 @@ Contract PoapCollection(
         caller = callerAddr
      }
 
-     let (initialImmState, initialMutState) = PoapNFT.encodeFields!(selfContractId!(), totalSupply, nftUri, eventName, description, organizer, location, eventStartAt, eventEndAt)
+     let (initialImmState, initialMutState) = PoapNFT.encodeFields!(selfContractId!(), totalSupply, nftUri, imageSvg, eventName, description, organizer, location, eventStartAt, eventEndAt)
  
      let contractId = copyCreateSubContractWithToken!{caller -> ALPH: minimalContractDeposit!()}(
          toByteVec!(totalSupply),
