@@ -2,13 +2,13 @@
 
 import LandingLayout from "@/layouts/LandingLayout";
 import Navigation from "@/components/global/Navigation";
-import NFTList from "@/components/nfts/NFTList";
+import Timeline from "@/components/timelines/Timeline";
 
 export default function Mint() {
   return (
     <LandingLayout>
       <Navigation />
-      <NFTList />
+      <Timeline />
     </LandingLayout>
   )
 }

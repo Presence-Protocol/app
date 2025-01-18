@@ -2,14 +2,14 @@
 
 import LandingLayout from "@/layouts/LandingLayout";
 import Navigation from "@/components/global/Navigation";
-import NFTList from "@/components/nfts/NFTList";
+import NewMint from "@/components/forms/NewMint";
+import MintNFT from "@/components/nfts/MintNFT";
 
 export default function Mint() {
   return (
     <LandingLayout>
       <Navigation />
-      <NFTList />
+      <MintNFT />
     </LandingLayout>
   )
 }
-

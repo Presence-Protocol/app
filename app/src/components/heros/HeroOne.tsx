@@ -3,7 +3,7 @@
 export default function HeroOne() {
   return (
     <section className="overflow-hidden relative">
-      <div className="mx-auto border-b-2 border-black 2xl:border-x-2 bg-lila-300 relative overflow-hidden min-h-[90vh] md:min-h-[80vh] flex">
+      <div className="mx-auto border-b-2 border-black 2xl:border-x-2 bg-lila-300 relative overflow-hidden min-h-[90vh] md:min-h-[60vh] flex">
         <img
           className="absolute shadow-large rounded-full shadow-black w-48 h-48 md:w-72 md:h-72 -top-12 -right-12 md:-top-20 md:-right-20"
           src="/images/blob3.svg"
