@@ -5,12 +5,14 @@ Contract PoapFactory(
 ){
 
     event EventCreated(contractId: ByteVec, eventName: ByteVec, organizer: Address)
+    event PoapMinted(contractId: ByteVec, collectionId: PoapCollection, nftIndex: U256 ,caller: Address)
 
 
     @using(preapprovedAssets = true, checkExternalCaller = false, updateFields = true)
     pub fn mintNewCollection(
         collectionUri: ByteVec,
         nftUri: ByteVec,
+        imageSvg: ByteVec,
         maxSupply: U256,
         mintStartAt: U256,
         mintEndAt: U256,
@@ -29,6 +31,7 @@ Contract PoapFactory(
             let (initialImmState, initialMutState) = PoapCollection.encodeFields!(poapTemplateId,
                 collectionUri,
                 nftUri,
+                imageSvg,
                 maxSupply,
                 mintStartAt,
                 mintEndAt,
@@ -53,5 +56,17 @@ Contract PoapFactory(
             return contractId
         
         }
+    
+    @using(preapprovedAssets = true, checkExternalCaller = false)
+    pub fn mintPoap(collection: PoapCollection) -> (){
+        let caller = callerAddress!()
+
+
+        let poapContractId = collection.mint{caller -> ALPH: minimalContractDeposit!()}(caller)
+        let collectionTotalSupply = collection.totalSupply()
+
+        emit PoapMinted(poapContractId, collection, collectionTotalSupply, caller)
+
+    }   
 
 }

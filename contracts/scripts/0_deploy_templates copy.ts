@@ -20,7 +20,8 @@ const deployTemplates: DeployFunction<Settings> = async (
       organizer: NULL_CONTRACT_ADDRESS,
       location: '00',
       eventStartAt: 0n,
-      eventEndAt: 0n
+      eventEndAt: 0n,
+      image: '00'
     }
   })
 
@@ -38,7 +39,8 @@ const deployTemplates: DeployFunction<Settings> = async (
       eventStartAt: 0n,
       eventEndAt: 0n,
       totalSupply: 0n,
-      nftUri: ''
+      nftUri: '',
+      imageSvg: '00'
     }
   })
 
