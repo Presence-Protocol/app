@@ -1,8 +1,8 @@
 {
-  "version": "v3.10.0",
+  "version": "v3.11.1",
   "name": "PoapFactory",
-  "bytecode": "0301405901030c1001402ad3e82c3ac2b4170cce011600160116021603160416051606160716081609160a1406414c50480002130d64160b130164170e170d160cd1a2ce00160d160eaf170fa0000d2aa10005160f1605160c60160f02",
-  "codeHash": "9f858e7ac924d8fe13a3976a16efaa1c0b7dda0e0e67dae231764f3b34afeebe",
+  "bytecode": "03024059408701030c1001402ad3e82c3ac2b4170cce011600160116021603160416051606160716081609160a1406414c50480002130d64160b130164170e170d160cd1a2ce00160d160eaf170fa0000d2aa10005160f1605160c60160f02010301040018d3f652052cb417010c0d16000101170216010ed12ca20c0d16000104170306160316001602160161",
+  "codeHash": "8a1c1c59bc3ba73e1af7842adef59a2066ddce31506fee2e0a7c8cfbb77fccf6",
   "fieldsSig": {
     "names": [
       "collectionTemplateId",
@@ -31,6 +31,21 @@
       "fieldTypes": [
         "ByteVec",
         "ByteVec",
+        "Address"
+      ]
+    },
+    {
+      "name": "PoapMinted",
+      "fieldNames": [
+        "contractId",
+        "collectionId",
+        "nftIndex",
+        "caller"
+      ],
+      "fieldTypes": [
+        "ByteVec",
+        "PoapCollection",
+        "U256",
         "Address"
       ]
     }
@@ -83,6 +98,19 @@
       "returnTypes": [
         "ByteVec"
       ]
+    },
+    {
+      "name": "mintPoap",
+      "paramNames": [
+        "collection"
+      ],
+      "paramTypes": [
+        "PoapCollection"
+      ],
+      "paramIsMutable": [
+        false
+      ],
+      "returnTypes": []
     }
   ],
   "constants": [],
