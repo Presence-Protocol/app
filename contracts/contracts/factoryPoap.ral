@@ -59,9 +59,9 @@ Contract PoapFactory(
     pub fn mintPoap(collection: PoapCollection) -> (){
         let caller = callerAddress!()
 
-        let collectionTotalSupply = collection.totalSupply()
 
-        let poapContractId = collection.mint{caller -> ALPH: minimalContractDeposit!()}()
+        let poapContractId = collection.mint{caller -> ALPH: minimalContractDeposit!()}(caller)
+        let collectionTotalSupply = collection.totalSupply()
 
         emit PoapMinted(poapContractId, collection, collectionTotalSupply, caller)
 

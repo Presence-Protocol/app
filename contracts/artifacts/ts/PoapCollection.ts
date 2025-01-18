@@ -81,7 +81,7 @@ export namespace PoapCollectionTypes {
       result: CallContractResult<null>;
     };
     mint: {
-      params: Omit<CallContractParams<{}>, "args">;
+      params: CallContractParams<{ callerAddr: Address }>;
       result: CallContractResult<HexString>;
     };
   }
@@ -122,7 +122,7 @@ export namespace PoapCollectionTypes {
       result: SignExecuteScriptTxResult;
     };
     mint: {
-      params: Omit<SignExecuteContractMethodParams<{}>, "args">;
+      params: SignExecuteContractMethodParams<{ callerAddr: Address }>;
       result: SignExecuteScriptTxResult;
     };
   }
@@ -199,9 +199,9 @@ class Factory extends ContractFactory<
       return testMethod(this, "validateNFT", params, getContractByCodeHash);
     },
     mint: async (
-      params: Omit<
-        TestContractParamsWithoutMaps<PoapCollectionTypes.Fields, never>,
-        "testArgs"
+      params: TestContractParamsWithoutMaps<
+        PoapCollectionTypes.Fields,
+        { callerAddr: Address }
       >
     ): Promise<TestContractResultWithoutMaps<HexString>> => {
       return testMethod(this, "mint", params, getContractByCodeHash);
@@ -222,7 +222,7 @@ export const PoapCollection = new Factory(
   Contract.fromJson(
     PoapCollectionContractJson,
     "",
-    "e09735314bb19883e2817937ce0cf1778f4827f45f7f300bf733f5dc64bf5def",
+    "c067f3380f6735f6dab9dca58f3f796dfb897358c436bc69354a3b17c0421077",
     AllStructs
   )
 );
@@ -301,13 +301,13 @@ export class PoapCollectionInstance extends ContractInstance {
       );
     },
     mint: async (
-      params?: PoapCollectionTypes.CallMethodParams<"mint">
+      params: PoapCollectionTypes.CallMethodParams<"mint">
     ): Promise<PoapCollectionTypes.CallMethodResult<"mint">> => {
       return callMethod(
         PoapCollection,
         this,
         "mint",
-        params === undefined ? {} : params,
+        params,
         getContractByCodeHash
       );
     },

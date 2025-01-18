@@ -30,12 +30,15 @@ Contract PoapCollection(
     }
 
    @using(preapprovedAssets = true, updateFields = true, checkExternalCaller = false)
-   pub fn mint() -> (ByteVec) {
+   pub fn mint(callerAddr: Address) -> (ByteVec) {
      assert!(totalSupply < maxSupply, ErrorCodes.MaxSupplyReached)
      assert!(blockTimeStamp!() >= mintStartAt, ErrorCodes.MintNotStarted)
      assert!(blockTimeStamp!() <= mintEndAt, ErrorCodes.MintEnded)
 
-     let caller = callerAddress!()
+     let mut caller = callerAddress!()     
+     if(isContractAddress!(caller)){ // if called from a contract, need to get the reall caller
+        caller = callerAddr
+     }
 
      let (initialImmState, initialMutState) = PoapNFT.encodeFields!(selfContractId!(), totalSupply, nftUri, eventName, description, organizer, location, eventStartAt, eventEndAt)
  

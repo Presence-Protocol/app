@@ -3,7 +3,7 @@ import { expectAssertionError, testNodeWallet } from '@alephium/web3-test'
 import { deployToDevnet } from '@alephium/cli'
 import { PoapFactory, PoapCollection, PoapCollectionInstance, PoapNFT } from '../../artifacts/ts'
 import { PrivateKeyWallet } from '@alephium/web3-wallet'
-import { getCollectionPath, getRandomSigner } from '../utils'
+import { getCollectionPath, getRandomSigner, transferAlphTo } from '../utils'
 
 describe('integration tests', () => {
   const defaultGroup = 0
@@ -16,6 +16,8 @@ describe('integration tests', () => {
 
   beforeEach(async () => {
     minter = await getRandomSigner(defaultGroup)
+
+    await transferAlphTo(minter.address, 100n * ONE_ALPH);
   })
 
 
@@ -110,7 +112,10 @@ describe('integration tests', () => {
 
     await collection.transact.mint({
       signer: minter,
-      attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT   
+      attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT,
+      args: {
+        callerAddr: minter.address
+      }
     })
     
     expect((await collection.view.totalSupply()).returns).toBe(1n)
@@ -118,12 +123,13 @@ describe('integration tests', () => {
     
     await factory.transact.mintPoap({
       args: {
-        collection: collection.contractId
+        collection: collection.contractId,
       },
       signer: minter,
-      attoAlphAmount: ONE_ALPH
+      attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT
     })
-    
+
+     
     expect((await collection.view.totalSupply()).returns).toBe(2n)
 
     // get Poap    
@@ -178,7 +184,10 @@ describe('integration tests', () => {
 
     await collection.transact.mint({
       signer: minter,
-      attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT   
+      attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT,
+      args: {
+        callerAddr: minter.address
+      } 
     })
     
     expect((await collection.view.totalSupply()).returns).toBe(1n)
@@ -236,14 +245,20 @@ describe('integration tests', () => {
 
     await collection.transact.mint({
       signer: minter,
-      attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT   
+      attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT,
+      args: {
+        callerAddr: minter.address
+      }
     })
     
     expect((await collection.view.totalSupply()).returns).toBe(1n)
 
     await expectAssertionError(collection.transact.mint({
       signer: minter,
-      attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT   
+      attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT,
+      args: {
+        callerAddr: minter.address
+      }  
     }),addressFromContractId(poapCollectionMinted), 3)
 
   }, 20000)
@@ -292,7 +307,10 @@ describe('integration tests', () => {
     
     await expectAssertionError(collection.transact.mint({
       signer: minter,
-      attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT   
+      attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT,
+      args: {
+        callerAddr: minter.address
+      }
     }),addressFromContractId(poapCollectionMinted), 5)
 
   }, 20000)
@@ -340,7 +358,10 @@ describe('integration tests', () => {
     
     await expectAssertionError(collection.transact.mint({
       signer: minter,
-      attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT   
+      attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT,
+      args: {
+        callerAddr: minter.address
+      }
     }),addressFromContractId(poapCollectionMinted), 4)
 
   }, 20000)
