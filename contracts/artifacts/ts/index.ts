@@ -5,4 +5,5 @@
 export * from "./PoapCollection";
 export * from "./PoapFactory";
 export * from "./PoapNFT";
+export * from "./PoapNFTImage";
 export * from "./scripts";

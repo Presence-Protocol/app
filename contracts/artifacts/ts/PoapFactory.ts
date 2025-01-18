@@ -42,6 +42,7 @@ export namespace PoapFactoryTypes {
   export type Fields = {
     collectionTemplateId: HexString;
     poapTemplateId: HexString;
+    poapTemplateImageId: HexString;
     numMintedCollection: bigint;
   };
 
@@ -199,7 +200,7 @@ export const PoapFactory = new Factory(
   Contract.fromJson(
     PoapFactoryContractJson,
     "",
-    "fa3807ef793cc05380aad483485be8097b15fd3f753c1617c25c58f4cb08d161",
+    "e2c2dcd6bd0bfff2eabac055b456ad8384e85b4d9037d58f92c8437566466282",
     AllStructs
   )
 );

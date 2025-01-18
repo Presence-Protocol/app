@@ -1,0 +1,31 @@
+{
+  "version": "v3.11.1",
+  "name": "PoapNFTImage",
+  "bytecode": "01014024010000000105d305b7f6871413646174613a696d6167652f7376672b786d6c2cce004402",
+  "codeHash": "c80acc8866ae1fd6be13cd12386890033f5a5c08f89cf653328e3281a07d0036",
+  "fieldsSig": {
+    "names": [
+      "image"
+    ],
+    "types": [
+      "ByteVec"
+    ],
+    "isMutable": [
+      false
+    ]
+  },
+  "eventsSig": [],
+  "functions": [
+    {
+      "name": "getImage",
+      "paramNames": [],
+      "paramTypes": [],
+      "paramIsMutable": [],
+      "returnTypes": [
+        "ByteVec"
+      ]
+    }
+  ],
+  "constants": [],
+  "enums": []
+}

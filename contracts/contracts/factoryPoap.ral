@@ -1,6 +1,7 @@
 Contract PoapFactory(
     collectionTemplateId: ByteVec,
     poapTemplateId: ByteVec,
+    poapTemplateImageId: ByteVec,
     mut numMintedCollection: U256
 ){
 
@@ -28,10 +29,17 @@ Contract PoapFactory(
         totalSupply: U256) -> (ByteVec){
             let caller = callerAddress!()
 
+            let (initialImmStateImg, initialMutStateImg) = PoapNFTImage.encodeFields!(imageSvg)
+            let poapImageContractId = copyCreateContract!{caller -> ALPH: minimalContractDeposit!()}(
+                poapTemplateImageId,
+                initialImmStateImg,
+                initialMutStateImg
+            )
+            
             let (initialImmState, initialMutState) = PoapCollection.encodeFields!(poapTemplateId,
                 collectionUri,
                 nftUri,
-                imageSvg,
+                poapImageContractId,
                 maxSupply,
                 mintStartAt,
                 mintEndAt,

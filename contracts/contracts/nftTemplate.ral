@@ -36,7 +36,7 @@ Contract PoapNFT(
   }
 
   pub fn getImage() -> ByteVec {
-      return b`data:image/svg+xml,` ++ image
+      return PoapNFTImage(image).getImage()
   }
 
 
