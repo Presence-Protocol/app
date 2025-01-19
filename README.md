@@ -30,6 +30,21 @@
 | eventStartAt  | U256    | When the event starts                                        |
 | eventEndAt    | U256    | When the event ends                                          |
 
+### POAP
+
+| Name         | Type    | Description                                                  |
+|--------------|---------|--------------------------------------------------------------|
+| collectionId | ByteVec | Collection id contract where the NFT is generated from       |
+| nftIndex     | ByteVec | Index of the NFT, nft id                                     |
+| uri          | ByteVec | URI where the nft metadata are stored (ex: image)            |
+| image        | ByteVec | SVG of an image, can be used to store small logo. Max 2.8 KB |
+| eventName    | ByteVec | Name of the event                                            |
+| description  | ByteVec | Description of the event                                     |
+| organizer    | Address | Address of the organizer, i.e creator of the event           |
+| location     | ByteVec | Where the event is taking place                              |
+| eventStartAt | U256    | When the event starts                                        |
+| eventEndAt   | U256    | When the event ends                                          |
+
 ## Metadata format
 
 Based on [IDynamicNFT](https://github.com/Deadrare/ANS/blob/main/contract/contracts/dynamic_nft/dynamic_nft_standard.ral)
