@@ -141,7 +141,7 @@ describe('integration tests', () => {
     expect(hexToString(poapState.fields.eventName)).toBe('Test 1')
 
     expect((await poap.view.getTraits()).returns.length).toBe(6)
-
+    expect(hexToString((await poap.view.getTokenUri()).returns)).toBe('https://fjfjf.com/afjhd')
   }, 20000)
 
 
@@ -220,6 +220,7 @@ describe('integration tests', () => {
 
     expect((await poap.view.getTraits()).returns.length).toBe(6)
     expect(hexToString(poapState.fields.image)).toBe(svg)
+    expect(hexToString((await poap.view.getTokenUri()).returns)).not.toBe('https://fjfjf.com/afjhd')
 
   }, 20000)
 

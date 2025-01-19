@@ -265,7 +265,7 @@ export const PoapNFT = new Factory(
   Contract.fromJson(
     PoapNFTContractJson,
     "",
-    "4bba64d6343d92d1ff63fe12e5d7af76f16a474dc63554ef3048213e76b7e474",
+    "f8530a49efdaa2f03e2f077b39545dae517505326b31c223fd8bb76287fb6017",
     AllStructs
   )
 );
