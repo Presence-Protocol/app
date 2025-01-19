@@ -35,7 +35,7 @@ export default function RootLayout({
     >
       <body className="flex h-full flex-col">
         <AlephiumWalletProvider 
-          theme="simple-light" 
+          theme="retro" 
           network={tokenFaucetConfig.network} 
           addressGroup={tokenFaucetConfig.groupIndex}
         >

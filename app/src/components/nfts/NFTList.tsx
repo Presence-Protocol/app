@@ -1,9 +1,15 @@
 "use client"
 
+import { Wallet } from '@alephium/web3-react';
 import React from 'react';
 
-export default function NFTList() {
+export default function NFTList({ account }: { account: string }) {
   // Mock data - in real app would come from props or API
+
+  console.log(account)
+
+  const truncatedAccount = account.slice(0, 4) + '...' + account.slice(-4);
+
   const nfts = [
     {
       id: 1,
@@ -56,18 +62,37 @@ export default function NFTList() {
   ];
 
   return (
-    <section className="py-12 px-4 md:px-8">
+    <section className="py-24 px-4 md:px-8">
       <div className="max-w-7xl mx-auto">
         <div className="flex items-center justify-center gap-4 mb-12">
           <h2 className="text-2xl lg:text-4xl font-semibold text-black text-center">
-             NFT Collection (16DHr...3Ah4)
+             Your Presence ({truncatedAccount})
           </h2>
           <div className="text-black items-center shadow shadow-black text-xs font-semibold inline-flex px-4 bg-lila-300 border-black border-2 py-2 rounded-lg tracking-wide">
-            {nfts.length} NFTs
+            {nfts.length} Events
           </div>
+     
         </div>
 
+<div className="flex justify-center items-center mb-24">     {
+            account && (
+                <a
+                    className="text-black mr-6 items-center shadow shadow-black text-base font-semibold inline-flex px-6 focus:outline-none justify-center text-center bg-white border-black ease-in-out transform transition-all focus:ring-lila-700 focus:shadow-none border-2 duration-100 focus:bg-black focus:text-white w-full sm:w-auto py-2 rounded-lg h-14 focus:translate-y-1 hover:text-lila-800 tracing-wide"
+            href="/new-event"
+            title="link to your page"
+            aria-label="your label"
+          >
+            Create New Event  <span className="ml-3">&rarr;</span>
+   
+            </a>
+        )
+      }</div>
+        
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+
+
+            
           {nfts.map((nft) => (
             <div 
               key={nft.id}

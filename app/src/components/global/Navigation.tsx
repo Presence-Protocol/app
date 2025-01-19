@@ -6,8 +6,11 @@ import MainLogo from '@/images/logos/logo.png';
 
 
 import { AlephiumConnectButton, AlephiumConnectButtonCustom } from '@alephium/web3-react'
+import { useWallet } from '@alephium/web3-react';
 
 function CustomWalletConnectButton() {
+  const { account, connectionStatus } = useWallet()
+
   return (
     <AlephiumConnectButton.Custom>
       {({ isConnected, disconnect, show, account }) => {
@@ -34,7 +37,9 @@ function CustomWalletConnectButton() {
 export default function Navigation() {
   const [isOpen, setIsOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const { account, connectionStatus } = useWallet()
 
+  const isConnected = connectionStatus === 'connected'
 
   
 
@@ -182,12 +187,19 @@ export default function Navigation() {
           </div>
 
           <a
-            className="duration-300 focus:text-orange/90 hover:text-lila-900 px-3 py-2 transform transition font-semibold"
-            title="link to your page"
-            aria-label="your label"
-            href="/my-nfts"
+            className={`duration-300 focus:text-orange/90 hover:text-lila-900 px-3 py-2 transform transition font-semibold ${!isConnected ? 'opacity-50 cursor-not-allowed' : ''}`}
+            title={!isConnected ? 'Please connect wallet first' : 'link to your page'}
+            aria-label={!isConnected ? 'Please connect wallet first' : 'your label'} 
+            href={!isConnected ? '' : '/my-nfts'}
+            onClick={e => !isConnected && e.preventDefault()}
           >
-            My NFTs
+            {!isConnected && (
+              <span className="mr-1" style={{ marginBottom: '-2px' }}><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-4 inline-block align-text-top">
+              <path fillRule="evenodd" d="M12 1.5a5.25 5.25 0 0 0-5.25 5.25v3a3 3 0 0 0-3 3v6.75a3 3 0 0 0 3 3h10.5a3 3 0 0 0 3-3v-6.75a3 3 0 0 0-3-3v-3c0-2.9-2.35-5.25-5.25-5.25Zm3.75 8.25v-3a3.75 3.75 0 1 0-7.5 0v3h7.5Z" clipRule="evenodd" />
+            </svg>
+            </span>
+            )}
+            My Presence
           </a>
 
             <CustomWalletConnectButton />
