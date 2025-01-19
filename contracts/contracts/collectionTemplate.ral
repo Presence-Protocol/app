@@ -1,8 +1,7 @@
 import "std/nft_collection_interface"
 Contract PoapCollection(
     nftTemplateId: ByteVec,
-    collectionImageUri: ByteVec,
-    nftImageUri: ByteVec,
+    imageUri: ByteVec,
     imageSvg: ByteVec,
     maxSupply: U256,
     mintStartAt: U256,
@@ -41,7 +40,7 @@ Contract PoapCollection(
         caller = callerAddr
      }
 
-     let (initialImmState, initialMutState) = PoapNFT.encodeFields!(selfContractId!(), totalSupply, nftImageUri, imageSvg, eventName, description, organizer, location, eventStartAt, eventEndAt)
+     let (initialImmState, initialMutState) = PoapNFT.encodeFields!(selfContractId!(), totalSupply, imageUri, imageSvg, eventName, description, organizer, location, eventStartAt, eventEndAt)
  
      let contractId = copyCreateSubContractWithToken!{caller -> ALPH: minimalContractDeposit!()}(
          toByteVec!(totalSupply),
@@ -68,7 +67,7 @@ Contract PoapCollection(
         return b`data:application/json,{"name": "` ++ eventName ++ b`", "description":`++ description ++ b`, "image": "` ++ imageSvg ++ b`"}`
       }
 
-      return b`data:application/json,{"name": "` ++ eventName ++ b`", "description":`++ description ++ b`, "image": "` ++ collectionImageUri ++ b`"}`
+      return b`data:application/json,{"name": "` ++ eventName ++ b`", "description":`++ description ++ b`, "image": "` ++ imageUri ++ b`"}`
     }
     
     pub fn totalSupply() -> U256 {

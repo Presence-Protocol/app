@@ -17,8 +17,7 @@
 | Name          | Type    | Description                                                  |
 |---------------|---------|--------------------------------------------------------------|
 | nftTemplateId | ByteVec | Contract template id for poap                                |
-| collectionUri | ByteVec | URI where the collection metadate are stored (ex: image)     |
-| nftUri        | ByteVec | URI where the collection metadate are stored (ex: image)     |
+| imageUri      | ByteVec | URI where the collection image is stored                     |
 | imageSvg      | ByteVec | SVG of an image, can be used to store small logo. Max 2.8 KB |
 | maxSupply     | U256    | How many POAP can be minted                                  |
 | mintStartAt   | U256    | When mint can start                                          |
@@ -36,7 +35,7 @@
 |--------------|---------|--------------------------------------------------------------|
 | collectionId | ByteVec | Collection id contract where the NFT is generated from       |
 | nftIndex     | ByteVec | Index of the NFT, nft id                                     |
-| uri          | ByteVec | URI where the nft metadata are stored (ex: image)            |
+| imageUri     | ByteVec | URI where the image is stored (ex: image)            |
 | image        | ByteVec | SVG of an image, can be used to store small logo. Max 2.8 KB |
 | eventName    | ByteVec | Name of the event                                            |
 | description  | ByteVec | Description of the event                                     |

@@ -35,8 +35,7 @@ describe('integration tests', () => {
 
     await factory.transact.mintNewCollection({
       args: {
-        collectionImageUri: stringToHex('https://arweave.net/Z1HAdT_PGnxPLct4-u7l1Zl_h4DNdxzKev7tCDAEflc'),
-        nftImageUri: stringToHex('https://fjfjf.com/afjhd'),
+        imageUri: stringToHex('https://arweave.net/hoxK8xC9wRjD_6HiOzhdY2jW0ZnJoF2f0N4FcSLXqzQ'),
         imageSvg: stringToHex("00"),
         maxSupply: 10n,
         mintStartAt: 1735823531000n,
@@ -83,8 +82,7 @@ describe('integration tests', () => {
     
     await factory.transact.mintNewCollection({
       args: {
-        collectionImageUri: stringToHex('https://arweave.net/Z1HAdT_PGnxPLct4-u7l1Zl_h4DNdxzKev7tCDAEflc'),
-        nftImageUri: stringToHex('https://fjfjf.com/afjhd'),
+        imageUri: stringToHex('https://arweave.net/Z1HAdT_PGnxPLct4-u7l1Zl_h4DNdxzKev7tCDAEflc'),
         imageSvg: "00",
         maxSupply: 10n,
         mintStartAt: 1735823531000n,
@@ -139,7 +137,7 @@ describe('integration tests', () => {
     expect(hexToString(poapState.fields.eventName)).toBe('Test 1')
 
     expect((await poap.view.getTraits()).returns.length).toBe(6)
-    expect(hexToString((await poap.view.getTokenUri()).returns)).toBe('data:application/json,{\"name\": \"Test 1\", \"attributes\": [{\"trait_type\": \"Event Name\", \"value\": \"Test 1\"}, {\"trait_type\": \"Description\", \"value\": \"First poap test\"}, {\"trait_type\": \"Organizer\", \"value\": \"00bee85f379545a2ed9f6cceb331288842f378cf0f04012ad4ac8824aae7d6f80a\"}, {\"trait_type\": \"Location\", \"value\": \"Online\"}, {\"trait_type\": \"Event Start At\", \"value\": 1735823531000}, {\"trait_type\": \"Event End At\", \"value\": 1735823531000}], \"image\": \"https://fjfjf.com/afjhd\"}')
+    expect(hexToString((await poap.view.getTokenUri()).returns)).toBe('data:application/json,{\"name\": \"Test 1\", \"attributes\": [{\"trait_type\": \"Event Name\", \"value\": \"Test 1\"}, {\"trait_type\": \"Description\", \"value\": \"First poap test\"}, {\"trait_type\": \"Organizer\", \"value\": \"00bee85f379545a2ed9f6cceb331288842f378cf0f04012ad4ac8824aae7d6f80a\"}, {\"trait_type\": \"Location\", \"value\": \"Online\"}, {\"trait_type\": \"Event Start At\", \"value\": 1735823531000}, {\"trait_type\": \"Event End At\", \"value\": 1735823531000}], \"image\": \"https://arweave.net/Z1HAdT_PGnxPLct4-u7l1Zl_h4DNdxzKev7tCDAEflc\"}')
   }, 20000)
 
 
@@ -160,8 +158,7 @@ describe('integration tests', () => {
 
     await factory.transact.mintNewCollection({
       args: {
-        collectionImageUri: stringToHex('https://arweave.net/Z1HAdT_PGnxPLct4-u7l1Zl_h4DNdxzKev7tCDAEflc'),
-        nftImageUri: stringToHex('https://fjfjf.com/afjhd'),
+        imageUri: stringToHex('https://arweave.net/Z1HAdT_PGnxPLct4-u7l1Zl_h4DNdxzKev7tCDAEflc'),
         imageSvg: stringToHex(svg),
         maxSupply: 10n,
         mintStartAt: 1735823531000n,
@@ -235,8 +232,7 @@ describe('integration tests', () => {
     
     await factory.transact.mintNewCollection({
       args: {
-        collectionImageUri: stringToHex('https://arweave.net/Z1HAdT_PGnxPLct4-u7l1Zl_h4DNdxzKev7tCDAEflc'),
-        nftImageUri: stringToHex('https://fjfjf.com/afjhd'),
+        imageUri: stringToHex('https://arweave.net/Z1HAdT_PGnxPLct4-u7l1Zl_h4DNdxzKev7tCDAEflc'),
         maxSupply: 10n,
         imageSvg: "00",
         mintStartAt: 1735823531000n,
@@ -296,8 +292,7 @@ describe('integration tests', () => {
     
     await factory.transact.mintNewCollection({
       args: {
-        collectionImageUri: stringToHex('https://arweave.net/Z1HAdT_PGnxPLct4-u7l1Zl_h4DNdxzKev7tCDAEflc'),
-        nftImageUri: stringToHex('https://fjfjf.com/afjhd'),
+        imageUri: stringToHex('https://arweave.net/Z1HAdT_PGnxPLct4-u7l1Zl_h4DNdxzKev7tCDAEflc'),
         maxSupply: 1n,
         imageSvg: "00",
         mintStartAt: 1735823531000n,
@@ -358,8 +353,7 @@ describe('integration tests', () => {
     
     await factory.transact.mintNewCollection({
       args: {
-        collectionImageUri: stringToHex('https://arweave.net/Z1HAdT_PGnxPLct4-u7l1Zl_h4DNdxzKev7tCDAEflc'),
-        nftImageUri: stringToHex('https://fjfjf.com/afjhd'),
+        imageUri: stringToHex('https://arweave.net/Z1HAdT_PGnxPLct4-u7l1Zl_h4DNdxzKev7tCDAEflc'),
         maxSupply: 1n,
         imageSvg: "00",
         mintStartAt: BigInt(Date.now() + 4 * 1000),
@@ -409,8 +403,7 @@ describe('integration tests', () => {
     
     await factory.transact.mintNewCollection({
       args: {
-        collectionImageUri: stringToHex('https://arweave.net/Z1HAdT_PGnxPLct4-u7l1Zl_h4DNdxzKev7tCDAEflc'),
-        nftImageUri: stringToHex('https://fjfjf.com/afjhd'),
+        imageUri: stringToHex('https://arweave.net/Z1HAdT_PGnxPLct4-u7l1Zl_h4DNdxzKev7tCDAEflc'),
         maxSupply: 1n,
         imageSvg: "00",
         mintStartAt: BigInt(Date.now()-60*1000),

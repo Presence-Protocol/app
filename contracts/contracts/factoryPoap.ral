@@ -10,8 +10,7 @@ Contract PoapFactory(
 
     @using(preapprovedAssets = true, checkExternalCaller = false, updateFields = true)
     pub fn mintNewCollection(
-        collectionImageUri: ByteVec,
-        nftImageUri: ByteVec,
+        imageUri: ByteVec,
         imageSvg: ByteVec,
         maxSupply: U256,
         mintStartAt: U256,
@@ -28,8 +27,7 @@ Contract PoapFactory(
             let caller = callerAddress!()
 
             let (initialImmState, initialMutState) = PoapCollection.encodeFields!(poapTemplateId,
-                collectionImageUri,
-                nftImageUri,
+                imageUri,
                 imageSvg,
                 maxSupply,
                 mintStartAt,
