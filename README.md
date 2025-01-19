@@ -1,6 +1,6 @@
 # Presence protocol
 
-![](./docs/workflows.png)
+![./docs/workflows.png]()
 
 ## Contracts fields
 
