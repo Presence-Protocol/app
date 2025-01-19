@@ -7,42 +7,42 @@ const services = [
   {
     bgColor: "bg-lila-400",
     imgSrc: "/images/blob1.svg",
-    title: "Step 1: Name your POAP",
+    title: "Track your attendance",
     description:
       "Embrace peer-to-peer trading without intermediaries. Trade directly with other users on our platform, enjoying the benefits of decentralization.",
   },
   {
     bgColor: "bg-lila-400", 
     imgSrc: "/images/blob2.svg",
-    title: "Step 2: Add POAP metadata",
+    title: "Share your memories",
     description:
       "Put your crypto assets to work and earn passive income through staking, a feature that allows you to participate in network validation and reap rewards.",
   },
   {
     bgColor: "bg-lila-400",
     imgSrc: "/images/blob3.svg", 
-    title: "Step 3: Upload an Image",
+    title: "Create Collectibles",
     description:
       "Immerse yourself in the world of non-fungible tokens (NFTs) with our marketplace. Buy, sell, and even create unique digital collectibles.",
   },
   {
     bgColor: "bg-lila-400",
     imgSrc: "/images/blob4.svg",
-    title: "Step 4: Set your mint amount",
+    title: "Reward your Users",
     description:
       "Experience the convenience of near-instantaneous cryptocurrency transfers, allowing you to send and receive digital assets.",
   },
   {
     bgColor: "bg-lila-400",
     imgSrc: "/images/blob5.svg",
-    title: "Step 5: Buy your NFT", 
+    title: "Immoralize your Art", 
     description:
       "Access a wealth of educational resources to expand your knowledge of blockchain technology.",
   },
   {
     bgColor: "bg-lila-400",
     imgSrc: "/images/blob6.svg",
-    title: "Step 6: Stake your NFT",
+    title: "Staking",
     description:
       "Seamlessly trade and manage your crypto assets on the go with our mobile application, offering all the features and convenience you expect.",
   },
@@ -52,13 +52,13 @@ export default function FeatureSix() {
   return (
     <section>
       <div
-        // className="items-center w-full mx-auto p-8 lg:p-20 2xl:px-0 border-b-2 border-black 2xl:border-x-2 bg-red-500">
+        // className="items-center w-full mx-auto p-8 lg:p-20 2xl:px-0  bg-red-500">
                   className="items-center w-full mx-auto pt-8 pl-8 pr-8 lg:pt-20 lg:pl-20 lg:pr-20  2xl:px-0 bg-white">
 
         <div className="relative p-8 lg:px20 2xl:px-0 items-center text-center justify-center max-w-3xl mx-auto">
    
           <h2 className="text-4xl lg:text-6xl font-semibold text-black text-balance">
-            The Future of Attendance & Memories
+          The use cases of <span className="text-black font-bold uppercase text-6xl tracking-tighter">Presence Protocol</span> are limitless
           </h2>
  
           <p className="text-lg text-black tracking-wide mt-6 text-balance">

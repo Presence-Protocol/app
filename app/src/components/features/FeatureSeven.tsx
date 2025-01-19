@@ -71,7 +71,7 @@ export default function FeatureSeven() {
 
   return (
     <section className="overflow-hidden">
-      <div className="relative items-center w-full divide-y-2 divide-black mx-auto border-b-2 border-black 2xl:border-x-2 overflow-hidden">
+      <div className="relative items-center w-full divide-y-2 divide-black mx-auto  overflow-hidden">
         <div className="flex flex-col w-full">
           <div 
             className="flex flex-col w-full"

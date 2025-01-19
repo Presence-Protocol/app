@@ -21,16 +21,16 @@ export default function Home() {
     <LandingLayout>
       <Navigation />
       {/* <AlephiumConnectButton /> */}
-      {connectionStatus === 'connected' && (
+      {/* {connectionStatus === 'connected' && (
         <TokenDapp config={tokenFaucetConfig} />
-      )}
+      )} */}
       <HeroOne />
       <LogoCloudOne/>
       <FeatureSix />
       <FeatureEight />
       <CtaOne />
       <FaqOne />
-      {/* <Footer /> */}
+      <Footer />
     </LandingLayout>
   )
 }

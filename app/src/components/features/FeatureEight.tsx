@@ -80,7 +80,7 @@ export default function FeatureEight() {
   return (
     <section>
       <div
-        className="mx-auto lg:flex 2xl:border-x-2 border-black border-b-2">
+        className="mx-auto lg:flex">
         <div className="lg:w-1/2 p-8 lg:px-20 bg-lila-200">
           <div className="lg:sticker lg:sticky py-16 top-20">
             <div>
@@ -93,12 +93,10 @@ export default function FeatureEight() {
               <h2
                 className="text-3xl mt-12 xl:text-6xl tracking-tight font-medium text-black">
                 {/* The Use Cases <span className="md:block"> of Presence Protocol</span> */}
-                The <i>use cases</i> of <span className="text-black font-bold uppercase text-6xl">Presence Protocol</span> are endless
+                How to use<br/><span className="text-black font-bold uppercase text-6xl tracking-tighter">Presence Protocol</span>
               </h2>
               <p className="max-w-md mt-4 tracking-wide xl:text-xl text-lg text-black">
-                Count on our dedicated customer support team to assist you round the
-                clock, addressing your queries and concerns promptly and
-                effectively.
+                Supercharge your attendance and memory management with Presence Protocol, the ultimate solution for preserving and sharing your most cherished moments.
                 
               </p>
               <div className="flex-col flex gap-3 mt-10 sm:flex-row">

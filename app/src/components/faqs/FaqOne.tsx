@@ -47,7 +47,7 @@ const FaqOne = () => {
   return (
     <section className="relative flex items-center w-full bg-white">
       <div
-        className="relative items-center w-full mx-auto  border-b-2 border-black 2xl:border-x-2">
+        className="relative items-center w-full mx-auto  ">
         <div className="grid grid-cols-1 lg:grid-cols-3 lg:divide-x-2 divide-black">
           <div className="text-center lg:text-left p-8 lg:p-20 bg-lila-500">
             <p className="text-3xl lg:text-9xl tracking-tight font-medium text-black">

@@ -53,7 +53,7 @@ export default function FeatureOne() {
       {sections.map((section) => (
         <div
           key={section.id}
-          className={`relative items-center w-full divide-y-2 divide-black mx-auto border-b-2 border-black 2xl:border-x-2 ${
+          className={`relative items-center w-full divide-y-2 divide-black mx-auto  ${
             section.id % 2 === 0 ? "lg:grid-cols-2" : "lg:grid-cols-3"
           }`}>
           <div

@@ -3,7 +3,7 @@
 export default function HeroTwo() {
   return (
     <section className="relative flex items-center w-full">
-      <div className="mx-auto  border-b-2 border-black 2xl:border-x-2">
+      <div className="mx-auto ">
         <div
           className="grid grid-cols-1 lg:grid-cols-2 divide-y-2 divide-black md:divide-y-0 md:divide-x-2">
           <div

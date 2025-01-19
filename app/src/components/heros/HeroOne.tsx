@@ -1,32 +1,53 @@
 'use client';
 
+import { useEffect, useState } from 'react';
+
 export default function HeroOne() {
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      // Get mouse position relative to window center
+      const x = (e.clientX - window.innerWidth / 2) / 50;
+      const y = (e.clientY - window.innerHeight / 2) / 50;
+      setMousePosition({ x, y });
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, []);
+
   return (
     <section className="overflow-hidden relative">
-      <div className="mx-auto border-b-2 border-black 2xl:border-x-2 bg-lila-300 relative overflow-hidden min-h-[90vh] md:min-h-[60vh] flex">
+      <div className="mx-auto bg-lila-300 relative overflow-hidden min-h-[90vh] md:min-h-[60vh] flex">
         <img
-          className="absolute shadow-large rounded-full shadow-black w-48 h-48 md:w-72 md:h-72 -top-12 -right-12 md:-top-20 md:-right-20"
+          className="absolute shadow-large rounded-full shadow-black w-48 h-48 md:w-72 md:h-72 -top-12 -right-12 md:-top-20 md:-right-20 transition-transform duration-200 ease-out"
+          style={{ transform: `translate(${mousePosition.x * -1}px, ${mousePosition.y * -1}px)` }}
           src="/images/blob3.svg"
           alt="your alt-text"
         />
 
         <img
-          className="absolute shadow-large rounded-full shadow-black w-48 h-48 md:w-72 md:h-72 -bottom-12 left-8 md:-bottom-20 md:left-12"
+          className="absolute shadow-large rounded-full shadow-black w-48 h-48 md:w-72 md:h-72 -bottom-12 left-8 md:-bottom-20 md:left-12 transition-transform duration-200 ease-out"
+          style={{ transform: `translate(${mousePosition.x * 1.2}px, ${mousePosition.y * 1.2}px)` }}
           src="/images/blob4.svg"
           alt="your alt-text"
         />
         <img
-          className="absolute w-64 h-64 md:w-96 md:h-96 shadow-large rounded-full shadow-black -bottom-20 -right-12 md:-bottom-32 md:-right-20"
+          className="absolute w-64 h-64 md:w-96 md:h-96 shadow-large rounded-full shadow-black -bottom-20 -right-12 md:-bottom-32 md:-right-20 transition-transform duration-200 ease-out"
+          style={{ transform: `translate(${mousePosition.x * -0.8}px, ${mousePosition.y * 0.8}px)` }}
           src="/images/blob1.svg"
           alt="your alt-text"
         />
         <img
-          className="absolute shadow-large rounded-full shadow-black w-48 h-48 md:w-72 md:h-72 bottom-8 -left-12 md:bottom-12 md:-left-20"
+          className="absolute shadow-large rounded-full shadow-black w-48 h-48 md:w-72 md:h-72 bottom-8 -left-12 md:bottom-12 md:-left-20 transition-transform duration-200 ease-out"
+          style={{ transform: `translate(${mousePosition.x * 0.6}px, ${mousePosition.y * -0.6}px)` }}
           src="/images/blob2.svg"
           alt="your alt-text"
         />
         <img
-          className="absolute shadow-large rounded-full shadow-black w-48 h-48 md:w-72 md:h-72 -top-32 left-32 md:-top-48 md:left-52"
+          className="absolute shadow-large rounded-full shadow-black w-48 h-48 md:w-72 md:h-72 -top-32 left-32 md:-top-48 md:left-52 transition-transform duration-200 ease-out"
+          style={{ transform: `translate(${mousePosition.x * 0.4}px, ${mousePosition.y * 0.4}px)` }}
           src="/images/blob5.svg"
           alt="your alt-text"
         />

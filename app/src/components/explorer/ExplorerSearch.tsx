@@ -3,7 +3,7 @@
 export default function ExplorerSearch() {
   return (
     <section className="overflow-hidden relative">
-      <div className="mx-auto border-b-2 border-black 2xl:border-x-2 bg-lila-300 relative overflow-hidden">
+      <div className="mx-auto  bg-lila-300 relative overflow-hidden">
         <div className="items-center w-full grid mx-auto p-8 lg:p-12">
         <img
           className="absolute shadow-large rounded-full shadow-black w-32 h-32 md:w-48 md:h-48 -top-10 -right-6 md:-top-16 md:-right-10"
