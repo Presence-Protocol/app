@@ -223,7 +223,7 @@ export const PoapCollection = new Factory(
   Contract.fromJson(
     PoapCollectionContractJson,
     "",
-    "e51406d6d51ce3c8521c3786880fb4663f37f100b366e5e4b68688742c06a97f",
+    "15b39c6769d1e27f8c5513e1d87ccb04313c193a34112b4d2b77a223af9ade67",
     AllStructs
   )
 );

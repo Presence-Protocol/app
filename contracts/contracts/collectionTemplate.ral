@@ -64,8 +64,8 @@ Contract PoapCollection(
 
     pub fn getCollectionUri() -> ByteVec {
 
-      if(image != #00){
-        return b`data:application/json,{"name": "` ++ eventName ++ b`", "description":`++ description ++ b`, "image": "` ++ image ++ b`"}`
+      if(imageSvg != #00){
+        return b`data:application/json,{"name": "` ++ eventName ++ b`", "description":`++ description ++ b`, "image": "` ++ imageSvg ++ b`"}`
       }
       return collectionUri
     }
