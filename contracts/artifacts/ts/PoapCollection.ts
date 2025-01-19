@@ -41,15 +41,15 @@ import { Trait, AllStructs } from "./types";
 export namespace PoapCollectionTypes {
   export type Fields = {
     nftTemplateId: HexString;
-    collectionUri: HexString;
-    nftUri: HexString;
+    collectionImageUri: HexString;
+    nftImageUri: HexString;
     imageSvg: HexString;
     maxSupply: bigint;
     mintStartAt: bigint;
     mintEndAt: bigint;
     eventName: HexString;
     description: HexString;
-    organizer: Address;
+    organizer: HexString;
     location: HexString;
     eventStartAt: bigint;
     eventEndAt: bigint;
@@ -223,7 +223,7 @@ export const PoapCollection = new Factory(
   Contract.fromJson(
     PoapCollectionContractJson,
     "",
-    "15b39c6769d1e27f8c5513e1d87ccb04313c193a34112b4d2b77a223af9ade67",
+    "e3551aecc0d0a847a414aa7416502587d5b21603bf14537b388b906a6c1b6023",
     AllStructs
   )
 );

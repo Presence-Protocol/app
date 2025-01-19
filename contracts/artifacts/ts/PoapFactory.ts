@@ -62,15 +62,14 @@ export namespace PoapFactoryTypes {
   export interface CallMethodTable {
     mintNewCollection: {
       params: CallContractParams<{
-        collectionUri: HexString;
-        nftUri: HexString;
+        collectionImageUri: HexString;
+        nftImageUri: HexString;
         imageSvg: HexString;
         maxSupply: bigint;
         mintStartAt: bigint;
         mintEndAt: bigint;
         eventName: HexString;
         description: HexString;
-        organizer: Address;
         location: HexString;
         eventStartAt: bigint;
         eventEndAt: bigint;
@@ -85,6 +84,10 @@ export namespace PoapFactoryTypes {
     getNumEventsCreated: {
       params: Omit<CallContractParams<{}>, "args">;
       result: CallContractResult<bigint>;
+    };
+    convert: {
+      params: CallContractParams<{ array: HexString }>;
+      result: CallContractResult<HexString>;
     };
   }
   export type CallMethodParams<T extends keyof CallMethodTable> =
@@ -106,15 +109,14 @@ export namespace PoapFactoryTypes {
   export interface SignExecuteMethodTable {
     mintNewCollection: {
       params: SignExecuteContractMethodParams<{
-        collectionUri: HexString;
-        nftUri: HexString;
+        collectionImageUri: HexString;
+        nftImageUri: HexString;
         imageSvg: HexString;
         maxSupply: bigint;
         mintStartAt: bigint;
         mintEndAt: bigint;
         eventName: HexString;
         description: HexString;
-        organizer: Address;
         location: HexString;
         eventStartAt: bigint;
         eventEndAt: bigint;
@@ -128,6 +130,10 @@ export namespace PoapFactoryTypes {
     };
     getNumEventsCreated: {
       params: Omit<SignExecuteContractMethodParams<{}>, "args">;
+      result: SignExecuteScriptTxResult;
+    };
+    convert: {
+      params: SignExecuteContractMethodParams<{ array: HexString }>;
       result: SignExecuteScriptTxResult;
     };
   }
@@ -160,15 +166,14 @@ class Factory extends ContractFactory<
       params: TestContractParamsWithoutMaps<
         PoapFactoryTypes.Fields,
         {
-          collectionUri: HexString;
-          nftUri: HexString;
+          collectionImageUri: HexString;
+          nftImageUri: HexString;
           imageSvg: HexString;
           maxSupply: bigint;
           mintStartAt: bigint;
           mintEndAt: bigint;
           eventName: HexString;
           description: HexString;
-          organizer: Address;
           location: HexString;
           eventStartAt: bigint;
           eventEndAt: bigint;
@@ -204,6 +209,14 @@ class Factory extends ContractFactory<
         getContractByCodeHash
       );
     },
+    convert: async (
+      params: TestContractParamsWithoutMaps<
+        PoapFactoryTypes.Fields,
+        { array: HexString }
+      >
+    ): Promise<TestContractResultWithoutMaps<HexString>> => {
+      return testMethod(this, "convert", params, getContractByCodeHash);
+    },
   };
 
   stateForTest(
@@ -220,7 +233,7 @@ export const PoapFactory = new Factory(
   Contract.fromJson(
     PoapFactoryContractJson,
     "",
-    "b24d05b2380a725e0f8fe8e0a1e4b9fe66c73ce2f039e7cdf00fc07e58d819a4",
+    "1031a0bbd04a3a28a54e12a5566448a9de0c3cc83caf0405b222fa33753e5ad3",
     AllStructs
   )
 );
@@ -314,6 +327,17 @@ export class PoapFactoryInstance extends ContractInstance {
         getContractByCodeHash
       );
     },
+    convert: async (
+      params: PoapFactoryTypes.CallMethodParams<"convert">
+    ): Promise<PoapFactoryTypes.CallMethodResult<"convert">> => {
+      return callMethod(
+        PoapFactory,
+        this,
+        "convert",
+        params,
+        getContractByCodeHash
+      );
+    },
   };
 
   transact = {
@@ -340,6 +364,11 @@ export class PoapFactoryInstance extends ContractInstance {
         "getNumEventsCreated",
         params
       );
+    },
+    convert: async (
+      params: PoapFactoryTypes.SignExecuteMethodParams<"convert">
+    ): Promise<PoapFactoryTypes.SignExecuteMethodResult<"convert">> => {
+      return signExecuteMethod(PoapFactory, this, "convert", params);
     },
   };
 

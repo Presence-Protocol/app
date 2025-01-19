@@ -14,7 +14,7 @@ const deployTemplates: DeployFunction<Settings> = async (
     initialFields: {
       collectionId: '00',
       nftIndex: 0n,
-      uri: '00',
+      imageUri: '00',
       eventName: '00',
       description: '00',
       organizer: NULL_CONTRACT_ADDRESS,
@@ -28,7 +28,7 @@ const deployTemplates: DeployFunction<Settings> = async (
   await deployer.deployContract(PoapCollection,{
     initialFields: {
       nftTemplateId: '00',
-      collectionUri: '00',
+      collectionImageUri: '00',
       maxSupply: 0n,
       mintStartAt: 0n,
       mintEndAt: 0n,
@@ -39,7 +39,7 @@ const deployTemplates: DeployFunction<Settings> = async (
       eventStartAt: 0n,
       eventEndAt: 0n,
       totalSupply: 0n,
-      nftUri: '',
+      nftImageUri: '',
       imageSvg: '00'
     }
   })

@@ -3,11 +3,11 @@ import "std/nft_interface"
 Contract PoapNFT(
   collectionId: ByteVec,
   nftIndex: U256,
-  uri: ByteVec,
+  imageUri: ByteVec,
   image: ByteVec,
   eventName: ByteVec,
   description: ByteVec,
-  organizer: Address,
+  organizer: ByteVec,
   location: ByteVec,
   eventStartAt: U256,
   eventEndAt: U256
@@ -16,10 +16,10 @@ Contract PoapNFT(
   pub fn getTokenUri() -> ByteVec {
 
     if(image != #00){
-      return b`data:application/json,{"name": "` ++ eventName ++ b`", "attributes": [{"trait_type": "Event Name", "value": "` ++ eventName ++ b`"}, {"trait_type": "Description", "value": "` ++ description ++ b`"}, {"trait_type": "Organizer", "value": "` ++ toByteVec!(organizer) ++ b`"}, {"trait_type": "Location", "value": "` ++ location ++ b`"}, {"trait_type": "Event Start At", "value": ` ++ u256ToString!(eventStartAt) ++ b`}, {"trait_type": "Event End At", "value": ` ++ u256ToString!(eventEndAt) ++ b`}], "image": "` ++ image ++ b`"}`
+      return b`data:application/json,{"name": "` ++ eventName ++ b`", "attributes": [{"trait_type": "Event Name", "value": "` ++ eventName ++ b`"}, {"trait_type": "Description", "value": "` ++ description ++ b`"}, {"trait_type": "Organizer", "value": "` ++ organizer ++ b`"}, {"trait_type": "Location", "value": "` ++ location ++ b`"}, {"trait_type": "Event Start At", "value": ` ++ u256ToString!(eventStartAt) ++ b`}, {"trait_type": "Event End At", "value": ` ++ u256ToString!(eventEndAt) ++ b`}], "image": "` ++ image ++ b`"}`
     }
 
-    return uri
+    return b`data:application/json,{"name": "` ++ eventName ++ b`", "attributes": [{"trait_type": "Event Name", "value": "` ++ eventName ++ b`"}, {"trait_type": "Description", "value": "` ++ description ++ b`"}, {"trait_type": "Organizer", "value": "` ++ organizer ++ b`"}, {"trait_type": "Location", "value": "` ++ location ++ b`"}, {"trait_type": "Event Start At", "value": ` ++ u256ToString!(eventStartAt) ++ b`}, {"trait_type": "Event End At", "value": ` ++ u256ToString!(eventEndAt) ++ b`}], "image": "` ++ imageUri ++ b`"}`
   }
 
   pub fn getCollectionIndex() -> (ByteVec, U256) {
@@ -58,7 +58,7 @@ Contract PoapNFT(
         },
         Trait {
             traitType: b`Organizer`,
-            value: toByteVec!(organizer)
+            value: organizer
         },
         Trait {
             traitType: b`Location`,

@@ -1,8 +1,8 @@
 {
   "version": "v3.11.1",
   "name": "PoapFactory",
-  "bytecode": "0303405b4089409701030d1101402bd3022507c0b4170dce011600160116021603160416051606160716081609160a160b1406414c50480002130e64160c130164170f170e160dd1a2ce00160e160faf1710a0000d2aa1000516101606160d60161002010301040017d3f652052cb417011601d1a216010d0d1600010417020c0d16000101170306160216001603160161010000000103d3c2aa9c01a00002",
-  "codeHash": "b24d05b2380a725e0f8fe8e0a1e4b9fe66c73ce2f039e7cdf00fc07e58d819a4",
+  "bytecode": "0304405e408c409a414701030c1001402dd3b912fceeb4170cce0116001601160216031604160516061607160c47000316081609160a1406414c50480002130e64160b130164170e170d160cd1a2ce00160d160eaf170fa0000d2aa10005160f1606160c60160f02010301040017d3f652052cb417011601d1a216010d0d1600010417020c0d16000101170306160216001603160161010000000103d3c2aa9c01a00002000001160140581401301401311401321401331401341401351401361401371401381401391401611401621401631401641401651401661710170f170e170d170c170b170a170917081707170617051704170317021701140017110c17121612160043314c402d1600161216120d2a626c1340ff3817131613103c130f3817141613130f381715161116147a1310314d0d2a784416157a1310314d0d2a7844171116120d2a17124a7fce161102",
+  "codeHash": "1031a0bbd04a3a28a54e12a5566448a9de0c3cc83caf0405b222fa33753e5ad3",
   "fieldsSig": {
     "names": [
       "collectionTemplateId",
@@ -54,15 +54,14 @@
     {
       "name": "mintNewCollection",
       "paramNames": [
-        "collectionUri",
-        "nftUri",
+        "collectionImageUri",
+        "nftImageUri",
         "imageSvg",
         "maxSupply",
         "mintStartAt",
         "mintEndAt",
         "eventName",
         "description",
-        "organizer",
         "location",
         "eventStartAt",
         "eventEndAt",
@@ -77,14 +76,12 @@
         "U256",
         "ByteVec",
         "ByteVec",
-        "Address",
         "ByteVec",
         "U256",
         "U256",
         "U256"
       ],
       "paramIsMutable": [
-        false,
         false,
         false,
         false,
@@ -122,6 +119,21 @@
       "paramIsMutable": [],
       "returnTypes": [
         "U256"
+      ]
+    },
+    {
+      "name": "convert",
+      "paramNames": [
+        "array"
+      ],
+      "paramTypes": [
+        "ByteVec"
+      ],
+      "paramIsMutable": [
+        false
+      ],
+      "returnTypes": [
+        "ByteVec"
       ]
     }
   ],
