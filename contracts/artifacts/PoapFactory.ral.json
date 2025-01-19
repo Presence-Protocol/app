@@ -1,8 +1,8 @@
 {
   "version": "v3.11.1",
   "name": "PoapFactory",
-  "bytecode": "0302405b408901030d1101402bd3022507c0b4170dce011600160116021603160416051606160716081609160a160b1406414c50480002130e64160c130164170f170e160dd1a2ce00160e160faf1710a0000d2aa1000516101606160d60161002010301040017d3f652052cb417011601d1a216010d0d1600010417020c0d16000101170306160216001603160161",
-  "codeHash": "fa3807ef793cc05380aad483485be8097b15fd3f753c1617c25c58f4cb08d161",
+  "bytecode": "0304405c408a4098414501030b0f01402cd359604df0b4170bce011600160116021603160416051606160b4700031607160816091406414c50480002130d64160a130164170d170c160bd1a2ce00160c160daf170ea0000d2aa10005160e1605160b60160e02010301040017d3f652052cb417011601d1a216010d0d1600010417020c0d16000101170306160216001603160161010000000103d3c2aa9c01a00002000001160140581401301401311401321401331401341401351401361401371401381401391401611401621401631401641401651401661710170f170e170d170c170b170a170917081707170617051704170317021701140017110c17121612160043314c402d1600161216120d2a626c1340ff3817131613103c130f3817141613130f381715161116147a1310314d0d2a784416157a1310314d0d2a7844171116120d2a17124a7fce161102",
+  "codeHash": "dfda7881dec5d7e4d8cbb7b3484f2e443c411689b8a8fdee9af15c18b5a809de",
   "fieldsSig": {
     "names": [
       "collectionTemplateId",
@@ -54,15 +54,13 @@
     {
       "name": "mintNewCollection",
       "paramNames": [
-        "collectionUri",
-        "nftUri",
+        "imageUri",
         "imageSvg",
         "maxSupply",
         "mintStartAt",
         "mintEndAt",
         "eventName",
         "description",
-        "organizer",
         "location",
         "eventStartAt",
         "eventEndAt",
@@ -71,21 +69,17 @@
       "paramTypes": [
         "ByteVec",
         "ByteVec",
-        "ByteVec",
         "U256",
         "U256",
         "U256",
         "ByteVec",
         "ByteVec",
-        "Address",
         "ByteVec",
         "U256",
         "U256",
         "U256"
       ],
       "paramIsMutable": [
-        false,
-        false,
         false,
         false,
         false,
@@ -114,6 +108,30 @@
         false
       ],
       "returnTypes": []
+    },
+    {
+      "name": "getNumEventsCreated",
+      "paramNames": [],
+      "paramTypes": [],
+      "paramIsMutable": [],
+      "returnTypes": [
+        "U256"
+      ]
+    },
+    {
+      "name": "convert",
+      "paramNames": [
+        "array"
+      ],
+      "paramTypes": [
+        "ByteVec"
+      ],
+      "paramIsMutable": [
+        false
+      ],
+      "returnTypes": [
+        "ByteVec"
+      ]
     }
   ],
   "constants": [],

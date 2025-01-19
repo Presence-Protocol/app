@@ -1,0 +1,114 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/26.0.4 Chrome/128.0.6613.186 Electron/32.2.5 Safari/537.36" version="26.0.4">
+  <diagram id="C5RBs43oDa-KdzZeNtuy" name="Page-1">
+    <mxGraphModel dx="1067" dy="1233" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+      <root>
+        <mxCell id="WIyWlLk6GJQsqaUBKTNV-0" />
+        <mxCell id="WIyWlLk6GJQsqaUBKTNV-1" parent="WIyWlLk6GJQsqaUBKTNV-0" />
+        <mxCell id="Pax1yDMVbgt0zzM49SSv-3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0.5;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="WIyWlLk6GJQsqaUBKTNV-1" source="Pax1yDMVbgt0zzM49SSv-0" target="Pax1yDMVbgt0zzM49SSv-5">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="299" y="220" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="Pax1yDMVbgt0zzM49SSv-4" value="Create new event" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="Pax1yDMVbgt0zzM49SSv-3">
+          <mxGeometry x="0.1918" y="-2" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="Pax1yDMVbgt0zzM49SSv-0" value="Actor" style="shape=umlActor;verticalLabelPosition=top;verticalAlign=bottom;html=1;outlineConnect=0;labelPosition=center;align=center;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
+          <mxGeometry x="40" y="190" width="30" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="Pax1yDMVbgt0zzM49SSv-7" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" edge="1" parent="WIyWlLk6GJQsqaUBKTNV-1" source="Pax1yDMVbgt0zzM49SSv-5" target="Pax1yDMVbgt0zzM49SSv-6">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="Pax1yDMVbgt0zzM49SSv-9" value="Create new collection" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="Pax1yDMVbgt0zzM49SSv-7">
+          <mxGeometry x="-0.3333" relative="1" as="geometry">
+            <mxPoint x="20" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="Pax1yDMVbgt0zzM49SSv-10" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="WIyWlLk6GJQsqaUBKTNV-1" source="Pax1yDMVbgt0zzM49SSv-5" target="Pax1yDMVbgt0zzM49SSv-12">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="505" y="140" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="Pax1yDMVbgt0zzM49SSv-13" value="emit" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="Pax1yDMVbgt0zzM49SSv-10">
+          <mxGeometry x="-0.002" y="-2" relative="1" as="geometry">
+            <mxPoint x="-2" y="1" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="Pax1yDMVbgt0zzM49SSv-5" value="PoapFactory" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
+          <mxGeometry x="240" y="190" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="Pax1yDMVbgt0zzM49SSv-6" value="PoapCollection" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
+          <mxGeometry x="510" y="190" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="Pax1yDMVbgt0zzM49SSv-12" value="EventCreated(contractId: ByteVec, eventName: ByteVec, organizer: Address)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
+          <mxGeometry x="210" y="50" width="180" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="Pax1yDMVbgt0zzM49SSv-15" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0.5;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="WIyWlLk6GJQsqaUBKTNV-1" source="Pax1yDMVbgt0zzM49SSv-17" target="Pax1yDMVbgt0zzM49SSv-22">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="299" y="560" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="Pax1yDMVbgt0zzM49SSv-25" value="Mint a Poap" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="Pax1yDMVbgt0zzM49SSv-15">
+          <mxGeometry x="-0.1676" y="1" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="Pax1yDMVbgt0zzM49SSv-17" value="Actor" style="shape=umlActor;verticalLabelPosition=top;verticalAlign=bottom;html=1;outlineConnect=0;labelPosition=center;align=center;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
+          <mxGeometry x="40" y="530" width="30" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="Pax1yDMVbgt0zzM49SSv-18" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" edge="1" parent="WIyWlLk6GJQsqaUBKTNV-1" source="Pax1yDMVbgt0zzM49SSv-22" target="Pax1yDMVbgt0zzM49SSv-23">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="Pax1yDMVbgt0zzM49SSv-19" value="Create new collection" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="Pax1yDMVbgt0zzM49SSv-18">
+          <mxGeometry x="-0.3333" relative="1" as="geometry">
+            <mxPoint x="20" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="Pax1yDMVbgt0zzM49SSv-20" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="WIyWlLk6GJQsqaUBKTNV-1" source="Pax1yDMVbgt0zzM49SSv-22" target="Pax1yDMVbgt0zzM49SSv-24">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="505" y="480" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="Pax1yDMVbgt0zzM49SSv-21" value="emit" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="Pax1yDMVbgt0zzM49SSv-20">
+          <mxGeometry x="-0.002" y="-2" relative="1" as="geometry">
+            <mxPoint x="-2" y="1" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="Pax1yDMVbgt0zzM49SSv-22" value="PoapFactory" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
+          <mxGeometry x="240" y="530" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="Pax1yDMVbgt0zzM49SSv-27" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="WIyWlLk6GJQsqaUBKTNV-1" source="Pax1yDMVbgt0zzM49SSv-23" target="Pax1yDMVbgt0zzM49SSv-26">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="Pax1yDMVbgt0zzM49SSv-28" value="Create a new NFT" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="Pax1yDMVbgt0zzM49SSv-27">
+          <mxGeometry x="-0.3818" relative="1" as="geometry">
+            <mxPoint x="31" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="Pax1yDMVbgt0zzM49SSv-23" value="PoapCollection" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
+          <mxGeometry x="510" y="530" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="Pax1yDMVbgt0zzM49SSv-24" value="PoapMinted(contractId: ByteVec, collectionId: PoapCollection, nftIndex: U256 ,caller: Address)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
+          <mxGeometry x="210" y="390" width="180" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="Pax1yDMVbgt0zzM49SSv-26" value="PoapNFT" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
+          <mxGeometry x="780" y="530" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="Pax1yDMVbgt0zzM49SSv-29" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=1;entryY=1;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="WIyWlLk6GJQsqaUBKTNV-1" source="Pax1yDMVbgt0zzM49SSv-26" target="Pax1yDMVbgt0zzM49SSv-17">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="840" y="640" />
+              <mxPoint x="70" y="640" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="Pax1yDMVbgt0zzM49SSv-31" value="Send POAP" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="Pax1yDMVbgt0zzM49SSv-29">
+          <mxGeometry x="-0.0115" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

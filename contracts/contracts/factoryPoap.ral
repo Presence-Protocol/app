@@ -10,8 +10,7 @@ Contract PoapFactory(
 
     @using(preapprovedAssets = true, checkExternalCaller = false, updateFields = true)
     pub fn mintNewCollection(
-        collectionUri: ByteVec,
-        nftUri: ByteVec,
+        imageUri: ByteVec,
         imageSvg: ByteVec,
         maxSupply: U256,
         mintStartAt: U256,
@@ -20,7 +19,6 @@ Contract PoapFactory(
         //event properties
         eventName: ByteVec,
         description: ByteVec,
-        organizer: Address,
         location: ByteVec,
         eventStartAt: U256,
         eventEndAt: U256,
@@ -29,15 +27,14 @@ Contract PoapFactory(
             let caller = callerAddress!()
 
             let (initialImmState, initialMutState) = PoapCollection.encodeFields!(poapTemplateId,
-                collectionUri,
-                nftUri,
+                imageUri,
                 imageSvg,
                 maxSupply,
                 mintStartAt,
                 mintEndAt,
                 eventName,
                 description,
-                organizer,
+                convert(toByteVec!(caller)),
                 location,
                 eventStartAt,
                 eventEndAt,
@@ -67,6 +64,24 @@ Contract PoapFactory(
 
         emit PoapMinted(poapContractId, collection, collectionTotalSupply, caller)
 
-    }   
+    }
+
+    pub fn getNumEventsCreated() -> U256{
+        return numMintedCollection
+    }
+
+    // Converts a byte array to a hexadecimal string. Used to change the token ID to a readable format.
+    fn convert(array: ByteVec) -> ByteVec {
+        let hexBytes = [b`0`, b`1`, b`2`, b`3`, b`4`, b`5`, b`6`, b`7`, b`8`, b`9`, b`a`, b`b`, b`c`, b`d`, b`e`, b`f`]
+        let mut result = #
+        for(let mut offset = 0; offset < size!(array); offset = offset + 1) {
+           let byte = u256From1Byte!(byteVecSlice!(array, offset, offset + 1)) & 0xFF
+           let high = (byte >> 4) & 0x0F
+           let low = byte & 0x0F
+           result = result ++ hexBytes[high] ++ hexBytes[low]
+        }
+    
+        return result
+      }
 
 }
