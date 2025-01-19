@@ -63,7 +63,11 @@ Contract PoapCollection(
  // collection json https://arweave.net/Z1HAdT_PGnxPLct4-u7l1Zl_h4DNdxzKev7tCDAEflc
 
     pub fn getCollectionUri() -> ByteVec {
-        return collectionUri
+
+      if(image != #00){
+        return b`data:application/json,{"name": "` ++ eventName ++ b`", "description":`++ description ++ b`, "image": "` ++ image ++ b`"}`
+      }
+      return collectionUri
     }
     
     pub fn totalSupply() -> U256 {
