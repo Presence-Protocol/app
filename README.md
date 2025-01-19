@@ -92,6 +92,14 @@ To be able to show the POAP on NFT platforms, explorer and wallets, the organize
 ```json
 {
   "name": "Alephium meetup",
-  "image": "<image file>"
+  "image": "<image file uri>",
+  "attributes": [
+    {"trait_type": "Event Name", "value": "<eventName>"},
+    {"trait_type": "Description", "value": "<description>"},
+    {"trait_type": "Organizer", "value": "<organizer>"},
+    {"trait_type": "Location", "value": "<location>"},
+    {"trait_type": "Event Start At", "value": <eventStartAt>},
+    {"trait_type": "Event End At", "value": <eventEndAt>}
+  ]
 }
 ```
