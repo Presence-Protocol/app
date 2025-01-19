@@ -87,8 +87,6 @@ To be able to show the POAP on NFT platforms, explorer and wallets, the organize
 }
 ```
 
-
-
 ### POAP
 
 ```json
