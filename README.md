@@ -25,7 +25,7 @@
 | mintStopAt    | U256    | When mint will stop                                          |
 | eventName     | ByteVec | Name of the event                                            |
 | description   | ByteVec | Description of the event                                     |
-| organizer     | Address | Address of the organizer, i.e creator of the event           |
+| organizer     | ByteVec | Address of the organizer converted to hex string , i.e creator of the event          |
 | location      | ByteVec | Where the event is taking place                              |
 | eventStartAt  | U256    | When the event starts                                        |
 | eventEndAt    | U256    | When the event ends                                          |
@@ -40,7 +40,7 @@
 | image        | ByteVec | SVG of an image, can be used to store small logo. Max 2.8 KB |
 | eventName    | ByteVec | Name of the event                                            |
 | description  | ByteVec | Description of the event                                     |
-| organizer    | Address | Address of the organizer, i.e creator of the event           |
+| organizer    | ByteVec | Address of the organizer converted to hex string , i.e creator of the event           |
 | location     | ByteVec | Where the event is taking place                              |
 | eventStartAt | U256    | When the event starts                                        |
 | eventEndAt   | U256    | When the event ends                                          |
@@ -79,27 +79,9 @@ Trait {
 To be able to show the POAP on NFT platforms, explorer and wallets, the organizer needs to add a json file following the NFT format the chain is using.
 
 ### Collection
-```json
-{
-  "name": "Alephium meetup",
-  "description": "One of the many",
-  "image": "<image file>"
-}
-```
+
+collectionImageUri should receive an URL pointing to the image resource.
 
 ### POAP
 
-```json
-{
-  "name": "Alephium meetup",
-  "image": "<image file uri>",
-  "attributes": [
-    {"trait_type": "Event Name", "value": "<eventName>"},
-    {"trait_type": "Description", "value": "<description>"},
-    {"trait_type": "Organizer", "value": "<organizer>"},
-    {"trait_type": "Location", "value": "<location>"},
-    {"trait_type": "Event Start At", "value": <eventStartAt>},
-    {"trait_type": "Event End At", "value": <eventEndAt>}
-  ]
-}
-```
+nftImageUri should receive an URL pointing to the image resource.
