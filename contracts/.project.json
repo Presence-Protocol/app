@@ -37,9 +37,9 @@
     },
     "PoapFactory": {
       "sourceFile": "factoryPoap.ral",
-      "sourceCodeHash": "6df009ac969329f603e6bdeb36352f4fa3cb5f239040e712ef1a4209d0828b65",
+      "sourceCodeHash": "0e404ad57ed29530e66f44c0bb7870fe2a5a2f16d0c004f4eba1d0976fef61fe",
       "bytecodeDebugPatch": "",
-      "codeHashDebug": "fa3807ef793cc05380aad483485be8097b15fd3f753c1617c25c58f4cb08d161"
+      "codeHashDebug": "b24d05b2380a725e0f8fe8e0a1e4b9fe66c73ce2f039e7cdf00fc07e58d819a4"
     },
     "PoapNFT": {
       "sourceFile": "nftTemplate.ral",

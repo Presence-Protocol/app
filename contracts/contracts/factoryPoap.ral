@@ -67,6 +67,10 @@ Contract PoapFactory(
 
         emit PoapMinted(poapContractId, collection, collectionTotalSupply, caller)
 
-    }   
+    }
+
+    pub fn getNumEventsCreated() -> U256{
+        return numMintedCollection
+    }
 
 }
