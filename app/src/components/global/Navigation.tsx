@@ -190,7 +190,7 @@ export default function Navigation() {
             className={`duration-300 focus:text-orange/90 hover:text-lila-900 px-3 py-2 transform transition font-semibold ${!isConnected ? 'opacity-50 cursor-not-allowed' : ''}`}
             title={!isConnected ? 'Please connect wallet first' : 'link to your page'}
             aria-label={!isConnected ? 'Please connect wallet first' : 'your label'} 
-            href={!isConnected ? '' : '/my-nfts'}
+            href={!isConnected ? '' : '/my-presence'}
             onClick={e => !isConnected && e.preventDefault()}
           >
             {!isConnected && (
@@ -204,16 +204,6 @@ export default function Navigation() {
 
             <CustomWalletConnectButton />
 
-          {/* <a
-            className="text-black ml-4 mr-6 items-center shadow shadow-black text-base font-semibold inline-flex px-6 focus:outline-none justify-center text-center bg-white border-black ease-in-out transform transition-all focus:ring-lila-700 focus:shadow-none border-2 duration-100 focus:bg-black focus:text-white w-full sm:w-auto py-2 rounded-lg h-14 focus:translate-y-1 hover:text-lila-800 tracing-wide"
-            href="/new-event"
-            title="link to your page"
-            aria-label="your label"
-          >
-            Connect Wallet 
-   
-          </a> */}
-                   {/* <span className="ml-3">&rarr;</span> */}
         </nav>
       </div>
     </div>

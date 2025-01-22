@@ -1,14 +1,22 @@
 "use client"
 
 import React, { useState } from 'react';
+import { web3, Contract } from '@alephium/web3'
+import { PoapFactory } from '../../../../contracts/artifacts/ts/PoapFactory'
+import { toast } from 'react-hot-toast'
+import { useWallet } from '@alephium/web3-react'
+import { stringToHex } from '@alephium/web3'
 
-export default function NewMint() {
+export default function NewEvent() {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [amount, setAmount] = useState(0);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
+  const [location, setLocation] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { account, signer } = useWallet()
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -20,6 +28,78 @@ export default function NewMint() {
       reader.readAsDataURL(file);
     }
   };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+
+    try {
+      if (!account?.address) {
+        throw new Error('Please connect your wallet first')
+      }
+
+      // Convert dates to UNIX timestamps
+      const eventStartAt = BigInt(new Date(startDate).getTime() / 1000);
+      const eventEndAt = BigInt(new Date(endDate).getTime() / 1000);
+      
+      // Set mint period same as event period for now
+      const mintStartAt = eventStartAt;
+      const mintEndAt = eventEndAt;
+
+      // Initialize contract
+      const factoryContract = PoapFactory.at('1GBvuTs4TosNB9xTCGJL5wABn2xTYCzwa7MnXHphjcj1y');
+
+      // Convert strings to hex format
+      const imageUri = stringToHex(previewImage || '');
+      const imageSvg = stringToHex(''); // If you have SVG version
+      const eventName = stringToHex(title);
+      const descriptionHex = stringToHex(description);
+      const locationHex = stringToHex(location);
+
+      // Call contract method using transact
+      const result = await factoryContract.transact.mintNewCollection({
+        args: {
+          imageUri,
+          imageSvg,
+          maxSupply: BigInt(amount),
+          mintStartAt,
+          mintEndAt,
+          eventName,
+          description: descriptionHex,
+          location: locationHex,
+          eventStartAt,
+          eventEndAt,
+          totalSupply: BigInt(0)
+        },
+        signer
+      });
+
+      toast.success('Event created successfully!');
+      // Handle success (e.g., redirect to event page)
+    } catch (error) {
+      console.error('Error creating event:', error);
+      toast.error('Failed to create event. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  // Add location input field in the form
+  const locationInput = (
+    <div className="border-2 border-black divide-black shadow rounded-xl overflow-hidden">
+      <div>
+        <label htmlFor="location" className="sr-only">Location</label>
+        <input
+          id="location"
+          type="text"
+          placeholder="Event Location"
+          value={location}
+          onChange={(e) => setLocation(e.target.value)}
+          className="block w-full px-3 py-4 text-xl text-black border-2 border-transparent appearance-none placeholder-black border-black focus:border-black focus:bg-lila-500 focus:outline-none focus:ring-black sm:text-sm"
+        />
+      </div>
+    </div>
+  );
 
   return (
     <section>
@@ -64,7 +144,7 @@ export default function NewMint() {
               Create a new POAP for your event, community or yourself!
               </p>
 
-              <form className="mt-6">
+              <form className="mt-6" onSubmit={handleSubmit}>
                 <div className="space-y-6">
                   <div className="border-2 border-black divide-black shadow rounded-xl overflow-hidden">
                     <div>
@@ -167,13 +247,16 @@ export default function NewMint() {
                     </div>
                   </div>
 
+                  {locationInput}
+
                   <div>
                     <button
                       type="submit"
+                      disabled={isSubmitting}
                       aria-label="submit"
-                      className="text-black items-center shadow shadow-black text-lg font-semibold inline-flex px-6 focus:outline-none justify-center text-center bg-white border-black ease-in-out transform transition-all focus:ring-lila-700 focus:shadow-none border-2 duration-100 focus:bg-black focus:text-white py-3 rounded-lg h-16 tracking-wide focus:translate-y-1 w-full hover:text-lila-800"
+                      className={`text-black items-center shadow shadow-black text-lg font-semibold inline-flex px-6 focus:outline-none justify-center text-center bg-white border-black ease-in-out transform transition-all focus:ring-lila-700 focus:shadow-none border-2 duration-100 focus:bg-black focus:text-white py-3 rounded-lg h-16 tracking-wide focus:translate-y-1 w-full hover:text-lila-800 ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
                     >
-                      Create POAP
+                      {isSubmitting ? 'Creating...' : 'Create POAP'}
                     </button>
                   </div>
                 </div>
