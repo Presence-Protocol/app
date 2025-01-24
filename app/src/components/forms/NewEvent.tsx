@@ -1,11 +1,12 @@
 "use client"
 
 import React, { useState } from 'react';
-import { web3, Contract } from '@alephium/web3'
+import { web3, Contract, MINIMAL_CONTRACT_DEPOSIT, DUST_AMOUNT } from '@alephium/web3'
 import { PoapFactory } from '../../../../contracts/artifacts/ts/PoapFactory'
 import { toast } from 'react-hot-toast'
 import { useWallet } from '@alephium/web3-react'
 import { stringToHex } from '@alephium/web3'
+import { loadDeployments } from 'my-contracts/deployments';
 
 const MAX_TITLE_LENGTH = 50;
 const MAX_DESCRIPTION_LENGTH = 180;
@@ -63,7 +64,8 @@ export default function NewEvent() {
       const mintEndAt = eventEndAt;
 
       // Initialize contract
-      const factoryContract = PoapFactory.at('1GBvuTs4TosNB9xTCGJL5wABn2xTYCzwa7MnXHphjcj1y');
+      const deployment = loadDeployments('testnet'); // TODO use getNetwork()
+      const factoryContract = PoapFactory.at(deployment.contracts.PoapFactory.contractInstance.address);
 
       // Convert strings to hex format
       const imageUri = stringToHex(previewImage || '');
@@ -87,7 +89,8 @@ export default function NewEvent() {
           eventEndAt,
           totalSupply: BigInt(0)
         },
-        signer: signer
+        signer: signer,
+        attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT+DUST_AMOUNT,
       });
 
       toast.success('Event created successfully!');

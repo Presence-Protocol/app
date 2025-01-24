@@ -64,10 +64,10 @@ Contract PoapCollection(
     pub fn getCollectionUri() -> ByteVec {
 
       if(imageSvg != #00){
-        return b`data:application/json,{"name": "` ++ eventName ++ b`", "description":`++ description ++ b`, "image": "` ++ imageSvg ++ b`"}`
+        return b`data:application/json,{"name": "` ++ eventName ++ b`", "description": "`++ description ++ b`", "image": "` ++ imageSvg ++ b`"}`
       }
 
-      return b`data:application/json,{"name": "` ++ eventName ++ b`", "description":`++ description ++ b`, "image": "` ++ imageUri ++ b`"}`
+      return b`data:application/json,{"name": "` ++ eventName ++ b`", "description": "`++ description ++ b`", "image": "` ++ imageUri ++ b`"}`
     }
     
     pub fn totalSupply() -> U256 {
