@@ -7,6 +7,9 @@ import { toast } from 'react-hot-toast'
 import { useWallet } from '@alephium/web3-react'
 import { stringToHex } from '@alephium/web3'
 
+const MAX_TITLE_LENGTH = 50;
+const MAX_DESCRIPTION_LENGTH = 180;
+
 export default function NewEvent() {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -38,9 +41,22 @@ export default function NewEvent() {
         throw new Error('Please connect your wallet first')
       }
 
-      // Convert dates to UNIX timestamps
-      const eventStartAt = BigInt(new Date(startDate).getTime() / 1000);
-      const eventEndAt = BigInt(new Date(endDate).getTime() / 1000);
+      if (!signer) {
+        throw new Error('Signer not available')
+      }
+
+      // Validate input lengths
+      if (title.length > MAX_TITLE_LENGTH) {
+        throw new Error(`Event name must be ${MAX_TITLE_LENGTH} characters or less`)
+      }
+
+      if (description.length > MAX_DESCRIPTION_LENGTH) {
+        throw new Error(`Description must be ${MAX_DESCRIPTION_LENGTH} characters or less`)
+      }
+
+      // Convert dates to millisecond timestamps (no need to multiply by 1000)
+      const eventStartAt = BigInt(new Date(startDate).getTime());
+      const eventEndAt = BigInt(new Date(endDate).getTime());
       
       // Set mint period same as event period for now
       const mintStartAt = eventStartAt;
@@ -71,14 +87,14 @@ export default function NewEvent() {
           eventEndAt,
           totalSupply: BigInt(0)
         },
-        signer
+        signer: signer
       });
 
       toast.success('Event created successfully!');
       // Handle success (e.g., redirect to event page)
     } catch (error) {
       console.error('Error creating event:', error);
-      toast.error('Failed to create event. Please try again.');
+      toast.error(error instanceof Error ? error.message : 'Failed to create event. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
@@ -103,12 +119,12 @@ export default function NewEvent() {
 
   return (
     <section>
-      <div className="mx-auto">
-      <div className="relative justify-center max-h-[calc(100vh-82px)] lg:max-h-[calc(100vh-82px)] md:max-h-[calc(100vh-58px)] overflow-hidden lg:px-0 md:px-12 grid lg:grid-cols-5 h-screen lg:divide-x-2 divide-black">
-      <div className="hidden bg-lila-500 lg:col-span-2 lg:block lg:flex-1 lg:relative sm:contents">
+      <div className="mx-auto mt-">
+        <div className="relative justify-center max-h-[calc(100vh-82px)] lg:max-h-[calc(100vh-82px)] md:max-h-[calc(100vh-58px)] lg:px-0 md:px-12 grid lg:grid-cols-5 h-screen lg:divide-x-2 divide-black">
+          <div className="hidden bg-lila-500 lg:col-span-2 lg:block lg:flex-1 lg:relative sm:contents">
             <div className="absolute inset-0 object-cover w-full h-full bg-lila-300">
               <div className="w-full h-full flex flex-col items-center justify-center">
-                <div className="w-full max-w-lg p-8 text-center">
+                <div className="w-full max-w-lg p-8 text-center fixed">
                   <div className="w-64 h-64 mx-auto rounded-2xl border-2 border-black shadow bg-white">
                     {previewImage ? (
                       <img src={previewImage} alt="Preview" className="w-full h-full object-cover rounded-xl" />
@@ -136,12 +152,9 @@ export default function NewEvent() {
               <h2 className="text-2xl lg:text-4xl font-semibold text-black max-w-4xl">
                 Create New Presence Event
               </h2>
-              {/* <p className="mt-4 xl:text-xl tracking-wide text-black">
-                Create a new POAP for your event, community or yourself!
-              </p> */}
 
               <p className="text-lg text-black tracking-wide mt-4 text-balance">
-              Create a new POAP for your event, community or yourself!
+                Create a new POAP for your event, community or yourself!
               </p>
 
               <form className="mt-6" onSubmit={handleSubmit}>
@@ -154,9 +167,13 @@ export default function NewEvent() {
                         type="text"
                         placeholder="POAP Title"
                         value={title}
+                        maxLength={MAX_TITLE_LENGTH}
                         onChange={(e) => setTitle(e.target.value)}
                         className="block w-full px-3 py-4 text-xl text-black border-2 border-transparent appearance-none placeholder-black border-black focus:border-black focus:bg-lila-500 focus:outline-none focus:ring-black sm:text-sm"
                       />
+                      <div className="px-3 py-1 text-sm text-gray-500">
+                        {title.length}/{MAX_TITLE_LENGTH} characters
+                      </div>
                     </div>
                   </div>
 
@@ -167,10 +184,14 @@ export default function NewEvent() {
                         id="description"
                         placeholder="POAP Description"
                         value={description}
+                        maxLength={MAX_DESCRIPTION_LENGTH}
                         onChange={(e) => setDescription(e.target.value)}
                         rows={4}
                         className="block w-full px-3 py-4 text-xl text-black border-2 border-transparent appearance-none placeholder-black border-black focus:border-black focus:bg-lila-500 focus:outline-none focus:ring-black sm:text-sm"
                       />
+                      <div className="px-3 py-1 text-sm text-gray-500">
+                        {description.length}/{MAX_DESCRIPTION_LENGTH} characters
+                      </div>
                     </div>
                   </div>
 
