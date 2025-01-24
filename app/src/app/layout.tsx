@@ -4,6 +4,7 @@ import { Bricolage_Grotesque } from 'next/font/google'
 import '@/styles/globals.css'
 import { AlephiumWalletProvider } from '@alephium/web3-react'
 import { tokenFaucetConfig } from '@/services/utils'
+import { WalletLoadingProvider } from '@/context/WalletLoadingContext'
 
 const bricolageGrotesque = Bricolage_Grotesque({
   subsets: ['latin'],
@@ -34,13 +35,16 @@ export default function RootLayout({
       )}
     >
       <body className="flex h-full flex-col">
-        <AlephiumWalletProvider 
-          theme="retro" 
-          network={tokenFaucetConfig.network} 
-          addressGroup={tokenFaucetConfig.groupIndex}
-        >
-          {children}
-        </AlephiumWalletProvider>
+        <WalletLoadingProvider>
+          <AlephiumWalletProvider 
+            theme="retro" 
+            network={tokenFaucetConfig.network} 
+            addressGroup={tokenFaucetConfig.groupIndex}
+            persistConnection={true}
+          >
+            {children}
+          </AlephiumWalletProvider>
+        </WalletLoadingProvider>
       </body>
     </html>
   )

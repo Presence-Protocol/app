@@ -13,6 +13,8 @@ import FeatureEight from "@/components/features/FeatureEight"
 import CtaOne from "@/components/ctas/CtaOne"
 import FaqOne from "@/components/faqs/FaqOne"
 import Footer from "@/components/global/Footer"
+import HeroOneCopy from "@/components/heros/HeroOne copy"
+import HeroThree from '@/components/heros/HeroThree'
 
 export default function Home() {
   const { connectionStatus } = useWallet()
@@ -24,7 +26,9 @@ export default function Home() {
       {/* {connectionStatus === 'connected' && (
         <TokenDapp config={tokenFaucetConfig} />
       )} */}
-      <HeroOne />
+      {/* <HeroOne /> */}
+      <HeroThree />
+      {/* <HeroOneCopy /> */}
       <LogoCloudOne/>
       <FeatureSix />
       <FeatureEight />
