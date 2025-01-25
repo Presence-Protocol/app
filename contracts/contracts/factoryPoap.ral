@@ -10,13 +10,12 @@ Contract PoapFactory(
 
     @using(preapprovedAssets = true, checkExternalCaller = false, updateFields = true)
     pub fn mintNewCollection(
-        imageUri: ByteVec,
-        imageSvg: ByteVec,
         maxSupply: U256,
         mintStartAt: U256,
         mintEndAt: U256,
 
         //event properties
+        eventImage: ByteVec,
         eventName: ByteVec,
         description: ByteVec,
         location: ByteVec,
@@ -27,11 +26,10 @@ Contract PoapFactory(
             let caller = callerAddress!()
 
             let (initialImmState, initialMutState) = PoapCollection.encodeFields!(poapTemplateId,
-                imageUri,
-                imageSvg,
                 maxSupply,
                 mintStartAt,
                 mintEndAt,
+                eventImage,
                 eventName,
                 description,
                 convert(toByteVec!(caller)),

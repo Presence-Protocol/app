@@ -35,8 +35,7 @@ describe('integration tests', () => {
 
     await factory.transact.mintNewCollection({
       args: {
-        imageUri: stringToHex('https://arweave.net/hoxK8xC9wRjD_6HiOzhdY2jW0ZnJoF2f0N4FcSLXqzQ'),
-        imageSvg: stringToHex("00"),
+        eventImage: stringToHex('https://arweave.net/hoxK8xC9wRjD_6HiOzhdY2jW0ZnJoF2f0N4FcSLXqzQ'),
         maxSupply: 10n,
         mintStartAt: 1735823531000n,
         mintEndAt: 1672665131000n,
@@ -82,8 +81,7 @@ describe('integration tests', () => {
     
     await factory.transact.mintNewCollection({
       args: {
-        imageUri: stringToHex('https://arweave.net/Z1HAdT_PGnxPLct4-u7l1Zl_h4DNdxzKev7tCDAEflc'),
-        imageSvg: "00",
+        eventImage: stringToHex('https://arweave.net/Z1HAdT_PGnxPLct4-u7l1Zl_h4DNdxzKev7tCDAEflc'),
         maxSupply: 10n,
         mintStartAt: 1735823531000n,
         mintEndAt: 1893595576000n,
@@ -158,8 +156,7 @@ describe('integration tests', () => {
 
     await factory.transact.mintNewCollection({
       args: {
-        imageUri: stringToHex('https://arweave.net/Z1HAdT_PGnxPLct4-u7l1Zl_h4DNdxzKev7tCDAEflc'),
-        imageSvg: stringToHex(svg),
+        eventImage: stringToHex(svg),
         maxSupply: 10n,
         mintStartAt: 1735823531000n,
         mintEndAt: 1893595576000n,
@@ -213,7 +210,7 @@ describe('integration tests', () => {
     expect(hexToString(poapState.fields.eventName)).toBe('Test 1')
 
     expect((await poap.view.getTraits()).returns.length).toBe(6)
-    expect(hexToString(poapState.fields.image)).toBe(svg)
+    expect(hexToString(poapState.fields.eventImage)).toBe(svg)
     expect(hexToString((await poap.view.getTokenUri()).returns)).not.toBe('https://fjfjf.com/afjhd')
 
   }, 20000)
@@ -232,9 +229,8 @@ describe('integration tests', () => {
     
     await factory.transact.mintNewCollection({
       args: {
-        imageUri: stringToHex('https://arweave.net/Z1HAdT_PGnxPLct4-u7l1Zl_h4DNdxzKev7tCDAEflc'),
+        eventImage: stringToHex('https://arweave.net/Z1HAdT_PGnxPLct4-u7l1Zl_h4DNdxzKev7tCDAEflc'),
         maxSupply: 10n,
-        imageSvg: "00",
         mintStartAt: 1735823531000n,
         mintEndAt: 1893595576000n,
         eventName: stringToHex('Test 1'),
@@ -292,9 +288,8 @@ describe('integration tests', () => {
     
     await factory.transact.mintNewCollection({
       args: {
-        imageUri: stringToHex('https://arweave.net/Z1HAdT_PGnxPLct4-u7l1Zl_h4DNdxzKev7tCDAEflc'),
+        eventImage: stringToHex('https://arweave.net/Z1HAdT_PGnxPLct4-u7l1Zl_h4DNdxzKev7tCDAEflc'),
         maxSupply: 1n,
-        imageSvg: "00",
         mintStartAt: 1735823531000n,
         mintEndAt: 1893595576000n,
         eventName: stringToHex('Test 1'),
@@ -353,9 +348,8 @@ describe('integration tests', () => {
     
     await factory.transact.mintNewCollection({
       args: {
-        imageUri: stringToHex('https://arweave.net/Z1HAdT_PGnxPLct4-u7l1Zl_h4DNdxzKev7tCDAEflc'),
+        eventImage: stringToHex('https://arweave.net/Z1HAdT_PGnxPLct4-u7l1Zl_h4DNdxzKev7tCDAEflc'),
         maxSupply: 1n,
-        imageSvg: "00",
         mintStartAt: BigInt(Date.now() + 4 * 1000),
         mintEndAt: 1893595576000n,
         eventName: stringToHex('Test 1'),
@@ -403,9 +397,8 @@ describe('integration tests', () => {
     
     await factory.transact.mintNewCollection({
       args: {
-        imageUri: stringToHex('https://arweave.net/Z1HAdT_PGnxPLct4-u7l1Zl_h4DNdxzKev7tCDAEflc'),
+        eventImage: stringToHex('https://arweave.net/Z1HAdT_PGnxPLct4-u7l1Zl_h4DNdxzKev7tCDAEflc'),
         maxSupply: 1n,
-        imageSvg: "00",
         mintStartAt: BigInt(Date.now()-60*1000),
         mintEndAt: BigInt(Date.now()-4*1000),
         eventName: stringToHex('Test 1'),

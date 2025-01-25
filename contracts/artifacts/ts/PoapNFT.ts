@@ -42,8 +42,7 @@ export namespace PoapNFTTypes {
   export type Fields = {
     collectionId: HexString;
     nftIndex: bigint;
-    imageUri: HexString;
-    image: HexString;
+    eventImage: HexString;
     eventName: HexString;
     description: HexString;
     organizer: HexString;
@@ -265,7 +264,7 @@ export const PoapNFT = new Factory(
   Contract.fromJson(
     PoapNFTContractJson,
     "",
-    "94561e22f2f4327e1eaa576d7684436fc80a6412b94f71784ce262f9d7a53b75",
+    "9ec3b948e839e844eddede84ecf00513c9de9dfc2d99ae5164920baf9740b5ce",
     AllStructs
   )
 );
