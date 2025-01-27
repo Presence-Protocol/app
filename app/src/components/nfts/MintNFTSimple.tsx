@@ -13,7 +13,7 @@ export default  function MintNFTSimple() {
     const [nftCollection, setNftCollection] = useState({});
   
     web3.setCurrentNodeProvider(
-      process.env.NEXT_PUBLIC_NODE_URL ?? "https://node.mainnet.alephium.org",
+      "https://node.testnet.alephium.org",
       undefined,
       undefined
     );
@@ -21,7 +21,7 @@ export default  function MintNFTSimple() {
     const deployment = loadDeployments('testnet'); // TODO use getNetwork()
     const factoryContract = PoapFactory.at(deployment.contracts.PoapFactory.contractInstance.address);
   
-    const poapCollection = PoapCollection.at("z3KF71Go5HpFGKX1K8Gzoh6yf6nUb3ChtyRccXj47fKu") // TODO contract id/address is passed as an URL parameter we have to use addressFromContractId() because it will be the contract id to will be passed on the URL
+    const poapCollection = PoapCollection.at("xV21hHQZsJaaf3KGgE11ukLkayYcztEmCG2n1m58eDom") // TODO contract id/address is passed as an URL parameter we have to use addressFromContractId() because it will be the contract id to will be passed on the URL
     
     poapCollection.fetchState().then((collectionMetadata) => {setNftCollection({ 
       
@@ -31,9 +31,11 @@ export default  function MintNFTSimple() {
         price: 0.1, // the price for now it's 0.1 ALPH only
         maxSupply: collectionMetadata.fields.maxSupply,
         currentSupply: collectionMetadata.fields.totalSupply
-      
+        
 
-    })});
+    }
+  )
+});
     // Mock data - in real app would come from props or API
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();

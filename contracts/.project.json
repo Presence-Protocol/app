@@ -43,9 +43,9 @@
     },
     "PoapNFT": {
       "sourceFile": "nftTemplate.ral",
-      "sourceCodeHash": "f8b13241e14f2305160f223137b78d52fcbe808d9c429dc1d5e8486d0ecaaa26",
+      "sourceCodeHash": "254fb5648b3b6653664bcf3dc60de7806a9a8e66866b05e5afea5b6614384935",
       "bytecodeDebugPatch": "",
-      "codeHashDebug": "9ec3b948e839e844eddede84ecf00513c9de9dfc2d99ae5164920baf9740b5ce"
+      "codeHashDebug": "8843113164c9296b70fcdea9933692d24a9c818fce96e1a8ed4b776803f9ab7a"
     },
     "Trait": {
       "sourceFile": "dynamic_nft_standard.ral",

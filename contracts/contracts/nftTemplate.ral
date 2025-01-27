@@ -10,7 +10,7 @@ Contract PoapNFT(
   location: ByteVec,
   eventStartAt: U256,
   eventEndAt: U256
-) implements IDynamicNFT {
+) implements INFT {
   
   pub fn getTokenUri() -> ByteVec {
 
@@ -18,7 +18,7 @@ Contract PoapNFT(
     //  return b`data:application/json,{"name": "` ++ eventName ++ b`", "attributes": [{"trait_type": "Event Name", "value": "` ++ eventName ++ b`"}, {"trait_type": "Description", "value": "` ++ description ++ b`"}, {"trait_type": "Organizer", "value": "` ++ organizer ++ b`"}, {"trait_type": "Location", "value": "` ++ location ++ b`"}, {"trait_type": "Event Start At", "value": ` ++ u256ToString!(eventStartAt) ++ b`}, {"trait_type": "Event End At", "value": ` ++ u256ToString!(eventEndAt) ++ b`}], "image": "` ++ image ++ b`"}`
     //}
 
-    return b`data:application/json,{"name": "` ++ eventName ++ b`", "attributes": [{"trait_type": "Event Name", "value": "` ++ eventName ++ b`"}, {"trait_type": "Description", "value": "` ++ description ++ b`"}, {"trait_type": "Organizer", "value": "` ++ organizer ++ b`"}, {"trait_type": "Location", "value": "` ++ location ++ b`"}, {"trait_type": "Event Start At", "value": ` ++ u256ToString!(eventStartAt) ++ b`}, {"trait_type": "Event End At", "value": ` ++ u256ToString!(eventEndAt) ++ b`}], "image": "` ++ eventImage ++ b`"}`
+    return b`data:application/json,{"name": "` ++ eventName ++ b`","image": "` ++ eventImage ++ b`", "attributes": [{"trait_type": "Event Name", "value": "` ++ eventName ++ b`"}, {"trait_type": "Description", "value": "` ++ description ++ b`"}, {"trait_type": "Organizer", "value": "` ++ organizer ++ b`"}, {"trait_type": "Location", "value": "` ++ location ++ b`"}, {"trait_type": "Event Start At", "value": ` ++ u256ToString!(eventStartAt) ++ b`}, {"trait_type": "Event End At", "value": ` ++ u256ToString!(eventEndAt) ++ b`}]}`
   }
 
   pub fn getCollectionIndex() -> (ByteVec, U256) {
