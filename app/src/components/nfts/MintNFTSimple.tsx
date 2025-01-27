@@ -13,10 +13,10 @@ export default  function MintNFTSimple() {
     const [nftCollection, setNftCollection] = useState({});
   
     web3.setCurrentNodeProvider(
-      "https://node.testnet.alephium.org",
+      process.env.NEXT_PUBLIC_NODE_URL ?? "https://node.testnet.alephium.org",
       undefined,
       undefined
-    );
+    ); // this can be set globally in the app
   
     const deployment = loadDeployments('testnet'); // TODO use getNetwork()
     const factoryContract = PoapFactory.at(deployment.contracts.PoapFactory.contractInstance.address);
