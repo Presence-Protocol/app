@@ -33,6 +33,7 @@ export default function NewEvent() {
     }
   };
 
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -73,12 +74,11 @@ export default function NewEvent() {
       const eventName = stringToHex(title);
       const descriptionHex = stringToHex(description);
       const locationHex = stringToHex(location);
-
+      console.log(previewImage)
       // Call contract method using transact
       const result = await factoryContract.transact.mintNewCollection({
         args: {
-          imageUri,
-          imageSvg,
+          eventImage: imageUri,
           maxSupply: BigInt(amount),
           mintStartAt,
           mintEndAt,

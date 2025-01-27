@@ -1,19 +1,55 @@
 "use client"
 
+import { addressFromContractId, contractIdFromAddress, DUST_AMOUNT, hexToString, MINIMAL_CONTRACT_DEPOSIT, stringToHex, web3 } from '@alephium/web3';
+import { useWallet } from '@alephium/web3-react';
+import { PoapFactory, PoapCollection } from 'my-contracts';
+import { loadDeployments } from 'my-contracts/deployments';
 import React, { useState } from 'react';
 
-export default function MintNFTSimple() {
+export default  function MintNFTSimple() {
   const [quantity, setQuantity] = useState(1);
 
-  // Mock data - in real app would come from props or API
-  const nftCollection = {
-    title: "ALPHGlobal London 2024 POAP",
-    description: "Commemorative NFT for attending ALPHGlobal London 2024", 
-    image: "/sample-nft.png",
-    price: 0.01,
-    maxSupply: 1000,
-    currentSupply: 423
-  };
+    const { account, signer } = useWallet()
+    const [nftCollection, setNftCollection] = useState({});
+  
+    web3.setCurrentNodeProvider(
+      process.env.NEXT_PUBLIC_NODE_URL ?? "https://node.mainnet.alephium.org",
+      undefined,
+      undefined
+    );
+  
+    const deployment = loadDeployments('testnet'); // TODO use getNetwork()
+    const factoryContract = PoapFactory.at(deployment.contracts.PoapFactory.contractInstance.address);
+  
+    const poapCollection = PoapCollection.at("z3KF71Go5HpFGKX1K8Gzoh6yf6nUb3ChtyRccXj47fKu") // TODO contract id/address is passed as an URL parameter we have to use addressFromContractId() because it will be the contract id to will be passed on the URL
+    
+    poapCollection.fetchState().then((collectionMetadata) => {setNftCollection({ 
+      
+        title: hexToString(collectionMetadata.fields.eventName),
+        description: hexToString(collectionMetadata.fields.description),
+        image: hexToString(collectionMetadata.fields.eventImage),
+        price: 0.1, // the price for now it's 0.1 ALPH only
+        maxSupply: collectionMetadata.fields.maxSupply,
+        currentSupply: collectionMetadata.fields.totalSupply
+      
+
+    })});
+    // Mock data - in real app would come from props or API
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+  
+      if (!signer) {
+        throw new Error('Signer not available')
+      }
+  
+      factoryContract.transact.mintPoap({
+        args: {
+          collection: poapCollection.contractId,
+        },
+        signer: signer,
+        attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT
+      })
+    }
 
   return (
     <section>
@@ -41,6 +77,7 @@ export default function MintNFTSimple() {
 
               <div className="mt-12">
                 <button
+                  onClick={handleSubmit}
                   type="button"
                   aria-label="mint"
                   className="text-black items-center shadow shadow-black text-lg font-semibold inline-flex px-6 focus:outline-none justify-center text-center bg-white border-black ease-in-out transform transition-all focus:ring-lila-700 focus:shadow-none border-2 duration-100 focus:bg-black focus:text-white py-3 rounded-lg h-16 tracking-wide focus:translate-y-1 w-full hover:text-lila-800"
