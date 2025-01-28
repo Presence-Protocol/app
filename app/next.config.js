@@ -3,7 +3,7 @@ const nextConfig = {
   trailingSlash: true,
   reactStrictMode: true,
   assetPrefix: process.env.NODE_ENV === 'production' ? "/app/" : "",
-  basePath: process.env.DEPLOYED_GITHUB_PATH || '',
+  basePath: process.env.NODE_ENV === 'production'  ? "/app" : "",
   output: "export",
   distDir: 'build',
   experimental: {
