@@ -2,15 +2,15 @@
 const nextConfig = {
   trailingSlash: true,
   reactStrictMode: true,
-  assetPrefix: "/app/",
-  basePath: "/app",
+  assetPrefix: process.env.NODE_ENV == "development" && "",
+  basePath: process.env.NODE_ENV == "development" && "",
   output: "export",
   distDir: 'build',
   experimental: {
     esmExternals: true,
     appDir: true
   },
-  //images: { unoptimized: true },
+  images: { unoptimized: true },
   optimizeFonts: true,
   webpack: (config, { isServer }) => {
     if (!isServer) {
