@@ -2,8 +2,8 @@
 const nextConfig = {
   trailingSlash: true,
   reactStrictMode: true,
-  assetPrefix: process.env.NODE_ENV == "development" && "",
-  basePath: process.env.NODE_ENV == "development" && "",
+  assetPrefix: process.env.NODE_ENV != "development" ? "/app/" : "",
+  basePath: process.env.NODE_ENV != "development" ? "/app" : "",
   output: "export",
   distDir: 'build',
   experimental: {
