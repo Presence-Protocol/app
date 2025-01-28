@@ -132,7 +132,15 @@ export default function FeatureSeven() {
                         key={index}
                         role="option"
                         className="snap-start w-64 lg:w-96 h-full"
-                        onIntersect={(entry) => handleIntersect(entry, index === 0, index === items.length - 1)}
+                        ref={(el) => {
+                          if (!el) return;
+                          const observer = new IntersectionObserver(
+                            (entries) => handleIntersect(entries[0], index === 0, index === items.length - 1),
+                            { threshold: 0.5 }
+                          );
+                          observer.observe(el);
+                          return () => observer.disconnect();
+                        }}
                       >
                         <div className={`border-2 border-black shadow-large p-8 rounded-3xl h-full ${item.bgColor}`}>
                           <img className="size-20" src={item.imgSrc} alt={item.title} />

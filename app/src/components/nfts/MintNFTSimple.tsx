@@ -6,52 +6,65 @@ import { PoapFactory, PoapCollection } from 'my-contracts';
 import { loadDeployments } from 'my-contracts/deployments';
 import React, { useState } from 'react';
 
-export default  function MintNFTSimple() {
+interface NFTCollection {
+  title: string;
+  description: string;
+  image: string;
+  price: number;
+  maxSupply: bigint;
+  currentSupply: bigint;
+}
+
+export default function MintNFTSimple() {
   const [quantity, setQuantity] = useState(1);
 
-    const { account, signer } = useWallet()
-    const [nftCollection, setNftCollection] = useState({});
-  
-    web3.setCurrentNodeProvider(
-      process.env.NEXT_PUBLIC_NODE_URL ?? "https://node.testnet.alephium.org",
-      undefined,
-      undefined
-    ); // this can be set globally in the app
-  
-    const deployment = loadDeployments('testnet'); // TODO use getNetwork()
-    const factoryContract = PoapFactory.at(deployment.contracts.PoapFactory.contractInstance.address);
-  
-    const poapCollection = PoapCollection.at("xV21hHQZsJaaf3KGgE11ukLkayYcztEmCG2n1m58eDom") // TODO contract id/address is passed as an URL parameter we have to use addressFromContractId() because it will be the contract id to will be passed on the URL
-    
-    poapCollection.fetchState().then((collectionMetadata) => {setNftCollection({ 
-      
-        title: hexToString(collectionMetadata.fields.eventName),
-        description: hexToString(collectionMetadata.fields.description),
-        image: hexToString(collectionMetadata.fields.eventImage),
-        price: 0.1, // the price for now it's 0.1 ALPH only
-        maxSupply: collectionMetadata.fields.maxSupply,
-        currentSupply: collectionMetadata.fields.totalSupply
-        
+  const { account, signer } = useWallet()
+  const [nftCollection, setNftCollection] = useState<NFTCollection>({
+    title: '',
+    description: '',
+    image: '',
+    price: 0.1,
+    maxSupply: BigInt(0),
+    currentSupply: BigInt(0)
+  });
 
-    }
-  )
-});
-    // Mock data - in real app would come from props or API
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
+  web3.setCurrentNodeProvider(
+    process.env.NEXT_PUBLIC_NODE_URL ?? "https://node.testnet.alephium.org",
+    undefined,
+    undefined
+  ); // this can be set globally in the app
+
+  const deployment = loadDeployments('testnet'); // TODO use getNetwork()
+  const factoryContract = PoapFactory.at(deployment.contracts.PoapFactory.contractInstance.address);
+
+  const poapCollection = PoapCollection.at("xV21hHQZsJaaf3KGgE11ukLkayYcztEmCG2n1m58eDom") // TODO contract id/address is passed as an URL parameter we have to use addressFromContractId() because it will be the contract id to will be passed on the URL
   
-      if (!signer) {
-        throw new Error('Signer not available')
-      }
-  
-      factoryContract.transact.mintPoap({
-        args: {
-          collection: poapCollection.contractId,
-        },
-        signer: signer,
-        attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT
-      })
+  poapCollection.fetchState().then((collectionMetadata) => {
+    setNftCollection({ 
+      title: hexToString(collectionMetadata.fields.eventName),
+      description: hexToString(collectionMetadata.fields.description),
+      image: hexToString(collectionMetadata.fields.imageSvg),
+      price: 0.1,
+      maxSupply: collectionMetadata.fields.maxSupply,
+      currentSupply: collectionMetadata.fields.totalSupply
+    })
+  });
+  // Mock data - in real app would come from props or API
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!signer) {
+      throw new Error('Signer not available')
     }
+
+    factoryContract.transact.mintPoap({
+      args: {
+        collection: poapCollection.contractId,
+      },
+      signer: signer,
+      attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT
+    })
+  }
 
   return (
     <section>

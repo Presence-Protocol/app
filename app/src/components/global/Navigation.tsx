@@ -17,33 +17,25 @@ function CustomWalletConnectButton() {
   const { account, connectionStatus } = useWallet()
   const { isWalletLoading, setIsWalletLoading } = useWalletLoading()
 
-
   useEffect(() => {
     if (typeof window !== 'undefined') {
       setIsWalletLoading(false)
     }
   }, [])
 
+  const showLoading = isWalletLoading || 
+    connectionStatus === 'connecting' || 
+    connectionStatus === undefined
+
   return (
     <AlephiumConnectButton.Custom>
       {({ isConnected, disconnect, show }) => {
-        const showLoading = isWalletLoading ||
-          connectionStatus === 'connecting' ||
-          connectionStatus === 'loading'
-
-        if (connectionStatus === 'loading') {
+        if (showLoading) {
           return null
         }
 
         return isConnected ? (
           null
-          // <button
-          //   className={`${buttonClasses} ${showLoading ? loadingClasses : ''}`}
-          //   onClick={disconnect}
-          //   disabled={showLoading}
-          // >
-          //   {showLoading ? 'Loading...' : 'Disconnect'}
-          // </button>
         ) : (
           <button
             className={`${buttonClasses} ${showLoading ? loadingClasses : ''}`}

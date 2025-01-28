@@ -108,24 +108,17 @@ export default function NFTList({ account }: { account: string }) {
   
 
   function CustomWalletConnectButton() {
-    const { account, connectionStatus } = useWallet()
-    const { isWalletLoading, setIsWalletLoading } = useWalletLoading()
+    const { connectionStatus } = useWallet()
+    const { isWalletLoading } = useWalletLoading()
   
-  
-    useEffect(() => {
-      if (typeof window !== 'undefined') {
-        setIsWalletLoading(false)
-      }
-    }, [])
+    const showLoading = isWalletLoading || 
+      connectionStatus === 'connecting' || 
+      connectionStatus === undefined
   
     return (
       <AlephiumConnectButton.Custom>
         {({ isConnected, disconnect, show }) => {
-          const showLoading = isWalletLoading ||
-            connectionStatus === 'connecting' ||
-            connectionStatus === 'loading'
-  
-          if (connectionStatus === 'loading') {
+          if (showLoading) {
             return null
           }
   
