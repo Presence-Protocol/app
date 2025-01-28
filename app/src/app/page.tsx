@@ -1,7 +1,6 @@
 'use client'
 
 import React from 'react'
-import { TokenDapp } from '@/components/TokenDapp'
 import { AlephiumConnectButton, useWallet } from '@alephium/web3-react'
 import { tokenFaucetConfig } from '@/services/utils'
 import Navigation from '@/components/global/Navigation'
