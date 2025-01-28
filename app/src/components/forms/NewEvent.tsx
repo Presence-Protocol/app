@@ -1,8 +1,8 @@
 "use client"
 
-import React, { useState } from 'react';
-import { web3, Contract, MINIMAL_CONTRACT_DEPOSIT, DUST_AMOUNT } from '@alephium/web3'
-import { PoapFactory } from '../../../../contracts/artifacts/ts/PoapFactory'
+import React, { useEffect, useState } from 'react';
+import { web3, Contract, MINIMAL_CONTRACT_DEPOSIT, DUST_AMOUNT, Subscription, contractIdFromAddress, addressFromContractId } from '@alephium/web3'
+import { PoapFactory, PoapFactoryTypes } from '../../../../contracts/artifacts/ts/PoapFactory'
 import { toast } from 'react-hot-toast'
 import { useWallet } from '@alephium/web3-react'
 import { stringToHex } from '@alephium/web3'
@@ -33,6 +33,7 @@ export default function NewEvent() {
     }
   };
 
+ 
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -93,6 +94,9 @@ export default function NewEvent() {
         attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT+DUST_AMOUNT,
       });
 
+      // TODO add loading bar/spinner
+      
+
       toast.success('Event created successfully!');
       // Handle success (e.g., redirect to event page)
     } catch (error) {
@@ -102,6 +106,45 @@ export default function NewEvent() {
       setIsSubmitting(false);
     }
   };
+
+  useEffect(() => {
+    console.log('Setting up node provider...');
+   web3.setCurrentNodeProvider(
+      process.env.NEXT_PUBLIC_NODE_URL ?? "https://node.testnet.alephium.org",
+      undefined,
+      undefined
+    );
+    console.log('Node provider setup complete');
+  }, []);
+
+  // Event subscription with logging
+  useEffect(() => {
+    const deployment = loadDeployments('testnet'); // TODO use getNetwork()
+      const factoryContract = PoapFactory.at(deployment.contracts.PoapFactory.contractInstance.address);
+
+    async function subscribeEvents() {
+      console.log('Setting up event subscriptions, event length:', await factoryContract.getContractEventsCurrentCount());
+      const currentEventCount = await factoryContract.getContractEventsCurrentCount()
+      const events = factoryContract.subscribeEventCreatedEvent({
+        pollingInterval: 5000,
+        messageCallback: async (event) => {
+
+          if(event.fields.organizer == account?.address) { // organizer appear in the events it means it was created by the user and we can get the contract address addressFromContractId(event.fields.contractId). This is what we would need for the link
+            console.log('Event created:', event);
+            console.log(`Contract created by ${account?.address} has address ${addressFromContractId(event.fields.contractId)}`);
+          }
+          return Promise.resolve(); 
+        },
+        errorCallback: (error, subscription) => {
+          console.error(`Error from contract factory:`, error);
+          subscription.unsubscribe();
+          return Promise.resolve();
+        }
+      }, currentEventCount)
+    }
+    subscribeEvents();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Add location input field in the form
   const locationInput = (
