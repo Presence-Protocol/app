@@ -2,6 +2,7 @@
 const nextConfig = {
   reactStrictMode: true,
   assetPrefix: "/app/",
+  basePath: "/app",
   output: "export",
   distDir: 'build',
   experimental: {
