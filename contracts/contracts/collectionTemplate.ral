@@ -1,16 +1,15 @@
 import "std/nft_collection_interface"
 Contract PoapCollection(
     nftTemplateId: ByteVec,
-    collectionUri: ByteVec,
-    nftUri: ByteVec,
     maxSupply: U256,
     mintStartAt: U256,
     mintEndAt: U256,
 
     //event properties
+    eventImage: ByteVec,
     eventName: ByteVec,
     description: ByteVec,
-    organizer: Address,
+    organizer: ByteVec,
     location: ByteVec,
     eventStartAt: U256,
     eventEndAt: U256,
@@ -30,14 +29,17 @@ Contract PoapCollection(
     }
 
    @using(preapprovedAssets = true, updateFields = true, checkExternalCaller = false)
-   pub fn mint() -> (ByteVec) {
+   pub fn mint(callerAddr: Address) -> (ByteVec) {
      assert!(totalSupply < maxSupply, ErrorCodes.MaxSupplyReached)
      assert!(blockTimeStamp!() >= mintStartAt, ErrorCodes.MintNotStarted)
      assert!(blockTimeStamp!() <= mintEndAt, ErrorCodes.MintEnded)
 
-     let caller = callerAddress!()
+     let mut caller = callerAddress!()     
+     if(isContractAddress!(caller)){ // if called from a contract, need to get the reall caller
+        caller = callerAddr
+     }
 
-     let (initialImmState, initialMutState) = PoapNFT.encodeFields!(selfContractId!(), totalSupply, nftUri, eventName, description, organizer, location, eventStartAt, eventEndAt)
+     let (initialImmState, initialMutState) = PoapNFT.encodeFields!(selfContractId!(), totalSupply, eventImage, eventName, description, organizer, location, eventStartAt, eventEndAt)
  
      let contractId = copyCreateSubContractWithToken!{caller -> ALPH: minimalContractDeposit!()}(
          toByteVec!(totalSupply),
@@ -59,7 +61,12 @@ Contract PoapCollection(
  // collection json https://arweave.net/Z1HAdT_PGnxPLct4-u7l1Zl_h4DNdxzKev7tCDAEflc
 
     pub fn getCollectionUri() -> ByteVec {
-        return collectionUri
+
+     //if(imageSvg != #00){
+     //   return b`data:application/json,{"name": "` ++ eventName ++ b`", "description": "`++ description ++ b`", "image": "` ++ imageSvg ++ b`"}`
+     // }
+
+      return b`data:application/json,{"name": "` ++ eventName ++ b`", "description": "`++ description ++ b`", "image": "` ++     eventImage ++ b`"}`
     }
     
     pub fn totalSupply() -> U256 {

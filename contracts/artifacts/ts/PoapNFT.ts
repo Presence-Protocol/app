@@ -42,18 +42,16 @@ export namespace PoapNFTTypes {
   export type Fields = {
     collectionId: HexString;
     nftIndex: bigint;
-    uri: HexString;
+    eventImage: HexString;
     eventName: HexString;
     description: HexString;
-    organizer: Address;
+    organizer: HexString;
     location: HexString;
     eventStartAt: bigint;
     eventEndAt: bigint;
   };
 
   export type State = ContractState<Fields>;
-
-  export type MetadataUpdatedEvent = ContractEvent<{}>;
 
   export interface CallMethodTable {
     getTokenUri: {
@@ -63,6 +61,10 @@ export namespace PoapNFTTypes {
     getCollectionIndex: {
       params: Omit<CallContractParams<{}>, "args">;
       result: CallContractResult<[HexString, bigint]>;
+    };
+    getNFTIndex: {
+      params: Omit<CallContractParams<{}>, "args">;
+      result: CallContractResult<bigint>;
     };
     getName: {
       params: Omit<CallContractParams<{}>, "args">;
@@ -76,6 +78,10 @@ export namespace PoapNFTTypes {
       params: Omit<CallContractParams<{}>, "args">;
       result: CallContractResult<HexString>;
     };
+    getTraits: {
+      params: Omit<CallContractParams<{}>, "args">;
+      result: CallContractResult<[Trait, Trait, Trait, Trait, Trait, Trait]>;
+    };
     getTraitCount: {
       params: Omit<CallContractParams<{}>, "args">;
       result: CallContractResult<bigint>;
@@ -83,14 +89,6 @@ export namespace PoapNFTTypes {
     getTraitAtIndex: {
       params: CallContractParams<{ index: bigint }>;
       result: CallContractResult<Trait>;
-    };
-    getNFTIndex: {
-      params: Omit<CallContractParams<{}>, "args">;
-      result: CallContractResult<bigint>;
-    };
-    getTraits: {
-      params: Omit<CallContractParams<{}>, "args">;
-      result: CallContractResult<[Trait, Trait, Trait, Trait, Trait, Trait]>;
     };
   }
   export type CallMethodParams<T extends keyof CallMethodTable> =
@@ -118,6 +116,10 @@ export namespace PoapNFTTypes {
       params: Omit<SignExecuteContractMethodParams<{}>, "args">;
       result: SignExecuteScriptTxResult;
     };
+    getNFTIndex: {
+      params: Omit<SignExecuteContractMethodParams<{}>, "args">;
+      result: SignExecuteScriptTxResult;
+    };
     getName: {
       params: Omit<SignExecuteContractMethodParams<{}>, "args">;
       result: SignExecuteScriptTxResult;
@@ -130,20 +132,16 @@ export namespace PoapNFTTypes {
       params: Omit<SignExecuteContractMethodParams<{}>, "args">;
       result: SignExecuteScriptTxResult;
     };
+    getTraits: {
+      params: Omit<SignExecuteContractMethodParams<{}>, "args">;
+      result: SignExecuteScriptTxResult;
+    };
     getTraitCount: {
       params: Omit<SignExecuteContractMethodParams<{}>, "args">;
       result: SignExecuteScriptTxResult;
     };
     getTraitAtIndex: {
       params: SignExecuteContractMethodParams<{ index: bigint }>;
-      result: SignExecuteScriptTxResult;
-    };
-    getNFTIndex: {
-      params: Omit<SignExecuteContractMethodParams<{}>, "args">;
-      result: SignExecuteScriptTxResult;
-    };
-    getTraits: {
-      params: Omit<SignExecuteContractMethodParams<{}>, "args">;
       result: SignExecuteScriptTxResult;
     };
   }
@@ -161,8 +159,6 @@ class Factory extends ContractFactory<PoapNFTInstance, PoapNFTTypes.Fields> {
       AllStructs
     );
   }
-
-  eventIndex = { MetadataUpdated: 0 };
 
   at(address: string): PoapNFTInstance {
     return new PoapNFTInstance(address);
@@ -190,6 +186,14 @@ class Factory extends ContractFactory<PoapNFTInstance, PoapNFTTypes.Fields> {
         getContractByCodeHash
       );
     },
+    getNFTIndex: async (
+      params: Omit<
+        TestContractParamsWithoutMaps<PoapNFTTypes.Fields, never>,
+        "testArgs"
+      >
+    ): Promise<TestContractResultWithoutMaps<bigint>> => {
+      return testMethod(this, "getNFTIndex", params, getContractByCodeHash);
+    },
     getName: async (
       params: Omit<
         TestContractParamsWithoutMaps<PoapNFTTypes.Fields, never>,
@@ -214,6 +218,16 @@ class Factory extends ContractFactory<PoapNFTInstance, PoapNFTTypes.Fields> {
     ): Promise<TestContractResultWithoutMaps<HexString>> => {
       return testMethod(this, "getImage", params, getContractByCodeHash);
     },
+    getTraits: async (
+      params: Omit<
+        TestContractParamsWithoutMaps<PoapNFTTypes.Fields, never>,
+        "testArgs"
+      >
+    ): Promise<
+      TestContractResultWithoutMaps<[Trait, Trait, Trait, Trait, Trait, Trait]>
+    > => {
+      return testMethod(this, "getTraits", params, getContractByCodeHash);
+    },
     getTraitCount: async (
       params: Omit<
         TestContractParamsWithoutMaps<PoapNFTTypes.Fields, never>,
@@ -229,24 +243,6 @@ class Factory extends ContractFactory<PoapNFTInstance, PoapNFTTypes.Fields> {
       >
     ): Promise<TestContractResultWithoutMaps<Trait>> => {
       return testMethod(this, "getTraitAtIndex", params, getContractByCodeHash);
-    },
-    getNFTIndex: async (
-      params: Omit<
-        TestContractParamsWithoutMaps<PoapNFTTypes.Fields, never>,
-        "testArgs"
-      >
-    ): Promise<TestContractResultWithoutMaps<bigint>> => {
-      return testMethod(this, "getNFTIndex", params, getContractByCodeHash);
-    },
-    getTraits: async (
-      params: Omit<
-        TestContractParamsWithoutMaps<PoapNFTTypes.Fields, never>,
-        "testArgs"
-      >
-    ): Promise<
-      TestContractResultWithoutMaps<[Trait, Trait, Trait, Trait, Trait, Trait]>
-    > => {
-      return testMethod(this, "getTraits", params, getContractByCodeHash);
     },
   };
 
@@ -264,7 +260,7 @@ export const PoapNFT = new Factory(
   Contract.fromJson(
     PoapNFTContractJson,
     "",
-    "304b2535ecddeb58ec22f34c7cd4e417513cce02403dc03f41a6a519a8a79810",
+    "8843113164c9296b70fcdea9933692d24a9c818fce96e1a8ed4b776803f9ab7a",
     AllStructs
   )
 );
@@ -278,23 +274,6 @@ export class PoapNFTInstance extends ContractInstance {
 
   async fetchState(): Promise<PoapNFTTypes.State> {
     return fetchContractState(PoapNFT, this);
-  }
-
-  async getContractEventsCurrentCount(): Promise<number> {
-    return getContractEventsCurrentCount(this.address);
-  }
-
-  subscribeMetadataUpdatedEvent(
-    options: EventSubscribeOptions<PoapNFTTypes.MetadataUpdatedEvent>,
-    fromCount?: number
-  ): EventSubscription {
-    return subscribeContractEvent(
-      PoapNFT.contract,
-      this,
-      options,
-      "MetadataUpdated",
-      fromCount
-    );
   }
 
   view = {
@@ -316,6 +295,17 @@ export class PoapNFTInstance extends ContractInstance {
         PoapNFT,
         this,
         "getCollectionIndex",
+        params === undefined ? {} : params,
+        getContractByCodeHash
+      );
+    },
+    getNFTIndex: async (
+      params?: PoapNFTTypes.CallMethodParams<"getNFTIndex">
+    ): Promise<PoapNFTTypes.CallMethodResult<"getNFTIndex">> => {
+      return callMethod(
+        PoapNFT,
+        this,
+        "getNFTIndex",
         params === undefined ? {} : params,
         getContractByCodeHash
       );
@@ -353,6 +343,17 @@ export class PoapNFTInstance extends ContractInstance {
         getContractByCodeHash
       );
     },
+    getTraits: async (
+      params?: PoapNFTTypes.CallMethodParams<"getTraits">
+    ): Promise<PoapNFTTypes.CallMethodResult<"getTraits">> => {
+      return callMethod(
+        PoapNFT,
+        this,
+        "getTraits",
+        params === undefined ? {} : params,
+        getContractByCodeHash
+      );
+    },
     getTraitCount: async (
       params?: PoapNFTTypes.CallMethodParams<"getTraitCount">
     ): Promise<PoapNFTTypes.CallMethodResult<"getTraitCount">> => {
@@ -375,28 +376,6 @@ export class PoapNFTInstance extends ContractInstance {
         getContractByCodeHash
       );
     },
-    getNFTIndex: async (
-      params?: PoapNFTTypes.CallMethodParams<"getNFTIndex">
-    ): Promise<PoapNFTTypes.CallMethodResult<"getNFTIndex">> => {
-      return callMethod(
-        PoapNFT,
-        this,
-        "getNFTIndex",
-        params === undefined ? {} : params,
-        getContractByCodeHash
-      );
-    },
-    getTraits: async (
-      params?: PoapNFTTypes.CallMethodParams<"getTraits">
-    ): Promise<PoapNFTTypes.CallMethodResult<"getTraits">> => {
-      return callMethod(
-        PoapNFT,
-        this,
-        "getTraits",
-        params === undefined ? {} : params,
-        getContractByCodeHash
-      );
-    },
   };
 
   transact = {
@@ -409,6 +388,11 @@ export class PoapNFTInstance extends ContractInstance {
       params: PoapNFTTypes.SignExecuteMethodParams<"getCollectionIndex">
     ): Promise<PoapNFTTypes.SignExecuteMethodResult<"getCollectionIndex">> => {
       return signExecuteMethod(PoapNFT, this, "getCollectionIndex", params);
+    },
+    getNFTIndex: async (
+      params: PoapNFTTypes.SignExecuteMethodParams<"getNFTIndex">
+    ): Promise<PoapNFTTypes.SignExecuteMethodResult<"getNFTIndex">> => {
+      return signExecuteMethod(PoapNFT, this, "getNFTIndex", params);
     },
     getName: async (
       params: PoapNFTTypes.SignExecuteMethodParams<"getName">
@@ -425,6 +409,11 @@ export class PoapNFTInstance extends ContractInstance {
     ): Promise<PoapNFTTypes.SignExecuteMethodResult<"getImage">> => {
       return signExecuteMethod(PoapNFT, this, "getImage", params);
     },
+    getTraits: async (
+      params: PoapNFTTypes.SignExecuteMethodParams<"getTraits">
+    ): Promise<PoapNFTTypes.SignExecuteMethodResult<"getTraits">> => {
+      return signExecuteMethod(PoapNFT, this, "getTraits", params);
+    },
     getTraitCount: async (
       params: PoapNFTTypes.SignExecuteMethodParams<"getTraitCount">
     ): Promise<PoapNFTTypes.SignExecuteMethodResult<"getTraitCount">> => {
@@ -434,16 +423,6 @@ export class PoapNFTInstance extends ContractInstance {
       params: PoapNFTTypes.SignExecuteMethodParams<"getTraitAtIndex">
     ): Promise<PoapNFTTypes.SignExecuteMethodResult<"getTraitAtIndex">> => {
       return signExecuteMethod(PoapNFT, this, "getTraitAtIndex", params);
-    },
-    getNFTIndex: async (
-      params: PoapNFTTypes.SignExecuteMethodParams<"getNFTIndex">
-    ): Promise<PoapNFTTypes.SignExecuteMethodResult<"getNFTIndex">> => {
-      return signExecuteMethod(PoapNFT, this, "getNFTIndex", params);
-    },
-    getTraits: async (
-      params: PoapNFTTypes.SignExecuteMethodParams<"getTraits">
-    ): Promise<PoapNFTTypes.SignExecuteMethodResult<"getTraits">> => {
-      return signExecuteMethod(PoapNFT, this, "getTraits", params);
     },
   };
 

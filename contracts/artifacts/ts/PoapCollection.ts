@@ -41,14 +41,13 @@ import { Trait, AllStructs } from "./types";
 export namespace PoapCollectionTypes {
   export type Fields = {
     nftTemplateId: HexString;
-    collectionUri: HexString;
-    nftUri: HexString;
     maxSupply: bigint;
     mintStartAt: bigint;
     mintEndAt: bigint;
+    eventImage: HexString;
     eventName: HexString;
     description: HexString;
-    organizer: Address;
+    organizer: HexString;
     location: HexString;
     eventStartAt: bigint;
     eventEndAt: bigint;
@@ -81,7 +80,7 @@ export namespace PoapCollectionTypes {
       result: CallContractResult<null>;
     };
     mint: {
-      params: Omit<CallContractParams<{}>, "args">;
+      params: CallContractParams<{ callerAddr: Address }>;
       result: CallContractResult<HexString>;
     };
   }
@@ -122,7 +121,7 @@ export namespace PoapCollectionTypes {
       result: SignExecuteScriptTxResult;
     };
     mint: {
-      params: Omit<SignExecuteContractMethodParams<{}>, "args">;
+      params: SignExecuteContractMethodParams<{ callerAddr: Address }>;
       result: SignExecuteScriptTxResult;
     };
   }
@@ -199,9 +198,9 @@ class Factory extends ContractFactory<
       return testMethod(this, "validateNFT", params, getContractByCodeHash);
     },
     mint: async (
-      params: Omit<
-        TestContractParamsWithoutMaps<PoapCollectionTypes.Fields, never>,
-        "testArgs"
+      params: TestContractParamsWithoutMaps<
+        PoapCollectionTypes.Fields,
+        { callerAddr: Address }
       >
     ): Promise<TestContractResultWithoutMaps<HexString>> => {
       return testMethod(this, "mint", params, getContractByCodeHash);
@@ -222,7 +221,7 @@ export const PoapCollection = new Factory(
   Contract.fromJson(
     PoapCollectionContractJson,
     "",
-    "e09735314bb19883e2817937ce0cf1778f4827f45f7f300bf733f5dc64bf5def",
+    "e2e7b4c5136aba48caaecf457d964321a949e32d4cf638c7206080665faf85a5",
     AllStructs
   )
 );
@@ -301,13 +300,13 @@ export class PoapCollectionInstance extends ContractInstance {
       );
     },
     mint: async (
-      params?: PoapCollectionTypes.CallMethodParams<"mint">
+      params: PoapCollectionTypes.CallMethodParams<"mint">
     ): Promise<PoapCollectionTypes.CallMethodResult<"mint">> => {
       return callMethod(
         PoapCollection,
         this,
         "mint",
-        params === undefined ? {} : params,
+        params,
         getContractByCodeHash
       );
     },

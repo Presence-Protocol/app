@@ -26,3 +26,10 @@ export async function transferAlphTo(to: Address, amount: bigint) {
 export function getCollectionPath(parentContractId: string, mintedId: bigint) {
     return subContractId(parentContractId, mintedId.toString(16).padStart(64,'0'), 0)
   }
+
+  export async function loadSvg(url: string): Promise<string> {
+    const response = await fetch(url)
+    return (await response.text()).replace(/[\r\n]/g, '')
+
+  }
+  

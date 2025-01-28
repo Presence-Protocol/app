@@ -1,0 +1,94 @@
+---
+// Define the array of page sections
+let pageSections = [
+  {
+    title: "Breathtakingly fast",
+    description: "Built for speed with 50ms interactions and real-time sync.",
+    image: "/images/thumbnail1.svg",
+    imageFirst: false,
+    textContent: [
+      {
+        title: "Breathtakingly fast",
+        description:
+          "Built for speed with 50ms interactions and real-time sync.",
+      },
+      {
+        title: "Built for your keyboard",
+        description:
+          "Fly through your tasks with rapid-fire keyboard shortcuts for everything. Literally everything.",
+      },
+      {
+        title: "Meet your command line",
+        description:
+          "Complete any action in seconds with the global command menu.",
+      },
+    ],
+  },
+  {
+    title: "Designed for modern software teams",
+    description: "Comes with built-in workflows that create focus and routine.",
+    image: "/images/thumbnail3.svg",
+    imageFirst: true,
+    textContent: [
+      {
+        title: "Designed for modern software teams",
+        description:
+          "Comes with built-in workflows that create focus and routine.",
+      },
+      {
+        title: "In seconds",
+        description:
+          "Create tasks in seconds, discuss issues in context, and breeze through your work in views tailored to you and your team.",
+      },
+      {
+        title: "Parent and sub-issues",
+        description: "Break larger tasks into smaller issues.",
+      },
+    ],
+  },
+  // Add more items as needed
+];
+---
+
+<section>
+ <div class="divide-y-2 divide-black border-b-2 border-black">
+    {
+      pageSections.map((section, index) => (
+        <div class="relative items-center divide-y-2 divide-black w-full mx-auto  2xl:">
+          <div class="grid grid-cols-1 lg:grid-cols-2 divide-y-2 divide-black md:divide-y-0 md:divide-x-2">
+            {section.imageFirst ? (
+              <div class="block w-full aspect-square lg:mt-0 bg-lila-500 h-full">
+                <img
+                  class="object-cover"
+                  src={section.image}
+                  alt="#"
+                />
+              </div>
+            ) : null}
+            <div class="relative p-8 lg:px-20 items-center gap-12 h-full lg:inline-flex bg-white">
+              <div class="max-w-xl text-left md:text-center lg:text-left mx-auto space-y-12">
+                {section.textContent.map((text) => (
+                  <div>
+                    <p class="text-3xl tracking-tight text-black">{text.title}</p>
+                    <p class="max-w-xl mt-4 xl:text-2xl tracking-tight text-black">
+                      {text.description}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+            {!section.imageFirst ? (
+              <div class="block w-full aspect-square lg:mt-0 bg-lila-500 h-full">
+                <img
+                  class="object-cover"
+                  src={section.image}
+                  alt="#"
+                />
+              </div>
+            ) : null}
+          </div>
+        </div>
+      ))
+    }
+ </div>
+</section>

@@ -1,8 +1,8 @@
 {
-  "version": "v3.10.0",
+  "version": "v3.11.1",
   "name": "PoapFactory",
-  "bytecode": "0301405901030c1001402ad3e82c3ac2b4170cce011600160116021603160416051606160716081609160a1406414c50480002130d64160b130164170e170d160cd1a2ce00160d160eaf170fa0000d2aa10005160f1605160c60160f02",
-  "codeHash": "9f858e7ac924d8fe13a3976a16efaa1c0b7dda0e0e67dae231764f3b34afeebe",
+  "bytecode": "0304405a40884096414301030a0e01402bd3a5583ab2b4170ace01160016011602160316041605160a4700031606160716081406414c50480002130c641609130164170c170b160ad1a2ce00160b160caf170da0000d2aa10005160d1604160a60160d02010301040017d3f652052cb417011601d1a216010d0d1600010417020c0d16000101170306160216001603160161010000000103d3c2aa9c01a00002000001160140581401301401311401321401331401341401351401361401371401381401391401611401621401631401641401651401661710170f170e170d170c170b170a170917081707170617051704170317021701140017110c17121612160043314c402d1600161216120d2a626c1340ff3817131613103c130f3817141613130f381715161116147a1310314d0d2a784416157a1310314d0d2a7844171116120d2a17124a7fce161102",
+  "codeHash": "fc90c7c55ef6d42e75e2c34732cead1f2ecf779ab4c450c1b93c0b713d6bc09e",
   "fieldsSig": {
     "names": [
       "collectionTemplateId",
@@ -33,34 +33,45 @@
         "ByteVec",
         "Address"
       ]
+    },
+    {
+      "name": "PoapMinted",
+      "fieldNames": [
+        "contractId",
+        "collectionId",
+        "nftIndex",
+        "caller"
+      ],
+      "fieldTypes": [
+        "ByteVec",
+        "PoapCollection",
+        "U256",
+        "Address"
+      ]
     }
   ],
   "functions": [
     {
       "name": "mintNewCollection",
       "paramNames": [
-        "collectionUri",
-        "nftUri",
         "maxSupply",
         "mintStartAt",
         "mintEndAt",
+        "eventImage",
         "eventName",
         "description",
-        "organizer",
         "location",
         "eventStartAt",
         "eventEndAt",
         "totalSupply"
       ],
       "paramTypes": [
-        "ByteVec",
-        "ByteVec",
         "U256",
         "U256",
         "U256",
         "ByteVec",
         "ByteVec",
-        "Address",
+        "ByteVec",
         "ByteVec",
         "U256",
         "U256",
@@ -76,8 +87,43 @@
         false,
         false,
         false,
-        false,
-        false,
+        false
+      ],
+      "returnTypes": [
+        "ByteVec"
+      ]
+    },
+    {
+      "name": "mintPoap",
+      "paramNames": [
+        "collection"
+      ],
+      "paramTypes": [
+        "PoapCollection"
+      ],
+      "paramIsMutable": [
+        false
+      ],
+      "returnTypes": []
+    },
+    {
+      "name": "getNumEventsCreated",
+      "paramNames": [],
+      "paramTypes": [],
+      "paramIsMutable": [],
+      "returnTypes": [
+        "U256"
+      ]
+    },
+    {
+      "name": "convert",
+      "paramNames": [
+        "array"
+      ],
+      "paramTypes": [
+        "ByteVec"
+      ],
+      "paramIsMutable": [
         false
       ],
       "returnTypes": [
