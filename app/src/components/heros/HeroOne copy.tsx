@@ -16,7 +16,7 @@ export default function HeroOneCopy() {
                     <div key={index} className="flex-none w-52 bg-white p-3 rounded-xl border-2 border-black shadow-large">
                       <div className="relative">
                         <div className="aspect-square rounded-lg bg-lila-300 mb-3" />
-                        <img src={`./images/blob${(index % 5) + 1}.svg`} alt="Feature blob" className="absolute inset-0 w-full h-full object-cover rounded-lg" />
+                        <img src={`/images/blob${(index % 5) + 1}.svg`} alt="Feature blob" className="absolute inset-0 w-full h-full object-cover rounded-lg" />
                       </div>
                       <h3 className="font-medium text-base">Create Events</h3>
                       <p className="text-xs text-gray-600">Host and manage your events</p>
@@ -26,7 +26,7 @@ export default function HeroOneCopy() {
                     <div key={`duplicate-${index}`} className="flex-none w-52 bg-white p-3 rounded-xl border-2 border-black shadow-large">
                       <div className="relative">
                         <div className="aspect-square rounded-lg bg-lila-300 mb-3" />
-                        <img src={`./images/blob${(index % 5) + 1}.svg`} alt="Feature blob" className="absolute inset-0 w-full h-full object-cover rounded-lg" />
+                        <img src={`/images/blob${(index % 5) + 1}.svg`} alt="Feature blob" className="absolute inset-0 w-full h-full object-cover rounded-lg" />
                       </div>
                       <h3 className="font-medium text-base">Create Events</h3>
                       <p className="text-xs text-gray-600">Host and manage your events</p>
@@ -62,7 +62,7 @@ export default function HeroOneCopy() {
                     <div key={index} className="flex-none w-52 bg-white p-3 rounded-xl border-2 border-black shadow-large">
                       <div className="relative">
                         <div className="aspect-square rounded-lg bg-lila-300 mb-3" />
-                        <img src={`./images/blob${((index + 2) % 5) + 1}.svg`} alt="Feature blob" className="absolute inset-0 w-full h-full object-cover rounded-lg" />
+                        <img src={`/images/blob${((index + 2) % 5) + 1}.svg`} alt="Feature blob" className="absolute inset-0 w-full h-full object-cover rounded-lg" />
                       </div>
                       <h3 className="font-medium text-base">Track Attendance</h3>
                       <p className="text-xs text-gray-600">Verify event participation</p>
@@ -72,7 +72,7 @@ export default function HeroOneCopy() {
                     <div key={`duplicate-${index}`} className="flex-none w-52 bg-white p-3 rounded-xl border-2 border-black shadow-large">
                       <div className="relative">
                         <div className="aspect-square rounded-lg bg-lila-300 mb-3" />
-                        <img src={`./images/blob${((index + 2) % 5) + 1}.svg`} alt="Feature blob" className="absolute inset-0 w-full h-full object-cover rounded-lg" />
+                        <img src={`/images/blob${((index + 2) % 5) + 1}.svg`} alt="Feature blob" className="absolute inset-0 w-full h-full object-cover rounded-lg" />
                       </div>
                       <h3 className="font-medium text-base">Track Attendance</h3>
                       <p className="text-xs text-gray-600">Verify event participation</p>
