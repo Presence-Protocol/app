@@ -9,12 +9,14 @@ import { AlephiumConnectButton, AlephiumConnectButtonCustom } from '@alephium/we
 import { useWallet } from '@alephium/web3-react';
 import { useWalletLoading } from '@/context/WalletLoadingContext';
 
+const buttonClasses = "text-black items-center shadow shadow-black text-base font-semibold inline-flex px-6 focus:outline-none justify-center text-center bg-white border-black ease-in-out transform transition-all focus:ring-lila-700 focus:shadow-none border-2 duration-100 focus:bg-black focus:text-white w-full sm:w-auto py-2 rounded-lg h-14 focus:translate-y-1 hover:text-lila-800 tracing-wide"
+const loadingClasses = "opacity-50 transition-opacity duration-200"
+
+
 function CustomWalletConnectButton() {
   const { account, connectionStatus } = useWallet()
   const { isWalletLoading, setIsWalletLoading } = useWalletLoading()
 
-  const buttonClasses = "text-black items-center shadow shadow-black text-base font-semibold inline-flex px-6 focus:outline-none justify-center text-center bg-white border-black ease-in-out transform transition-all focus:ring-lila-700 focus:shadow-none border-2 duration-100 focus:bg-black focus:text-white w-full sm:w-auto py-2 rounded-lg h-14 focus:translate-y-1 hover:text-lila-800 tracing-wide"
-  const loadingClasses = "opacity-50 transition-opacity duration-200"
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -25,22 +27,23 @@ function CustomWalletConnectButton() {
   return (
     <AlephiumConnectButton.Custom>
       {({ isConnected, disconnect, show }) => {
-        const showLoading = isWalletLoading || 
-                          connectionStatus === 'connecting' || 
-                          connectionStatus === 'loading'
+        const showLoading = isWalletLoading ||
+          connectionStatus === 'connecting' ||
+          connectionStatus === 'loading'
 
         if (connectionStatus === 'loading') {
           return null
         }
 
         return isConnected ? (
-          <button
-            className={`${buttonClasses} ${showLoading ? loadingClasses : ''}`}
-            onClick={disconnect}
-            disabled={showLoading}
-          >
-            {showLoading ? 'Loading...' : 'Disconnect'}
-          </button>
+          null
+          // <button
+          //   className={`${buttonClasses} ${showLoading ? loadingClasses : ''}`}
+          //   onClick={disconnect}
+          //   disabled={showLoading}
+          // >
+          //   {showLoading ? 'Loading...' : 'Disconnect'}
+          // </button>
         ) : (
           <button
             className={`${buttonClasses} ${showLoading ? loadingClasses : ''}`}
@@ -211,9 +214,23 @@ export default function Navigation() {
               My Presence
             </Link>
 
-            <div className="w-[180px] flex-shrink-0 min-h-[60px]">
-              <CustomWalletConnectButton />
+            <div className='mr-4'>
+              {
+                isConnected ?
+                  <Link
+                    href="/new-event"
+                    className={`${buttonClasses}`}
+                  // onClick={() => router.push('/new-event')}
+                  >
+                    Create Event
+                  </Link>
+                  :
+                  <div className="w-[180px] flex-shrink-0 min-h-[60px]">
+                    <CustomWalletConnectButton />
+                  </div>
+              }
             </div>
+
           </div>
 
         </nav>
