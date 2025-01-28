@@ -17,25 +17,35 @@ function CustomWalletConnectButton() {
   const { account, connectionStatus } = useWallet()
   const { isWalletLoading, setIsWalletLoading } = useWalletLoading()
 
+
   useEffect(() => {
     if (typeof window !== 'undefined') {
       setIsWalletLoading(false)
     }
   }, [])
 
-  const showLoading = isWalletLoading || 
-    connectionStatus === 'connecting' || 
-    connectionStatus === undefined
-
   return (
     <AlephiumConnectButton.Custom>
       {({ isConnected, disconnect, show }) => {
-        if (showLoading) {
+        const showLoading = isWalletLoading ||
+          connectionStatus === 'connecting' ||
+          // @ts-ignore - We need this check even though types don't overlap
+          connectionStatus === 'loading'
+
+        // @ts-ignore - We need this check even though types don't overlap
+        if (connectionStatus === 'loading') {
           return null
         }
 
         return isConnected ? (
           null
+          // <button
+          //   className={`${buttonClasses} ${showLoading ? loadingClasses : ''}`}
+          //   onClick={disconnect}
+          //   disabled={showLoading}
+          // >
+          //   {showLoading ? 'Loading...' : 'Disconnect'}
+          // </button>
         ) : (
           <button
             className={`${buttonClasses} ${showLoading ? loadingClasses : ''}`}
@@ -109,12 +119,12 @@ export default function Navigation() {
           >
             How it works
           </Link> */}
-          <Link
+          {/* <Link
             className="duration-300 focus:text-orange/90 hover:text-lila-900 px-3 py-2 transform transition font-semibold"
             href="/explorer"
           >
             Explorer
-          </Link>
+          </Link> */}
 
           {/* <div className="relative">
             <button
