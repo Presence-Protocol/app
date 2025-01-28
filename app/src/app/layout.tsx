@@ -5,6 +5,7 @@ import '@/styles/globals.css'
 import { AlephiumWalletProvider } from '@alephium/web3-react'
 import { tokenFaucetConfig } from '@/services/utils'
 import { WalletLoadingProvider } from '@/context/WalletLoadingContext'
+import { WalletConnectionProvider } from '@/context/WalletConnectionContext'
 
 const bricolageGrotesque = Bricolage_Grotesque({
   subsets: ['latin'],
@@ -40,9 +41,10 @@ export default function RootLayout({
             theme="retro" 
             network={tokenFaucetConfig.network} 
             addressGroup={tokenFaucetConfig.groupIndex}
-            persistConnection={true}
           >
-            {children}
+            <WalletConnectionProvider>
+              {children}
+            </WalletConnectionProvider>
           </AlephiumWalletProvider>
         </WalletLoadingProvider>
       </body>

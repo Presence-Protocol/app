@@ -21,7 +21,7 @@ export default function Home() {
 
   return (
     <LandingLayout>
-      <Navigation />
+      <Navigation  />
       {/* <AlephiumConnectButton /> */}
       {/* {connectionStatus === 'connected' && (
         <TokenDapp config={tokenFaucetConfig} />
