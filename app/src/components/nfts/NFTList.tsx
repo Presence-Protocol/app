@@ -1,7 +1,9 @@
 "use client"
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { AlephiumConnectButton, useWallet } from '@alephium/web3-react'
+import { useWalletLoading } from '@/context/WalletLoadingContext';
 
 export default function NFTList({ account }: { account: string }) {
   const truncatedAccount = account.slice(0, 4) + '...' + account.slice(-4);
@@ -101,6 +103,48 @@ export default function NFTList({ account }: { account: string }) {
       status: "Open"
     }
   ];
+  const buttonClasses = "text-black items-center shadow shadow-black text-xs font-semibold inline-flex px-4 bg-white border-black border-2 py-2 rounded-lg tracking-wide"
+  const loadingClasses = "opacity-50 transition-opacity duration-200"
+  
+
+  function CustomWalletConnectButton() {
+    const { account, connectionStatus } = useWallet()
+    const { isWalletLoading, setIsWalletLoading } = useWalletLoading()
+  
+  
+    useEffect(() => {
+      if (typeof window !== 'undefined') {
+        setIsWalletLoading(false)
+      }
+    }, [])
+  
+    return (
+      <AlephiumConnectButton.Custom>
+        {({ isConnected, disconnect, show }) => {
+          const showLoading = isWalletLoading ||
+            connectionStatus === 'connecting' ||
+            connectionStatus === 'loading'
+  
+          if (connectionStatus === 'loading') {
+            return null
+          }
+  
+          return isConnected ? (
+                        <button
+              className={`${buttonClasses} ${showLoading ? loadingClasses : ''}`}
+              onClick={disconnect}
+              disabled={showLoading}
+            >
+              {showLoading ? 'Loading...' : 'Disconnect'}
+            </button>
+
+          ) : (
+      null
+          )
+        }}
+      </AlephiumConnectButton.Custom>
+    )
+  }
 
   const displayedNFTs = showAllNFTs ? nfts : nfts.slice(0, 6);
 
@@ -114,6 +158,10 @@ export default function NFTList({ account }: { account: string }) {
           <div className="text-black items-center shadow shadow-black text-xs font-semibold inline-flex px-4 bg-lila-300 border-black border-2 py-2 rounded-lg tracking-wide">
             {nfts.length} Events
           </div>
+          {/* <div className="text-black items-center shadow shadow-black text-xs font-semibold inline-flex px-4 bg-lila-300 border-black border-2 py-2 rounded-lg tracking-wide">
+            Disconnect
+          </div> */}
+          <CustomWalletConnectButton />
         </div>
 
         {/* Minted NFTs Section */}

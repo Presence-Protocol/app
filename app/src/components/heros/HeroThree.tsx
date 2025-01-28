@@ -8,8 +8,8 @@ export default function HeroThree() {
       <main>
         <div className="relative isolate">
           <div className="overflow-hidden">
-            <div className="mx-auto max-w-7xl px-6 pb-12 pt-24 sm:pt-32 lg:px-8 lg:pt-12">
-              <div className="mx-auto max-w-2xl gap-x-8 lg:mx-0 lg:flex lg:max-w-none lg:items-center">
+            <div className="mx-auto max-w-8xl px-20 pb-12 pt-24 sm:pt-32 lg:px-20 lg:pt-12">
+              <div className="mx-auto max-w-2xl gap-x-8 lg:mx-0 lg:flex lg:max-w-none lg:items-center justify-evenly">
                 <div className="relative w-full lg:max-w-xl lg:shrink-0 xl:max-w-2xl">
                   <h2 className="text-pretty text-5xl font-semibold tracking-tight text-black sm:text-7xl">
                     Your Moments,<br/> Your Memories, <br/> Your Attendance; <i>Immortalized.</i>
