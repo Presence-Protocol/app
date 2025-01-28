@@ -43,7 +43,8 @@ export default function MintNFTSimple() {
     setNftCollection({ 
       title: hexToString(collectionMetadata.fields.eventName),
       description: hexToString(collectionMetadata.fields.description),
-      image: hexToString(collectionMetadata.fields.imageSvg),
+      // image: hexToString(collectionMetadata.fields.imageSvg),
+      image: hexToString(collectionMetadata.fields.eventImage),
       price: 0.1,
       maxSupply: collectionMetadata.fields.maxSupply,
       currentSupply: collectionMetadata.fields.totalSupply
