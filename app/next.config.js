@@ -10,7 +10,7 @@ const nextConfig = {
     esmExternals: true,
     appDir: true
   },
-  images: { unoptimized: true },
+  //images: { unoptimized: true },
   optimizeFonts: true,
   webpack: (config, { isServer }) => {
     if (!isServer) {
