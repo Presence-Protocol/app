@@ -1,7 +1,6 @@
 'use client';
 
 import React from 'react';
-import BaseHead from '@/components/BaseHead';
 
 interface LandingLayoutProps {
   children: React.ReactNode;
