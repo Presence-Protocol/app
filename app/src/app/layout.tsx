@@ -40,7 +40,6 @@ export default function RootLayout({
             theme="retro" 
             network={tokenFaucetConfig.network} 
             addressGroup={tokenFaucetConfig.groupIndex}
-            persistConnection={true}
           >
             {children}
           </AlephiumWalletProvider>
