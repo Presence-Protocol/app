@@ -12,6 +12,8 @@ import Link from 'next/link';
 const MAX_TITLE_LENGTH = 50;
 const MAX_DESCRIPTION_LENGTH = 180;
 
+type ProgressState = 'idle' | 'submitting' | 'mining' | 'complete';
+
 export default function NewEvent() {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -23,7 +25,7 @@ export default function NewEvent() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [createdContractAddress, setCreatedContractAddress] = useState<string | null>(null);
   const { account, signer } = useWallet()
-  const [creationProgress, setCreationProgress] = useState<'idle' | 'submitting' | 'mining' | 'complete'>('idle');
+  const [creationProgress, setCreationProgress] = useState<ProgressState>('idle');
   const [txHash, setTxHash] = useState<string | null>(null);
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -188,7 +190,7 @@ export default function NewEvent() {
           
           <div className="space-y-2">
             <div className="flex items-center space-x-2">
-              <div className={`w-2 h-2 rounded-full ${creationProgress === 'idle' ? 'bg-gray-300' : 'bg-green-500'}`}></div>
+              <div className={`w-2 h-2 rounded-full ${creationProgress === 'submitting' ? 'bg-green-500' : 'bg-gray-300'}`}></div>
               <span className="text-xs">Preparing transaction</span>
             </div>
             
