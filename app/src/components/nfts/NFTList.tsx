@@ -154,7 +154,7 @@ export default function NFTList({ account }: { account: string }) {
           {/* <div className="text-black items-center shadow shadow-black text-xs font-semibold inline-flex px-4 bg-lila-300 border-black border-2 py-2 rounded-lg tracking-wide">
             Disconnect
           </div> */}
-          <CustomWalletConnectButton />
+          {/* <CustomWalletConnectButton /> */}
         </div>
 
         {/* Minted NFTs Section */}

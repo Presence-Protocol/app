@@ -11,8 +11,8 @@ export default function Mint() {
   return (
     <LandingLayout>
       <Navigation />
-      <ExplorerSearch />
-      <ExplorerSliders />
+      {/* <ExplorerSearch />
+      <ExplorerSliders /> */}
     </LandingLayout>
   )
 }

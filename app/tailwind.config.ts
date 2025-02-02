@@ -14,7 +14,7 @@ export default {
         sans: ["Bricolage Grotesque", ...defaultTheme.fontFamily.sans],
       },
       animation: {
-        'marquee-left': 'marqueeLeft 20s linear infinite',
+        'marquee-left': 'marqueeLeft 30s linear infinite',
         'marquee-right': 'marqueeRight 20s linear infinite',
         'animation-paused': 'paused',
         'scroller-down': 'scrollerDown 12s linear infinite',
@@ -23,8 +23,8 @@ export default {
       },
       keyframes: {
         marqueeLeft: {
-          '0%': { transform: 'translateX(0%)' },
-          '100%': { transform: 'translateX(-100%)' },
+          '0%': { transform: 'translateX(0)' },
+          '100%': { transform: 'translateX(-33.33%)' },
         },
         marqueeRight: {
           '0%': { transform: 'translateX(-100%)' },

@@ -9,7 +9,7 @@ import { AlephiumConnectButton, AlephiumConnectButtonCustom } from '@alephium/we
 import { useWallet } from '@alephium/web3-react';
 import { useWalletLoading } from '@/context/WalletLoadingContext';
 
-const buttonClasses = "text-black items-center shadow shadow-black text-base font-semibold inline-flex px-6 focus:outline-none justify-center text-center bg-white border-black ease-in-out transform transition-all focus:ring-lila-700 focus:shadow-none border-2 duration-100 focus:bg-black focus:text-white w-full sm:w-auto py-2 rounded-lg h-14 focus:translate-y-1 hover:text-lila-800 tracing-wide"
+const buttonClasses = "text-black items-center shadow shadow-black text-base font-semibold inline-flex px-6 h-[50px] focus:outline-none justify-center text-center bg-white border-black ease-in-out transform transition-all focus:ring-lila-700 focus:shadow-none border-2 duration-100 focus:bg-black focus:text-white w-full sm:w-auto py-2 rounded-lg h-14 focus:translate-y-1 hover:text-lila-800 tracing-wide"
 const loadingClasses = "opacity-50 transition-opacity duration-200"
 
 
@@ -38,14 +38,14 @@ function CustomWalletConnectButton() {
         }
 
         return isConnected ? (
-          null
-          // <button
-          //   className={`${buttonClasses} ${showLoading ? loadingClasses : ''}`}
-          //   onClick={disconnect}
-          //   disabled={showLoading}
-          // >
-          //   {showLoading ? 'Loading...' : 'Disconnect'}
-          // </button>
+          // null
+          <button
+            className={`${buttonClasses} ${showLoading ? loadingClasses : ''}`}
+            onClick={disconnect}
+            disabled={showLoading}
+          >
+            {showLoading ? 'Loading...' : 'Disconnect'}
+          </button>
         ) : (
           <button
             className={`${buttonClasses} ${showLoading ? loadingClasses : ''}`}
@@ -69,7 +69,7 @@ export default function Navigation() {
   const isConnected = connectionStatus === 'connected'
 
   return (
-    <div className="mx-auto w-full bg-lila-500 justify-center sticky top-0 py-1 lg:py-3 z-20 border-b-2 border-black">
+    <div className="mx-auto w-full bg-lila-500 justify-center sticky top-0 py-1 lg:py-3.5 z-20 border-b-2 border-black">
       <div className="mx-auto w-full flex flex-col lg:flex-row py-2 lg:py-0 lg:items-center lg:justify-between px-4 lg:px-0">
         <div className="text-black items-center flex justify-between flex-row">
           <Link
@@ -119,12 +119,7 @@ export default function Navigation() {
           >
             How it works
           </Link> */}
-          {/* <Link
-            className="duration-300 focus:text-orange/90 hover:text-lila-900 px-3 py-2 transform transition font-semibold"
-            href="/explorer"
-          >
-            Explorer
-          </Link> */}
+
 
           {/* <div className="relative">
             <button
@@ -200,41 +195,52 @@ export default function Navigation() {
             )}
           </div> */}
 
-          <div className="flex items-center gap-4 w-full lg:w-auto">
-            <Link
-              className={`duration-300 focus:text-orange/90 hover:text-lila-900 px-3 py-2 transform transition font-semibold ${!isConnected ? 'opacity-50 cursor-not-allowed' : ''}`}
-              href={isConnected ? '/my-presence' : '#'}
-              onClick={e => !isConnected && e.preventDefault()}
-            >
-              {!isConnected && (
-                <span className="mr-1" style={{ marginBottom: '-2px' }}>
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-4 inline-block align-text-top">
-                    <path fillRule="evenodd" d="M12 1.5a5.25 5.25 0 0 0-5.25 5.25v3a3 3 0 0 0-3 3v6.75a3 3 0 0 0 3 3h10.5a3 3 0 0 0 3-3v-6.75a3 3 0 0 0-3-3v-3c0-2.9-2.35-5.25-5.25-5.25Zm3.75 8.25v-3a3.75 3.75 0 1 0-7.5 0v3h7.5Z" clipRule="evenodd" />
-                  </svg>
-                </span>
-              )}
-              My Presence
-            </Link>
+          {
+            isConnected ?
+              <>
+                <Link
+                  className="duration-300 focus:text-orange/90 hover:text-lila-900 px-3 py-2 transform transition font-semibold"
+                  href="/explorer"
+                >
+                  Explorer
+                </Link>
 
-            <div className='mr-4'>
-              {
-                isConnected ?
+                <div className='mr-1'>
                   <Link
                     href="/new-event"
-                    className={`${buttonClasses}`}
+                    className={`duration-300 focus:text-orange/90 hover:text-lila-900 px-3 py-2 transform transition font-semibold ${!isConnected ? 'opacity-50 cursor-not-allowed' : ''}`}
                   // onClick={() => router.push('/new-event')}
                   >
-                    Create Event
+                    New Event
                   </Link>
-                  :
-                  <div className="w-[180px] flex-shrink-0 min-h-[60px]">
-                    <CustomWalletConnectButton />
-                  </div>
-              }
+                </div>
+
+                <Link
+                  className={`duration-300 focus:text-orange/90 hover:text-lila-900 px-3 py-2 transform transition font-semibold ${!isConnected ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  href={isConnected ? '/my-presence' : '#'}
+                  onClick={e => !isConnected && e.preventDefault()}
+                >
+                  {!isConnected && (
+                    <span className="mr-1" style={{ marginBottom: '-2px' }}>
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-4 inline-block align-text-top">
+                        <path fillRule="evenodd" d="M12 1.5a5.25 5.25 0 0 0-5.25 5.25v3a3 3 0 0 0-3 3v6.75a3 3 0 0 0 3 3h10.5a3 3 0 0 0 3-3v-6.75a3 3 0 0 0-3-3v-3c0-2.9-2.35-5.25-5.25-5.25Zm3.75 8.25v-3a3.75 3.75 0 1 0-7.5 0v3h7.5Z" clipRule="evenodd" />
+                      </svg>
+                    </span>
+                  )}
+                  My Presence
+                </Link>
+              </>
+              :
+              null
+          }
+
+          <div className="flex items-center gap-4 w-full lg:w-auto">
+            <div className='mr-2'>
+              <div className="w-[180px] flex-shrink-0 h-[50px]">
+                <CustomWalletConnectButton />
+              </div>
             </div>
-
           </div>
-
         </nav>
       </div>
     </div>

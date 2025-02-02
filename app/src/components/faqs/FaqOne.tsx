@@ -54,7 +54,7 @@ const FaqOne = () => {
               FAQ
             </p>
             <p className="text-xl tracking-wide mt-4 text-black max-w-xs">
-              Answers to commonly asked questions about our platform
+              Answers to commonly asked questions about the protocol
             </p>
           </div>
           <div
