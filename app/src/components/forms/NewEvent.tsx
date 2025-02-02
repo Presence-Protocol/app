@@ -1,12 +1,13 @@
 "use client"
 
 import React, { useEffect, useState } from 'react';
-import { web3, Contract, MINIMAL_CONTRACT_DEPOSIT, DUST_AMOUNT, Subscription, contractIdFromAddress, addressFromContractId } from '@alephium/web3'
+import { web3, Contract, MINIMAL_CONTRACT_DEPOSIT, DUST_AMOUNT, Subscription, contractIdFromAddress, addressFromContractId, NetworkId } from '@alephium/web3'
 import { PoapFactory, PoapFactoryTypes } from '../../../../contracts/artifacts/ts/PoapFactory'
 import { toast } from 'react-hot-toast'
 import { useWallet } from '@alephium/web3-react'
 import { stringToHex } from '@alephium/web3'
 import { loadDeployments } from 'my-contracts/deployments';
+import Link from 'next/link';
 
 const MAX_TITLE_LENGTH = 50;
 const MAX_DESCRIPTION_LENGTH = 180;
@@ -20,7 +21,10 @@ export default function NewEvent() {
   const [endDate, setEndDate] = useState('');
   const [location, setLocation] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [createdContractAddress, setCreatedContractAddress] = useState<string | null>(null);
   const { account, signer } = useWallet()
+  const [creationProgress, setCreationProgress] = useState<'idle' | 'submitting' | 'mining' | 'complete'>('idle');
+  const [txHash, setTxHash] = useState<string | null>(null);
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -33,11 +37,10 @@ export default function NewEvent() {
     }
   };
 
- 
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setCreationProgress('submitting');
 
     try {
       if (!account?.address) {
@@ -66,7 +69,7 @@ export default function NewEvent() {
       const mintEndAt = eventEndAt;
 
       // Initialize contract
-      const deployment = loadDeployments('testnet'); // TODO use getNetwork()
+      const deployment = loadDeployments( process.env.NEXT_PUBLIC_NETWORK as NetworkId ?? 'testnet'); // TODO use getNetwork()
       const factoryContract = PoapFactory.at(deployment.contracts.PoapFactory.contractInstance.address);
 
       // Convert strings to hex format
@@ -94,14 +97,14 @@ export default function NewEvent() {
         attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT+DUST_AMOUNT,
       });
 
-      // TODO add loading bar/spinner
+      setTxHash(result.txId);
+      setCreationProgress('mining');
       
-
-      toast.success('Event created successfully!');
-      // Handle success (e.g., redirect to event page)
+      toast.success('Transaction submitted! Waiting for confirmation...');
     } catch (error) {
       console.error('Error creating event:', error);
       toast.error(error instanceof Error ? error.message : 'Failed to create event. Please try again.');
+      setCreationProgress('idle');
     } finally {
       setIsSubmitting(false);
     }
@@ -119,7 +122,7 @@ export default function NewEvent() {
 
   // Event subscription with logging
   useEffect(() => {
-    const deployment = loadDeployments('testnet'); // TODO use getNetwork()
+    const deployment = loadDeployments(process.env.NEXT_PUBLIC_NETWORK as NetworkId ?? 'testnet'); // TODO use getNetwork()
       const factoryContract = PoapFactory.at(deployment.contracts.PoapFactory.contractInstance.address);
 
     async function subscribeEvents() {
@@ -128,10 +131,13 @@ export default function NewEvent() {
       const events = factoryContract.subscribeEventCreatedEvent({
         pollingInterval: 5000,
         messageCallback: async (event) => {
-
-          if(event.fields.organizer == account?.address) { // organizer appear in the events it means it was created by the user and we can get the contract address addressFromContractId(event.fields.contractId). This is what we would need for the link
+          if(event.fields.organizer == account?.address) {
+            const contractAddress = addressFromContractId(event.fields.contractId);
             console.log('Event created:', event);
-            console.log(`Contract created by ${account?.address} has address ${addressFromContractId(event.fields.contractId)}`);
+            console.log(`Contract created by ${account?.address} has address ${contractAddress}`);
+            setCreatedContractAddress(contractAddress);
+            setCreationProgress('complete');
+            toast.success('POAP created successfully!');
           }
           return Promise.resolve(); 
         },
@@ -162,6 +168,54 @@ export default function NewEvent() {
       </div>
     </div>
   );
+
+  const renderProgress = () => {
+    if (creationProgress === 'idle') return null;
+
+    return (
+      <div className="border-2 border-black divide-black shadow rounded-xl overflow-hidden bg-lila-100 p-4">
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <p className="text-sm font-medium text-black">Creating your POAP</p>
+            {creationProgress === 'complete' ? (
+              <svg className="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+              </svg>
+            ) : (
+              <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-black"></div>
+            )}
+          </div>
+          
+          <div className="space-y-2">
+            <div className="flex items-center space-x-2">
+              <div className={`w-2 h-2 rounded-full ${creationProgress === 'idle' ? 'bg-gray-300' : 'bg-green-500'}`}></div>
+              <span className="text-xs">Preparing transaction</span>
+            </div>
+            
+            <div className="flex items-center space-x-2">
+              <div className={`w-2 h-2 rounded-full ${creationProgress === 'mining' || creationProgress === 'complete' ? 'bg-green-500' : 'bg-gray-300'}`}></div>
+              <span className="text-xs">Transaction submitted</span>
+              {txHash && (
+                <a 
+                  href={`https://explorer.alephium.org/transactions/${txHash}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-xs text-blue-600 hover:underline"
+                >
+                  View transaction
+                </a>
+              )}
+            </div>
+            
+            <div className="flex items-center space-x-2">
+              <div className={`w-2 h-2 rounded-full ${creationProgress === 'complete' ? 'bg-green-500' : 'bg-gray-300'}`}></div>
+              <span className="text-xs">Contract deployment complete</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
 
   return (
     <section>
@@ -316,12 +370,22 @@ export default function NewEvent() {
 
                   {locationInput}
 
+                  {renderProgress()}
+
+                  {createdContractAddress && (
+                    <div className="border-2 border-black divide-black shadow rounded-xl overflow-hidden bg-lila-100 p-4">
+                      <p className="text-sm font-medium text-black">POAP Created Successfully!</p>
+                      <p className="text-xs break-all mt-1">
+                        Share this link with your attendees: <Link href={`/mint-nft/#id=${createdContractAddress}`}>{createdContractAddress}</Link>
+                      </p>
+                    </div>
+                  )}
+
                   <div>
                     <button
                       type="submit"
-                      disabled={isSubmitting}
-                      aria-label="submit"
-                      className={`text-black items-center shadow shadow-black text-lg font-semibold inline-flex px-6 focus:outline-none justify-center text-center bg-white border-black ease-in-out transform transition-all focus:ring-lila-700 focus:shadow-none border-2 duration-100 focus:bg-black focus:text-white py-3 rounded-lg h-16 tracking-wide focus:translate-y-1 w-full hover:text-lila-800 ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
+                      disabled={isSubmitting || creationProgress !== 'idle'}
+                      className={`text-black items-center shadow shadow-black text-lg font-semibold inline-flex px-6 focus:outline-none justify-center text-center bg-white border-black ease-in-out transform transition-all focus:ring-lila-700 focus:shadow-none border-2 duration-100 focus:bg-black focus:text-white py-3 rounded-lg h-16 tracking-wide focus:translate-y-1 w-full hover:text-lila-800 ${(isSubmitting || creationProgress !== 'idle') ? 'opacity-50 cursor-not-allowed' : ''}`}
                     >
                       {isSubmitting ? 'Creating...' : 'Create POAP'}
                     </button>

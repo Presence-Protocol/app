@@ -1,15 +1,15 @@
 "use client"
 
-import { addressFromContractId, contractIdFromAddress, DUST_AMOUNT, hexToString, MINIMAL_CONTRACT_DEPOSIT, stringToHex, web3 } from '@alephium/web3';
+import { addressFromContractId, contractIdFromAddress, DUST_AMOUNT, hexToString, MINIMAL_CONTRACT_DEPOSIT, NetworkId, stringToHex, web3 } from '@alephium/web3';
 import { useWallet } from '@alephium/web3-react';
-import { PoapFactory, PoapCollection } from 'my-contracts';
+import { PoapFactory, PoapCollection, PoapFactoryTypes, PoapFactoryInstance, PoapCollectionInstance } from 'my-contracts';
 import { loadDeployments } from 'my-contracts/deployments';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 interface NFTCollection {
   title: string;
   description: string;
-  image: string;
+  image: string | null;
   price: number;
   maxSupply: bigint;
   currentSupply: bigint;
@@ -17,45 +17,79 @@ interface NFTCollection {
 
 export default function MintNFTSimple() {
   const [quantity, setQuantity] = useState(1);
+  const [contractId, setContractId] = useState<string | null>(null);
+  const [factoryContract, setFactoryContract] = useState<PoapFactoryInstance | null>(null);
+  const [poapCollection, setPoapCollection] = useState<PoapCollectionInstance | null>(null);
+  const { account, signer } = useWallet();
 
-  const { account, signer } = useWallet()
   const [nftCollection, setNftCollection] = useState<NFTCollection>({
-    title: '',
-    description: '',
-    image: '',
+    title: '00',
+    description: '00',
+    image: null,
     price: 0.1,
     maxSupply: BigInt(0),
     currentSupply: BigInt(0)
   });
 
-  web3.setCurrentNodeProvider(
-    process.env.NEXT_PUBLIC_NODE_URL ?? "https://node.testnet.alephium.org",
-    undefined,
-    undefined
-  ); // this can be set globally in the app
+  useEffect(() => {
+    console.log('UseEffect running');
+    // Setup web3
+    
 
-  const deployment = loadDeployments('testnet'); // TODO use getNetwork()
-  const factoryContract = PoapFactory.at(deployment.contracts.PoapFactory.contractInstance.address);
+    if (typeof window !== 'undefined') {
+      const hash = window.location.hash;
+      const idMatch = hash.match(/id=([^&]*)/);
+      const id = idMatch ? idMatch[1] : null;
+      setContractId(id);
+    }
+  }, []);
 
-  const poapCollection = PoapCollection.at("xV21hHQZsJaaf3KGgE11ukLkayYcztEmCG2n1m58eDom") // TODO contract id/address is passed as an URL parameter we have to use addressFromContractId() because it will be the contract id to will be passed on the URL
-  
-  poapCollection.fetchState().then((collectionMetadata) => {
-    setNftCollection({ 
-      title: hexToString(collectionMetadata.fields.eventName),
-      description: hexToString(collectionMetadata.fields.description),
-      // image: hexToString(collectionMetadata.fields.imageSvg),
-      image: hexToString(collectionMetadata.fields.eventImage),
-      price: 0.1,
-      maxSupply: collectionMetadata.fields.maxSupply,
-      currentSupply: collectionMetadata.fields.totalSupply
-    })
-  });
+  useEffect(() => {
+    web3.setCurrentNodeProvider(
+      process.env.NEXT_PUBLIC_NODE_URL ?? "https://node.testnet.alephium.org",
+      undefined,
+      undefined
+    );
+    const deployment = loadDeployments(process.env.NEXT_PUBLIC_NETWORK as NetworkId ?? 'testnet');
+    setFactoryContract(PoapFactory.at(deployment.contracts.PoapFactory.contractInstance.address));
+
+    if (contractId) {
+      const collectionAddress = contractId;
+      
+      const collection = PoapCollection.at(collectionAddress);
+      setPoapCollection(collection);
+      
+      collection.fetchState()
+        .then((collectionMetadata) => {
+          setNftCollection({ 
+            title: hexToString(collectionMetadata.fields.eventName),
+            description: hexToString(collectionMetadata.fields.description),
+            image: hexToString(collectionMetadata.fields.eventImage),
+            price: 0.1,
+            maxSupply: collectionMetadata.fields.maxSupply,
+            currentSupply: collectionMetadata.fields.totalSupply
+          });
+        })
+        .catch((error) => {
+          console.error('Error fetching collection state:', error);
+        });
+    } else {
+      console.log('No contract ID provided');
+    }
+  }, [contractId]);
+
   // Mock data - in real app would come from props or API
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!signer) {
       throw new Error('Signer not available')
+    }
+    if (!factoryContract) {
+      throw new Error('Factory contract not initialized')
+    }
+    if (!poapCollection) {
+      throw new Error('POAP collection not initialized')
     }
 
     factoryContract.transact.mintPoap({
@@ -75,7 +109,7 @@ export default function MintNFTSimple() {
             <div className="w-full max-w-lg p-8 text-center">
               <div className="w-64 h-64 mx-auto rounded-2xl border-2 border-black shadow bg-white">
                 <img 
-                  src={nftCollection.image} 
+                  src={nftCollection.image ?? undefined}
                   alt={nftCollection.title} 
                   className="w-full h-full object-cover rounded-xl"
                 />
