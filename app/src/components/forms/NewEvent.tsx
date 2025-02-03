@@ -27,6 +27,7 @@ export default function NewEvent() {
   const { account, signer } = useWallet()
   const [creationProgress, setCreationProgress] = useState<ProgressState>('idle');
   const [txHash, setTxHash] = useState<string | null>(null);
+  const [isCopied, setIsCopied] = useState(false);
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -387,9 +388,34 @@ export default function NewEvent() {
                   {createdContractAddress && (
                     <div className="border-2 border-black divide-black shadow rounded-xl overflow-hidden bg-lila-100 p-4">
                       <p className="text-sm font-medium text-black">POAP Created Successfully!</p>
-                      <p className="text-xs break-all mt-1">
-                        Share this link with your attendees: <Link href={`/mint-nft/#id=${createdContractAddress}`}>{createdContractAddress}</Link>
-                      </p>
+                      <div className="flex items-center gap-2 mt-1">
+                        <p className="text-xs break-all">
+                          Share this link with your attendees: <Link href={`/mint-nft/#id=${createdContractAddress}`}>{createdContractAddress}</Link>
+                        </p>
+                        <button
+                          onClick={(e) => {
+                            e.preventDefault();
+                            navigator.clipboard.writeText(`${window.location.origin}/mint-nft/#id=${createdContractAddress}`);
+                            setIsCopied(true);
+                            toast.success('Link copied to clipboard!');
+                            // Reset the copied state after 2 seconds
+                            setTimeout(() => setIsCopied(false), 2000);
+                          }}
+                          type="button"
+                          className="p-1 hover:bg-lila-200 rounded-md transition-colors"
+                          title="Copy link"
+                        >
+                          {isCopied ? (
+                            <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                            </svg>
+                          ) : (
+                            <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                            </svg>
+                          )}
+                        </button>
+                      </div>
                     </div>
                   )}
 
