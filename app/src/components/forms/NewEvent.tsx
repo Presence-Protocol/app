@@ -307,7 +307,17 @@ export default function NewEvent() {
                           min="1"
                           placeholder="Number of POAPs to mint"
                           value={amount || ''}
-                          onChange={(e) => setAmount(parseInt(e.target.value) || 0)}
+                          onKeyDown={(e) => {
+                            // Prevent non-numeric input (except for backspace, delete, arrows)
+                            if (!/[0-9]/.test(e.key) && 
+                                !['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab'].includes(e.key)) {
+                              e.preventDefault();
+                            }
+                          }}
+                          onChange={(e) => {
+                            const value = e.target.value.replace(/[^0-9]/g, '');
+                            setAmount(parseInt(value) || 0);
+                          }}
                           className="block w-full px-3 py-4 text-xl text-black border-2 border-transparent appearance-none placeholder-black border-black focus:border-black focus:bg-lila-500 focus:outline-none focus:ring-black sm:text-sm"
                         />
                       </div>
