@@ -31,6 +31,8 @@ export default function NFTList({ account }: { account: string }) {
   const [nfts, setNfts] = useState<NFTMetadata[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
+
+
   useEffect(() => {
     console.log('Setting up node provider...');
    web3.setCurrentNodeProvider(
@@ -70,6 +72,8 @@ export default function NFTList({ account }: { account: string }) {
 
     fetchNFTs();
   }, [account]);
+
+
 
   const displayedNFTs = showAllNFTs ? nfts : nfts.slice(0, 6);
 

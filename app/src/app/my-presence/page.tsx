@@ -17,7 +17,13 @@ export default function Mint() {
       {/* {account?.address} */}
 
 
-      {connectionStatus === 'connected' && (
+      {connectionStatus !== 'connected' ? (
+        <div className="flex items-center justify-center min-h-[50vh]">
+          <p className="text-lg text-gray-600">
+            Please connect your wallet to view your NFTs
+          </p>
+        </div>
+      ) : (
         <NFTList 
           account={account?.address}
         />
