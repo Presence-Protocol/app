@@ -13,7 +13,8 @@ interface NFTMetadata {
   description: string;
   image: string;
   tokenId: string;
-  mintDate: string;
+  eventDateStart: string;
+  eventDateEnd: string;
 }
 
 interface POAPResponse {
@@ -57,7 +58,8 @@ export default function NFTList({ account }: { account: string }) {
             description: hexToString(collectionMetadata.fields.description),
             image: hexToString(collectionMetadata.fields.eventImage),
             tokenId: `#${poap.nftIndex}`,
-            mintDate: new Date(poap.createdAt).toLocaleDateString()
+            eventDateStart: new Date(Number(collectionMetadata.fields.eventStartAt)).toLocaleDateString(),
+            eventDateEnd: new Date(Number(collectionMetadata.fields.eventEndAt)).toLocaleDateString()
           };
         });
 
@@ -133,7 +135,7 @@ export default function NFTList({ account }: { account: string }) {
                       {nft.tokenId}
                     </div>
                     <div className="text-sm text-black font-medium">
-                      Minted: {nft.mintDate}
+                      Event Date: {nft.eventDateStart} - {nft.eventDateEnd}
                     </div>
                   </div>
                 </div>
