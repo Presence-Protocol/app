@@ -252,7 +252,7 @@ export default function NewEvent() {
 
           <div className="relative z-10 flex flex-col flex-1 px-4 py-10 bg-white-500 lg:py-24 md:flex-none md:px-28 sm:justify-center lg:col-span-3">
             <div className="w-full mx-auto md:px-0 sm:px-4 text-center">
-              <h2 className="text-2xl lg:text-4xl font-semibold text-black max-w-4xl">
+              <h2 className="text-2xl lg:text-3xl font-semibold text-black max-w-4xl">
                 Create New Presence Event
               </h2>
 
