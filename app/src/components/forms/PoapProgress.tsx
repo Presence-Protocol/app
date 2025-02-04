@@ -52,7 +52,7 @@ export default function PoapProgress({ isOpen, onClose, progress }: PoapProgress
               ) : status === 'current' ? (
                 <div className="animate-spin rounded-full h-5 w-5 border-2 border-black border-t-transparent" />
               ) : (
-                <svg className="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
                 </svg>
               )}

@@ -5,6 +5,7 @@ import { useWallet } from '@alephium/web3-react';
 import { PoapFactory, PoapCollection, PoapFactoryTypes, PoapFactoryInstance, PoapCollectionInstance } from 'my-contracts';
 import { loadDeployments } from 'my-contracts/deployments';
 import React, { useEffect, useState } from 'react';
+import Image from 'next/image';
 
 interface NFTCollection {
   title: string;
@@ -21,6 +22,7 @@ export default function MintNFTSimple() {
   const [factoryContract, setFactoryContract] = useState<PoapFactoryInstance | null>(null);
   const [poapCollection, setPoapCollection] = useState<PoapCollectionInstance | null>(null);
   const { account, signer } = useWallet();
+  const [isMinting, setIsMinting] = useState(false);
 
   const [nftCollection, setNftCollection] = useState<NFTCollection>({
     title: '00',
@@ -78,27 +80,33 @@ export default function MintNFTSimple() {
     }
   }, [contractId]);
 
-  // Mock data - in real app would come from props or API
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsMinting(true);
 
-    if (!signer) {
-      throw new Error('Signer not available')
-    }
-    if (!factoryContract) {
-      throw new Error('Factory contract not initialized')
-    }
-    if (!poapCollection) {
-      throw new Error('POAP collection not initialized')
-    }
+    try {
+      if (!signer) {
+        throw new Error('Signer not available')
+      }
+      if (!factoryContract) {
+        throw new Error('Factory contract not initialized')
+      }
+      if (!poapCollection) {
+        throw new Error('POAP collection not initialized')
+      }
 
-    factoryContract.transact.mintPoap({
-      args: {
-        collection: poapCollection.contractId,
-      },
-      signer: signer,
-      attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT
-    })
+      await factoryContract.transact.mintPoap({
+        args: {
+          collection: poapCollection.contractId,
+        },
+        signer: signer,
+        attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT
+      });
+    } catch (error) {
+      console.error('Error minting NFT:', error);
+    } finally {
+      setIsMinting(false);
+    }
   }
 
   return (
@@ -130,9 +138,26 @@ export default function MintNFTSimple() {
                   onClick={handleSubmit}
                   type="button"
                   aria-label="mint"
-                  className="text-black items-center shadow shadow-black text-lg font-semibold inline-flex px-6 focus:outline-none justify-center text-center bg-white border-black ease-in-out transform transition-all focus:ring-lila-700 focus:shadow-none border-2 duration-100 focus:bg-black focus:text-white py-3 rounded-lg h-16 tracking-wide focus:translate-y-1 w-full hover:text-lila-800"
+                  disabled={isMinting}
+                  className="text-black items-center shadow shadow-black text-lg font-semibold inline-flex px-6 focus:outline-none justify-center text-center bg-white border-black ease-in-out transform transition-all focus:ring-lila-700 focus:shadow-none border-2 duration-100 focus:bg-black focus:text-white py-3 rounded-lg h-16 tracking-wide focus:translate-y-1 w-full hover:text-lila-800 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Mint NFT
+                  {isMinting ? (
+                    <div className="flex items-center justify-center gap-3">
+                      <div className="animate-spin">
+                        <Image 
+                          src="/images/blob5.svg"
+                          alt="Minting..."
+                          width={24}
+                          height={24}
+                          className="opacity-70"
+                          priority
+                        />
+                      </div>
+                      <span>Minting...</span>
+                    </div>
+                  ) : (
+                    'Mint NFT'
+                  )}
                 </button>
               </div>
             </div>

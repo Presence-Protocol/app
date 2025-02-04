@@ -15,6 +15,7 @@ interface NFTMetadata {
   tokenId: string;
   eventDateStart: string;
   eventDateEnd: string;
+  collectionId: string;
 }
 
 interface POAPResponse {
@@ -24,6 +25,7 @@ interface POAPResponse {
   caller: string;
   createdAt: string;
   updatedAt: string;
+  collectionId: string;
 }
 
 export default function NFTList({ account }: { account: string }) {
@@ -31,6 +33,7 @@ export default function NFTList({ account }: { account: string }) {
   const [showAllNFTs, setShowAllNFTs] = useState(false);
   const [nfts, setNfts] = useState<NFTMetadata[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  // const contractAddress = addressFromContractId(contractId);
 
 
 
@@ -51,10 +54,11 @@ export default function NFTList({ account }: { account: string }) {
         // Fetch POAP data
         const response = await fetch(`https://presenceprotocol.notrustverify.ch/api/poap/${account}`);
         const poapData: POAPResponse[] = await response.json();
-
+        console.log('poapData', poapData);
         // Fetch metadata for each POAP
         const nftPromises = poapData.map(async (poap) => {
           const collection = PoapNFT.at(addressFromContractId(poap.contractId));
+          console.log('collection', collection);
           const collectionMetadata = await collection.fetchState();
 
           return {
@@ -63,7 +67,9 @@ export default function NFTList({ account }: { account: string }) {
             image: hexToString(collectionMetadata.fields.eventImage),
             tokenId: `#${poap.nftIndex}`,
             eventDateStart: new Date(Number(collectionMetadata.fields.eventStartAt)).toLocaleDateString(),
-            eventDateEnd: new Date(Number(collectionMetadata.fields.eventEndAt)).toLocaleDateString()
+            eventDateEnd: new Date(Number(collectionMetadata.fields.eventEndAt)).toLocaleDateString(),
+            // contractAddress: addressFromContractId(collectionMetadata.contractId),
+            collectionId: addressFromContractId(poap.collectionContractId)
           };
         });
 
@@ -164,9 +170,12 @@ export default function NFTList({ account }: { account: string }) {
           </div>
         </div>
 
+        {/* TODO */}
+        {/*  add a share button  mint-nft/#id=22LZgH9314Si1toVcB7oBKYZT5tmMdTPgHDsBSbHh4rKH */}
+
         {/* Minted NFTs Section */}
         <div className="mb-16">
-          <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center justify-between mb-8">
             <h3 className="text-2xl font-semibold text-black">Your Events</h3>
             <Link
               className="text-black items-center shadow shadow-black text-base font-semibold inline-flex px-6 focus:outline-none justify-center text-center bg-white border-black ease-in-out transform transition-all focus:ring-lila-700 focus:shadow-none border-2 duration-100 focus:bg-black focus:text-white py-2 rounded-lg h-12 focus:translate-y-1 hover:text-lila-800 tracking-wide"
@@ -183,12 +192,22 @@ export default function NFTList({ account }: { account: string }) {
                 key={index}
                 className="border-2 border-black rounded-xl overflow-hidden bg-white shadow"
               >
-                <div className="aspect-square overflow-hidden border-b-2 border-black">
+                <div className="relative aspect-square overflow-hidden border-b-2 border-black">
                   <img
                     src={nft.image}
                     alt={nft.title}
                     className="w-full h-full object-cover"
                   />
+                  <button
+                    onClick={() => navigator.clipboard.writeText(`${window.location.origin}/mint-nft/#id=${nft.collectionId}`)}
+                    className="absolute top-2 right-2 text-black items-center shadow shadow-black text-xs font-semibold inline-flex px-2 bg-white border-black ease-in-out transform transition-all focus:ring-lila-700 focus:shadow-none border-2 duration-100 focus:bg-black focus:text-white py-1 rounded-lg h-8 focus:translate-y-1 hover:text-lila-800 tracking-wide"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-3 h-3 mr-1">
+                      <path fillRule="evenodd" d="M15.75 4.5a3 3 0 1 1 .825 2.066l-8.421 4.679a3.002 3.002 0 0 1 0 1.51l8.421 4.679a3 3 0 1 1-.729 1.31l-8.421-4.678a3 3 0 1 1 0-4.132l8.421-4.679a3 3 0 0 1-.096-.755Z" clipRule="evenodd" />
+                    </svg>
+                    Share 
+                    {/* {nft.collectionId} */}
+                  </button>
                 </div>
                 <div className="p-6 bg-lila-100">
                   <h3 className="text-xl font-semibold text-black mb-2">{nft.title}</h3>
