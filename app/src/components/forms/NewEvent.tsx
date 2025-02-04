@@ -415,20 +415,24 @@ export default function NewEvent() {
                       <div>
                         <label htmlFor="file-upload" className="sr-only">Upload POAP Image</label>
                         <div className="flex items-center justify-center w-full">
-                          <label htmlFor="file-upload" className="relative cursor-pointer w-full">
-                            <div className="flex flex-col items-center justify-center p-6">
-                              {previewImage ? (
-                                <div className="relative">
-                                  <img src={previewImage} alt="Preview" className="w-16 h-16 object-cover rounded-lg" />
-                                  <button
-                                    type="button"
-                                    onClick={handleRemoveImage}
-                                    className="absolute top-0 right-0 bg-red-500 text-white rounded-full p-1"
-                                  >
-                                    &times;
-                                  </button>
-                                </div>
-                              ) : (
+                          {previewImage ? (
+                            <div className="relative w-full bg-lila-100">
+                              <img 
+                                src={previewImage} 
+                                alt="Preview" 
+                                className="w-full h-[160px] object-contain"
+                              />
+                              <button
+                                type="button"
+                                onClick={handleRemoveImage}
+                                className="absolute top-2 right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center border-2 border-black shadow-sm hover:bg-red-600 transition-colors"
+                              >
+                                ✕
+                              </button>
+                            </div>
+                          ) : (
+                            <label htmlFor="file-upload" className="relative cursor-pointer w-full">
+                              <div className="flex flex-col items-center justify-center p-6 min-h-[160px]">
                                 <svg xmlns="http://www.w3.org/2000/svg" className="w-8 h-8 text-black mb-2" viewBox="0 0 24 24" strokeWidth="1" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
                                   <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
                                   <path d="M14 3v4a1 1 0 0 0 1 1h4"></path>
@@ -436,18 +440,18 @@ export default function NewEvent() {
                                   <path d="M12 11v6"></path>
                                   <path d="M9.5 13.5l2.5 -2.5l2.5 2.5"></path>
                                 </svg>
-                              )}
-                              <p className="text-sm text-black">Upload POAP Image (PNG, JPG, GIF up to 10MB)</p>
-                            </div>
-                            <input 
-                              id="file-upload" 
-                              name="file-upload" 
-                              type="file" 
-                              className="sr-only" 
-                              accept="image/*"
-                              onChange={handleImageUpload}
-                            />
-                          </label>
+                                <p className="text-sm text-black">Upload POAP Image (PNG, JPG, GIF up to 10MB)</p>
+                              </div>
+                              <input 
+                                id="file-upload" 
+                                name="file-upload" 
+                                type="file" 
+                                className="sr-only" 
+                                accept="image/*"
+                                onChange={handleImageUpload}
+                              />
+                            </label>
+                          )}
                         </div>
                       </div>
                     </div>
