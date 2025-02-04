@@ -87,7 +87,7 @@ export default function NFTList({ account }: { account: string }) {
 
   if (isLoading) {
     return (
-      <section className="py-24 px-4 md:px-8 bg-lila-200">
+      <section className="py-36 px-4 md:px-8 bg-lila-200">
         <div className="mx-auto max-w-7xl flex flex-col items-center justify-center space-y-8">
           <div className="animate-spin">
             <Image 
@@ -112,10 +112,10 @@ export default function NFTList({ account }: { account: string }) {
 
   if (nfts.length === 0) {
     return (
-      <section className="py-24 px-4 md:px-8 bg-lila-200">
+      <section className="py-36 px-4 md:px-8 bg-lila-200">
         <div className="mx-auto max-w-7xl">
           <div className="flex items-center justify-center gap-4 mb-12">
-            <h2 className="text-2xl lg:text-4xl font-semibold text-black text-center">
+            <h2 className="text-2xl lg:text-3xl font-semibold text-black text-center">
               Your Presence ({truncatedAccount})
             </h2>
             <div className="text-black items-center shadow shadow-black text-xs font-semibold inline-flex px-4 bg-lila-300 border-black border-2 py-2 rounded-lg tracking-wide">
@@ -156,7 +156,7 @@ export default function NFTList({ account }: { account: string }) {
     <section className="py-24 px-4 md:px-8 bg-lila-200">
       <div className="mx-auto max-w-7xl">
         <div className="flex items-center justify-center gap-4 mb-12">
-          <h2 className="text-2xl lg:text-4xl font-semibold text-black text-center">
+          <h2 className="text-2xl lg:text-3xl font-semibold text-black text-center">
             Your Presence ({truncatedAccount})
           </h2>
           <div className="text-black items-center shadow shadow-black text-xs font-semibold inline-flex px-4 bg-lila-300 border-black border-2 py-2 rounded-lg tracking-wide">
