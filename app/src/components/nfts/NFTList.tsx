@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { AlephiumConnectButton, useWallet } from '@alephium/web3-react'
 import { useWalletLoading } from '@/context/WalletLoadingContext';
-
+import Image from 'next/image';
 import { addressFromContractId, hexToString, web3 } from '@alephium/web3';
 import { PoapCollection, PoapNFT } from 'my-contracts';
 
@@ -36,14 +36,18 @@ export default function NFTList({ account }: { account: string }) {
 
   useEffect(() => {
     console.log('Setting up node provider...');
-   web3.setCurrentNodeProvider(
+    web3.setCurrentNodeProvider(
       process.env.NEXT_PUBLIC_NODE_URL ?? "https://node.testnet.alephium.org",
       undefined,
       undefined
     );
     console.log('Node provider setup complete');
+    
     const fetchNFTs = async () => {
       try {
+        // Create a minimum loading time promise
+        const minLoadingTime = new Promise(resolve => setTimeout(resolve, 1000));
+        
         // Fetch POAP data
         const response = await fetch(`https://presenceprotocol.notrustverify.ch/api/poap/${account}`);
         const poapData: POAPResponse[] = await response.json();
@@ -64,6 +68,8 @@ export default function NFTList({ account }: { account: string }) {
         });
 
         const nftMetadata = await Promise.all(nftPromises);
+        // Wait for both the data and minimum loading time
+        await Promise.all([minLoadingTime]);
         setNfts(nftMetadata);
       } catch (error) {
         console.error('Error fetching NFTs:', error);
@@ -82,8 +88,65 @@ export default function NFTList({ account }: { account: string }) {
   if (isLoading) {
     return (
       <section className="py-24 px-4 md:px-8 bg-lila-200">
-        <div className="mx-auto max-w-7xl text-center">
-          Loading your POAPs...
+        <div className="mx-auto max-w-7xl flex flex-col items-center justify-center space-y-8">
+          <div className="animate-spin">
+            <Image 
+              src="/images/blob5.svg"
+              alt="Loading..."
+              width={80}
+              height={80}
+              className="opacity-70"
+              priority
+            />
+          </div>
+          <div className="text-2xl font-semibold text-black/70">
+            Loading your POAPs...
+          </div>
+          <div className="text-sm text-black/50">
+            Please wait while we fetch your event memories
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  if (nfts.length === 0) {
+    return (
+      <section className="py-24 px-4 md:px-8 bg-lila-200">
+        <div className="mx-auto max-w-7xl">
+          <div className="flex items-center justify-center gap-4 mb-12">
+            <h2 className="text-2xl lg:text-4xl font-semibold text-black text-center">
+              Your Presence ({truncatedAccount})
+            </h2>
+            <div className="text-black items-center shadow shadow-black text-xs font-semibold inline-flex px-4 bg-lila-300 border-black border-2 py-2 rounded-lg tracking-wide">
+              0 Events
+            </div>
+          </div>
+
+          <div className="max-w-2xl mx-auto text-center">
+            <div className="bg-white p-8 rounded-xl border-2 border-black shadow-large">
+              <Image
+                src="/images/blob4.svg"
+                alt="No events"
+                width={120}
+                height={120}
+                className="mx-auto mb-6"
+                priority
+              />
+              <h3 className="text-2xl font-semibold text-black mb-4">
+                No Events Found
+              </h3>
+              <p className="text-gray-600 mb-8">
+                You haven't collected any POAPs yet. Start by attending an event or create your own event to mint POAPs!
+              </p>
+              <Link
+                href="/new-event"
+                className="text-black items-center shadow shadow-black text-base font-semibold inline-flex px-6 focus:outline-none justify-center text-center bg-lila-300 border-black ease-in-out transform transition-all focus:ring-lila-700 focus:shadow-none border-2 duration-100 focus:bg-black focus:text-white py-3 rounded-lg h-12 focus:translate-y-1 hover:text-lila-800 tracking-wide"
+              >
+                Create Your First Event <span className="ml-2">→</span>
+              </Link>
+            </div>
+          </div>
         </div>
       </section>
     );

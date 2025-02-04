@@ -195,48 +195,42 @@ export default function Navigation() {
             )}
           </div> */}
 
-          {
-            isConnected ?
-              <>
-                <Link
-                  className="duration-300 focus:text-orange/90 hover:text-lila-900 px-3 py-2 transform transition font-semibold"
-                  href="/explorer"
-                >
-                  Explorer
-                </Link>
+          <Link
+            className={`duration-300 focus:text-orange/90 hover:text-lila-900 px-3 py-2 transform transition font-semibold ${!isConnected ? 'opacity-50 cursor-not-allowed' : ''}`}
+            href={isConnected ? '/explorer' : '#'}
+            onClick={e => !isConnected && e.preventDefault()}
+          >
+            Explorer
+          </Link>
 
-                <div className='mr-1'>
-                  <Link
-                    href="/new-event"
-                    className={`duration-300 focus:text-orange/90 hover:text-lila-900 px-3 py-2 transform transition font-semibold ${!isConnected ? 'opacity-50 cursor-not-allowed' : ''}`}
-                  // onClick={() => router.push('/new-event')}
-                  >
-                    New Event
-                  </Link>
-                </div>
+          <div className='mr-1'>
+            <Link
+              href={isConnected ? '/new-event' : '#'}
+              className={`duration-300 focus:text-orange/90 hover:text-lila-900 px-3 py-2 transform transition font-semibold ${!isConnected ? 'opacity-50 cursor-not-allowed' : ''}`}
+              onClick={e => !isConnected && e.preventDefault()}
+            >
+              New Event
+            </Link>
+          </div>
 
-                <Link
-                  className={`duration-300 focus:text-orange/90 hover:text-lila-900 px-3 py-2 transform transition font-semibold ${!isConnected ? 'opacity-50 cursor-not-allowed' : ''}`}
-                  href={isConnected ? '/my-presence' : '#'}
-                  onClick={e => !isConnected && e.preventDefault()}
-                >
-                  {!isConnected && (
-                    <span className="mr-1" style={{ marginBottom: '-2px' }}>
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-4 inline-block align-text-top">
-                        <path fillRule="evenodd" d="M12 1.5a5.25 5.25 0 0 0-5.25 5.25v3a3 3 0 0 0-3 3v6.75a3 3 0 0 0 3 3h10.5a3 3 0 0 0 3-3v-6.75a3 3 0 0 0-3-3v-3c0-2.9-2.35-5.25-5.25-5.25Zm3.75 8.25v-3a3.75 3.75 0 1 0-7.5 0v3h7.5Z" clipRule="evenodd" />
-                      </svg>
-                    </span>
-                  )}
-                  My Presence
-                </Link>
-              </>
-              :
-              null
-          }
+          <Link
+            className={`duration-300 focus:text-orange/90 hover:text-lila-900 px-3 py-2 transform transition font-semibold ${!isConnected ? 'opacity-50 cursor-not-allowed' : ''}`}
+            href={isConnected ? '/my-presence' : '#'}
+            onClick={e => !isConnected && e.preventDefault()}
+          >
+            {!isConnected && (
+              <span className="mr-1" style={{ marginBottom: '-2px' }}>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-4 inline-block align-text-top">
+                  <path fillRule="evenodd" d="M12 1.5a5.25 5.25 0 0 0-5.25 5.25v3a3 3 0 0 0-3 3v6.75a3 3 0 0 0 3 3h10.5a3 3 0 0 0 3-3v-6.75a3 3 0 0 0-3-3v-3c0-2.9-2.35-5.25-5.25-5.25Zm3.75 8.25v-3a3.75 3.75 0 1 0-7.5 0v3h7.5Z" clipRule="evenodd" />
+                </svg>
+              </span>
+            )}
+            My Presence
+          </Link>
 
-          <div className="flex items-center gap-4 w-full lg:w-auto">
-            <div className='mr-2'>
-              <div className="w-[180px] flex-shrink-0 h-[50px]">
+          <div className="flex items-center gap-4 w-full lg:w-auto mr-8">
+            <div className=''>
+              <div className=" flex-shrink-0 h-[50px]">
                 <CustomWalletConnectButton />
               </div>
             </div>
