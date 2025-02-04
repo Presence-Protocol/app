@@ -6,7 +6,6 @@ import NFTList from "@/components/nfts/NFTList";
 import { useWallet } from "@alephium/web3-react";
 import Footer from "@/components/global/Footer";
 
-
 export default function Mint() {
   const { account, connectionStatus } = useWallet()
 
@@ -14,6 +13,8 @@ export default function Mint() {
     <LandingLayout>
       <Navigation />
       <>
+
+      
       {/* {account?.address} */}
 
       {connectionStatus !== 'connected' ? (

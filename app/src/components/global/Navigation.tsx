@@ -205,11 +205,11 @@ export default function Navigation() {
 
           <div className='mr-1'>
             <Link
-              href={isConnected ? '/new-event' : '#'}
+              href={isConnected ? '/new-collection' : '#'}
               className={`duration-300 focus:text-orange/90 hover:text-lila-900 px-3 py-2 transform transition font-semibold ${!isConnected ? 'opacity-50 cursor-not-allowed' : ''}`}
               onClick={e => !isConnected && e.preventDefault()}
             >
-              New Event
+              New Collection
             </Link>
           </div>
 

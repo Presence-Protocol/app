@@ -99,7 +99,7 @@ export default function PoapProgress({ isOpen, onClose, progress }: PoapProgress
     </div>
     {progress.txHash && (
       <Link 
-        href="/new-event"
+        href="/new-collection"
         target="_blank"
         rel="noopener noreferrer"
         className="text-sm text-lila-800 hover:underline text-center"

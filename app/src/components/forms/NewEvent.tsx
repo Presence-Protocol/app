@@ -187,7 +187,7 @@ export default function NewEvent() {
               txHash: txHash ?? undefined,
               contractAddress
             });
-            toast.success('POAP created successfully!');
+            toast.success('Collection created successfully!');
           }
           return Promise.resolve(); 
         },
@@ -213,7 +213,7 @@ export default function NewEvent() {
           placeholder="Event Location"
           value={location}
           onChange={(e) => setLocation(e.target.value)}
-          className="block w-full px-3 py-4 text-xl text-black border-2 border-transparent appearance-none rounded-2xl placeholder-black border-black focus:border-black focus:bg-lila-500 focus:outline-none focus:ring-black sm:text-sm"
+          className="block w-full px-3 py-3 text-xl text-black border-2 border-transparent appearance-none rounded-2xl placeholder-black border-black focus:border-black focus:bg-lila-500 focus:outline-none focus:ring-black sm:text-sm"
         />
       </div>
     </div>
@@ -226,7 +226,7 @@ export default function NewEvent() {
       <div className="border-2 border-black divide-black shadow rounded-2xl overflow-hidden bg-lila-100 p-4">
         <div className="space-y-3">
           <div className="flex items-center justify-between">
-            <p className="text-sm font-medium text-black">Creating your POAP</p>
+            <p className="text-sm font-medium text-black">Creating your Collection</p>
             {creationProgress === true ? (
               <svg className="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
@@ -282,7 +282,7 @@ export default function NewEvent() {
                       <div className="w-full h-full flex items-center justify-center text-gray-400">No image uploaded</div>
                     )}
                   </div>
-                  <h3 className="mt-6 text-2xl font-medium text-black">{title || 'POAP Title Preview'}</h3>
+                  <h3 className="mt-6 text-2xl font-medium text-black">{title || 'Collection Title Preview'}</h3>
                   <p className="mt-2 text-sm text-black">{description || 'Description Preview'}</p>
                   <div className="mt-4 flex justify-center">
                     <button
@@ -313,19 +313,19 @@ export default function NewEvent() {
                       onClick={() => setIsProgressOpen(false)}
                       className="mt-8 text-black items-center shadow shadow-black text-lg font-semibold inline-flex px-6 focus:outline-none justify-center text-center bg-white border-black ease-in-out transform transition-all focus:ring-lila-700 focus:shadow-none border-2 duration-100 focus:bg-black focus:text-white py-3 rounded-2xl h-16 tracking-wide focus:translate-y-1 w-full hover:text-lila-800"
                     >
-                      Create New Event
+                      Create New Collection
                     </button>
                   )}
                 </div>
               </div>
             ) : (
-              <div className="max-w-2xl mx-auto md:px-0 sm:px-4 text-center">
+              <div className="max-w-xl mx-auto lg:min-w-[500px] md:px-0 sm:px-4 text-center">
                 <h2 className="text-2xl lg:text-3xl font-semibold text-black max-w-4xl mb-1">
-                  Create New Presence Event
+                  Create Presence Collection
                 </h2>
                 <p className="text-sm text-gray-500 mb-6">
-                Create a new POAP for your event, community or yourself!
-        </p>
+                  Create a new collection for your event, community or yourself!
+                </p>
        
 
                 <form className="mt-6" onSubmit={handleSubmit}>
@@ -336,11 +336,11 @@ export default function NewEvent() {
                         <input
                           id="title"
                           type="text"
-                          placeholder="POAP Title"
+                          placeholder="Collection Title"
                           value={title}
                           maxLength={MAX_TITLE_LENGTH}
                           onChange={(e) => setTitle(e.target.value)}
-                          className="block w-full px-3 py-4 text-xl text-black border-2 border-transparent appearance-none placeholder-black border-black focus:border-black focus:bg-lila-500 focus:outline-none focus:ring-black sm:text-sm rounded-2xl"
+                          className="block w-full px-3 py-3 text-xl text-black border-2 border-transparent appearance-none placeholder-black border-black focus:border-black focus:bg-lila-500 focus:outline-none focus:ring-black sm:text-sm rounded-2xl"
                         />
                         <div className="px-3 py-1 text-sm text-gray-500">
                           {title.length}/{MAX_TITLE_LENGTH} characters
@@ -353,12 +353,12 @@ export default function NewEvent() {
                         <label htmlFor="description" className="sr-only">Description</label>
                         <textarea
                           id="description"
-                          placeholder="POAP Description"
+                          placeholder="Collection Description"
                           value={description}
                           maxLength={MAX_DESCRIPTION_LENGTH}
                           onChange={(e) => setDescription(e.target.value)}
-                          rows={4}
-                          className="block w-full px-3 py-4 text-xl text-black border-2 border-transparent appearance-none placeholder-black border-black focus:border-black focus:bg-lila-500 focus:outline-none focus:ring-black sm:text-sm rounded-2xl"
+                          rows={3}
+                          className="block w-full px-3 py-3 text-xl text-black border-2 border-transparent appearance-none placeholder-black border-black focus:border-black focus:bg-lila-500 focus:outline-none focus:ring-black sm:text-sm rounded-2xl"
                         />
                         <div className="px-3 py-1 text-sm text-gray-500">
                           {description.length}/{MAX_DESCRIPTION_LENGTH} characters
@@ -366,7 +366,21 @@ export default function NewEvent() {
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                      <div className="border-2 border-black divide-black shadow rounded-2xl overflow-hidden">
+                        <div>
+                          <label htmlFor="location" className="sr-only">Location</label>
+                          <input
+                            id="location"
+                            type="text"
+                            placeholder="Event Location"
+                            value={location}
+                            onChange={(e) => setLocation(e.target.value)}
+                            className="block w-full px-3 py-3 text-xl text-black border-2 border-transparent appearance-none rounded-2xl placeholder-black border-black focus:border-black focus:bg-lila-500 focus:outline-none focus:ring-black sm:text-sm"
+                          />
+                        </div>
+                      </div>
+
                       <div className="border-2 border-black divide-black shadow rounded-2xl overflow-hidden">
                         <div>
                           <label htmlFor="amount" className="sr-only">Amount</label>
@@ -374,38 +388,40 @@ export default function NewEvent() {
                             id="amount"
                             type="number"
                             min="1"
-                            placeholder="Number of POAPs to mint"
+                            placeholder="Presence Mint Limit"
                             value={amount || ''}
                             onChange={(e) => setAmount(parseInt(e.target.value) || 0)}
-                            className="block w-full px-3 py-4 text-xl text-black border-2 border-transparent appearance-none placeholder-black border-black focus:border-black focus:bg-lila-500 focus:outline-none focus:ring-black sm:text-sm rounded-2xl"
+                            className="block w-full px-3 py-3 text-xl text-black border-2 border-transparent appearance-none placeholder-black border-black focus:border-black focus:bg-lila-500 focus:outline-none focus:ring-black sm:text-sm rounded-2xl"
                           />
                         </div>
                       </div>
+                    </div>
 
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                       <div className="border-2 border-black divide-black shadow rounded-2xl overflow-hidden">
                         <div>
-                          <label htmlFor="startDate" className="sr-only">Start Date</label>
+                          <label htmlFor="startDate" className="block px-3 pt-2 pb-2 text-sm text-gray-600">Start Minting Date</label>
                           <input
                             id="startDate"
                             type="date"
                             placeholder="Start Date"
                             value={startDate}
                             onChange={(e) => setStartDate(e.target.value)}
-                            className="block w-full px-3 py-4 text-xl text-black border-2 border-transparent appearance-none placeholder-black border-black focus:border-black focus:bg-lila-500 focus:outline-none focus:ring-black sm:text-sm rounded-2xl"
+                            className="block w-full px-3 py-2 text-xl text-black border-2 border-transparent appearance-none placeholder-black border-black focus:border-black focus:bg-lila-500 focus:outline-none focus:ring-black sm:text-sm rounded-2xl"
                           />
                         </div>
                       </div>
 
                       <div className="border-2 border-black divide-black shadow rounded-2xl overflow-hidden">
                         <div>
-                          <label htmlFor="endDate" className="sr-only">End Date</label>
+                          <label htmlFor="endDate" className="block px-3 pt-2 pb-2 text-sm text-gray-600">End Minting Date</label>
                           <input
                             id="endDate"
                             type="date"
                             placeholder="End Date"
                             value={endDate}
                             onChange={(e) => setEndDate(e.target.value)}
-                            className="block w-full px-3 py-4 text-xl text-black border-2 border-transparent appearance-none placeholder-black border-black focus:border-black focus:bg-lila-500 focus:outline-none focus:ring-black sm:text-sm rounded-2xl"
+                            className="block w-full px-3 py-2 text-xl text-black border-2 border-transparent appearance-none placeholder-black border-black focus:border-black focus:bg-lila-500 focus:outline-none focus:ring-black sm:text-sm rounded-2xl"
                           />
                         </div>
                       </div>
@@ -413,14 +429,14 @@ export default function NewEvent() {
 
                     <div className="border-2 border-black divide-black shadow rounded-2xl overflow-hidden">
                       <div>
-                        <label htmlFor="file-upload" className="sr-only">Upload POAP Image</label>
+                        <label htmlFor="file-upload" className="sr-only">Upload Collection Image</label>
                         <div className="flex items-center justify-center w-full">
                           {previewImage ? (
                             <div className="relative w-full bg-lila-100">
                               <img 
                                 src={previewImage} 
                                 alt="Preview" 
-                                className="w-full h-[160px] object-contain"
+                                className="w-full h-[120px] object-contain"
                               />
                               <button
                                 type="button"
@@ -432,7 +448,7 @@ export default function NewEvent() {
                             </div>
                           ) : (
                             <label htmlFor="file-upload" className="relative cursor-pointer w-full">
-                              <div className="flex flex-col items-center justify-center p-6 min-h-[160px]">
+                              <div className="flex flex-col items-center justify-center p-6 min-h-[120px]">
                                 <svg xmlns="http://www.w3.org/2000/svg" className="w-8 h-8 text-black mb-2" viewBox="0 0 24 24" strokeWidth="1" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
                                   <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
                                   <path d="M14 3v4a1 1 0 0 0 1 1h4"></path>
@@ -440,7 +456,7 @@ export default function NewEvent() {
                                   <path d="M12 11v6"></path>
                                   <path d="M9.5 13.5l2.5 -2.5l2.5 2.5"></path>
                                 </svg>
-                                <p className="text-sm text-black">Upload POAP Image (PNG, JPG, GIF up to 10MB)</p>
+                                <p className="text-sm text-black">Upload Collection Image (PNG, JPG, GIF up to 10MB)</p>
                               </div>
                               <input 
                                 id="file-upload" 
@@ -456,13 +472,13 @@ export default function NewEvent() {
                       </div>
                     </div>
 
-                    {locationInput}
+                    {/* {locationInput} */}
 
                     {renderProgress()}
 
                     {createdContractAddress && (
                       <div className="border-2 border-black divide-black shadow rounded-2xl overflow-hidden bg-lila-100 p-4">
-                        <p className="text-sm font-medium text-black">POAP Created Successfully!</p>
+                        <p className="text-sm font-medium text-black">Collection Created Successfully!</p>
                         <p className="text-xs break-all mt-1">
                           Share this link with your attendees: <Link href={`/mint-nft/#id=${createdContractAddress}`}>{createdContractAddress}</Link>
                         </p>
@@ -475,7 +491,7 @@ export default function NewEvent() {
                         disabled={isSubmitting || !isFormValid()}
                         className={`text-black items-center shadow shadow-black text-lg font-semibold inline-flex px-6 focus:outline-none justify-center text-center bg-white border-black ease-in-out transform transition-all focus:ring-lila-700 focus:shadow-none border-2 duration-100 focus:bg-black focus:text-white py-3 rounded-2xl h-16 tracking-wide focus:translate-y-1 w-full hover:text-lila-800 ${(isSubmitting || creationProgress !== false || !isFormValid()) ? 'opacity-50 cursor-not-allowed' : ''}`}
                       >
-                        {isSubmitting ? 'Creating...' : isFormValid() ? 'Create POAP' : 'Please fill out all fields'}
+                        {isSubmitting ? 'Creating...' : isFormValid() ? 'Create Collection' : 'Please fill out all fields'}
                       </button>
                     </div>
                   </div>
