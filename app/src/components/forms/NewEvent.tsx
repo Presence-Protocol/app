@@ -388,7 +388,7 @@ export default function NewEvent() {
                             id="amount"
                             type="number"
                             min="1"
-                            placeholder="Presence Mint Limit"
+                            placeholder="Presence Mint Supply"
                             value={amount || ''}
                             onChange={(e) => setAmount(parseInt(e.target.value) || 0)}
                             className="block w-full px-3 py-3 text-xl text-black border-2 border-transparent appearance-none placeholder-black border-black focus:border-black focus:bg-lila-500 focus:outline-none focus:ring-black sm:text-sm rounded-2xl"
