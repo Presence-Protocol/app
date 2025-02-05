@@ -48,11 +48,11 @@ export default function MintNFT() {
           <div className="relative z-10 flex flex-col flex-1 px-4 py-10 bg-white-500 lg:py-24 md:flex-none md:px-28 sm:justify-center lg:col-span-3">
             <div className="w-full mx-auto md:px-0 sm:px-4 text-center">
               <h2 className="text-2xl lg:text-4xl font-semibold text-black max-w-4xl">
-                Mint Your POAP
+                Mint Your Presence
               </h2>
 
               <p className="text-lg text-black tracking-wide mt-4 text-balance">
-                Join the community by minting this exclusive POAP NFT
+                Join the community by minting this exclusive POAP Presence
               </p>
 
               <form className="mt-12">
@@ -75,7 +75,7 @@ export default function MintNFT() {
 
                   <div className="bg-lila-100 border-2 border-black rounded-xl p-6 text-left">
                     <div className="flex justify-between mb-2">
-                      <span>Price per NFT</span>
+                      <span>Price per mint</span>
                       <span>{nftCollection.price} ALPH</span>
                     </div>
                     <div className="flex justify-between mb-2">
@@ -94,7 +94,7 @@ export default function MintNFT() {
                       aria-label="mint"
                       className="text-black items-center shadow shadow-black text-lg font-semibold inline-flex px-6 focus:outline-none justify-center text-center bg-white border-black ease-in-out transform transition-all focus:ring-lila-700 focus:shadow-none border-2 duration-100 focus:bg-black focus:text-white py-3 rounded-lg h-16 tracking-wide focus:translate-y-1 w-full hover:text-lila-800"
                     >
-                      Mint NFT
+                      Mint Presence
                     </button>
                   </div>
                 </div>

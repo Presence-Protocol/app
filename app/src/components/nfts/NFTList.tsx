@@ -206,7 +206,7 @@ export default function NFTList({ account }: { account: string }) {
                 You haven't collected any POAPs yet. Start by attending an event or create your own event to mint POAPs!
               </p>
               <Link
-                href="/new-collection"
+                href="/new-event"
                 className="text-black items-center shadow shadow-black text-base font-semibold inline-flex px-6 focus:outline-none justify-center text-center bg-lila-300 border-black ease-in-out transform transition-all focus:ring-lila-700 focus:shadow-none border-2 duration-100 focus:bg-black focus:text-white py-3 rounded-lg h-12 focus:translate-y-1 hover:text-lila-800 tracking-wide"
               >
                 Create Your First Event <span className="ml-2">→</span>
@@ -259,7 +259,7 @@ export default function NFTList({ account }: { account: string }) {
                     className="w-full h-full object-cover"
                   />
                   <button
-                    onClick={() => navigator.clipboard.writeText(`${window.location.origin}/mint-nft/#id=${nft.collectionId}`)}
+                    onClick={() => navigator.clipboard.writeText(`${window.location.origin}/mint-presence/#id=${nft.collectionId}`)}
                     className="absolute top-2 right-2 text-black items-center shadow shadow-black text-[10px] font-semibold inline-flex px-2 bg-white border-black ease-in-out transform transition-all focus:ring-lila-700 focus:shadow-none border-2 duration-100 focus:bg-black focus:text-white py-1 rounded-lg h-6 focus:translate-y-1 hover:text-lila-800 tracking-wide"
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-2.5 h-2.5 mr-1">
@@ -301,16 +301,16 @@ export default function NFTList({ account }: { account: string }) {
         <div className="mb-24">
           <div className="flex items-center justify-between mb-8">
             <div className="flex items-center gap-4">
-              <h3 className="text-2xl font-semibold text-black">Your Collections</h3>
+              <h3 className="text-2xl font-semibold text-black">Your Events</h3>
               <div className="text-black items-center shadow shadow-black text-xs font-semibold inline-flex px-4 bg-white border-black border-2 py-2 rounded-lg tracking-wide">
                 {events.length} Events
               </div>
             </div>
             <Link
               className="text-black items-center shadow shadow-black text-xs font-semibold inline-flex px-4 focus:outline-none justify-center text-center bg-white border-black ease-in-out transform transition-all focus:ring-lila-700 focus:shadow-none border-2 duration-100 focus:bg-black focus:text-white py-2 rounded-lg h-10 focus:translate-y-1 hover:text-lila-800 tracking-wide"
-              href="/new-collection"
+              href="/new-event"
             >
-              New Collection <span className="ml-1">&rarr;</span>
+              New Event <span className="ml-1">&rarr;</span>
             </Link>
           </div>
           
@@ -348,7 +348,7 @@ export default function NFTList({ account }: { account: string }) {
                     </div>
                   </div>
                   <button
-                    onClick={() => navigator.clipboard.writeText(`${window.location.origin}/mint-nft/#id=${addressFromContractId(event.contractId)}`)}
+                    onClick={() => navigator.clipboard.writeText(`${window.location.origin}/mint-presence/#id=${addressFromContractId(event.contractId)}`)}
                     className="mt-4 w-full text-black items-center shadow shadow-black text-xs font-semibold inline-flex px-4 justify-center bg-white border-black ease-in-out transform transition-all focus:ring-lila-700 focus:shadow-none border-2 duration-100 focus:bg-black focus:text-white py-2 rounded-lg h-10 focus:translate-y-1 hover:text-lila-800 tracking-wide"
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-3 h-3 mr-1">

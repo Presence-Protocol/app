@@ -196,20 +196,21 @@ export default function Navigation() {
           </div> */}
 
           <Link
-            className={`duration-300 focus:text-orange/90 hover:text-lila-900 px-3 py-2 transform transition font-semibold ${!isConnected ? 'opacity-50 cursor-not-allowed' : ''}`}
-            href={isConnected ? '/explorer' : '#'}
-            onClick={e => !isConnected && e.preventDefault()}
+            className={`duration-300 focus:text-orange/90 hover:text-lila-900 px-3 py-2 transform transition font-semibold`}
+            // href={isConnected ? '/explorer' : '#'}
+            href="/explorer"
+            // onClick={e => !isConnected && e.preventDefault()}
           >
             Explorer
           </Link>
 
           <div className='mr-1'>
             <Link
-              href={isConnected ? '/new-collection' : '#'}
+              href={isConnected ? '/new-event' : '#'}
               className={`duration-300 focus:text-orange/90 hover:text-lila-900 px-3 py-2 transform transition font-semibold ${!isConnected ? 'opacity-50 cursor-not-allowed' : ''}`}
               onClick={e => !isConnected && e.preventDefault()}
             >
-              New Collection
+              New Event
             </Link>
           </div>
 

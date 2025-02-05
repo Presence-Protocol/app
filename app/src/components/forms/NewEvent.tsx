@@ -10,9 +10,11 @@ import { loadDeployments } from 'my-contracts/deployments';
 import Link from 'next/link';
 import PoapProgress, { ProgressStep } from './PoapProgress';
 import LargeImageWarning from '../Modals/LargeImageWarning';
-
+import MintAmountInfo from '../Modals/MintAmountInfo';
 const MAX_TITLE_LENGTH = 50;
 const MAX_DESCRIPTION_LENGTH = 180;
+
+
 
 export default function NewEvent() {
   const [title, setTitle] = useState('');
@@ -37,6 +39,11 @@ export default function NewEvent() {
   });
   const [isImageValid, setIsImageValid] = useState(true);
   const [isLargeImageWarningOpen, setIsLargeImageWarningOpen] = useState(false);
+  const [isMintAmountInfoOpen, setIsMintAmountInfoOpen] = useState(false);
+  const [eventStartDate, setEventStartDate] = useState('');
+  const [eventEndDate, setEventEndDate] = useState('');
+  const [isPublicEvent, setIsPublicEvent] = useState(false);
+  const [mintLimit, setMintLimit] = useState(false);
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -60,14 +67,28 @@ export default function NewEvent() {
   };
 
   const isFormValid = () => {
+    const now = new Date().getTime();
+    const eventStart = new Date(eventStartDate).getTime();
+    const eventEnd = new Date(eventEndDate).getTime();
+    const mintStart = new Date(startDate).getTime();
+    const mintEnd = new Date(endDate).getTime();
+
     return (
       title.length > 0 &&
+      title.length <= MAX_TITLE_LENGTH &&
       description.length > 0 &&
+      description.length <= MAX_DESCRIPTION_LENGTH &&
       amount > 0 &&
       startDate.length > 0 &&
       endDate.length > 0 &&
+      eventStartDate.length > 0 &&
+      eventEndDate.length > 0 &&
       location.length > 0 &&
-      isImageValid
+      isImageValid &&
+      eventEnd > eventStart &&
+      mintEnd > mintStart &&
+      eventStart >= now &&
+      mintStart >= now
     );
   };
 
@@ -95,13 +116,34 @@ export default function NewEvent() {
         throw new Error(`Description must be ${MAX_DESCRIPTION_LENGTH} characters or less`)
       }
 
+      // Add date validation
+      const now = new Date().getTime();
+      const eventStart = new Date(eventStartDate).getTime();
+      const eventEnd = new Date(eventEndDate).getTime();
+      const mintStart = new Date(startDate).getTime();
+      const mintEnd = new Date(endDate).getTime();
+
+      if (eventEnd <= eventStart) {
+        throw new Error('Event end date must be after event start date');
+      }
+
+      if (mintEnd <= mintStart) {
+        throw new Error('Minting end date must be after minting start date');
+      }
+
+      if (mintStart < now) {
+        throw new Error('Minting start date cannot be in the past');
+      }
+
+      if (eventStart < now) {
+        throw new Error('Event start date cannot be in the past');
+      }
+
       // Convert dates to millisecond timestamps (no need to multiply by 1000)
-      const eventStartAt = BigInt(new Date(startDate).getTime());
-      const eventEndAt = BigInt(new Date(endDate).getTime());
-      
-      // Set mint period same as event period for now
-      const mintStartAt = eventStartAt;
-      const mintEndAt = eventEndAt;
+      const eventStartAt = BigInt(new Date(eventStartDate).getTime());
+      const eventEndAt = BigInt(new Date(eventEndDate).getTime());
+      const mintStartAt = BigInt(new Date(startDate).getTime());
+      const mintEndAt = BigInt(new Date(endDate).getTime());
 
       // Initialize contract
       const deployment = loadDeployments( process.env.NEXT_PUBLIC_NETWORK as NetworkId ?? 'testnet'); // TODO use getNetwork()
@@ -113,7 +155,7 @@ export default function NewEvent() {
       const eventName = stringToHex(title);
       const descriptionHex = stringToHex(description);
       const locationHex = stringToHex(location);
-      console.log(previewImage)
+
       // Call contract method using transact
       const result = await factoryContract.transact.mintNewCollection({
         args: {
@@ -127,7 +169,8 @@ export default function NewEvent() {
           eventStartAt,
           eventEndAt,
           totalSupply: BigInt(0),
-          isPublic: false
+          isPublic: isPublicEvent,
+          // mintLimit: mintLimit
         },
         signer: signer,
         attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT+DUST_AMOUNT,
@@ -146,6 +189,8 @@ export default function NewEvent() {
       setEndDate('');
       setLocation('');
       setPreviewImage(null);
+      setIsPublicEvent(false);
+      setMintLimit(false);
       
       toast.success('Transaction submitted! Waiting for confirmation...');
     } catch (error) {
@@ -188,7 +233,7 @@ export default function NewEvent() {
               txHash: txHash ?? undefined,
               contractAddress
             });
-            toast.success('Collection created successfully!');
+            toast.success('Event created successfully!');
           }
           return Promise.resolve(); 
         },
@@ -227,7 +272,7 @@ export default function NewEvent() {
       <div className="border-2 border-black divide-black shadow rounded-2xl overflow-hidden bg-lila-100 p-4">
         <div className="space-y-3">
           <div className="flex items-center justify-between">
-            <p className="text-sm font-medium text-black">Creating your Collection</p>
+            <p className="text-sm font-medium text-black">Creating your Event</p>
             {creationProgress === true ? (
               <svg className="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
@@ -274,7 +319,8 @@ export default function NewEvent() {
         <div className="relative justify-center max-h-[calc(100vh-82px)] lg:max-h-[calc(100vh-82px)] md:max-h-[calc(100vh-58px)] lg:px-0 md:px-12 grid lg:grid-cols-5 h-screen lg:divide-x-2 divide-black">
           <div className="hidden bg-lila-500 lg:col-span-2 lg:block lg:flex-1 lg:relative sm:contents">
             <div className="absolute inset-0 object-cover w-full h-full bg-lila-300">
-              <div className="w-full h-full flex flex-col items-center justify-center">
+              <div className="w-full h-[calc(100vh-82px)] flex flex-col items-center justify-center">
+                
                 <div className="w-full max-w-lg p-8 text-center fixed">
                   <div className="w-64 h-64 mx-auto rounded-2xl border-2 border-black shadow bg-white">
                     {previewImage ? (
@@ -283,7 +329,7 @@ export default function NewEvent() {
                       <div className="w-full h-full flex items-center justify-center text-gray-400">No image uploaded</div>
                     )}
                   </div>
-                  <h3 className="mt-6 text-2xl font-medium text-black">{title || 'Collection Title Preview'}</h3>
+                  <h3 className="mt-6 text-2xl font-medium text-black">{title || 'Event Title Preview'}</h3>
                   <p className="mt-2 text-sm text-black">{description || 'Description Preview'}</p>
                   <div className="mt-4 flex justify-center">
                     <button
@@ -314,7 +360,7 @@ export default function NewEvent() {
                       onClick={() => setIsProgressOpen(false)}
                       className="mt-8 text-black items-center shadow shadow-black text-lg font-semibold inline-flex px-6 focus:outline-none justify-center text-center bg-white border-black ease-in-out transform transition-all focus:ring-lila-700 focus:shadow-none border-2 duration-100 focus:bg-black focus:text-white py-3 rounded-2xl h-16 tracking-wide focus:translate-y-1 w-full hover:text-lila-800"
                     >
-                      Create New Collection
+                      Create New Event
                     </button>
                   )}
                 </div>
@@ -322,10 +368,10 @@ export default function NewEvent() {
             ) : (
               <div className="max-w-xl mx-auto lg:min-w-[500px] md:px-0 sm:px-4 text-center">
                 <h2 className="text-2xl lg:text-3xl font-semibold text-black max-w-4xl mb-1">
-                  Create Presence Collection
+                  Create Presence Event
                 </h2>
                 <p className="text-sm text-gray-500 mb-6">
-                  Create a new collection for your event, community or yourself!
+                  Create a New Event & Share your Presence
                 </p>
        
 
@@ -337,7 +383,7 @@ export default function NewEvent() {
                         <input
                           id="title"
                           type="text"
-                          placeholder="Collection Title"
+                          placeholder="Event Title"
                           value={title}
                           maxLength={MAX_TITLE_LENGTH}
                           onChange={(e) => setTitle(e.target.value)}
@@ -354,7 +400,7 @@ export default function NewEvent() {
                         <label htmlFor="description" className="sr-only">Description</label>
                         <textarea
                           id="description"
-                          placeholder="Collection Description"
+                          placeholder="Event Description"
                           value={description}
                           maxLength={MAX_DESCRIPTION_LENGTH}
                           onChange={(e) => setDescription(e.target.value)}
@@ -383,61 +429,114 @@ export default function NewEvent() {
                       </div>
 
                       <div className="border-2 border-black divide-black shadow rounded-2xl overflow-hidden">
-                        <div>
+                        <div className="relative">
                           <label htmlFor="amount" className="sr-only">Amount</label>
                           <input
                             id="amount"
                             type="number"
                             min="1"
-                            placeholder="Presence Mint Supply"
+                            placeholder="Presence Amount"
                             value={amount || ''}
                             onChange={(e) => setAmount(parseInt(e.target.value) || 0)}
-                            className="block w-full px-3 py-3 text-xl text-black border-2 border-transparent appearance-none placeholder-black border-black focus:border-black focus:bg-lila-500 focus:outline-none focus:ring-black sm:text-sm rounded-2xl"
+                            className="block w-full px-3 py-3 text-xl text-black border-2 border-transparent appearance-none placeholder-black border-black focus:border-black focus:bg-lila-500 focus:outline-none focus:ring-black sm:text-sm rounded-2xl pr-10"
                           />
+                          <button
+                            type="button"
+                            onClick={() => setIsMintAmountInfoOpen(true)}
+                            className="absolute right-3 top-1/2 -translate-y-1/2"
+                          >
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              className="h-5 w-5 text-gray-800 hover:text-black"
+                              viewBox="0 0 24 24"
+                              strokeWidth="2"
+                              stroke="currentColor"
+                              fill="none"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            >
+                              <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                              <path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" />
+                              <path d="M12 8l.01 0" />
+                              <path d="M11 12l1 0l0 4l1 0" />
+                            </svg>
+                          </button>
                         </div>
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                      <div className="border-2 border-black divide-black shadow rounded-2xl overflow-hidden">
-                        <div>
-                          <label htmlFor="startDate" className="block px-3 pt-2 pb-2 text-sm text-gray-600">Start Minting Date</label>
-                          <input
-                            id="startDate"
-                            type="date"
-                            placeholder="Start Date"
-                            value={startDate}
-                            onChange={(e) => setStartDate(e.target.value)}
-                            className="block w-full px-3 py-2 text-xl text-black border-2 border-transparent appearance-none placeholder-black border-black focus:border-black focus:bg-lila-500 focus:outline-none focus:ring-black sm:text-sm rounded-2xl"
-                          />
+                    <div className="space-y-4">
+                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                        <div className="border-2 border-black divide-black shadow rounded-2xl overflow-hidden">
+                          <div>
+                            <label htmlFor="eventStartDate" className="block px-3 pt-2 pb-2 text-sm text-gray-600">Event Start Date</label>
+                            <input
+                              id="eventStartDate"
+                              type="date"
+                              placeholder="Event Start Date"
+                              value={eventStartDate}
+                              onChange={(e) => setEventStartDate(e.target.value)}
+                              className="block w-full px-3 py-2 text-xl text-black border-2 border-transparent appearance-none placeholder-black border-black focus:border-black focus:bg-lila-500 focus:outline-none focus:ring-black sm:text-sm rounded-2xl"
+                            />
+                          </div>
+                        </div>
+
+                        <div className="border-2 border-black divide-black shadow rounded-2xl overflow-hidden">
+                          <div>
+                            <label htmlFor="eventEndDate" className="block px-3 pt-2 pb-2 text-sm text-gray-600">Event End Date</label>
+                            <input
+                              id="eventEndDate"
+                              type="date"
+                              placeholder="Event End Date"
+                              value={eventEndDate}
+                              onChange={(e) => setEventEndDate(e.target.value)}
+                              className="block w-full px-3 py-2 text-xl text-black border-2 border-transparent appearance-none placeholder-black border-black focus:border-black focus:bg-lila-500 focus:outline-none focus:ring-black sm:text-sm rounded-2xl"
+                            />
+                          </div>
                         </div>
                       </div>
 
-                      <div className="border-2 border-black divide-black shadow rounded-2xl overflow-hidden">
-                        <div>
-                          <label htmlFor="endDate" className="block px-3 pt-2 pb-2 text-sm text-gray-600">End Minting Date</label>
-                          <input
-                            id="endDate"
-                            type="date"
-                            placeholder="End Date"
-                            value={endDate}
-                            onChange={(e) => setEndDate(e.target.value)}
-                            className="block w-full px-3 py-2 text-xl text-black border-2 border-transparent appearance-none placeholder-black border-black focus:border-black focus:bg-lila-500 focus:outline-none focus:ring-black sm:text-sm rounded-2xl"
-                          />
+                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                        <div className="border-2 border-black divide-black shadow rounded-2xl overflow-hidden">
+                          <div>
+                            <label htmlFor="startDate" className="block px-3 pt-2 pb-2 text-sm text-gray-600">Start Minting Date</label>
+                            <input
+                              id="startDate"
+                              type="date"
+                              placeholder="Start Minting Date"
+                              value={startDate}
+                              onChange={(e) => setStartDate(e.target.value)}
+                              className="block w-full px-3 py-2 text-xl text-black border-2 border-transparent appearance-none placeholder-black border-black focus:border-black focus:bg-lila-500 focus:outline-none focus:ring-black sm:text-sm rounded-2xl"
+                            />
+                          </div>
+                        </div>
+
+                        <div className="border-2 border-black divide-black shadow rounded-2xl overflow-hidden">
+                          <div>
+                            <label htmlFor="endDate" className="block px-3 pt-2 pb-2 text-sm text-gray-600">End Minting Date</label>
+                            <input
+                              id="endDate"
+                              type="date"
+                              placeholder="End Minting Date"
+                              value={endDate}
+                              onChange={(e) => setEndDate(e.target.value)}
+                              className="block w-full px-3 py-2 text-xl text-black border-2 border-transparent appearance-none placeholder-black border-black focus:border-black focus:bg-lila-500 focus:outline-none focus:ring-black sm:text-sm rounded-2xl"
+                            />
+                          </div>
                         </div>
                       </div>
                     </div>
 
                     <div className="border-2 border-black divide-black shadow rounded-2xl overflow-hidden">
                       <div>
-                        <label htmlFor="file-upload" className="sr-only">Upload Collection Image</label>
+                        <label htmlFor="file-upload" className="sr-only">Upload Event Image</label>
                         <div className="flex items-center justify-center w-full">
                           {previewImage ? (
                             <div className="relative w-full bg-lila-100">
                               <img 
                                 src={previewImage} 
                                 alt="Preview" 
-                                className="w-full h-[120px] object-contain"
+                                className="w-full h-[100px] object-contain"
                               />
                               <button
                                 type="button"
@@ -449,7 +548,7 @@ export default function NewEvent() {
                             </div>
                           ) : (
                             <label htmlFor="file-upload" className="relative cursor-pointer w-full">
-                              <div className="flex flex-col items-center justify-center p-6 min-h-[120px]">
+                              <div className="flex flex-col items-center justify-center p-6 min-h-[100px]">
                                 <svg xmlns="http://www.w3.org/2000/svg" className="w-8 h-8 text-black mb-2" viewBox="0 0 24 24" strokeWidth="1" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
                                   <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
                                   <path d="M14 3v4a1 1 0 0 0 1 1h4"></path>
@@ -457,7 +556,7 @@ export default function NewEvent() {
                                   <path d="M12 11v6"></path>
                                   <path d="M9.5 13.5l2.5 -2.5l2.5 2.5"></path>
                                 </svg>
-                                <p className="text-sm text-black">Upload Collection Image (PNG, JPG, GIF up to 10MB)</p>
+                                <p className="text-sm text-black">Upload Event Image (PNG, JPG, GIF up to 10MB)</p>
                               </div>
                               <input 
                                 id="file-upload" 
@@ -473,15 +572,65 @@ export default function NewEvent() {
                       </div>
                     </div>
 
-                    {/* {locationInput} */}
+                    <div className="space-y-2">
+                      <div className="flex items-center text-left justify-between p-4">
+                        <div>
+                          <h3 className="text-sm font-medium text-black">{isPublicEvent ? 'Public Event' : 'Private Event'}</h3>
+                          <p className="text-xs text-gray-500">{isPublicEvent ? 'Anyone will be able to mint your Presence' : 'Only approved addresses will be able to mint your Presence'}</p>
+                        </div>
+                        <div className="items-center inline-flex">
+                          <button
+                            type="button"
+                            role="switch"
+                            aria-checked={isPublicEvent}
+                            onClick={() => setIsPublicEvent(!isPublicEvent)}
+                            className={`relative inline-flex w-10 rounded-full py-1 transition border-2 shadow-small border-black ${
+                              isPublicEvent ? 'bg-lila-400' : 'bg-white'
+                            }`}
+                          >
+                            <span
+                              className={`h-2 w-2 rounded-full transition shadow-md ${
+                                isPublicEvent ? 'translate-x-6 bg-lila-800' : 'translate-x-1 bg-gray-500'
+                              }`}
+                              aria-hidden="true"
+                            />
+                          </button>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center text-left justify-between p-4">
+                        <div>
+                          <h3 className="text-sm font-medium text-black">{mintLimit ? 'Limit Address Mints' : 'No Limit'}</h3>
+                          <p className="text-xs text-gray-500">{mintLimit ? 'This will limit the number of mints per address to 1' : 'There is no limit to the number of mints per address'}</p>
+                        </div>
+                        <div className="items-center inline-flex">
+                          <button
+                            type="button"
+                            role="switch"
+                            aria-checked={mintLimit}
+                            onClick={() => setMintLimit(!mintLimit)}
+                            className={`relative inline-flex w-10 rounded-full py-1 transition border-2 shadow-small border-black ${
+                              mintLimit ? 'bg-lila-400' : 'bg-white'
+                            }`}
+                          >
+                            <span
+                              className={`h-2 w-2 rounded-full transition shadow-md ${
+                                mintLimit ? 'translate-x-6 bg-lila-800' : 'translate-x-1 bg-gray-500'
+                              }`}
+                              aria-hidden="true"
+                            />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
 
                     {renderProgress()}
 
                     {createdContractAddress && (
                       <div className="border-2 border-black divide-black shadow rounded-2xl overflow-hidden bg-lila-100 p-4">
-                        <p className="text-sm font-medium text-black">Collection Created Successfully!</p>
+                        <p className="text-sm font-medium text-black">Event Created Successfully!</p>
                         <p className="text-xs break-all mt-1">
-                          Share this link with your attendees: <Link href={`/mint-nft/#id=${createdContractAddress}`}>{createdContractAddress}</Link>
+                          Share this link with your attendees: <Link href={`/mint-presence/#id=${createdContractAddress}`}>{createdContractAddress}</Link>
                         </p>
                       </div>
                     )}
@@ -492,7 +641,7 @@ export default function NewEvent() {
                         disabled={isSubmitting || !isFormValid()}
                         className={`text-black items-center shadow shadow-black text-lg font-semibold inline-flex px-6 focus:outline-none justify-center text-center bg-white border-black ease-in-out transform transition-all focus:ring-lila-700 focus:shadow-none border-2 duration-100 focus:bg-black focus:text-white py-3 rounded-2xl h-16 tracking-wide focus:translate-y-1 w-full hover:text-lila-800 ${(isSubmitting || creationProgress !== false || !isFormValid()) ? 'opacity-50 cursor-not-allowed' : ''}`}
                       >
-                        {isSubmitting ? 'Creating...' : isFormValid() ? 'Create Collection' : 'Please fill out all fields'}
+                        {isSubmitting ? 'Creating...' : isFormValid() ? 'Create Event' : 'Please fill out all fields'}
                       </button>
                     </div>
                   </div>
@@ -505,6 +654,10 @@ export default function NewEvent() {
       <LargeImageWarning 
         isOpen={isLargeImageWarningOpen} 
         onClose={() => setIsLargeImageWarningOpen(false)} 
+      />
+      <MintAmountInfo 
+        isOpen={isMintAmountInfoOpen}
+        onClose={() => setIsMintAmountInfoOpen(false)}
       />
     </section>
   );

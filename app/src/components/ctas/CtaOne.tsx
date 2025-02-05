@@ -30,7 +30,7 @@ const CtaOne = () => {
             <div className="mt-12">
               <Link
                 className="text-black items-center shadow shadow-lila-600 text-lg font-semibold inline-flex px-6 focus:outline-none justify-center text-center bg-lila-300 focus:bg-lila-600 border-lila-600 duration-300 outline-none focus:shadow-none border-2 sm:w-auto py-3 rounded-lg h-16 tracking-wide focus:translate-y-1 w-full hover:bg-lila-500"
-                href="/new-collection"
+                href="/new-event"
                 aria-label="Explore all pages"
               >
                 Get started <span className="ml-3">&rarr;</span>

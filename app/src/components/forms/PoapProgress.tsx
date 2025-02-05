@@ -85,7 +85,7 @@ export default function PoapProgress({ isOpen, onClose, progress }: PoapProgress
           </Link>
           
           <Link 
-            href={`/mint-nft/#id=${progress.contractAddress}`}
+            href={`/mint-presence/#id=${progress.contractAddress}`}
             className="text-black items-center shadow shadow-black text-sm font-semibold inline-flex px-4 focus:outline-none justify-center text-center bg-lila-400 border-black ease-in-out transform transition-all focus:ring-lila-700 focus:shadow-none border-2 duration-100 focus:bg-black focus:text-white py-2 rounded-lg tracking-wide focus:translate-y-1 w-full hover:text-lila-800"
           >
             Share Mint Link
@@ -99,7 +99,7 @@ export default function PoapProgress({ isOpen, onClose, progress }: PoapProgress
     </div>
     {progress.txHash && (
       <Link 
-        href="/new-collection"
+        href="/new-event"
         target="_blank"
         rel="noopener noreferrer"
         className="text-sm text-lila-800 hover:underline text-center"

@@ -14,12 +14,12 @@
 // ];
 
 import Image from 'next/image';
-import AlphaLogo from "@/images/partner-logos/ALPH.svg"
-import PushValueLogo from "@/images/partner-logos/PV.svg"
-import NTV from "@/images/partner-logos/NTV.jpg"
+import AlphLogo from "@/images/partner-logos/ALPH.svg"
+import PushValueLogo from "@/images/partner-logos/PV.png"
+import NTV from "@/images/partner-logos/NTV.png"
 
 const partnerLogos = [
-  { src: AlphaLogo, alt: "Alephium Logo" },
+  { src: AlphLogo, alt: "Alephium Logo" },
   { src: PushValueLogo, alt: "Push Value Logo" },
   { src: NTV, alt: "NTV Logo" }
 ];

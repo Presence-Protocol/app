@@ -143,85 +143,78 @@ export default function MintNFTSimple() {
       <div className="mx-auto bg-lila-200">
         <div className="relative justify-center h-[calc(100vh-80px)] overflow-hidden px-4">
           <div className="w-full h-full flex flex-col items-center justify-center">
-            <div className="w-full max-w-lg p-8 text-center">
-              <div className="w-64 h-64 mx-auto rounded-2xl border-2 border-black shadow bg-white">
-                <img 
-                  src={nftCollection.image ?? undefined}
-                  alt={nftCollection.title} 
-                  className="w-full h-full object-cover rounded-xl"
-                />
-              </div>
-              <h3 className="mt-6 text-2xl font-medium text-black">{nftCollection.title}</h3>
-     <p className="mt-2 text-sm text-black">{nftCollection.description}</p>
-
-              <div className="mt-4 flex flex-col gap-4">
-                <div className="flex justify-center gap-4">
-                  <div className="text-black items-center shadow shadow-lila-600 text-xs font-semibold inline-flex px-6 bg-lila-300 border-lila-600 border-2 py-3 rounded-lg h-8 tracking-wide">
-                    {nftCollection.currentSupply.toString()} / {nftCollection.maxSupply.toString()}
-                  </div>
-                  <div className="text-black items-center shadow shadow-lila-600 text-xs font-semibold inline-flex px-6 bg-lila-300 border-lila-600 border-2 py-3 rounded-lg h-8 tracking-wide">
-                    {nftCollection.price} ALPH
-                  </div>
-                </div>
-
-                
-
-                <div className="flex flex-col gap-2 mt-">
-                         
-                  <div className="flex items-center justify-center gap-2 text-sm">
-                    <span className="text-gray-600">{nftCollection.location}</span>
-                    <span className="text-gray-400">•</span>
-                    <span className={`${nftCollection.isPublic ? 'text-black' : 'text-gray-600'}`}>
-                      {nftCollection.isPublic ? 'Public Event' : 'Private Event'}
-                    </span>
-                                    <span className="text-gray-400">•</span>
-                    <span className="text-gray-600">{formatDate(nftCollection.eventStartDate)} - {formatDate(nftCollection.eventEndDate)}</span>
-    
-                    
-                  </div>
-
-                  
+            <div className="w-full max-w-4xl p-8 flex gap-8 items-center">
+              {/* Left Column - Image */}
+              <div className="w-1/2">
+                <div className="w-full aspect-square rounded-2xl border-2 border-black shadow bg-white">
+                  <img 
+                    src={nftCollection.image ?? undefined}
+                    alt={nftCollection.title} 
+                    className="w-full h-full object-cover rounded-xl"
+                  />
                 </div>
               </div>
 
-              <div className="mt-8">
-                <button
-                  onClick={handleSubmit}
-                  type="button"
-                  aria-label="mint"
-                  disabled={isMinting}
-                  className="text-black items-center shadow shadow-black text-lg font-semibold inline-flex px-6 focus:outline-none justify-center text-center bg-white 
-                  border-black ease-in-out transform transition-all focus:ring-lila-700 focus:shadow-none border-2 duration-100 focus:bg-black focus:text-white py-3 rounded-lg h-16 tracking-wide focus:translate-y-1 w-full hover:text-lila-800 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {isMinting ? (
-                    <div className="flex items-center justify-center gap-3">
-                      <div className="animate-spin">
-                        <Image 
-                          src="/images/blob5.svg"
-                          alt="Minting..."
-                          width={24}
-                          height={24}
-                          className="opacity-70"
-                          priority
-                        />
+              {/* Right Column - Content */}
+              <div className="w-1/2 text-left">
+                <h3 className="text-2xl font-medium text-black">{nftCollection.title}</h3>
+                <p className="mt-2 text-sm text-black">{nftCollection.description}</p>
+
+                <div className="mt-4 flex flex-col gap-4">
+                  <div className="flex gap-4">
+                    <div className="text-black items-center shadow shadow-lila-600 text-xs font-semibold inline-flex px-6 bg-lila-300 border-lila-600 border-2 py-3 rounded-lg h-8 tracking-wide">
+                      {nftCollection.currentSupply.toString()} / {nftCollection.maxSupply.toString()}
+                    </div>
+                    <div className="text-black items-center shadow shadow-lila-600 text-xs font-semibold inline-flex px-6 bg-lila-300 border-lila-600 border-2 py-3 rounded-lg h-8 tracking-wide">
+                      {nftCollection.price} ALPH
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col gap-2">
+                    <div className="flex items-center gap-2 text-sm">
+                      <span className="text-gray-600">{nftCollection.location}</span>
+                      <span className="text-gray-400">•</span>
+                      <span className={`${nftCollection.isPublic ? 'text-black' : 'text-gray-600'}`}>
+                        {nftCollection.isPublic ? 'Public Event' : 'Private Event'}
+                      </span>
+                      <span className="text-gray-400">•</span>
+                      <span className="text-gray-600">{formatDate(nftCollection.eventStartDate)} - {formatDate(nftCollection.eventEndDate)}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mt-8">
+                  <button
+                    onClick={handleSubmit}
+                    type="button"
+                    aria-label="mint"
+                    disabled={isMinting}
+                    className="text-black items-center shadow shadow-black text-lg font-semibold inline-flex px-6 focus:outline-none justify-center text-center bg-white 
+                    border-black ease-in-out transform transition-all focus:ring-lila-700 focus:shadow-none border-2 duration-100 focus:bg-black focus:text-white py-3 rounded-lg h-16 tracking-wide focus:translate-y-1 w-full hover:text-lila-800 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {isMinting ? (
+                      <div className="flex items-center justify-center gap-3">
+                        <div className="animate-spin">
+                          <Image 
+                            src="/images/blob5.svg"
+                            alt="Minting..."
+                            width={24}
+                            height={24}
+                            className="opacity-70"
+                            priority
+                          />
+                        </div>
+                        <span>Minting...</span>
                       </div>
-                      <span>Minting...</span>
-                    </div>
-                  ) : (
-                    'Mint Presence'
-                  )}
-                </button>
+                    ) : (
+                      'Mint Presence'
+                    )}
+                  </button>
 
-                <div className="text-sm text-center">
-                    <div className="text-gray-600">
-                      
-                    </div>
-                
+                  <div className="text-xs text-gray-500 mt-5 text-center">
+                    Minting available until {formatDate(nftCollection.mintEndDate)}
                   </div>
-
-                    <div className="text-xs text-gray-500 mt-5">
-                      Minting available until {formatDate(nftCollection.mintEndDate)}
-                    </div>
+                </div>
               </div>
             </div>
           </div>
