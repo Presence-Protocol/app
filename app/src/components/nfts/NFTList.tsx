@@ -153,8 +153,8 @@ export default function NFTList({ account }: { account: string }) {
 
   if (isLoading) {
     return (
-      <section className="py-36 px-4 md:px-8 bg-lila-200">
-        <div className="mx-auto max-w-7xl flex flex-col items-center justify-center space-y-8">
+      <section className="py-32 min-h-[calc(100vh-80px)] flex items-center justify-center px-4 md:px-8 bg-lila-200">
+        <div className="mx-auto max-w-7xl flex flex-col my-auto items-center justify-center space-y-8">
           <div className="animate-spin">
             <Image 
               src="/images/blob5.svg"
@@ -168,7 +168,7 @@ export default function NFTList({ account }: { account: string }) {
           <div className="text-2xl font-semibold text-black/70">
             Loading your Presence...
           </div>
-          <div className="text-sm text-gray-500/70">
+          <div style={{marginTop: '10px'}} className="text-sm mt-0 pt-0 text-gray-500/70">
             Please wait while we fetch your event memories
           </div>
         </div>

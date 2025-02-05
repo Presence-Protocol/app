@@ -158,49 +158,28 @@ export default function Footer() {
                 title="link to your page"
                 aria-label="your label"
                 href="/"
-              >Overview</a
-              >
+              >Get Started</a>
               <a
                 className="hover:text-lila-500"
                 title="link to your page"
                 aria-label="your label"
-                href="/style-guide"
-              >Style Guide</a
+                href="/documentation"
+              >Documentation</a
+              >
+       
+              <a
+                className="hover:text-lila-500"
+                title="link to your page"
+                aria-label="your label"
+                href="https://www.lexingtonthemes.com/documentation/quick-start"
+              >Work with Us</a
               >
               <a
                 className="hover:text-lila-500"
                 title="link to your page"
                 aria-label="your label"
                 href="https://www.lexingtonthemes.com/legal/license"
-              >License</a
-              >
-              <a
-                className="hover:text-lila-500"
-                title="link to your page"
-                aria-label="your label"
-                href="https://www.lexingtonthemes.com/documentation/quick-start"
-              >Documentation</a
-              >
-              <a
-                className="hover:text-lila-500"
-                title="link to your page"
-                aria-label="your label"
-                href="https://x.com/lexingtonthemes"
-              >@lexingtonthemes</a
-              >
-              <a
-                className="hover:text-lila-500"
-                title="link to your page"
-                aria-label="your label"
-                href="https://x.com/mike_andreuzza"
-              >@Mike_Andreuzza</a
-              >
-              <a
-                className="hover:text-lila-500"
-                title="link to your page"
-                aria-label="your label"
-                href="https://lexingtonthemes.com/pricing"
-              >Get the bundle</a
+              >Contact Us</a
               >
             </nav>
           </div>

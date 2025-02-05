@@ -9,13 +9,10 @@ import ExplorerSearch from "@/components/explorer/ExplorerSearch";
 import ExplorerSliders from "@/components/explorer/ExplorerSliders";
 import ExplorerHeader from "@/components/explorer/ExplorerHeader";
 
-export default function Explorer() {
+export default function Documentation() {
   return (
     <LandingLayout>
       <Navigation />
-      {/* <ExplorerSearch /> */}
-      {/* <ExplorerHeader /> */}
-      <ExplorerSliders />
     </LandingLayout>
   )
 }
