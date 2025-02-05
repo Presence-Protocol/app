@@ -126,7 +126,8 @@ export default function NewEvent() {
           location: locationHex,
           eventStartAt,
           eventEndAt,
-          totalSupply: BigInt(0)
+          totalSupply: BigInt(0),
+          isPublic: true
         },
         signer: signer,
         attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT+DUST_AMOUNT,
