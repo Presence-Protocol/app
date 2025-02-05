@@ -176,7 +176,7 @@ export default function NFTList({ account }: { account: string }) {
     );
   }
 
-  if (nfts.length === 0) {
+  if (nfts.length === 0 && events.length === 0) {
     return (
       <section className="py-36 px-4 md:px-8 bg-lila-200">
         <div className="mx-auto max-w-7xl">
