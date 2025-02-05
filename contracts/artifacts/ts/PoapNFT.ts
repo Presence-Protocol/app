@@ -49,6 +49,7 @@ export namespace PoapNFTTypes {
     location: HexString;
     eventStartAt: bigint;
     eventEndAt: bigint;
+    isPublic: boolean;
   };
 
   export type State = ContractState<Fields>;
@@ -80,7 +81,9 @@ export namespace PoapNFTTypes {
     };
     getTraits: {
       params: Omit<CallContractParams<{}>, "args">;
-      result: CallContractResult<[Trait, Trait, Trait, Trait, Trait, Trait]>;
+      result: CallContractResult<
+        [Trait, Trait, Trait, Trait, Trait, Trait, Trait]
+      >;
     };
     getTraitCount: {
       params: Omit<CallContractParams<{}>, "args">;
@@ -224,7 +227,9 @@ class Factory extends ContractFactory<PoapNFTInstance, PoapNFTTypes.Fields> {
         "testArgs"
       >
     ): Promise<
-      TestContractResultWithoutMaps<[Trait, Trait, Trait, Trait, Trait, Trait]>
+      TestContractResultWithoutMaps<
+        [Trait, Trait, Trait, Trait, Trait, Trait, Trait]
+      >
     > => {
       return testMethod(this, "getTraits", params, getContractByCodeHash);
     },
@@ -260,7 +265,7 @@ export const PoapNFT = new Factory(
   Contract.fromJson(
     PoapNFTContractJson,
     "",
-    "8843113164c9296b70fcdea9933692d24a9c818fce96e1a8ed4b776803f9ab7a",
+    "3cea29156dffc1949dd4cf882a00cd3ce8f999d19386f02d7b8e354dc1a84cfc",
     AllStructs
   )
 );

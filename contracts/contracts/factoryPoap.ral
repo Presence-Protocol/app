@@ -4,8 +4,8 @@ Contract PoapFactory(
     mut numMintedCollection: U256
 ){
 
-    event EventCreated(contractId: ByteVec, eventName: ByteVec, organizer: Address)
-    event PoapMinted(contractId: ByteVec, collectionId: PoapCollection, nftIndex: U256 ,caller: Address)
+    event EventCreated(contractId: ByteVec, eventName: ByteVec, organizer: Address, isPublic: Bool)
+    event PoapMinted(contractId: ByteVec, collectionId: PoapCollection, nftIndex: U256 ,caller: Address, isPublic: Bool)
 
 
     @using(preapprovedAssets = true, checkExternalCaller = false, updateFields = true)
@@ -21,7 +21,7 @@ Contract PoapFactory(
         location: ByteVec,
         eventStartAt: U256,
         eventEndAt: U256,
-    
+        isPublic: Bool,
         totalSupply: U256) -> (ByteVec){
             let caller = callerAddress!()
 
@@ -36,7 +36,7 @@ Contract PoapFactory(
                 location,
                 eventStartAt,
                 eventEndAt,
-            
+                isPublic,
                 totalSupply)
         
             let contractId = copyCreateContract!{caller -> ALPH: minimalContractDeposit!()}(    
@@ -46,7 +46,7 @@ Contract PoapFactory(
             )
 
             numMintedCollection = numMintedCollection + 1
-            emit EventCreated(contractId, eventName, caller)
+            emit EventCreated(contractId, eventName, caller, isPublic)
 
             return contractId
         
@@ -60,7 +60,7 @@ Contract PoapFactory(
         let poapContractId = collection.mint{caller -> ALPH: minimalContractDeposit!()}(caller)
         let collectionTotalSupply = collection.totalSupply()
 
-        emit PoapMinted(poapContractId, collection, collectionTotalSupply, caller)
+        emit PoapMinted(poapContractId, collection, collectionTotalSupply, caller, collection.getIsPublic())
 
     }
 

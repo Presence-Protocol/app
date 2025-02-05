@@ -51,12 +51,14 @@ export namespace PoapFactoryTypes {
     contractId: HexString;
     eventName: HexString;
     organizer: Address;
+    isPublic: boolean;
   }>;
   export type PoapMintedEvent = ContractEvent<{
     contractId: HexString;
     collectionId: HexString;
     nftIndex: bigint;
     caller: Address;
+    isPublic: boolean;
   }>;
 
   export interface CallMethodTable {
@@ -71,6 +73,7 @@ export namespace PoapFactoryTypes {
         location: HexString;
         eventStartAt: bigint;
         eventEndAt: bigint;
+        isPublic: boolean;
         totalSupply: bigint;
       }>;
       result: CallContractResult<HexString>;
@@ -116,6 +119,7 @@ export namespace PoapFactoryTypes {
         location: HexString;
         eventStartAt: bigint;
         eventEndAt: bigint;
+        isPublic: boolean;
         totalSupply: bigint;
       }>;
       result: SignExecuteScriptTxResult;
@@ -171,6 +175,7 @@ class Factory extends ContractFactory<
           location: HexString;
           eventStartAt: bigint;
           eventEndAt: bigint;
+          isPublic: boolean;
           totalSupply: bigint;
         }
       >
@@ -227,7 +232,7 @@ export const PoapFactory = new Factory(
   Contract.fromJson(
     PoapFactoryContractJson,
     "",
-    "fc90c7c55ef6d42e75e2c34732cead1f2ecf779ab4c450c1b93c0b713d6bc09e",
+    "8faae9da5b5272fb710e3e1690d69db92421f42fe89ec039da57c4d879e4ce7e",
     AllStructs
   )
 );

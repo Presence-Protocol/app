@@ -22,6 +22,7 @@ const deployTemplates: DeployFunction<Settings> = async (
       location: '00',
       eventStartAt: 0n,
       eventEndAt: 0n,
+      isPublic: false
     }
   })
 
@@ -39,6 +40,7 @@ const deployTemplates: DeployFunction<Settings> = async (
       eventStartAt: 0n,
       eventEndAt: 0n,
       totalSupply: 0n,
+      isPublic: false
     }
   })
 

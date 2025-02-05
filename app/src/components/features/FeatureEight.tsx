@@ -15,24 +15,6 @@ const items = [
       "Experience the convenience of near-instantaneous cryptocurrency transfers, allowing you to send and receive digital assets in real-time, eliminating delays.",
   },
   {
-    number: "3",
-    title: "Multi-Currency Support",
-    description:
-      "Access a diverse range of cryptocurrencies in one unified platform, enabling you to explore and manage various digital assets effortlessly.",
-  },
-  {
-    number: "4", 
-    title: "Decentralized Exchanges",
-    description:
-      "Embrace peer-to-peer trading without intermediaries. Trade directly with other users on our platform, enjoying the benefits of decentralization.",
-  },
-  {
-    number: "5",
-    title: "Staking Rewards",
-    description:
-      "Put your crypto assets to work and earn passive income through staking, a feature that allows you to participate in network validation and reap rewards.",
-  },
-  {
     number: "6",
     title: "NFT Marketplace", 
     description:
@@ -52,28 +34,10 @@ const items = [
   },
   {
     number: "9",
-    title: "Real-time Market Data",
+    title: "Community Support",
     description:
-      "Stay informed and make well-informed trading decisions with access to live cryptocurrency prices, charts, and trends, available 24/7.",
-  },
-  {
-    number: "10",
-    title: "24/7 Customer Support",
-    description:
-      "Count on our dedicated customer support team to assist you round the clock, addressing your queries and concerns promptly and effectively.",
-  },
-  {
-    number: "11",
-    title: "Mobile App",
-    description:
-      "Seamlessly trade and manage your crypto assets on the go with our mobile application, offering all the features and convenience you expect.",
-  },
-  {
-    number: "12",
-    title: "Community Forum",
-    description:
-      "Connect with like-minded crypto enthusiasts, share insights, and participate in discussions within our community forum, fostering knowledge sharing and collaboration.",
-  },
+      "Join a vibrant community of crypto enthusiasts and get help from experienced users, ensuring you have a supportive environment to learn and grow.",
+  }
 ];
 
 export default function FeatureEight() {

@@ -51,6 +51,7 @@ export namespace PoapCollectionTypes {
     location: HexString;
     eventStartAt: bigint;
     eventEndAt: bigint;
+    isPublic: boolean;
     totalSupply: bigint;
   };
 
@@ -82,6 +83,10 @@ export namespace PoapCollectionTypes {
     mint: {
       params: CallContractParams<{ callerAddr: Address }>;
       result: CallContractResult<HexString>;
+    };
+    getIsPublic: {
+      params: Omit<CallContractParams<{}>, "args">;
+      result: CallContractResult<boolean>;
     };
   }
   export type CallMethodParams<T extends keyof CallMethodTable> =
@@ -122,6 +127,10 @@ export namespace PoapCollectionTypes {
     };
     mint: {
       params: SignExecuteContractMethodParams<{ callerAddr: Address }>;
+      result: SignExecuteScriptTxResult;
+    };
+    getIsPublic: {
+      params: Omit<SignExecuteContractMethodParams<{}>, "args">;
       result: SignExecuteScriptTxResult;
     };
   }
@@ -205,6 +214,14 @@ class Factory extends ContractFactory<
     ): Promise<TestContractResultWithoutMaps<HexString>> => {
       return testMethod(this, "mint", params, getContractByCodeHash);
     },
+    getIsPublic: async (
+      params: Omit<
+        TestContractParamsWithoutMaps<PoapCollectionTypes.Fields, never>,
+        "testArgs"
+      >
+    ): Promise<TestContractResultWithoutMaps<boolean>> => {
+      return testMethod(this, "getIsPublic", params, getContractByCodeHash);
+    },
   };
 
   stateForTest(
@@ -221,7 +238,7 @@ export const PoapCollection = new Factory(
   Contract.fromJson(
     PoapCollectionContractJson,
     "",
-    "e2e7b4c5136aba48caaecf457d964321a949e32d4cf638c7206080665faf85a5",
+    "bb7bf2a534d56a14a1c08ed255e1f1f7902ff2a01a2b8ab7b9eadd4536bf7c37",
     AllStructs
   )
 );
@@ -310,6 +327,17 @@ export class PoapCollectionInstance extends ContractInstance {
         getContractByCodeHash
       );
     },
+    getIsPublic: async (
+      params?: PoapCollectionTypes.CallMethodParams<"getIsPublic">
+    ): Promise<PoapCollectionTypes.CallMethodResult<"getIsPublic">> => {
+      return callMethod(
+        PoapCollection,
+        this,
+        "getIsPublic",
+        params === undefined ? {} : params,
+        getContractByCodeHash
+      );
+    },
   };
 
   transact = {
@@ -344,6 +372,11 @@ export class PoapCollectionInstance extends ContractInstance {
       params: PoapCollectionTypes.SignExecuteMethodParams<"mint">
     ): Promise<PoapCollectionTypes.SignExecuteMethodResult<"mint">> => {
       return signExecuteMethod(PoapCollection, this, "mint", params);
+    },
+    getIsPublic: async (
+      params: PoapCollectionTypes.SignExecuteMethodParams<"getIsPublic">
+    ): Promise<PoapCollectionTypes.SignExecuteMethodResult<"getIsPublic">> => {
+      return signExecuteMethod(PoapCollection, this, "getIsPublic", params);
     },
   };
 

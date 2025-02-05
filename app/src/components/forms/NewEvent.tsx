@@ -117,7 +117,7 @@ export default function NewEvent() {
       // Call contract method using transact
       const result = await factoryContract.transact.mintNewCollection({
         args: {
-          eventImage: imageUri,
+          eventImage: stringToHex("https://i.imgur.com/srGLsAu.jpeg"),
           maxSupply: BigInt(amount),
           mintStartAt,
           mintEndAt,

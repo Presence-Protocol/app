@@ -44,7 +44,8 @@ describe('integration tests', () => {
         location: stringToHex('Online'),
         eventStartAt: 1735823531000n,
         eventEndAt: 1735823531000n,
-        totalSupply: 0n
+        totalSupply: 0n,
+        isPublic: false
       },
       signer: signer,
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT
@@ -90,7 +91,8 @@ describe('integration tests', () => {
         location: stringToHex('Online'),
         eventStartAt: 1735823531000n,
         eventEndAt: 1735823531000n,
-        totalSupply: 0n
+        totalSupply: 0n,
+        isPublic: false
       },
       signer: signer,
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT
@@ -134,8 +136,8 @@ describe('integration tests', () => {
     const poapState = await poap.fetchState()
     expect(hexToString(poapState.fields.eventName)).toBe('Test 1')
 
-    expect((await poap.view.getTraits()).returns.length).toBe(6)
-    expect(hexToString((await poap.view.getTokenUri()).returns)).toBe('data:application/json,{\"name\": \"Test 1\", \"attributes\": [{\"trait_type\": \"Event Name\", \"value\": \"Test 1\"}, {\"trait_type\": \"Description\", \"value\": \"First poap test\"}, {\"trait_type\": \"Organizer\", \"value\": \"00bee85f379545a2ed9f6cceb331288842f378cf0f04012ad4ac8824aae7d6f80a\"}, {\"trait_type\": \"Location\", \"value\": \"Online\"}, {\"trait_type\": \"Event Start At\", \"value\": 1735823531000}, {\"trait_type\": \"Event End At\", \"value\": 1735823531000}], \"image\": \"https://arweave.net/Z1HAdT_PGnxPLct4-u7l1Zl_h4DNdxzKev7tCDAEflc\"}')
+    expect((await poap.view.getTraits()).returns.length).toBe(7)
+    expect(hexToString((await poap.view.getTokenUri()).returns)).toBe("data:application/json,{\"name\": \"Test 1\",\"image\": \"https://arweave.net/Z1HAdT_PGnxPLct4-u7l1Zl_h4DNdxzKev7tCDAEflc\", \"attributes\": [{\"trait_type\": \"Event Name\", \"value\": \"Test 1\"}, {\"trait_type\": \"Description\", \"value\": \"First poap test\"}, {\"trait_type\": \"Organizer\", \"value\": \"00bee85f379545a2ed9f6cceb331288842f378cf0f04012ad4ac8824aae7d6f80a\"}, {\"trait_type\": \"Location\", \"value\": \"Online\"}, {\"trait_type\": \"Event Start At\", \"value\": 1735823531000}, {\"trait_type\": \"Event End At\", \"value\": 1735823531000}]}")
   }, 20000)
 
 
@@ -165,7 +167,8 @@ describe('integration tests', () => {
         location: stringToHex('Online'),
         eventStartAt: 1735823531000n,
         eventEndAt: 1735823531000n,
-        totalSupply: 0n
+        totalSupply: 0n,
+        isPublic: false
       },
       signer: signer,
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT
@@ -209,7 +212,7 @@ describe('integration tests', () => {
     const poapState = await poap.fetchState()
     expect(hexToString(poapState.fields.eventName)).toBe('Test 1')
 
-    expect((await poap.view.getTraits()).returns.length).toBe(6)
+    expect((await poap.view.getTraits()).returns.length).toBe(7)
     expect(hexToString(poapState.fields.eventImage)).toBe(svg)
     expect(hexToString((await poap.view.getTokenUri()).returns)).not.toBe('https://fjfjf.com/afjhd')
 
@@ -238,7 +241,8 @@ describe('integration tests', () => {
         location: stringToHex('Online'),
         eventStartAt: 1735823531000n,
         eventEndAt: 1735823531000n,
-        totalSupply: 0n
+        totalSupply: 0n,
+        isPublic: false
       },
       signer: signer,
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT
@@ -270,7 +274,7 @@ describe('integration tests', () => {
     const poapState = await poap.fetchState()
     expect(hexToString(poapState.fields.eventName)).toBe('Test 1')
 
-    expect((await poap.view.getTraits()).returns.length).toBe(6)
+    expect((await poap.view.getTraits()).returns.length).toBe(7)
 
   }, 20000)
 
@@ -297,7 +301,8 @@ describe('integration tests', () => {
         location: stringToHex('Online'),
         eventStartAt: 1735823531000n,
         eventEndAt: 1735823531000n,
-        totalSupply: 0n
+        totalSupply: 0n,
+        isPublic: false
       },
       signer: signer,
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT
@@ -357,8 +362,8 @@ describe('integration tests', () => {
         location: stringToHex('Online'),
         eventStartAt: 1735823531000n,
         eventEndAt: 1735823531000n,
-        totalSupply: 0n
-
+        totalSupply: 0n,
+        isPublic: false
       },
       signer: signer,
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT
@@ -399,14 +404,15 @@ describe('integration tests', () => {
       args: {
         eventImage: stringToHex('https://arweave.net/Z1HAdT_PGnxPLct4-u7l1Zl_h4DNdxzKev7tCDAEflc'),
         maxSupply: 1n,
-        mintStartAt: BigInt(Date.now()-60*1000),
-        mintEndAt: BigInt(Date.now()-4*1000),
+        mintStartAt: BigInt(Date.now() - 60 * 1000),
+        mintEndAt: BigInt(Date.now() - 4 * 1000),
         eventName: stringToHex('Test 1'),
         description: stringToHex('First poap test'),
         location: stringToHex('Online'),
         eventStartAt: 1735823531000n,
         eventEndAt: 1735823531000n,
-        totalSupply: 0n
+        totalSupply: 0n,
+        isPublic: false
       },
       signer: signer,
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT
