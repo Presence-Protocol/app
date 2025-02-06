@@ -1,0 +1,11 @@
+enum ErrorCodes {
+    IncorrectTokenIndex = 0
+    NFTNotFound = 1
+    NFTNotPartOfCollection = 2
+    MaxSupplyReached = 3
+    MintEnded = 4
+    MintNotStarted = 5
+    LimitedMintPerAddress = 6
+    InvalidCaller = 7
+    NotBurnable = 8
+  }
