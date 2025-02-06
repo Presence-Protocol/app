@@ -97,7 +97,7 @@ export default function PoapProgress({ isOpen, onClose, progress }: PoapProgress
       )}
   
     </div>
-    {progress.txHash && (
+   {/*progress.txHash && (
       <Link 
         href="/new-event"
         target="_blank"
@@ -106,7 +106,7 @@ export default function PoapProgress({ isOpen, onClose, progress }: PoapProgress
       >
         You can leave this page now. Why not create another event?
       </Link>
-    )}
+    )*/}
     </div>
   );
 }

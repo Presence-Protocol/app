@@ -73,6 +73,7 @@ export default function NewEvent() {
     const mintStart = new Date(startDate).getTime();
     const mintEnd = new Date(endDate).getTime();
 
+
     return (
       title.length > 0 &&
       title.length <= MAX_TITLE_LENGTH &&
@@ -86,9 +87,8 @@ export default function NewEvent() {
       location.length > 0 &&
       isImageValid &&
       eventEnd > eventStart &&
-      mintEnd > mintStart &&
-      eventStart >= now &&
-      mintStart >= now
+      mintEnd > mintStart
+  
     );
   };
 
@@ -131,13 +131,14 @@ export default function NewEvent() {
         throw new Error('Minting end date must be after minting start date');
       }
 
+      /*
       if (mintStart < now) {
         throw new Error('Minting start date cannot be in the past');
       }
 
       if (eventStart < now) {
         throw new Error('Event start date cannot be in the past');
-      }
+      }*/
 
       // Convert dates to millisecond timestamps (no need to multiply by 1000)
       const eventStartAt = BigInt(new Date(eventStartDate).getTime());
@@ -170,7 +171,7 @@ export default function NewEvent() {
           eventEndAt,
           totalSupply: BigInt(0),
           isPublic: isPublicEvent,
-          oneMintPerAddress: false,
+          oneMintPerAddress: mintLimit,
           isBurnable: false,
         },
         signer: signer,
@@ -577,7 +578,7 @@ export default function NewEvent() {
                       <div className="flex items-center text-left justify-between p-4">
                         <div>
                           <h3 className="text-sm font-medium text-black">{isPublicEvent ? 'Public Event' : 'Private Event'}</h3>
-                          <p className="text-xs text-gray-500">{isPublicEvent ? 'Anyone will be able to mint your Presence' : 'Only approved addresses will be able to mint your Presence'}</p>
+                          <p className="text-xs text-gray-500">{isPublicEvent ? 'Anyone will be able to see your Presence' : 'Presence will not appear on Presence Explorer'}</p>
                         </div>
                         <div className="items-center inline-flex">
                           <button
@@ -601,8 +602,8 @@ export default function NewEvent() {
 
                       <div className="flex items-center text-left justify-between p-4">
                         <div>
-                          <h3 className="text-sm font-medium text-black">{mintLimit ? 'Limit Address Mints' : 'No Limit'}</h3>
-                          <p className="text-xs text-gray-500">{mintLimit ? 'This will limit the number of mints per address to 1' : 'There is no limit to the number of mints per address'}</p>
+                          <h3 className="text-sm font-medium text-black">{mintLimit ? 'Limit Address Presence' : 'No Limit'}</h3>
+                          <p className="text-xs text-gray-500">{mintLimit ? 'This will limit the number of Presence per address to 1' : 'There is no limit to the number of Presence per address'}</p>
                         </div>
                         <div className="items-center inline-flex">
                           <button
