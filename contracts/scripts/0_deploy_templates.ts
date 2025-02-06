@@ -1,6 +1,6 @@
 import { Deployer, DeployFunction, Network } from '@alephium/cli'
 import { Settings } from '../alephium.config'
-import { NULL_CONTRACT_ADDRESS, stringToHex, web3 } from '@alephium/web3'
+import { NULL_CONTRACT_ADDRESS, stringToHex, web3, ZERO_ADDRESS } from '@alephium/web3'
 import { PoapCollection, PoapNFT } from '../artifacts/ts'
 import { PrivateKeyWallet } from '@alephium/web3-wallet'
 
@@ -22,7 +22,9 @@ const deployTemplates: DeployFunction<Settings> = async (
       location: '00',
       eventStartAt: 0n,
       eventEndAt: 0n,
-      isPublic: false
+      isPublic: false,
+      minter: NULL_CONTRACT_ADDRESS,
+      isBurnable: false
     }
   })
 
@@ -40,7 +42,9 @@ const deployTemplates: DeployFunction<Settings> = async (
       eventStartAt: 0n,
       eventEndAt: 0n,
       totalSupply: 0n,
-      isPublic: false
+      isPublic: false,
+      oneMintPerAddress: false,
+      isBurnable: false
     }
   })
 

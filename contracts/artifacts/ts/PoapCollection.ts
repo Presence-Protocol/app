@@ -44,6 +44,7 @@ export namespace PoapCollectionTypes {
     maxSupply: bigint;
     mintStartAt: bigint;
     mintEndAt: bigint;
+    oneMintPerAddress: boolean;
     eventImage: HexString;
     eventName: HexString;
     description: HexString;
@@ -52,6 +53,7 @@ export namespace PoapCollectionTypes {
     eventStartAt: bigint;
     eventEndAt: bigint;
     isPublic: boolean;
+    isBurnable: boolean;
     totalSupply: bigint;
   };
 
@@ -82,6 +84,10 @@ export namespace PoapCollectionTypes {
     };
     mint: {
       params: CallContractParams<{ callerAddr: Address }>;
+      result: CallContractResult<HexString>;
+    };
+    nftByAddress: {
+      params: CallContractParams<{ caller: Address }>;
       result: CallContractResult<HexString>;
     };
     getIsPublic: {
@@ -129,6 +135,10 @@ export namespace PoapCollectionTypes {
       params: SignExecuteContractMethodParams<{ callerAddr: Address }>;
       result: SignExecuteScriptTxResult;
     };
+    nftByAddress: {
+      params: SignExecuteContractMethodParams<{ caller: Address }>;
+      result: SignExecuteScriptTxResult;
+    };
     getIsPublic: {
       params: Omit<SignExecuteContractMethodParams<{}>, "args">;
       result: SignExecuteScriptTxResult;
@@ -153,16 +163,6 @@ class Factory extends ContractFactory<
   }
 
   eventIndex = { PoapMinted: 0 };
-  consts = {
-    ErrorCodes: {
-      IncorrectTokenIndex: BigInt("0"),
-      NFTNotFound: BigInt("1"),
-      NFTNotPartOfCollection: BigInt("2"),
-      MaxSupplyReached: BigInt("3"),
-      MintEnded: BigInt("4"),
-      MintNotStarted: BigInt("5"),
-    },
-  };
 
   at(address: string): PoapCollectionInstance {
     return new PoapCollectionInstance(address);
@@ -214,6 +214,14 @@ class Factory extends ContractFactory<
     ): Promise<TestContractResultWithoutMaps<HexString>> => {
       return testMethod(this, "mint", params, getContractByCodeHash);
     },
+    nftByAddress: async (
+      params: TestContractParamsWithoutMaps<
+        PoapCollectionTypes.Fields,
+        { caller: Address }
+      >
+    ): Promise<TestContractResultWithoutMaps<HexString>> => {
+      return testMethod(this, "nftByAddress", params, getContractByCodeHash);
+    },
     getIsPublic: async (
       params: Omit<
         TestContractParamsWithoutMaps<PoapCollectionTypes.Fields, never>,
@@ -238,7 +246,7 @@ export const PoapCollection = new Factory(
   Contract.fromJson(
     PoapCollectionContractJson,
     "",
-    "bb7bf2a534d56a14a1c08ed255e1f1f7902ff2a01a2b8ab7b9eadd4536bf7c37",
+    "157081f69697aee42bb62a7026229bc84864df3a1ce9a363e3fb9113158de025",
     AllStructs
   )
 );
@@ -327,6 +335,17 @@ export class PoapCollectionInstance extends ContractInstance {
         getContractByCodeHash
       );
     },
+    nftByAddress: async (
+      params: PoapCollectionTypes.CallMethodParams<"nftByAddress">
+    ): Promise<PoapCollectionTypes.CallMethodResult<"nftByAddress">> => {
+      return callMethod(
+        PoapCollection,
+        this,
+        "nftByAddress",
+        params,
+        getContractByCodeHash
+      );
+    },
     getIsPublic: async (
       params?: PoapCollectionTypes.CallMethodParams<"getIsPublic">
     ): Promise<PoapCollectionTypes.CallMethodResult<"getIsPublic">> => {
@@ -372,6 +391,11 @@ export class PoapCollectionInstance extends ContractInstance {
       params: PoapCollectionTypes.SignExecuteMethodParams<"mint">
     ): Promise<PoapCollectionTypes.SignExecuteMethodResult<"mint">> => {
       return signExecuteMethod(PoapCollection, this, "mint", params);
+    },
+    nftByAddress: async (
+      params: PoapCollectionTypes.SignExecuteMethodParams<"nftByAddress">
+    ): Promise<PoapCollectionTypes.SignExecuteMethodResult<"nftByAddress">> => {
+      return signExecuteMethod(PoapCollection, this, "nftByAddress", params);
     },
     getIsPublic: async (
       params: PoapCollectionTypes.SignExecuteMethodParams<"getIsPublic">

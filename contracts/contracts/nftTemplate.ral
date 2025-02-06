@@ -10,7 +10,9 @@ Contract PoapNFT(
   location: ByteVec,
   eventStartAt: U256,
   eventEndAt: U256,
-  isPublic: Bool
+  isPublic: Bool,
+  minter: Address,
+  isBurnable: Bool
 ) implements INFT {
   
   pub fn getTokenUri() -> ByteVec {
@@ -81,6 +83,15 @@ Contract PoapNFT(
 
   pub fn getTraitAtIndex(index: U256) -> Trait {
       return getTraits()[index]
+  }
+
+  @using(preapprovedAssets = true, assetsInContract = true, checkExternalCaller = false)
+  pub fn burn() -> () {
+    assert!(isBurnable, ErrorCodes.NotBurnable)
+    assert!(callerAddress!() == minter, ErrorCodes.InvalidCaller)
+
+
+    destroySelf!(minter)
   }
 
 

@@ -170,7 +170,8 @@ export default function NewEvent() {
           eventEndAt,
           totalSupply: BigInt(0),
           isPublic: isPublicEvent,
-          // mintLimit: mintLimit
+          oneMintPerAddress: false,
+          isBurnable: false,
         },
         signer: signer,
         attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT+DUST_AMOUNT,

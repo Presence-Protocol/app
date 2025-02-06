@@ -4,6 +4,7 @@ Contract PoapCollection(
     maxSupply: U256,
     mintStartAt: U256,
     mintEndAt: U256,
+    oneMintPerAddress: Bool,
 
     //event properties
     eventImage: ByteVec,
@@ -14,19 +15,12 @@ Contract PoapCollection(
     eventStartAt: U256,
     eventEndAt: U256,
     isPublic: Bool,
+    isBurnable: Bool,
+
     mut totalSupply: U256
   ) implements INFTCollection {
 
     event PoapMinted(contractId: ByteVec, nftIndex: U256, caller: Address)
-
-    enum ErrorCodes {
-      IncorrectTokenIndex = 0
-      NFTNotFound = 1
-      NFTNotPartOfCollection = 2
-      MaxSupplyReached = 3
-      MintEnded = 4
-      MintNotStarted = 5
-    }
 
    @using(preapprovedAssets = true, updateFields = true, checkExternalCaller = false)
    pub fn mint(callerAddr: Address) -> (ByteVec) {
@@ -39,10 +33,16 @@ Contract PoapCollection(
         caller = callerAddr
      }
 
-     let (initialImmState, initialMutState) = PoapNFT.encodeFields!(selfContractId!(), totalSupply, eventImage, eventName, description, organizer, location, eventStartAt, eventEndAt, isPublic)
- 
+     let (initialImmState, initialMutState) = PoapNFT.encodeFields!(selfContractId!(), totalSupply, eventImage, eventName, description, organizer, location, eventStartAt, eventEndAt, isPublic, caller, isBurnable)
+     
+     let mut contractPath = toByteVec!(totalSupply)
+     if(oneMintPerAddress){
+        assert!(!contractExists!(subContractId!(toByteVec!(caller))), ErrorCodes.LimitedMintPerAddress)
+        contractPath = toByteVec!(caller)
+     }
+
      let contractId = copyCreateSubContractWithToken!{caller -> ALPH: minimalContractDeposit!()}(
-         toByteVec!(totalSupply),
+         contractPath,
          nftTemplateId,
          initialImmState,
          initialMutState,
@@ -80,9 +80,26 @@ Contract PoapCollection(
         return INFT(nftTokenId)
     }
 
+    pub fn nftByAddress(caller: Address) -> INFT {
+      assert!(oneMintPerAddress, ErrorCodes.LimitedMintPerAddress)
+  
+      let nftTokenId = subContractId!(toByteVec!(caller))
+      assert!(contractExists!(nftTokenId), ErrorCodes.NFTNotFound)
+  
+      return INFT(nftTokenId)
+  }
+
     pub fn validateNFT(nftId: ByteVec, nftIndex: U256) -> () {
-        let expectedTokenContract =  nftByIndex(nftIndex)
-        assert!(nftId == contractId!(expectedTokenContract), ErrorCodes.NFTNotPartOfCollection)
+
+        if (oneMintPerAddress){
+          let expectedTokenContract =  nftByAddress(callerAddress!())
+
+          assert!(nftId == contractId!(expectedTokenContract), ErrorCodes.NFTNotPartOfCollection)
+        }else {
+          let expectedTokenContract =  nftByIndex(nftIndex)
+          assert!(nftId == contractId!(expectedTokenContract), ErrorCodes.NFTNotPartOfCollection)
+        }
+
     }
 
     pub fn getIsPublic() -> (Bool) {

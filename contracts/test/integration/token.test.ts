@@ -12,13 +12,16 @@ describe('integration tests', () => {
   beforeAll(async () => {
     web3.setCurrentNodeProvider('http://127.0.0.1:22973', undefined, fetch)
   })
-  
+
   let minter: PrivateKeyWallet
+  let minter2: PrivateKeyWallet
 
   beforeEach(async () => {
     minter = await getRandomSigner(defaultGroup)
+    minter2 = await getRandomSigner(defaultGroup)
 
     await transferAlphTo(minter.address, 100n * ONE_ALPH);
+    await transferAlphTo(minter2.address, 100n * ONE_ALPH);
   })
 
 
@@ -45,7 +48,9 @@ describe('integration tests', () => {
         eventStartAt: 1735823531000n,
         eventEndAt: 1735823531000n,
         totalSupply: 0n,
-        isPublic: false
+        isPublic: false,
+        oneMintPerAddress: false,
+        isBurnable: false
       },
       signer: signer,
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT
@@ -56,8 +61,8 @@ describe('integration tests', () => {
 
     // Check that event is emitted
     const { events } = await web3
-    .getCurrentNodeProvider()
-    .events.getEventsContractContractaddress(factory.address, { start: 0 })
+      .getCurrentNodeProvider()
+      .events.getEventsContractContractaddress(factory.address, { start: 0 })
     expect(events.length).toEqual(1)
 
     const creationEvent = events[0]
@@ -78,8 +83,8 @@ describe('integration tests', () => {
 
     if (!factory) {
       throw new Error('Factory is undefined')
-    } 
-    
+    }
+
     await factory.transact.mintNewCollection({
       args: {
         eventImage: stringToHex('https://arweave.net/Z1HAdT_PGnxPLct4-u7l1Zl_h4DNdxzKev7tCDAEflc'),
@@ -92,7 +97,9 @@ describe('integration tests', () => {
         eventStartAt: 1735823531000n,
         eventEndAt: 1735823531000n,
         totalSupply: 0n,
-        isPublic: false
+        isPublic: false,
+        oneMintPerAddress: false,
+        isBurnable: false
       },
       signer: signer,
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT
@@ -100,13 +107,13 @@ describe('integration tests', () => {
 
     // Check that event is emitted
     const { events } = await web3
-    .getCurrentNodeProvider()
-    .events.getEventsContractContractaddress(factory.address, { start: 0 })
+      .getCurrentNodeProvider()
+      .events.getEventsContractContractaddress(factory.address, { start: 0 })
     expect(events.length).toEqual(1)
 
     const creationEvent = events[0]
     const poapCollectionMinted = creationEvent.fields[0].value as string
-    
+
     const collection = PoapCollection.at(addressFromContractId(poapCollectionMinted))
 
     await collection.transact.mint({
@@ -116,10 +123,10 @@ describe('integration tests', () => {
         callerAddr: minter.address
       }
     })
-    
+
     expect((await collection.view.totalSupply()).returns).toBe(1n)
 
-    
+
     await factory.transact.mintPoap({
       args: {
         collection: collection.contractId,
@@ -128,7 +135,7 @@ describe('integration tests', () => {
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT
     })
 
-     
+
     expect((await collection.view.totalSupply()).returns).toBe(2n)
 
     // get Poap    
@@ -150,8 +157,8 @@ describe('integration tests', () => {
 
     if (!factory) {
       throw new Error('Factory is undefined')
-    } 
-    
+    }
+
 
     const svg = await loadSvg('https://raw.githubusercontent.com/alephium/alephium-brand-guide/refs/heads/master/logos/svgs/Alephium-Logo-round.svg')
 
@@ -168,7 +175,9 @@ describe('integration tests', () => {
         eventStartAt: 1735823531000n,
         eventEndAt: 1735823531000n,
         totalSupply: 0n,
-        isPublic: false
+        isPublic: false,
+        oneMintPerAddress: false,
+        isBurnable: false
       },
       signer: signer,
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT
@@ -176,13 +185,13 @@ describe('integration tests', () => {
 
     // Check that event is emitted
     const { events } = await web3
-    .getCurrentNodeProvider()
-    .events.getEventsContractContractaddress(factory.address, { start: 0 })
+      .getCurrentNodeProvider()
+      .events.getEventsContractContractaddress(factory.address, { start: 0 })
     expect(events.length).toEqual(1)
 
     const creationEvent = events[0]
     const poapCollectionMinted = creationEvent.fields[0].value as string
-    
+
     const collection = PoapCollection.at(addressFromContractId(poapCollectionMinted))
 
     await collection.transact.mint({
@@ -192,10 +201,10 @@ describe('integration tests', () => {
         callerAddr: minter.address
       }
     })
-    
+
     expect((await collection.view.totalSupply()).returns).toBe(1n)
 
-    
+
     await factory.transact.mintPoap({
       args: {
         collection: collection.contractId,
@@ -204,7 +213,7 @@ describe('integration tests', () => {
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT
     })
 
-     
+
     expect((await collection.view.totalSupply()).returns).toBe(2n)
 
     // get Poap    
@@ -228,8 +237,8 @@ describe('integration tests', () => {
 
     if (!factory) {
       throw new Error('Factory is undefined')
-    } 
-    
+    }
+
     await factory.transact.mintNewCollection({
       args: {
         eventImage: stringToHex('https://arweave.net/Z1HAdT_PGnxPLct4-u7l1Zl_h4DNdxzKev7tCDAEflc'),
@@ -242,7 +251,9 @@ describe('integration tests', () => {
         eventStartAt: 1735823531000n,
         eventEndAt: 1735823531000n,
         totalSupply: 0n,
-        isPublic: false
+        isPublic: false,
+        oneMintPerAddress: false,
+        isBurnable: false
       },
       signer: signer,
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT
@@ -250,13 +261,13 @@ describe('integration tests', () => {
 
     // Check that event is emitted
     const { events } = await web3
-    .getCurrentNodeProvider()
-    .events.getEventsContractContractaddress(factory.address, { start: 0 })
+      .getCurrentNodeProvider()
+      .events.getEventsContractContractaddress(factory.address, { start: 0 })
     expect(events.length).toEqual(1)
 
     const creationEvent = events[0]
     const poapCollectionMinted = creationEvent.fields[0].value as string
-    
+
     const collection = PoapCollection.at(addressFromContractId(poapCollectionMinted))
 
     await collection.transact.mint({
@@ -264,9 +275,9 @@ describe('integration tests', () => {
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT,
       args: {
         callerAddr: minter.address
-      } 
+      }
     })
-    
+
     expect((await collection.view.totalSupply()).returns).toBe(1n)
 
     // get Poap    
@@ -288,8 +299,8 @@ describe('integration tests', () => {
 
     if (!factory) {
       throw new Error('Factory is undefined')
-    } 
-    
+    }
+
     await factory.transact.mintNewCollection({
       args: {
         eventImage: stringToHex('https://arweave.net/Z1HAdT_PGnxPLct4-u7l1Zl_h4DNdxzKev7tCDAEflc'),
@@ -302,16 +313,18 @@ describe('integration tests', () => {
         eventStartAt: 1735823531000n,
         eventEndAt: 1735823531000n,
         totalSupply: 0n,
-        isPublic: false
+        isPublic: false,
+        oneMintPerAddress: false,
+        isBurnable: false
       },
       signer: signer,
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT
     })
-    
+
     // Check that event is emitted
     const { events } = await web3
-    .getCurrentNodeProvider()
-    .events.getEventsContractContractaddress(factory.address, { start: 0 })
+      .getCurrentNodeProvider()
+      .events.getEventsContractContractaddress(factory.address, { start: 0 })
     expect(events.length).toEqual(1)
 
     const creationEvent = events[0]
@@ -326,7 +339,7 @@ describe('integration tests', () => {
         callerAddr: minter.address
       }
     })
-    
+
     expect((await collection.view.totalSupply()).returns).toBe(1n)
 
     await expectAssertionError(collection.transact.mint({
@@ -334,8 +347,8 @@ describe('integration tests', () => {
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT,
       args: {
         callerAddr: minter.address
-      }  
-    }),addressFromContractId(poapCollectionMinted), 3)
+      }
+    }), addressFromContractId(poapCollectionMinted), 3)
 
   }, 20000)
 
@@ -349,8 +362,8 @@ describe('integration tests', () => {
 
     if (!factory) {
       throw new Error('Factory is undefined')
-    } 
-    
+    }
+
     await factory.transact.mintNewCollection({
       args: {
         eventImage: stringToHex('https://arweave.net/Z1HAdT_PGnxPLct4-u7l1Zl_h4DNdxzKev7tCDAEflc'),
@@ -363,29 +376,31 @@ describe('integration tests', () => {
         eventStartAt: 1735823531000n,
         eventEndAt: 1735823531000n,
         totalSupply: 0n,
-        isPublic: false
+        isPublic: false,
+        oneMintPerAddress: false,
+        isBurnable: false
       },
       signer: signer,
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT
     })
     // Check that event is emitted
     const { events } = await web3
-    .getCurrentNodeProvider()
-    .events.getEventsContractContractaddress(factory.address, { start: 0 })
+      .getCurrentNodeProvider()
+      .events.getEventsContractContractaddress(factory.address, { start: 0 })
     expect(events.length).toEqual(1)
 
     const creationEvent = events[0]
     const poapCollectionMinted = creationEvent.fields[0].value as string
 
     const collection = PoapCollection.at(addressFromContractId(poapCollectionMinted))
-    
+
     await expectAssertionError(collection.transact.mint({
       signer: minter,
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT,
       args: {
         callerAddr: minter.address
       }
-    }),addressFromContractId(poapCollectionMinted), 5)
+    }), addressFromContractId(poapCollectionMinted), 5)
 
   }, 20000)
 
@@ -398,8 +413,8 @@ describe('integration tests', () => {
 
     if (!factory) {
       throw new Error('Factory is undefined')
-    } 
-    
+    }
+
     await factory.transact.mintNewCollection({
       args: {
         eventImage: stringToHex('https://arweave.net/Z1HAdT_PGnxPLct4-u7l1Zl_h4DNdxzKev7tCDAEflc'),
@@ -412,32 +427,380 @@ describe('integration tests', () => {
         eventStartAt: 1735823531000n,
         eventEndAt: 1735823531000n,
         totalSupply: 0n,
-        isPublic: false
+        isPublic: false,
+        oneMintPerAddress: false,
+        isBurnable: false
       },
       signer: signer,
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT
     })
-    
+
     // Check that event is emitted
     const { events } = await web3
-    .getCurrentNodeProvider()
-    .events.getEventsContractContractaddress(factory.address, { start: 0 })
+      .getCurrentNodeProvider()
+      .events.getEventsContractContractaddress(factory.address, { start: 0 })
     expect(events.length).toEqual(1)
 
     const creationEvent = events[0]
     const poapCollectionMinted = creationEvent.fields[0].value as string
 
     const collection = PoapCollection.at(addressFromContractId(poapCollectionMinted))
-    
+
     await expectAssertionError(collection.transact.mint({
       signer: minter,
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT,
       args: {
         callerAddr: minter.address
       }
-    }),addressFromContractId(poapCollectionMinted), 4)
+    }), addressFromContractId(poapCollectionMinted), 4)
+
+  }, 20000)
+
+
+  it('Mint second time with same address', async () => {
+    const signer = await testNodeWallet()
+    const deployments = await deployToDevnet()
+    const factory = deployments.getInstance(PoapFactory)
+
+    expect(factory).toBeDefined()
+
+    if (!factory) {
+      throw new Error('Factory is undefined')
+    }
+
+    await factory.transact.mintNewCollection({
+      args: {
+        eventImage: stringToHex('https://arweave.net/Z1HAdT_PGnxPLct4-u7l1Zl_h4DNdxzKev7tCDAEflc'),
+        maxSupply: 100n,
+        mintStartAt: BigInt(Date.now() - 10000 * 1000),
+        mintEndAt: BigInt(Date.now() + 10000 * 1000),
+        eventName: stringToHex('Test 1'),
+        description: stringToHex('First poap test'),
+        location: stringToHex('Online'),
+        eventStartAt: 1735823531000n,
+        eventEndAt: 1735823531000n,
+        totalSupply: 0n,
+        isPublic: false,
+        oneMintPerAddress: true,
+        isBurnable: false
+      },
+      signer: signer,
+      attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT
+    })
+
+    // Check that event is emitted
+    const { events } = await web3
+      .getCurrentNodeProvider()
+      .events.getEventsContractContractaddress(factory.address, { start: 0 })
+    expect(events.length).toEqual(1)
+
+    const creationEvent = events[0]
+    const poapCollectionMinted = creationEvent.fields[0].value as string
+
+    const collection = PoapCollection.at(addressFromContractId(poapCollectionMinted))
+
+    await collection.transact.mint({
+      signer: minter,
+      attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT,
+      args: {
+        callerAddr: minter.address
+      }
+    })
+
+
+    await expectAssertionError(collection.transact.mint({
+      signer: minter,
+      attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT,
+      args: {
+        callerAddr: minter.address
+      }
+    }), addressFromContractId(poapCollectionMinted), 6)
+
+
+    await collection.transact.mint({
+      signer: minter2,
+      attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT,
+      args: {
+        callerAddr: minter2.address
+      }
+    })
+
+  }, 20000)
+
+  it('Mint second time with same address with factory', async () => {
+    const signer = await testNodeWallet()
+    const deployments = await deployToDevnet()
+    const factory = deployments.getInstance(PoapFactory)
+
+    expect(factory).toBeDefined()
+
+    if (!factory) {
+      throw new Error('Factory is undefined')
+    }
+
+    await factory.transact.mintNewCollection({
+      args: {
+        eventImage: stringToHex('https://arweave.net/Z1HAdT_PGnxPLct4-u7l1Zl_h4DNdxzKev7tCDAEflc'),
+        maxSupply: 100n,
+        mintStartAt: BigInt(Date.now() - 10000 * 1000),
+        mintEndAt: BigInt(Date.now() + 10000 * 1000),
+        eventName: stringToHex('Test 1'),
+        description: stringToHex('First poap test'),
+        location: stringToHex('Online'),
+        eventStartAt: 1735823531000n,
+        eventEndAt: 1735823531000n,
+        totalSupply: 0n,
+        isPublic: false,
+        oneMintPerAddress: true,
+        isBurnable: false
+      },
+      signer: signer,
+      attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT
+    })
+
+    // Check that event is emitted
+    const { events } = await web3
+      .getCurrentNodeProvider()
+      .events.getEventsContractContractaddress(factory.address, { start: 0 })
+    expect(events.length).toEqual(1)
+
+    const creationEvent = events[0]
+    const poapCollectionMinted = creationEvent.fields[0].value as string
+
+    const collection = PoapCollection.at(addressFromContractId(poapCollectionMinted))
+
+    await factory.transact.mintPoap({
+      signer: minter,
+      attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT,
+      args: {
+        collection: collection.contractId
+      }
+    })
+
+
+    await expectAssertionError(factory.transact.mintPoap({
+      signer: minter,
+      attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT,
+      args: {
+        collection: collection.contractId
+      }
+    }), addressFromContractId(poapCollectionMinted), 6)
+
+
+    await factory.transact.mintPoap({
+      signer: minter2,
+      attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT,
+      args: {
+        collection: collection.contractId
+      }
+    })
+
+  }, 20000)
+
+  it('Mint second time with same address with factory', async () => {
+    const signer = await testNodeWallet()
+    const deployments = await deployToDevnet()
+    const factory = deployments.getInstance(PoapFactory)
+
+    expect(factory).toBeDefined()
+
+    if (!factory) {
+      throw new Error('Factory is undefined')
+    }
+
+    await factory.transact.mintNewCollection({
+      args: {
+        eventImage: stringToHex('https://arweave.net/Z1HAdT_PGnxPLct4-u7l1Zl_h4DNdxzKev7tCDAEflc'),
+        maxSupply: 100n,
+        mintStartAt: BigInt(Date.now() - 10000 * 1000),
+        mintEndAt: BigInt(Date.now() + 10000 * 1000),
+        eventName: stringToHex('Test 1'),
+        description: stringToHex('First poap test'),
+        location: stringToHex('Online'),
+        eventStartAt: 1735823531000n,
+        eventEndAt: 1735823531000n,
+        totalSupply: 0n,
+        isPublic: false,
+        oneMintPerAddress: true,
+        isBurnable: false
+      },
+      signer: signer,
+      attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT
+    })
+
+    // Check that event is emitted
+    const { events } = await web3
+      .getCurrentNodeProvider()
+      .events.getEventsContractContractaddress(factory.address, { start: 0 })
+    expect(events.length).toEqual(1)
+
+    const creationEvent = events[0]
+    const poapCollectionMinted = creationEvent.fields[0].value as string
+
+    const collection = PoapCollection.at(addressFromContractId(poapCollectionMinted))
+
+    await collection.transact.mint({
+      signer: minter,
+      attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT,
+      args: {
+        callerAddr: minter.address
+      }
+    })
+
+   
+   expect((await collection.view.nftByAddress({ args: {
+     caller: minter.address
+   } })).returns).toBeDefined()
+
+    await expectAssertionError(factory.transact.mintPoap({
+      signer: minter,
+      attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT,
+      args: {
+        collection: collection.contractId
+      }
+    }), addressFromContractId(poapCollectionMinted), 6)
+
+
+    await factory.transact.mintPoap({
+      signer: minter2,
+      attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT,
+      args: {
+        collection: collection.contractId
+      }
+    })
+
+  }, 20000)
+
+  it('Mint poap and burn it', async () => {
+    const signer = await testNodeWallet()
+    const deployments = await deployToDevnet()
+    const factory = deployments.getInstance(PoapFactory)
+
+    expect(factory).toBeDefined()
+
+    if (!factory) {
+      throw new Error('Factory is undefined')
+    }
+
+    await factory.transact.mintNewCollection({
+      args: {
+        eventImage: stringToHex('https://arweave.net/Z1HAdT_PGnxPLct4-u7l1Zl_h4DNdxzKev7tCDAEflc'),
+        maxSupply: 10n,
+        mintStartAt: 1735823531000n,
+        mintEndAt: 1893595576000n,
+        eventName: stringToHex('Test 1'),
+        description: stringToHex('First poap test'),
+        location: stringToHex('Online'),
+        eventStartAt: 1735823531000n,
+        eventEndAt: 1735823531000n,
+        totalSupply: 0n,
+        isPublic: false,
+        oneMintPerAddress: false,
+        isBurnable: true
+      },
+      signer: signer,
+      attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT
+    })
+
+    // Check that event is emitted
+    const { events } = await web3
+      .getCurrentNodeProvider()
+      .events.getEventsContractContractaddress(factory.address, { start: 0 })
+    expect(events.length).toEqual(1)
+
+    const creationEvent = events[0]
+    const poapCollectionMinted = creationEvent.fields[0].value as string
+
+    const collection = PoapCollection.at(addressFromContractId(poapCollectionMinted))
+
+    await factory.transact.mintPoap({
+      signer: minter,
+      attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT,
+      args: {
+        collection: collection.contractId
+      }
+    })
+
+    expect((await collection.view.totalSupply()).returns).toBe(1n)
+
+     
+    expectAssertionError(collection.view.nftByAddress({ args: {
+     caller: minter.address
+   } }), addressFromContractId(poapCollectionMinted), 6)
+
+    // get Poap    
+    const poap = PoapNFT.at(addressFromContractId((await collection.view.nftByIndex({ args: { index: 0n } })).returns))
+    await poap.transact.burn({
+      signer: minter,
+      attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT
+    })
+
+  }, 20000)
+
+
+  it('Mint poap and burn unburnable', async () => {
+    const signer = await testNodeWallet()
+    const deployments = await deployToDevnet()
+    const factory = deployments.getInstance(PoapFactory)
+
+    expect(factory).toBeDefined()
+
+    if (!factory) {
+      throw new Error('Factory is undefined')
+    }
+
+    await factory.transact.mintNewCollection({
+      args: {
+        eventImage: stringToHex('https://arweave.net/Z1HAdT_PGnxPLct4-u7l1Zl_h4DNdxzKev7tCDAEflc'),
+        maxSupply: 10n,
+        mintStartAt: 1735823531000n,
+        mintEndAt: 1893595576000n,
+        eventName: stringToHex('Test 1'),
+        description: stringToHex('First poap test'),
+        location: stringToHex('Online'),
+        eventStartAt: 1735823531000n,
+        eventEndAt: 1735823531000n,
+        totalSupply: 0n,
+        isPublic: false,
+        oneMintPerAddress: false,
+        isBurnable: false
+      },
+      signer: signer,
+      attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT
+    })
+
+    // Check that event is emitted
+    const { events } = await web3
+      .getCurrentNodeProvider()
+      .events.getEventsContractContractaddress(factory.address, { start: 0 })
+    expect(events.length).toEqual(1)
+
+    const creationEvent = events[0]
+    const poapCollectionMinted = creationEvent.fields[0].value as string
+
+    const collection = PoapCollection.at(addressFromContractId(poapCollectionMinted))
+
+    await factory.transact.mintPoap({
+      signer: minter,
+      attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT,
+      args: {
+        collection: collection.contractId
+      }
+    })
+
+    expect((await collection.view.totalSupply()).returns).toBe(1n)
+
+    // get Poap    
+    const poap = PoapNFT.at(addressFromContractId((await collection.view.nftByIndex({ args: { index: 0n } })).returns))
+
+    await expectAssertionError(poap.transact.burn({
+      signer: minter,
+      attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT
+    }), addressFromContractId(poap.contractId), 8)
 
   }, 20000)
 
 })
+
+
 

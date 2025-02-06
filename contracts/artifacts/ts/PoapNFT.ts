@@ -50,6 +50,8 @@ export namespace PoapNFTTypes {
     eventStartAt: bigint;
     eventEndAt: bigint;
     isPublic: boolean;
+    minter: Address;
+    isBurnable: boolean;
   };
 
   export type State = ContractState<Fields>;
@@ -92,6 +94,10 @@ export namespace PoapNFTTypes {
     getTraitAtIndex: {
       params: CallContractParams<{ index: bigint }>;
       result: CallContractResult<Trait>;
+    };
+    burn: {
+      params: Omit<CallContractParams<{}>, "args">;
+      result: CallContractResult<null>;
     };
   }
   export type CallMethodParams<T extends keyof CallMethodTable> =
@@ -145,6 +151,10 @@ export namespace PoapNFTTypes {
     };
     getTraitAtIndex: {
       params: SignExecuteContractMethodParams<{ index: bigint }>;
+      result: SignExecuteScriptTxResult;
+    };
+    burn: {
+      params: Omit<SignExecuteContractMethodParams<{}>, "args">;
       result: SignExecuteScriptTxResult;
     };
   }
@@ -249,6 +259,14 @@ class Factory extends ContractFactory<PoapNFTInstance, PoapNFTTypes.Fields> {
     ): Promise<TestContractResultWithoutMaps<Trait>> => {
       return testMethod(this, "getTraitAtIndex", params, getContractByCodeHash);
     },
+    burn: async (
+      params: Omit<
+        TestContractParamsWithoutMaps<PoapNFTTypes.Fields, never>,
+        "testArgs"
+      >
+    ): Promise<TestContractResultWithoutMaps<null>> => {
+      return testMethod(this, "burn", params, getContractByCodeHash);
+    },
   };
 
   stateForTest(
@@ -265,7 +283,7 @@ export const PoapNFT = new Factory(
   Contract.fromJson(
     PoapNFTContractJson,
     "",
-    "3cea29156dffc1949dd4cf882a00cd3ce8f999d19386f02d7b8e354dc1a84cfc",
+    "e0eeba75c6040f580c03e4674f27c17edbabc97e431ec8cefb202fe6a16297c1",
     AllStructs
   )
 );
@@ -381,6 +399,17 @@ export class PoapNFTInstance extends ContractInstance {
         getContractByCodeHash
       );
     },
+    burn: async (
+      params?: PoapNFTTypes.CallMethodParams<"burn">
+    ): Promise<PoapNFTTypes.CallMethodResult<"burn">> => {
+      return callMethod(
+        PoapNFT,
+        this,
+        "burn",
+        params === undefined ? {} : params,
+        getContractByCodeHash
+      );
+    },
   };
 
   transact = {
@@ -428,6 +457,11 @@ export class PoapNFTInstance extends ContractInstance {
       params: PoapNFTTypes.SignExecuteMethodParams<"getTraitAtIndex">
     ): Promise<PoapNFTTypes.SignExecuteMethodResult<"getTraitAtIndex">> => {
       return signExecuteMethod(PoapNFT, this, "getTraitAtIndex", params);
+    },
+    burn: async (
+      params: PoapNFTTypes.SignExecuteMethodParams<"burn">
+    ): Promise<PoapNFTTypes.SignExecuteMethodResult<"burn">> => {
+      return signExecuteMethod(PoapNFT, this, "burn", params);
     },
   };
 

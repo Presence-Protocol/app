@@ -13,6 +13,7 @@ Contract PoapFactory(
         maxSupply: U256,
         mintStartAt: U256,
         mintEndAt: U256,
+        oneMintPerAddress: Bool,
 
         //event properties
         eventImage: ByteVec,
@@ -22,6 +23,8 @@ Contract PoapFactory(
         eventStartAt: U256,
         eventEndAt: U256,
         isPublic: Bool,
+        isBurnable: Bool,
+
         totalSupply: U256) -> (ByteVec){
             let caller = callerAddress!()
 
@@ -29,6 +32,7 @@ Contract PoapFactory(
                 maxSupply,
                 mintStartAt,
                 mintEndAt,
+                oneMintPerAddress,
                 eventImage,
                 eventName,
                 description,
@@ -37,6 +41,7 @@ Contract PoapFactory(
                 eventStartAt,
                 eventEndAt,
                 isPublic,
+                isBurnable,
                 totalSupply)
         
             let contractId = copyCreateContract!{caller -> ALPH: minimalContractDeposit!()}(    

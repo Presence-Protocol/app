@@ -67,6 +67,7 @@ export namespace PoapFactoryTypes {
         maxSupply: bigint;
         mintStartAt: bigint;
         mintEndAt: bigint;
+        oneMintPerAddress: boolean;
         eventImage: HexString;
         eventName: HexString;
         description: HexString;
@@ -74,6 +75,7 @@ export namespace PoapFactoryTypes {
         eventStartAt: bigint;
         eventEndAt: bigint;
         isPublic: boolean;
+        isBurnable: boolean;
         totalSupply: bigint;
       }>;
       result: CallContractResult<HexString>;
@@ -113,6 +115,7 @@ export namespace PoapFactoryTypes {
         maxSupply: bigint;
         mintStartAt: bigint;
         mintEndAt: bigint;
+        oneMintPerAddress: boolean;
         eventImage: HexString;
         eventName: HexString;
         description: HexString;
@@ -120,6 +123,7 @@ export namespace PoapFactoryTypes {
         eventStartAt: bigint;
         eventEndAt: bigint;
         isPublic: boolean;
+        isBurnable: boolean;
         totalSupply: bigint;
       }>;
       result: SignExecuteScriptTxResult;
@@ -169,6 +173,7 @@ class Factory extends ContractFactory<
           maxSupply: bigint;
           mintStartAt: bigint;
           mintEndAt: bigint;
+          oneMintPerAddress: boolean;
           eventImage: HexString;
           eventName: HexString;
           description: HexString;
@@ -176,6 +181,7 @@ class Factory extends ContractFactory<
           eventStartAt: bigint;
           eventEndAt: bigint;
           isPublic: boolean;
+          isBurnable: boolean;
           totalSupply: bigint;
         }
       >
@@ -232,7 +238,7 @@ export const PoapFactory = new Factory(
   Contract.fromJson(
     PoapFactoryContractJson,
     "",
-    "8faae9da5b5272fb710e3e1690d69db92421f42fe89ec039da57c4d879e4ce7e",
+    "5f7d894a47ccf9ee047b8de87d3edb3d314778b30e7a43b3cf0c276b4f653be2",
     AllStructs
   )
 );
