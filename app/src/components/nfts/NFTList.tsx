@@ -238,7 +238,7 @@ export default function NFTList({ account }: { account: string }) {
         <div className="mb-24">
           <div className="flex items-center justify-between mb-8">
             <div className="flex items-center gap-4">
-              <h3 className="text-2xl font-semibold text-black">Your NFTs</h3>
+              <h3 className="text-2xl font-semibold text-black">Your Presences</h3>
               <div className="text-black items-center shadow shadow-black text-xs font-semibold inline-flex px-4 bg-white border-black border-2 py-2 rounded-lg tracking-wide">
                 {nfts.length} NFTs
               </div>
