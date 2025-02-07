@@ -44,6 +44,7 @@ export default function NewEvent() {
   const [eventEndDate, setEventEndDate] = useState('');
   const [isPublicEvent, setIsPublicEvent] = useState(false);
   const [mintLimit, setMintLimit] = useState(false);
+  const [imageUrl, setImageUrl] = useState('');
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -59,6 +60,45 @@ export default function NewEvent() {
       };
       reader.readAsDataURL(file);
     }
+  };
+
+  const fetchImageFromUrl = async (url: string) => {
+    try {
+      const response = await fetch(url);
+      const blob = await response.blob();
+      
+      if (!blob.type.startsWith('image/')) {
+        throw new Error('URL must point to an image');
+      }
+      
+      if (blob.size > 3072) {
+        setIsLargeImageWarningOpen(true);
+        return;
+      }
+  
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreviewImage(reader.result as string);
+        setIsImageValid(true);
+      };
+      reader.readAsDataURL(blob);
+    } catch (error) {
+      toast.error('Failed to load image from URL');
+      setIsImageValid(false);
+    }
+  };
+
+  const handleUrlSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!imageUrl) return;
+    
+    if (!imageUrl.match(/^https?:\/\/.+/)) {
+      toast.error('Please enter a valid URL');
+      return;
+    }
+    
+    await fetchImageFromUrl(imageUrl);
+    setImageUrl('');
   };
 
   const handleRemoveImage = () => {
@@ -572,6 +612,22 @@ export default function NewEvent() {
                           )}
                         </div>
                       </div>
+                    </div>
+
+                    <div>
+                      <input
+                        type="text"
+                        value={imageUrl}
+                        onChange={(e) => setImageUrl(e.target.value)}
+                        placeholder="Or paste image URL"
+                        className="w-full p-2 border rounded"
+                      />
+                      <button 
+                        onClick={handleUrlSubmit}
+                        className="mt-2 px-4 py-2 bg-blue-500 text-white rounded"
+                      >
+                        Load from URL
+                      </button>
                     </div>
 
                     <div className="space-y-2">
