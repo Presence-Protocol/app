@@ -622,9 +622,10 @@ export default function NewEvent() {
                         placeholder="Or paste image URL"
                         className="w-full p-2 border rounded"
                       />
+                      &nbsp;
                       <button 
                         onClick={handleUrlSubmit}
-                        className="mt-2 px-4 py-2 bg-blue-500 text-white rounded"
+                        className="w-full px-3 py-3 text-xl text-black border-2 border-black appearance-none rounded-2xl hover:bg-lila-500 focus:outline-none focus:ring-black sm:text-sm shadow"
                       >
                         Load from URL
                       </button>
