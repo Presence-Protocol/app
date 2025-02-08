@@ -45,16 +45,19 @@ export namespace PoapCollectionTypes {
     mintStartAt: bigint;
     mintEndAt: bigint;
     oneMintPerAddress: boolean;
+    poapPrice: bigint;
+    tokenIdPoap: HexString;
     eventImage: HexString;
     eventName: HexString;
     description: HexString;
-    organizer: HexString;
+    organizer: Address;
     location: HexString;
     eventStartAt: bigint;
     eventEndAt: bigint;
     isPublic: boolean;
     isBurnable: boolean;
     amountForStorageFees: bigint;
+    amountPoapFees: bigint;
     totalSupply: bigint;
   };
 
@@ -94,6 +97,22 @@ export namespace PoapCollectionTypes {
     getIsPublic: {
       params: Omit<CallContractParams<{}>, "args">;
       result: CallContractResult<boolean>;
+    };
+    getAmountForStorageFees: {
+      params: Omit<CallContractParams<{}>, "args">;
+      result: CallContractResult<bigint>;
+    };
+    claimFunds: {
+      params: CallContractParams<{ amountToClaim: bigint }>;
+      result: CallContractResult<null>;
+    };
+    getPoapPrice: {
+      params: Omit<CallContractParams<{}>, "args">;
+      result: CallContractResult<[bigint, HexString]>;
+    };
+    convert: {
+      params: CallContractParams<{ array: HexString }>;
+      result: CallContractResult<HexString>;
     };
   }
   export type CallMethodParams<T extends keyof CallMethodTable> =
@@ -142,6 +161,22 @@ export namespace PoapCollectionTypes {
     };
     getIsPublic: {
       params: Omit<SignExecuteContractMethodParams<{}>, "args">;
+      result: SignExecuteScriptTxResult;
+    };
+    getAmountForStorageFees: {
+      params: Omit<SignExecuteContractMethodParams<{}>, "args">;
+      result: SignExecuteScriptTxResult;
+    };
+    claimFunds: {
+      params: SignExecuteContractMethodParams<{ amountToClaim: bigint }>;
+      result: SignExecuteScriptTxResult;
+    };
+    getPoapPrice: {
+      params: Omit<SignExecuteContractMethodParams<{}>, "args">;
+      result: SignExecuteScriptTxResult;
+    };
+    convert: {
+      params: SignExecuteContractMethodParams<{ array: HexString }>;
       result: SignExecuteScriptTxResult;
     };
   }
@@ -231,6 +266,43 @@ class Factory extends ContractFactory<
     ): Promise<TestContractResultWithoutMaps<boolean>> => {
       return testMethod(this, "getIsPublic", params, getContractByCodeHash);
     },
+    getAmountForStorageFees: async (
+      params: Omit<
+        TestContractParamsWithoutMaps<PoapCollectionTypes.Fields, never>,
+        "testArgs"
+      >
+    ): Promise<TestContractResultWithoutMaps<bigint>> => {
+      return testMethod(
+        this,
+        "getAmountForStorageFees",
+        params,
+        getContractByCodeHash
+      );
+    },
+    claimFunds: async (
+      params: TestContractParamsWithoutMaps<
+        PoapCollectionTypes.Fields,
+        { amountToClaim: bigint }
+      >
+    ): Promise<TestContractResultWithoutMaps<null>> => {
+      return testMethod(this, "claimFunds", params, getContractByCodeHash);
+    },
+    getPoapPrice: async (
+      params: Omit<
+        TestContractParamsWithoutMaps<PoapCollectionTypes.Fields, never>,
+        "testArgs"
+      >
+    ): Promise<TestContractResultWithoutMaps<[bigint, HexString]>> => {
+      return testMethod(this, "getPoapPrice", params, getContractByCodeHash);
+    },
+    convert: async (
+      params: TestContractParamsWithoutMaps<
+        PoapCollectionTypes.Fields,
+        { array: HexString }
+      >
+    ): Promise<TestContractResultWithoutMaps<HexString>> => {
+      return testMethod(this, "convert", params, getContractByCodeHash);
+    },
   };
 
   stateForTest(
@@ -247,7 +319,7 @@ export const PoapCollection = new Factory(
   Contract.fromJson(
     PoapCollectionContractJson,
     "",
-    "378625bf71a4c61b5eb5767e5db7d5d78bea0c6cb6a8cea09a61ebd4665cc7cd",
+    "a359318da61e92aa9ea0a946a0a0d9035bbc18c07abccee17ad79a4903324c5b",
     AllStructs
   )
 );
@@ -358,6 +430,52 @@ export class PoapCollectionInstance extends ContractInstance {
         getContractByCodeHash
       );
     },
+    getAmountForStorageFees: async (
+      params?: PoapCollectionTypes.CallMethodParams<"getAmountForStorageFees">
+    ): Promise<
+      PoapCollectionTypes.CallMethodResult<"getAmountForStorageFees">
+    > => {
+      return callMethod(
+        PoapCollection,
+        this,
+        "getAmountForStorageFees",
+        params === undefined ? {} : params,
+        getContractByCodeHash
+      );
+    },
+    claimFunds: async (
+      params: PoapCollectionTypes.CallMethodParams<"claimFunds">
+    ): Promise<PoapCollectionTypes.CallMethodResult<"claimFunds">> => {
+      return callMethod(
+        PoapCollection,
+        this,
+        "claimFunds",
+        params,
+        getContractByCodeHash
+      );
+    },
+    getPoapPrice: async (
+      params?: PoapCollectionTypes.CallMethodParams<"getPoapPrice">
+    ): Promise<PoapCollectionTypes.CallMethodResult<"getPoapPrice">> => {
+      return callMethod(
+        PoapCollection,
+        this,
+        "getPoapPrice",
+        params === undefined ? {} : params,
+        getContractByCodeHash
+      );
+    },
+    convert: async (
+      params: PoapCollectionTypes.CallMethodParams<"convert">
+    ): Promise<PoapCollectionTypes.CallMethodResult<"convert">> => {
+      return callMethod(
+        PoapCollection,
+        this,
+        "convert",
+        params,
+        getContractByCodeHash
+      );
+    },
   };
 
   transact = {
@@ -402,6 +520,33 @@ export class PoapCollectionInstance extends ContractInstance {
       params: PoapCollectionTypes.SignExecuteMethodParams<"getIsPublic">
     ): Promise<PoapCollectionTypes.SignExecuteMethodResult<"getIsPublic">> => {
       return signExecuteMethod(PoapCollection, this, "getIsPublic", params);
+    },
+    getAmountForStorageFees: async (
+      params: PoapCollectionTypes.SignExecuteMethodParams<"getAmountForStorageFees">
+    ): Promise<
+      PoapCollectionTypes.SignExecuteMethodResult<"getAmountForStorageFees">
+    > => {
+      return signExecuteMethod(
+        PoapCollection,
+        this,
+        "getAmountForStorageFees",
+        params
+      );
+    },
+    claimFunds: async (
+      params: PoapCollectionTypes.SignExecuteMethodParams<"claimFunds">
+    ): Promise<PoapCollectionTypes.SignExecuteMethodResult<"claimFunds">> => {
+      return signExecuteMethod(PoapCollection, this, "claimFunds", params);
+    },
+    getPoapPrice: async (
+      params: PoapCollectionTypes.SignExecuteMethodParams<"getPoapPrice">
+    ): Promise<PoapCollectionTypes.SignExecuteMethodResult<"getPoapPrice">> => {
+      return signExecuteMethod(PoapCollection, this, "getPoapPrice", params);
+    },
+    convert: async (
+      params: PoapCollectionTypes.SignExecuteMethodParams<"convert">
+    ): Promise<PoapCollectionTypes.SignExecuteMethodResult<"convert">> => {
+      return signExecuteMethod(PoapCollection, this, "convert", params);
     },
   };
 

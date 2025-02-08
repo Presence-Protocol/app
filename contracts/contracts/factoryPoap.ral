@@ -14,6 +14,8 @@ Contract PoapFactory(
         mintStartAt: U256,
         mintEndAt: U256,
         oneMintPerAddress: Bool,
+        poapPrice: U256,
+        tokenIdPoap: ByteVec,
 
         //event properties
         eventImage: ByteVec,
@@ -26,6 +28,7 @@ Contract PoapFactory(
         isBurnable: Bool,
 
         amountForStorageFees: U256,
+        amountPoapFees: U256,
         totalSupply: U256) -> (ByteVec){
             let caller = callerAddress!()
 
@@ -34,16 +37,19 @@ Contract PoapFactory(
                 mintStartAt,
                 mintEndAt,
                 oneMintPerAddress,
+                poapPrice,
+                tokenIdPoap,
                 eventImage,
                 eventName,
                 description,
-                convert(toByteVec!(caller)),
+                caller,
                 location,
                 eventStartAt,
                 eventEndAt,
                 isPublic,
                 isBurnable,
                 amountForStorageFees,
+                amountPoapFees,
                 totalSupply)
             
             let mut amountForStorageFeesInContract = minimalContractDeposit!()
@@ -75,7 +81,10 @@ Contract PoapFactory(
         if(collectionAmountAlphInContract > minimalContractDeposit!()){
             feesStorageAmount = 0
         }
-        let poapContractId = collection.mint{caller -> ALPH: feesStorageAmount}(caller)
+
+        let (poapPrice, poapTokenId) = collection.getPoapPrice()
+
+        let poapContractId = collection.mint{caller -> ALPH: feesStorageAmount, poapTokenId: poapPrice}(caller)
         let collectionTotalSupply = collection.totalSupply()
 
         emit PoapMinted(poapContractId, collection, collectionTotalSupply, caller, collection.getIsPublic())
@@ -85,19 +94,5 @@ Contract PoapFactory(
     pub fn getNumEventsCreated() -> U256{
         return numMintedCollection
     }
-
-    // Converts a byte array to a hexadecimal string. Used to change the token ID to a readable format.
-    fn convert(array: ByteVec) -> ByteVec {
-        let hexBytes = [b`0`, b`1`, b`2`, b`3`, b`4`, b`5`, b`6`, b`7`, b`8`, b`9`, b`a`, b`b`, b`c`, b`d`, b`e`, b`f`]
-        let mut result = #
-        for(let mut offset = 0; offset < size!(array); offset = offset + 1) {
-           let byte = u256From1Byte!(byteVecSlice!(array, offset, offset + 1)) & 0xFF
-           let high = (byte >> 4) & 0x0F
-           let low = byte & 0x0F
-           result = result ++ hexBytes[high] ++ hexBytes[low]
-        }
-    
-        return result
-      }
 
 }

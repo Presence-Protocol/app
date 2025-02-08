@@ -68,6 +68,8 @@ export namespace PoapFactoryTypes {
         mintStartAt: bigint;
         mintEndAt: bigint;
         oneMintPerAddress: boolean;
+        poapPrice: bigint;
+        tokenIdPoap: HexString;
         eventImage: HexString;
         eventName: HexString;
         description: HexString;
@@ -77,6 +79,7 @@ export namespace PoapFactoryTypes {
         isPublic: boolean;
         isBurnable: boolean;
         amountForStorageFees: bigint;
+        amountPoapFees: bigint;
         totalSupply: bigint;
       }>;
       result: CallContractResult<HexString>;
@@ -88,10 +91,6 @@ export namespace PoapFactoryTypes {
     getNumEventsCreated: {
       params: Omit<CallContractParams<{}>, "args">;
       result: CallContractResult<bigint>;
-    };
-    convert: {
-      params: CallContractParams<{ array: HexString }>;
-      result: CallContractResult<HexString>;
     };
   }
   export type CallMethodParams<T extends keyof CallMethodTable> =
@@ -117,6 +116,8 @@ export namespace PoapFactoryTypes {
         mintStartAt: bigint;
         mintEndAt: bigint;
         oneMintPerAddress: boolean;
+        poapPrice: bigint;
+        tokenIdPoap: HexString;
         eventImage: HexString;
         eventName: HexString;
         description: HexString;
@@ -126,6 +127,7 @@ export namespace PoapFactoryTypes {
         isPublic: boolean;
         isBurnable: boolean;
         amountForStorageFees: bigint;
+        amountPoapFees: bigint;
         totalSupply: bigint;
       }>;
       result: SignExecuteScriptTxResult;
@@ -136,10 +138,6 @@ export namespace PoapFactoryTypes {
     };
     getNumEventsCreated: {
       params: Omit<SignExecuteContractMethodParams<{}>, "args">;
-      result: SignExecuteScriptTxResult;
-    };
-    convert: {
-      params: SignExecuteContractMethodParams<{ array: HexString }>;
       result: SignExecuteScriptTxResult;
     };
   }
@@ -176,6 +174,8 @@ class Factory extends ContractFactory<
           mintStartAt: bigint;
           mintEndAt: bigint;
           oneMintPerAddress: boolean;
+          poapPrice: bigint;
+          tokenIdPoap: HexString;
           eventImage: HexString;
           eventName: HexString;
           description: HexString;
@@ -185,6 +185,7 @@ class Factory extends ContractFactory<
           isPublic: boolean;
           isBurnable: boolean;
           amountForStorageFees: bigint;
+          amountPoapFees: bigint;
           totalSupply: bigint;
         }
       >
@@ -217,14 +218,6 @@ class Factory extends ContractFactory<
         getContractByCodeHash
       );
     },
-    convert: async (
-      params: TestContractParamsWithoutMaps<
-        PoapFactoryTypes.Fields,
-        { array: HexString }
-      >
-    ): Promise<TestContractResultWithoutMaps<HexString>> => {
-      return testMethod(this, "convert", params, getContractByCodeHash);
-    },
   };
 
   stateForTest(
@@ -241,7 +234,7 @@ export const PoapFactory = new Factory(
   Contract.fromJson(
     PoapFactoryContractJson,
     "",
-    "9954c7a49179854c70deeba609bf9fd834419b0f4f0eb89d602299ebb7ef95fc",
+    "81d0dd4f9bf0f2857f662b1de585b6680992ffd39a11fc9a1006518f4f44d3dd",
     AllStructs
   )
 );
@@ -335,17 +328,6 @@ export class PoapFactoryInstance extends ContractInstance {
         getContractByCodeHash
       );
     },
-    convert: async (
-      params: PoapFactoryTypes.CallMethodParams<"convert">
-    ): Promise<PoapFactoryTypes.CallMethodResult<"convert">> => {
-      return callMethod(
-        PoapFactory,
-        this,
-        "convert",
-        params,
-        getContractByCodeHash
-      );
-    },
   };
 
   transact = {
@@ -372,11 +354,6 @@ export class PoapFactoryInstance extends ContractInstance {
         "getNumEventsCreated",
         params
       );
-    },
-    convert: async (
-      params: PoapFactoryTypes.SignExecuteMethodParams<"convert">
-    ): Promise<PoapFactoryTypes.SignExecuteMethodResult<"convert">> => {
-      return signExecuteMethod(PoapFactory, this, "convert", params);
     },
   };
 
