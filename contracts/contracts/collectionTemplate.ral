@@ -5,12 +5,14 @@ Contract PoapCollection(
     mintStartAt: U256,
     mintEndAt: U256,
     oneMintPerAddress: Bool,
+    poapPrice: U256,
+    tokenIdPoap: ByteVec,
 
     //event properties
     eventImage: ByteVec,
     eventName: ByteVec,
     description: ByteVec,
-    organizer: ByteVec,
+    organizer: Address,
     location: ByteVec,
     eventStartAt: U256,
     eventEndAt: U256,
@@ -18,6 +20,7 @@ Contract PoapCollection(
     isBurnable: Bool,
 
     mut amountForStorageFees: U256,
+    mut amountPoapFees: U256,
     mut totalSupply: U256
   ) implements INFTCollection {
 
@@ -34,7 +37,8 @@ Contract PoapCollection(
         caller = callerAddr
      }
 
-     let (initialImmState, initialMutState) = PoapNFT.encodeFields!(selfContractId!(), totalSupply, eventImage, eventName, description, organizer, location, eventStartAt, eventEndAt, isPublic, caller, isBurnable)
+     let organizerAddressHex = convert(toByteVec!(organizer))
+     let (initialImmState, initialMutState) = PoapNFT.encodeFields!(selfContractId!(), totalSupply, eventImage, eventName, description, organizerAddressHex, location, eventStartAt, eventEndAt, isPublic, caller, isBurnable)
      
      let mut contractPath = toByteVec!(totalSupply)
      if(oneMintPerAddress){
@@ -47,6 +51,11 @@ Contract PoapCollection(
      if(amountForStorageFees > minimalContractDeposit!()){
         payer = selfAddress!()
         amountForStorageFees = amountForStorageFees - minimalContractDeposit!()
+     }
+
+     if(poapPrice > 0){
+        transferTokenToSelf!(caller, tokenIdPoap, poapPrice)
+        amountPoapFees = amountPoapFees + poapPrice
      }
 
      let contractId = copyCreateSubContractWithToken!{payer -> ALPH: minimalContractDeposit!()}(
@@ -116,6 +125,34 @@ Contract PoapCollection(
 
     pub fn getAmountForStorageFees() -> U256 {
         return amountForStorageFees
+    }
+
+    @using(assetsInContract = true, updateFields = true)
+    pub fn claimFunds(amountToClaim: U256) -> () {
+        checkCaller!(callerAddress!() == organizer, ErrorCodes.InvalidCaller)
+        assert!(amountToClaim <= amountPoapFees, ErrorCodes.NotEnoughAlph)
+
+        transferTokenFromSelf!(organizer, tokenIdPoap, amountToClaim)
+
+        amountPoapFees = amountPoapFees - amountToClaim
+    }
+
+    pub fn getPoapPrice() -> (U256,ByteVec) {
+        return poapPrice, tokenIdPoap
+    }
+
+    // Converts a byte array to a hexadecimal string. Used to change the token ID to a readable format.
+    fn convert(array: ByteVec) -> ByteVec {
+      let hexBytes = [b`0`, b`1`, b`2`, b`3`, b`4`, b`5`, b`6`, b`7`, b`8`, b`9`, b`a`, b`b`, b`c`, b`d`, b`e`, b`f`]
+      let mut result = #
+      for(let mut offset = 0; offset < size!(array); offset = offset + 1) {
+          let byte = u256From1Byte!(byteVecSlice!(array, offset, offset + 1)) & 0xFF
+          let high = (byte >> 4) & 0x0F
+          let low = byte & 0x0F
+          result = result ++ hexBytes[high] ++ hexBytes[low]
+        }
+    
+      return result
     }
 
 }

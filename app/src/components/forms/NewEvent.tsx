@@ -213,7 +213,10 @@ export default function NewEvent() {
           isPublic: isPublicEvent,
           oneMintPerAddress: mintLimit,
           isBurnable: false,
-          amountForStorageFees: 0n
+          amountForStorageFees: 0n,
+          poapPrice: 0n,
+          tokenIdPoap: '00',
+          amountPoapFees: 0n
         },
         signer: signer,
         attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT+DUST_AMOUNT,
