@@ -25,6 +25,7 @@ Contract PoapFactory(
         isPublic: Bool,
         isBurnable: Bool,
 
+        amountForStorageFees: U256,
         totalSupply: U256) -> (ByteVec){
             let caller = callerAddress!()
 
@@ -42,9 +43,16 @@ Contract PoapFactory(
                 eventEndAt,
                 isPublic,
                 isBurnable,
+                amountForStorageFees,
                 totalSupply)
-        
-            let contractId = copyCreateContract!{caller -> ALPH: minimalContractDeposit!()}(    
+            
+            let mut amountForStorageFeesInContract = minimalContractDeposit!()
+            if(amountForStorageFees > 0){
+                assert!(amountForStorageFees >= minimalContractDeposit!(), ErrorCodes.NotEnoughAlph)
+                amountForStorageFeesInContract = amountForStorageFees
+            }
+
+            let contractId = copyCreateContract!{caller -> ALPH: amountForStorageFeesInContract}(    
                 collectionTemplateId,
                 initialImmState,
                 initialMutState
@@ -61,8 +69,13 @@ Contract PoapFactory(
     pub fn mintPoap(collection: PoapCollection) -> (){
         let caller = callerAddress!()
 
+        let collectionAmountAlphInContract = collection.getAmountForStorageFees()
 
-        let poapContractId = collection.mint{caller -> ALPH: minimalContractDeposit!()}(caller)
+        let mut feesStorageAmount = minimalContractDeposit!()
+        if(collectionAmountAlphInContract > minimalContractDeposit!()){
+            feesStorageAmount = 0
+        }
+        let poapContractId = collection.mint{caller -> ALPH: feesStorageAmount}(caller)
         let collectionTotalSupply = collection.totalSupply()
 
         emit PoapMinted(poapContractId, collection, collectionTotalSupply, caller, collection.getIsPublic())

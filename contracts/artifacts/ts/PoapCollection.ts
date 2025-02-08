@@ -54,6 +54,7 @@ export namespace PoapCollectionTypes {
     eventEndAt: bigint;
     isPublic: boolean;
     isBurnable: boolean;
+    amountForStorageFees: bigint;
     totalSupply: bigint;
   };
 
@@ -246,7 +247,7 @@ export const PoapCollection = new Factory(
   Contract.fromJson(
     PoapCollectionContractJson,
     "",
-    "157081f69697aee42bb62a7026229bc84864df3a1ce9a363e3fb9113158de025",
+    "378625bf71a4c61b5eb5767e5db7d5d78bea0c6cb6a8cea09a61ebd4665cc7cd",
     AllStructs
   )
 );

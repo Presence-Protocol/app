@@ -8,4 +8,5 @@ enum ErrorCodes {
     LimitedMintPerAddress = 6
     InvalidCaller = 7
     NotBurnable = 8
+    NotEnoughAlph = 9
   }

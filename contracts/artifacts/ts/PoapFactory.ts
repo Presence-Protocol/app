@@ -76,6 +76,7 @@ export namespace PoapFactoryTypes {
         eventEndAt: bigint;
         isPublic: boolean;
         isBurnable: boolean;
+        amountForStorageFees: bigint;
         totalSupply: bigint;
       }>;
       result: CallContractResult<HexString>;
@@ -124,6 +125,7 @@ export namespace PoapFactoryTypes {
         eventEndAt: bigint;
         isPublic: boolean;
         isBurnable: boolean;
+        amountForStorageFees: bigint;
         totalSupply: bigint;
       }>;
       result: SignExecuteScriptTxResult;
@@ -182,6 +184,7 @@ class Factory extends ContractFactory<
           eventEndAt: bigint;
           isPublic: boolean;
           isBurnable: boolean;
+          amountForStorageFees: bigint;
           totalSupply: bigint;
         }
       >
@@ -238,7 +241,7 @@ export const PoapFactory = new Factory(
   Contract.fromJson(
     PoapFactoryContractJson,
     "",
-    "5f7d894a47ccf9ee047b8de87d3edb3d314778b30e7a43b3cf0c276b4f653be2",
+    "9954c7a49179854c70deeba609bf9fd834419b0f4f0eb89d602299ebb7ef95fc",
     AllStructs
   )
 );

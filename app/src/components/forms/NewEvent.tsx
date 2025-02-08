@@ -71,10 +71,10 @@ export default function NewEvent() {
         throw new Error('URL must point to an image');
       }
       
-      if (blob.size > 3072) {
+      /*if (blob.size > 3072) {
         setIsLargeImageWarningOpen(true);
         return;
-      }
+      }*/
   
       const reader = new FileReader();
       reader.onloadend = () => {
@@ -213,6 +213,7 @@ export default function NewEvent() {
           isPublic: isPublicEvent,
           oneMintPerAddress: mintLimit,
           isBurnable: false,
+          amountForStorageFees: 0n
         },
         signer: signer,
         attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT+DUST_AMOUNT,

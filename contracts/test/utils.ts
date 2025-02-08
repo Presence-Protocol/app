@@ -1,4 +1,4 @@
-import { Address, ONE_ALPH, stringToHex, subContractId, waitForTxConfirmation } from "@alephium/web3";
+import { Address, ONE_ALPH, stringToHex, subContractId, Token, waitForTxConfirmation, web3 } from "@alephium/web3";
 import { testPrivateKey } from "@alephium/web3-test";
 import { PrivateKeyWallet } from "@alephium/web3-wallet";
 
@@ -33,3 +33,18 @@ export function getCollectionPath(parentContractId: string, mintedId: bigint) {
 
   }
   
+  export const balanceOf = async (address: string): Promise<Token[]> => {
+    const balances = await web3.getCurrentNodeProvider().addresses.getAddressesAddressBalance(address)
+    const tokenBalances = balances.tokenBalances
+    return tokenBalances === undefined
+      ? []
+      : tokenBalances.map((t) => {
+          return { id: t.id, amount: BigInt(t.amount) }
+        })
+  }
+
+  export const alphBalanceOf = async (address: string): Promise<bigint> => {
+    const balances = await web3.getCurrentNodeProvider().addresses.getAddressesAddressBalance(address)
+    const balance = balances.balance
+    return balance === undefined ? 0n : BigInt(balance)
+  }

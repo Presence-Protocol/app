@@ -44,7 +44,8 @@ const deployTemplates: DeployFunction<Settings> = async (
       totalSupply: 0n,
       isPublic: false,
       oneMintPerAddress: false,
-      isBurnable: false
+      isBurnable: false,
+      amountForStorageFees: 0n
     }
   })
 

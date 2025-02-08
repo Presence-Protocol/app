@@ -17,12 +17,13 @@ Contract PoapCollection(
     isPublic: Bool,
     isBurnable: Bool,
 
+    mut amountForStorageFees: U256,
     mut totalSupply: U256
   ) implements INFTCollection {
 
-    event PoapMinted(contractId: ByteVec, nftIndex: U256, caller: Address)
+   event PoapMinted(contractId: ByteVec, nftIndex: U256, caller: Address)
 
-   @using(preapprovedAssets = true, updateFields = true, checkExternalCaller = false)
+   @using(preapprovedAssets = true, updateFields = true, checkExternalCaller = false, assetsInContract = true)
    pub fn mint(callerAddr: Address) -> (ByteVec) {
      assert!(totalSupply < maxSupply, ErrorCodes.MaxSupplyReached)
      assert!(blockTimeStamp!() >= mintStartAt, ErrorCodes.MintNotStarted)
@@ -41,7 +42,14 @@ Contract PoapCollection(
         contractPath = toByteVec!(caller)
      }
 
-     let contractId = copyCreateSubContractWithToken!{caller -> ALPH: minimalContractDeposit!()}(
+     let mut payer = caller
+     // pay storage fees if there's alph in contract
+     if(amountForStorageFees > minimalContractDeposit!()){
+        payer = selfAddress!()
+        amountForStorageFees = amountForStorageFees - minimalContractDeposit!()
+     }
+
+     let contractId = copyCreateSubContractWithToken!{payer -> ALPH: minimalContractDeposit!()}(
          contractPath,
          nftTemplateId,
          initialImmState,
@@ -50,7 +58,7 @@ Contract PoapCollection(
          caller
      )
 
-      emit PoapMinted(contractId, totalSupply, caller)
+     emit PoapMinted(contractId, totalSupply, caller)
 
      totalSupply = totalSupply + 1
 
@@ -104,6 +112,10 @@ Contract PoapCollection(
 
     pub fn getIsPublic() -> (Bool) {
         return isPublic
+    }
+
+    pub fn getAmountForStorageFees() -> U256 {
+        return amountForStorageFees
     }
 
 }

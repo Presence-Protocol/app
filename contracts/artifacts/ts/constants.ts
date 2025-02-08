@@ -12,4 +12,5 @@ export const ErrorCodes = {
   LimitedMintPerAddress: BigInt("6"),
   InvalidCaller: BigInt("7"),
   NotBurnable: BigInt("8"),
+  NotEnoughAlph: BigInt("9"),
 };

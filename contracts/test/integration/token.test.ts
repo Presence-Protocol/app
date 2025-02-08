@@ -3,7 +3,7 @@ import { expectAssertionError, testNodeWallet } from '@alephium/web3-test'
 import { deployToDevnet } from '@alephium/cli'
 import { PoapFactory, PoapCollection, PoapCollectionInstance, PoapNFT } from '../../artifacts/ts'
 import { PrivateKeyWallet } from '@alephium/web3-wallet'
-import { getCollectionPath, getRandomSigner, loadSvg, transferAlphTo } from '../utils'
+import { alphBalanceOf, balanceOf, getCollectionPath, getRandomSigner, loadSvg, transferAlphTo } from '../utils'
 import exp from 'constants'
 
 describe('integration tests', () => {
@@ -50,7 +50,8 @@ describe('integration tests', () => {
         totalSupply: 0n,
         isPublic: false,
         oneMintPerAddress: false,
-        isBurnable: false
+        isBurnable: false,
+        amountForStorageFees: 0n
       },
       signer: signer,
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT
@@ -99,7 +100,8 @@ describe('integration tests', () => {
         totalSupply: 0n,
         isPublic: false,
         oneMintPerAddress: false,
-        isBurnable: false
+        isBurnable: false,
+        amountForStorageFees: 0n
       },
       signer: signer,
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT
@@ -177,7 +179,8 @@ describe('integration tests', () => {
         totalSupply: 0n,
         isPublic: false,
         oneMintPerAddress: false,
-        isBurnable: false
+        isBurnable: false,
+        amountForStorageFees: 0n
       },
       signer: signer,
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT
@@ -253,7 +256,8 @@ describe('integration tests', () => {
         totalSupply: 0n,
         isPublic: false,
         oneMintPerAddress: false,
-        isBurnable: false
+        isBurnable: false,
+        amountForStorageFees: 0n
       },
       signer: signer,
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT
@@ -290,6 +294,100 @@ describe('integration tests', () => {
   }, 20000)
 
 
+  it('Mint poap with Contract Storage paid', async () => {
+    const signer = await testNodeWallet()
+    const deployments = await deployToDevnet()
+    const factory = deployments.getInstance(PoapFactory)
+
+    expect(factory).toBeDefined()
+
+    if (!factory) {
+      throw new Error('Factory is undefined')
+    }
+
+    await factory.transact.mintNewCollection({
+      args: {
+        eventImage: stringToHex('https://arweave.net/Z1HAdT_PGnxPLct4-u7l1Zl_h4DNdxzKev7tCDAEflc'),
+        maxSupply: 10n,
+        mintStartAt: 1735823531000n,
+        mintEndAt: 1893595576000n,
+        eventName: stringToHex('Test 1'),
+        description: stringToHex('First poap test'),
+        location: stringToHex('Online'),
+        eventStartAt: 1735823531000n,
+        eventEndAt: 1735823531000n,
+        totalSupply: 0n,
+        isPublic: false,
+        oneMintPerAddress: false,
+        isBurnable: false,
+        amountForStorageFees: 3n*10n**17n
+      },
+      signer: signer,
+      attoAlphAmount: 3n*10n**17n + DUST_AMOUNT
+    })
+
+    // Check that event is emitted
+    const { events } = await web3
+      .getCurrentNodeProvider()
+      .events.getEventsContractContractaddress(factory.address, { start: 0 })
+    expect(events.length).toEqual(1)
+
+    const creationEvent = events[0]
+    const poapCollectionMinted = creationEvent.fields[0].value as string
+
+    
+
+    const collection = PoapCollection.at(addressFromContractId(poapCollectionMinted))
+    let collectionState = await collection.fetchState()
+    console.log(await alphBalanceOf(collection.address))
+    expect((await alphBalanceOf(collection.address))).toEqual(collectionState.fields.amountForStorageFees)
+    expect((await alphBalanceOf(collection.address))).toEqual(3n*10n**17n)
+
+    await collection.transact.mint({
+      signer: minter,
+      attoAlphAmount: DUST_AMOUNT,
+      args: {
+        callerAddr: minter.address
+      }
+    })
+
+    collectionState = await collection.fetchState()
+    expect((await alphBalanceOf(collection.address))).toEqual(collectionState.fields.amountForStorageFees)
+    expect((await alphBalanceOf(collection.address))).toEqual(3n*10n**17n -10n**17n)
+
+    expect((await collection.view.totalSupply()).returns).toBe(1n)
+
+    await collection.transact.mint({
+      signer: minter,
+      attoAlphAmount:DUST_AMOUNT,
+      args: {
+        callerAddr: minter.address
+      }
+    })
+
+    collectionState = await collection.fetchState()
+    expect(collectionState.fields.amountForStorageFees).toEqual(MINIMAL_CONTRACT_DEPOSIT) //the storage fees for the collection contract
+    expect((await alphBalanceOf(collection.address))).toEqual(MINIMAL_CONTRACT_DEPOSIT)
+
+    // contract is empty, user need to pay for storage
+    await collection.transact.mint({
+      signer: minter,
+      attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT,
+      args: {
+        callerAddr: minter.address
+      }
+    })
+
+    // get Poap    
+    const poap = PoapNFT.at(addressFromContractId((await collection.view.nftByIndex({ args: { index: 0n } })).returns))
+    const poapState = await poap.fetchState()
+    expect(hexToString(poapState.fields.eventName)).toBe('Test 1')
+
+    expect((await poap.view.getTraits()).returns.length).toBe(7)
+
+  }, 20000)
+
+
   it('Mint poap more than supply', async () => {
     const signer = await testNodeWallet()
     const deployments = await deployToDevnet()
@@ -315,7 +413,8 @@ describe('integration tests', () => {
         totalSupply: 0n,
         isPublic: false,
         oneMintPerAddress: false,
-        isBurnable: false
+        isBurnable: false,
+        amountForStorageFees: 0n
       },
       signer: signer,
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT
@@ -378,7 +477,8 @@ describe('integration tests', () => {
         totalSupply: 0n,
         isPublic: false,
         oneMintPerAddress: false,
-        isBurnable: false
+        isBurnable: false,
+        amountForStorageFees: 0n
       },
       signer: signer,
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT
@@ -429,7 +529,8 @@ describe('integration tests', () => {
         totalSupply: 0n,
         isPublic: false,
         oneMintPerAddress: false,
-        isBurnable: false
+        isBurnable: false,
+        amountForStorageFees: 0n
       },
       signer: signer,
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT
@@ -482,7 +583,8 @@ describe('integration tests', () => {
         totalSupply: 0n,
         isPublic: false,
         oneMintPerAddress: true,
-        isBurnable: false
+        isBurnable: false,
+        amountForStorageFees: 0n
       },
       signer: signer,
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT
@@ -552,7 +654,8 @@ describe('integration tests', () => {
         totalSupply: 0n,
         isPublic: false,
         oneMintPerAddress: true,
-        isBurnable: false
+        isBurnable: false,
+        amountForStorageFees: 0n
       },
       signer: signer,
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT
@@ -622,7 +725,8 @@ describe('integration tests', () => {
         totalSupply: 0n,
         isPublic: false,
         oneMintPerAddress: true,
-        isBurnable: false
+        isBurnable: false,
+        amountForStorageFees: 0n
       },
       signer: signer,
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT
@@ -696,7 +800,8 @@ describe('integration tests', () => {
         totalSupply: 0n,
         isPublic: false,
         oneMintPerAddress: false,
-        isBurnable: true
+        isBurnable: true,
+        amountForStorageFees: 0n
       },
       signer: signer,
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT
@@ -763,7 +868,8 @@ describe('integration tests', () => {
         totalSupply: 0n,
         isPublic: false,
         oneMintPerAddress: false,
-        isBurnable: false
+        isBurnable: false,
+        amountForStorageFees: 0n
       },
       signer: signer,
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT
