@@ -116,9 +116,9 @@ export default function Navigation() {
         <nav className={`${isOpen ? 'flex' : 'hidden'} lg:flex flex-col lg:flex-row items-center justify-center lg:justify-end text-black text-base font-medium tracking-wide gap-4 py-4 lg:py-0`}>
           <Link
             className={`duration-300 focus:text-orange/90 hover:text-lila-900 px-3 py-2 transform transition font-semibold h-[50px] flex items-center justify-center`}
-            href="/explorer"
+            href="/events"
           >
-            Explorer
+            Explore Events
           </Link>
 
           <div className='mr-1'>

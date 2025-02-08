@@ -1,8 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import '../../utils/dateUtils';
-import ExplorerHeader from './ExplorerHeader';
+import Link from 'next/link';
+import ExplorerHeader from './EventsHeader';
 
 interface Event {
   contractId: string;
@@ -10,9 +10,11 @@ interface Event {
   caller: string;
   createdAt: string;
   updatedAt: string;
+  // Add any additional fields needed for event type classification
+  eventType?: 'free' | 'premium' | 'live';
 }
 
-export default function ExplorerSliders() {
+export default function EventsSliders() {
   const [events, setEvents] = useState<Event[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -35,7 +37,6 @@ export default function ExplorerSliders() {
         }
         
         const data = await response.json();
-        // Filter out events with test/placeholder names
         const filteredEvents = data.filter((event: Event) => 
           !['test', 'asdsad', 'ffd', 'asdas', 'sdd'].includes(event.eventName.toLowerCase())
         );
@@ -49,8 +50,6 @@ export default function ExplorerSliders() {
     };
 
     fetchEvents();
-    
-    // Add auto-refresh every 5 minutes
     const intervalId = setInterval(fetchEvents, 5 * 60 * 1000);
     return () => clearInterval(intervalId);
   }, []);
@@ -76,95 +75,65 @@ export default function ExplorerSliders() {
     );
   }
 
-  if (events.length === 0) {
-    return (
-      <div className="mt-12 text-center">
-        <div className="text-black items-center mb-4 shadow shadow-black text-xs font-semibold inline-flex px-4 bg-lila-300 border-black border-2 py-2 rounded-lg tracking-wide">
-          No events found
-        </div>
-      </div>
-    );
-  }
-
-  const rows = [
-    events.slice(0, Math.ceil(events.length / 3)),
-    events.slice(Math.ceil(events.length / 3), Math.ceil(2 * events.length / 3)),
-    events.slice(Math.ceil(2 * events.length / 3))
-  ];
+  // Mock categorization - replace with actual logic based on your event properties
+  const liveEvents = events.slice(0, 4);
+  const premiumEvents = events.slice(4, 8);
+  const freeEvents = events.slice(8, 12);
 
   return (
-    <div>
-      <ExplorerHeader 
-        totalEvents={events.length} 
-        last24Hours={last24Hours}
-      />
+    <div className="mx-auto">
+      <ExplorerHeader totalEvents={events.length} last24Hours={last24Hours} />
       
-      <div className="mx-auto py-8">
-        <div className="space-y-12">
-          {rows.map((rowEvents, rowIndex) => (
-            <div key={`row-${rowIndex}`} className="relative">
-              {/* Add fade overlays */}
-              <div className="absolute left-0 top-0 w-64 h-full bg-gradient-to-r from-white to-transparent z-40"></div>
-              <div className="absolute right-0 top-0 w-64 h-full bg-gradient-to-l from-white to-transparent z-40"></div>
-              
-              {/* Add container with overflow hidden */}
-              <div className="">
-                <div className="flex">
-                  <div className={`flex animate-scroll-${rowIndex} gap-12`}>
-                    {/* Original events */}
-                    {rowEvents.map((event) => (
-                      <EventCard key={event.contractId} event={event} />
-                    ))}
-                    {/* Duplicated events for infinite scroll */}
-                    {rowEvents.map((event) => (
-                      <EventCard 
-                        key={`duplicate-${event.contractId}`} 
-                        event={event} 
-                      />
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
+      <div className="space-y-24 py-8 px-8 max-w-7xl mx-auto">
+        {/* Live Events Section */}
+        <EventSection 
+          title="Live Events" 
+          events={liveEvents} 
+          viewAllLink="/events/live-events"
+        />
 
-      <style jsx>{`
-        @keyframes scroll-0 {
-          0% { transform: translateX(0); }
-          100% { transform: translateX(-50%); }
-        }
-        @keyframes scroll-1 {
-          0% { transform: translateX(-25%); }
-          100% { transform: translateX(-75%); }
-        }
-        @keyframes scroll-2 {
-          0% { transform: translateX(-10%); }
-          100% { transform: translateX(-60%); }
-        }
-        .animate-scroll-0 {
-          animation: scroll-0 60s linear infinite;
-        }
-        .animate-scroll-1 {
-          animation: scroll-1 75s linear infinite;
-        }
-        .animate-scroll-2 {
-          animation: scroll-2 65s linear infinite;
-        }
-        .animate-scroll-0:hover,
-        .animate-scroll-1:hover,
-        .animate-scroll-2:hover {
-          animation-play-state: paused;
-        }
-      `}</style>
+        {/* Premium Events Section */}
+        <EventSection 
+          title="Premium Events" 
+          events={premiumEvents} 
+          viewAllLink="/events/premium-events"
+        />
+
+        {/* Free Events Section */}
+        <EventSection 
+          title="Free Events" 
+          events={freeEvents} 
+          viewAllLink="/events/free-events"
+        />
+      </div>
+    </div>
+  );
+}
+function EventSection({ title, events, viewAllLink }: { 
+  title: string; 
+  events: Event[]; 
+  viewAllLink: string;
+}) {
+  return (
+    <div className="relative">
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-2xl font-bold">{title}</h2>
+        {events.length > 4 && (
+          <div className="text-black items-center shadow shadow-black text-xs font-semibold inline-flex px-4 bg-white border-black border-2 py-2 rounded-lg tracking-wide">
+            <Link href={viewAllLink}>View All</Link>
+          </div>
+        )}
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {events.map((event) => (
+          <EventCard key={event.contractId} event={event} />
+        ))}
+      </div>
     </div>
   );
 }
 
-// Separate EventCard component for better organization
 function EventCard({ event }: { event: Event }) {
-  console.log(event);
   const getRelativeTime = (date: Date) => {
     try {
       return date.toRelativeTimeString();
@@ -174,7 +143,7 @@ function EventCard({ event }: { event: Event }) {
   };
 
   return (
-    <div className="flex-none w-72 bg-white p-4 rounded-xl border-2 border-black shadow-large">
+    <div className="bg-white p-4 rounded-xl border-2 border-black shadow-large">
       <div className="aspect-video rounded-lg bg-lila-300 mb-4 flex flex-col items-center justify-center p-2">
         <span className="text-sm font-medium text-black">
           {new Date(event.createdAt).toLocaleDateString()}

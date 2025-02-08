@@ -114,7 +114,6 @@ export default function NewEvent() {
     const mintStart = new Date(startDate).getTime();
     const mintEnd = new Date(endDate).getTime();
 
-
     return (
       title.length > 0 &&
       title.length <= MAX_TITLE_LENGTH &&
@@ -127,9 +126,9 @@ export default function NewEvent() {
       eventEndDate.length > 0 &&
       location.length > 0 &&
       isImageValid &&
+      previewImage !== null &&
       eventEnd > eventStart &&
       mintEnd > mintStart
-  
     );
   };
 
@@ -228,17 +227,6 @@ export default function NewEvent() {
         txHash: result.txId 
       });
       
-      // Clear all form fields after successful submission
-      setTitle('');
-      setDescription('');
-      setAmount(0);
-      setStartDate('');
-      setEndDate('');
-      setLocation('');
-      setPreviewImage(null);
-      setIsPublicEvent(false);
-      setMintLimit(false);
-      
       toast.success('Transaction submitted! Waiting for confirmation...');
     } catch (error) {
       console.error('Error creating event:', error);
@@ -248,6 +236,23 @@ export default function NewEvent() {
       setIsSubmitting(false);
     }
   };
+
+  useEffect(() => {
+    setTitle('');
+    setDescription('');
+    setAmount(0);
+    setStartDate('');
+    setEndDate('');
+    setLocation('');
+    setPreviewImage(null);
+    setIsPublicEvent(false);
+    setMintLimit(false);
+    setEventStartDate('');
+    setEventEndDate('');
+    setImageUrl('');
+    setActiveTab('url');
+    setIsImageValid(true);
+  }, []);
 
   useEffect(() => {
     console.log('Setting up node provider...');
@@ -340,7 +345,7 @@ export default function NewEvent() {
               <span className="text-xs">Transaction submitted</span>
               {txHash && (
                 <a 
-                  href={`https://explorer.alephium.org/transactions/${txHash}`}
+                  href={`https://events.alephium.org/transactions/${txHash}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-xs text-blue-600 hover:underline"
@@ -574,27 +579,29 @@ export default function NewEvent() {
                       </div>
                     </div>
 
-                    <div className="border-2 border-black divide-black shadow rounded-2xl overflow-hidden">
+                    <div className={`border-2 border-black ${previewImage !== null ? 'bg-lila-100' : 'bg-white'} divide-black shadow rounded-2xl overflow-hidden`}>
                       <div className="flex items-center justify-center border-b-2 border-black">
                         <button
                           type="button"
                           onClick={() => setActiveTab('url')}
+                          disabled={previewImage !== null && activeTab !== 'url'}
                           className={`flex-1 py-3 px-6 focus:outline-none block text-sm ${
                             activeTab === 'url' 
-                              ? 'bg-lila-200 border-r-2 border-black text-black' 
-                              : 'hover:bg-lila-100 text-gray-600'
-                          }`}
+                              ? 'bg-lila-100 border-r-2 border-black text-black' 
+                              : 'bg-white text-gray-600'
+                          } ${previewImage !== null && activeTab !== 'url' ? 'opacity-50 cursor-not-allowed' : ''}`}
                         >
                           Event Image from URL
                         </button>
                         <button
                           type="button"
                           onClick={() => setActiveTab('upload')}
+                          disabled={previewImage !== null && activeTab !== 'upload'}
                           className={`flex-1 py-3 px-6 focus:outline-none block text-sm ${
                             activeTab === 'upload' 
-                              ? 'bg-lila-200 border-l-2 border-black text-black' 
-                              : 'hover:bg-lila-100 text-gray-600'
-                          }`}
+                              ? 'bg-lila-100 border-l-2 border-black text-black' 
+                              : 'bg-white text-gray-600'
+                          } ${previewImage !== null && activeTab !== 'upload' ? 'opacity-50 cursor-not-allowed' : ''}`}
                         >
                           Event Image from Upload
                         </button>
@@ -611,9 +618,9 @@ export default function NewEvent() {
                             <button
                               type="button"
                               onClick={handleRemoveImage}
-                              className="absolute top-2 right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center border-2 border-black shadow-sm hover:bg-red-600 transition-colors"
+                              className="absolute top-2 right-2 bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-700 transition-colors"
                             >
-                              ✕
+                              ×
                             </button>
                           </div>
                         ) : activeTab === 'url' ? (
@@ -627,9 +634,12 @@ export default function NewEvent() {
                             />
                             <button 
                               onClick={handleUrlSubmit}
-                              className="w-full px-3 py-2 text-black border-2 border-black rounded-lg hover:bg-lila-500 focus:outline-none focus:ring-2 focus:ring-lila-500 shadow"
+                              disabled={!imageUrl}
+                              className={`w-full px-3 py-2 text-black border-2 border-black rounded-lg hover:bg-lila-500 focus:outline-none focus:ring-2 focus:ring-lila-500 shadow ${
+                                !imageUrl ? 'opacity-50 cursor-not-allowed' : ''
+                              }`}
                             >
-                              Load from URL
+                              {imageUrl ? 'Load from URL' : 'Add URL to Load Image'}
                             </button>
                           </div>
                         ) : (
@@ -663,7 +673,7 @@ export default function NewEvent() {
                       <div className="flex items-center text-left justify-between p-4">
                         <div>
                           <h3 className="text-sm font-medium text-black">{isPublicEvent ? 'Public Event' : 'Private Event'}</h3>
-                          <p className="text-xs text-gray-500">{isPublicEvent ? 'Anyone will be able to see your Presence' : 'Presence will not appear on Presence Explorer'}</p>
+                          <p className="text-xs text-gray-500">{isPublicEvent ? 'Anyone will be able to see your Presence' : 'Presence will not appear on Event Explorer'}</p>
                         </div>
                         <div className="items-center inline-flex">
                           <button
