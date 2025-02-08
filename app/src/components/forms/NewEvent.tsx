@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useEffect, useState } from 'react';
-import { web3, Contract, MINIMAL_CONTRACT_DEPOSIT, DUST_AMOUNT, Subscription, contractIdFromAddress, addressFromContractId, NetworkId } from '@alephium/web3'
+import { web3, Contract, MINIMAL_CONTRACT_DEPOSIT, DUST_AMOUNT, Subscription, contractIdFromAddress, addressFromContractId, NetworkId, ALPH_TOKEN_ID } from '@alephium/web3'
 import { PoapFactory, PoapFactoryTypes } from '../../../../contracts/artifacts/ts/PoapFactory'
 import { toast } from 'react-hot-toast'
 import { useWallet } from '@alephium/web3-react'
@@ -215,7 +215,7 @@ export default function NewEvent() {
           isBurnable: false,
           amountForStorageFees: 0n,
           poapPrice: 0n,
-          tokenIdPoap: '00',
+          tokenIdPoap: ALPH_TOKEN_ID,
           amountPoapFees: 0n
         },
         signer: signer,
