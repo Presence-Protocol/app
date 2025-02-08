@@ -345,7 +345,7 @@ export default function NewEvent() {
               <span className="text-xs">Transaction submitted</span>
               {txHash && (
                 <a 
-                  href={`https://events.alephium.org/transactions/${txHash}`}
+                  href={`https://explorer.alephium.org/transactions/${txHash}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-xs text-blue-600 hover:underline"
