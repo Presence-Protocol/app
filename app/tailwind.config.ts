@@ -20,6 +20,8 @@ export default {
         'scroller-down': 'scrollerDown 12s linear infinite',
         'scroller-up': 'scrollerUp 12s linear infinite',
         'spin-reverse': 'spin-reverse 1s linear infinite',
+        scan: 'scan 2s ease-in-out infinite',
+        'card-appear': 'cardAppear 0.5s ease-out',
       },
       keyframes: {
         marqueeLeft: {
@@ -50,6 +52,10 @@ export default {
           to: {
             transform: 'rotate(-360deg)',
           },
+        },
+        scan: {
+          '0%, 100%': { transform: 'translateY(-100%)' },
+          '50%': { transform: 'translateY(100%)' },
         },
       },
       boxShadow: {

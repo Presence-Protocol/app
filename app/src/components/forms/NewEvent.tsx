@@ -45,6 +45,7 @@ export default function NewEvent() {
   const [isPublicEvent, setIsPublicEvent] = useState(false);
   const [mintLimit, setMintLimit] = useState(false);
   const [imageUrl, setImageUrl] = useState('');
+  const [activeTab, setActiveTab] = useState<'upload' | 'url'>('url');
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -571,67 +572,90 @@ export default function NewEvent() {
                     </div>
 
                     <div className="border-2 border-black divide-black shadow rounded-2xl overflow-hidden">
-                      <div>
-                        <label htmlFor="file-upload" className="sr-only">Upload Event Image</label>
-                        <div className="flex items-center justify-center w-full">
-                          {previewImage ? (
-                            <div className="relative w-full bg-lila-100">
-                              <img 
-                                src={previewImage} 
-                                alt="Preview" 
-                                className="w-full h-[100px] object-contain"
-                              />
-                              <button
-                                type="button"
-                                onClick={handleRemoveImage}
-                                className="absolute top-2 right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center border-2 border-black shadow-sm hover:bg-red-600 transition-colors"
-                              >
-                                ✕
-                              </button>
+                      <div className="flex items-center justify-center border-b-2 border-black">
+                        <button
+                          type="button"
+                          onClick={() => setActiveTab('url')}
+                          className={`flex-1 py-3 px-6 focus:outline-none block text-sm ${
+                            activeTab === 'url' 
+                              ? 'bg-lila-200 border-r-2 border-black text-black' 
+                              : 'hover:bg-lila-100 text-gray-600'
+                          }`}
+                        >
+                          Event Image from URL
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setActiveTab('upload')}
+                          className={`flex-1 py-3 px-6 focus:outline-none block text-sm ${
+                            activeTab === 'upload' 
+                              ? 'bg-lila-200 border-l-2 border-black text-black' 
+                              : 'hover:bg-lila-100 text-gray-600'
+                          }`}
+                        >
+                          Event Image from Upload
+                        </button>
+                      </div>
+
+                      <div className="p-4">
+                        {previewImage ? (
+                          <div className="relative w-full bg-lila-100">
+                            <img 
+                              src={previewImage} 
+                              alt="Preview" 
+                              className="w-full h-[100px] object-contain"
+                            />
+                            <button
+                              type="button"
+                              onClick={handleRemoveImage}
+                              className="absolute top-2 right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center border-2 border-black shadow-sm hover:bg-red-600 transition-colors"
+                            >
+                              ✕
+                            </button>
+                          </div>
+                        ) : activeTab === 'url' ? (
+                          <div className="flex flex-col justify-center min-h-[120px] max-h-[120px] space-y-3.5">
+                            <input
+                              type="text"
+                              value={imageUrl}
+                              onChange={(e) => setImageUrl(e.target.value)}
+                              placeholder="Paste image URL here"
+                              className="w-full p-2 border-2 border-black rounded-lg focus:outline-none focus:ring-2 focus:ring-lila-500"
+                            />
+                            <button 
+                              onClick={handleUrlSubmit}
+                              className="w-full px-3 py-2 text-black border-2 border-black rounded-lg hover:bg-lila-500 focus:outline-none focus:ring-2 focus:ring-lila-500 shadow"
+                            >
+                              Load from URL
+                            </button>
+                          </div>
+                        ) : (
+                          <label htmlFor="file-upload" className="relative cursor-pointer w-full">
+                            <div className="flex flex-col items-center justify-center p-6 min-h-[120px] max-h-[120px]">
+                              <svg xmlns="http://www.w3.org/2000/svg" className="w-8 h-8 text-black mb-2" viewBox="0 0 24 24" strokeWidth="1" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                <path d="M14 3v4a1 1 0 0 0 1 1h4"></path>
+                                <path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z"></path>
+                                <path d="M12 11v6"></path>
+                                <path d="M9.5 13.5l2.5 -2.5l2.5 2.5"></path>
+                              </svg>
+                              <p className="text-sm text-black">Upload Event Image (PNG, JPG, GIF up to 3KB)</p>
                             </div>
-                          ) : (
-                            <label htmlFor="file-upload" className="relative cursor-pointer w-full">
-                              <div className="flex flex-col items-center justify-center p-6 min-h-[100px]">
-                                <svg xmlns="http://www.w3.org/2000/svg" className="w-8 h-8 text-black mb-2" viewBox="0 0 24 24" strokeWidth="1" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
-                                  <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                                  <path d="M14 3v4a1 1 0 0 0 1 1h4"></path>
-                                  <path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z"></path>
-                                  <path d="M12 11v6"></path>
-                                  <path d="M9.5 13.5l2.5 -2.5l2.5 2.5"></path>
-                                </svg>
-                                <p className="text-sm text-black">Upload Event Image (PNG, JPG, GIF up to 10MB)</p>
-                              </div>
-                              <input 
-                                id="file-upload" 
-                                name="file-upload" 
-                                type="file" 
-                                className="sr-only" 
-                                accept="image/*"
-                                onChange={handleImageUpload}
-                              />
-                            </label>
-                          )}
-                        </div>
+                            <input 
+                              id="file-upload" 
+                              name="file-upload" 
+                              type="file" 
+                              className="sr-only" 
+                              accept="image/*"
+                              onChange={handleImageUpload}
+                            />
+                          </label>
+                        )}
                       </div>
                     </div>
 
-                    <div>
-                      <input
-                        type="text"
-                        value={imageUrl}
-                        onChange={(e) => setImageUrl(e.target.value)}
-                        placeholder="Or paste image URL"
-                        className="w-full p-2 border rounded"
-                      />
-                      &nbsp;
-                      <button 
-                        onClick={handleUrlSubmit}
-                        className="w-full px-3 py-3 text-xl text-black border-2 border-black appearance-none rounded-2xl hover:bg-lila-500 focus:outline-none focus:ring-black sm:text-sm shadow"
-                      >
-                        Load from URL
-                      </button>
-                    </div>
 
+                  
                     <div className="space-y-2">
                       <div className="flex items-center text-left justify-between p-4">
                         <div>
