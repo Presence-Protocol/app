@@ -233,7 +233,7 @@ export default function NewEvent() {
           amountForStorageFees: storageFees,
           poapPrice: poapPrice,
           tokenIdPoap: tokenId,
-          amountPoapFees: poapFees
+          amountPoapFees: 0n
         },
         signer: signer,
         attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT+DUST_AMOUNT,
