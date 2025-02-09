@@ -12,7 +12,7 @@ const CtaOne = () => {
           <div className="text-center max-w-3xl mx-auto">
             <Image
               className="mx-auto justify-center shadow shadow-white rounded-full"
-              src="/images/blob1.svg"
+              src="/images/blob5.svg"
               alt="Decorative blob"
               width={128}
               height={128}

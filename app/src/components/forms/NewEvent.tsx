@@ -713,7 +713,7 @@ export default function NewEvent() {
                           </Tooltip>
                         )}
 
-                        <Tooltip text={`This event is ${isPublicEvent ? 'visible to everyone' : 'only visible to specific addresses'}`}>
+                        <Tooltip text={`This event is ${isPublicEvent ? 'visible on the explore events page' : 'hidden on the explore events page'}`}>
                           <div className="text-black items-center shadow shadow-lila-600 text-xs font-semibold inline-flex px-4 bg-lila-300 border-lila-600 border-2 py-2 rounded-lg h-8 tracking-wide">
                             {isPublicEvent ? (
                               <>

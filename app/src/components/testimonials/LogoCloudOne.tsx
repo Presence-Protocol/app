@@ -17,11 +17,13 @@ import Image from 'next/image';
 import AlphLogo from "@/images/partner-logos/ALPH.svg"
 import PushValueLogo from "@/images/partner-logos/PV.png"
 import NTV from "@/images/partner-logos/NTV.png"
+import PineappleDAO from "@/images/partner-logos/pineapple-dao.png"
 
 const partnerLogos = [
   { src: AlphLogo, alt: "Alephium Logo" },
   { src: PushValueLogo, alt: "Push Value Logo" },
-  { src: NTV, alt: "NTV Logo" }
+  { src: NTV, alt: "NTV Logo" },
+  { src: PineappleDAO, alt: "Pineapple DAO Logo" }
 ];
 
 export default function LogoCloudOne() {
