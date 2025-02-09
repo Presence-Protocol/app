@@ -116,7 +116,7 @@ export default function NewEvent() {
     }
     
     await fetchImageFromUrl(imageUrl);
-    setImageUrl('');
+    setImageUrl(imageUrl);
   };
 
   const handleRemoveImage = () => {
@@ -208,12 +208,12 @@ export default function NewEvent() {
       const factoryContract = PoapFactory.at(deployment.contracts.PoapFactory.contractInstance.address);
 
       // Convert strings to hex format
-      const imageUri = stringToHex(previewImage || '');
+      const imageUri = stringToHex(previewImage || imageUrl);
       const imageSvg = stringToHex(''); // If you have SVG version
       const eventName = stringToHex(title);
       const descriptionHex = stringToHex(description);
       const locationHex = stringToHex(location);
-
+      console.log(imageUri)
       // Call contract method using transact
       const result = await factoryContract.transact.mintNewCollection({
         args: {
@@ -996,7 +996,7 @@ export default function NewEvent() {
                                   <path d="M12 11v6"></path>
                                   <path d="M9.5 13.5l2.5 -2.5l2.5 2.5"></path>
                                 </svg>
-                                <p className="text-sm text-black">Upload Event Image (PNG, JPG, GIF up to 3KB)</p>
+                                <p className="text-sm text-black">Upload Event Image (PNG, JPG, GIF up to 2KB)</p>
                               </div>
                               <input 
                                 id="file-upload" 
