@@ -519,7 +519,7 @@ export default function NewEvent() {
                 </svg>
               </button>
             </div>
-            <p className="text-xs text-gray-500 mb-2">Amount allocated for storage (in ALPH)</p>
+            <p className="text-xs text-gray-500 mb-2">Pay storage fees on behalf of the users (in ALPH)</p>
             <input
               type="number"
               min="0"
@@ -530,7 +530,7 @@ export default function NewEvent() {
             />
           </div>
 
-          <div className="p-4 bg-white">
+         {/* <div className="p-4 bg-white">
             <div className="flex items-center justify-between">
               <label className="text-sm font-medium text-black">POAP Fees</label>
               <button
@@ -564,7 +564,7 @@ export default function NewEvent() {
               onChange={(e) => setPoapFees(BigInt(Math.floor(Number(e.target.value) * 10**18)))}
               className="block w-full px-3 py-3 text-xl text-black border-2 border-black appearance-none placeholder-black focus:border-black focus:bg-lila-500 focus:outline-none focus:ring-black sm:text-sm rounded-2xl"
             />
-          </div>
+          </div>*/}
 
           <div className="p-4 bg-white">
             <div className="flex items-center justify-between">
@@ -1107,10 +1107,10 @@ export default function NewEvent() {
           isOpen={isStorageFeesInfoOpen}
           onClose={() => setIsStorageFeesInfoOpen(false)}
         />
-        <PoapFeesInfo 
+        {/*<PoapFeesInfo 
           isOpen={isPoapFeesInfoOpen}
           onClose={() => setIsPoapFeesInfoOpen(false)}
-        />
+        />*/}
         <TokenIdInfo 
           isOpen={isTokenIdInfoOpen}
           onClose={() => setIsTokenIdInfoOpen(false)}
