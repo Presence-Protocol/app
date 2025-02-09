@@ -47,7 +47,7 @@ export default function HeroThree() {
       <main>
         <div className="relative isolate">
           <div className="overflow-hidden">
-            <div className="mx-auto max-w-8xl px-6 sm:px-8 md:px-12 lg:px-20 pb-12 pt-12 sm:pt-16 lg:pt-6">
+            <div className="mx-auto max-w-8xl px-6 sm:px-8 md:px-12 lg:px-20 pb-12 pt-24 sm:pt-16 lg:pt-6">
               <div className="mx-auto max-w-2xl gap-x-8 lg:mx-0 lg:flex lg:max-w-none lg:items-center justify-evenly">
                 <div className="relative w-full lg:max-w-xl lg:shrink-0 xl:max-w-2xl">
                   <h2 className="text-pretty text-4xl sm:text-5xl lg:text-6xl font-semibold tracking-tight text-black">Proof You Were There.<br/> Powered by Alephium</h2>
@@ -92,7 +92,7 @@ export default function HeroThree() {
                           }}
                         >
                           <div className="relative h-auto">
-                            <div className="aspect-square rounded-lg box-border bg-lila-300 p-2 h-full" />
+                            <div className="aspect-square rounded-lg box-border bg-gradient-to-t from-lila-400 to-lila-300 p-2 h-full" />
                             <img
                               src={card.image}
                               alt="Feature blob"

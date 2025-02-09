@@ -14,7 +14,7 @@ import FaqOne from "@/components/faqs/FaqOne"
 import Footer from "@/components/global/Footer"
 import HeroOneCopy from "@/components/heros/HeroOne copy"
 import HeroThree from '@/components/heros/HeroThree'
-
+import FeatureOne from '@/components/features/FeatureOne'
 export default function Home() {
   const { connectionStatus } = useWallet()
 
@@ -29,8 +29,9 @@ export default function Home() {
       <HeroThree />
       {/* <HeroOneCopy /> */}
       <LogoCloudOne/>
-      <FeatureSix />
-      <FeatureEight />
+      {/* <FeatureSix /> */}
+      <FeatureOne />
+      {/* <FeatureEight /> */}
       <CtaOne />
       <FaqOne />
       <Footer />
