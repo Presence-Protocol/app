@@ -207,7 +207,7 @@ export default function NFTList({ account }: { account: string }) {
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Link
-                  href="/explore"
+                  href="/events"
                   className="text-black items-center shadow shadow-black text-base font-semibold inline-flex px-6 focus:outline-none justify-center text-center bg-white border-black ease-in-out transform transition-all focus:ring-lila-700 focus:shadow-none border-2 duration-100 focus:bg-black focus:text-white py-3 rounded-lg h-12 focus:translate-y-1 hover:text-lila-800 tracking-wide"
                 >
                   Explore Events <span className="ml-3">&rarr;</span>
@@ -271,7 +271,7 @@ export default function NFTList({ account }: { account: string }) {
                   Start by minting Presence from an event!
                 </p>
                 <Link
-                  href="/explore"
+                  href="/events"
                   className="text-black items-center shadow shadow-black text-base font-semibold inline-flex px-6 focus:outline-none justify-center text-center bg-white border-black ease-in-out transform transition-all focus:ring-lila-700 focus:shadow-none border-2 duration-100 focus:bg-black focus:text-white py-3 rounded-lg h-12 focus:translate-y-1 hover:text-lila-800 tracking-wide"
                 >
                   Explore Events <span className="ml-3">&rarr;</span>

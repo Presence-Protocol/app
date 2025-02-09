@@ -1,9 +1,51 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useWallet } from '@alephium/web3-react';
+import { AlephiumConnectButton } from '@alephium/web3-react';
+import { useWalletLoading } from '@/context/WalletLoadingContext';
+import Link from 'next/link';
+
+// Add the button styles
+const buttonClasses = "text-black items-center shadow shadow-black text-lg font-semibold inline-flex px-6 focus:outline-none justify-center text-center bg-white border-black ease-in-out transform transition-all focus:ring-lila-700 focus:shadow-none border-2 duration-100 focus:bg-black focus:text-white sm:w-auto py-3 rounded-lg h-16 focus:translate-y-1 w-full hover:text-lila-800 tracing-wide"
+const loadingClasses = "opacity-50 transition-opacity duration-200"
+
+function CustomWalletConnectButton() {
+  const { connectionStatus } = useWallet()
+  const { isWalletLoading, setIsWalletLoading } = useWalletLoading()
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setIsWalletLoading(false)
+    }
+  }, [])
+
+  return (
+    <AlephiumConnectButton.Custom>
+      {({ isConnected, show }) => {
+        const showLoading = isWalletLoading ||
+          connectionStatus === 'connecting' ||
+          // @ts-ignore - We need this check even though types don't overlap
+          connectionStatus === 'loading'
+
+        return (
+          <button
+            className={`${buttonClasses} ${showLoading ? loadingClasses : ''}`}
+            onClick={show}
+            disabled={showLoading}
+          >
+            {showLoading ? 'Loading...' : 'Get started'} <span className="ml-3">&rarr;</span>
+          </button>
+        )
+      }}
+    </AlephiumConnectButton.Custom>
+  )
+}
 
 export default function HeroThree() {
   const [isSpread, setIsSpread] = useState(false);
+  const { connectionStatus } = useWallet()
+  const isConnected = connectionStatus === 'connected'
 
   useEffect(() => {
     // Single timer for the spread animation
@@ -55,14 +97,16 @@ export default function HeroThree() {
                     Presence Protocol is built on the foundation of POAP, designed to leverage the power of the Alephium blockchain to provide verifiable proof of event attendance, known as a Presence.
                   </p>
                   <div className="mt-10">
-                    <a
-                      className="text-black items-center shadow shadow-black text-lg font-semibold inline-flex px-6 focus:outline-none justify-center text-center bg-white border-black ease-in-out transform transition-all focus:ring-lila-700 focus:shadow-none border-2 duration-100 focus:bg-black focus:text-white sm:w-auto py-3 rounded-lg h-16 focus:translate-y-1 w-full hover:text-lila-800 tracing-wide"
-                      href="/new-event"
-                      title="link to your page"
-                      aria-label="your label"
-                    >
-                      Get started <span className="ml-3">&rarr;</span>
-                    </a>
+                    {isConnected ? (
+                      <Link
+                        className={buttonClasses}
+                        href="/my-presence"
+                      >
+                        My Presence <span className="ml-3">&rarr;</span>
+                      </Link>
+                    ) : (
+                      <CustomWalletConnectButton />
+                    )}
                   </div>
                 </div>
 
