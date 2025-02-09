@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Live Events | Explorer',
+  title: 'Live Events | Presence Protocol',
   description: 'Browse all live events on Presence Protocol',
 };
 

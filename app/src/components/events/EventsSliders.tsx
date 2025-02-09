@@ -84,7 +84,7 @@ export default function EventsSliders() {
     <div className="mx-auto">
       <ExplorerHeader totalEvents={events.length} last24Hours={last24Hours} />
       
-      <div className="space-y-24 py-8 px-8 max-w-7xl mx-auto">
+      <div className="space-y-24 py-8 px-8 max-w-7xl mx-auto mt-12">
         {/* Live Events Section */}
         <EventSection 
           title="Live Events" 
