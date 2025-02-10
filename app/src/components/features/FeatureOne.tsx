@@ -1,5 +1,6 @@
 'use client';
 
+
 interface Section {
   id: number;
   imageSrc: string;
@@ -18,30 +19,37 @@ interface Section {
 const sections: Section[] = [
   {
     id: 1,
-    imageSrc: "/images/thumbnail2.svg",
-    imageAlt: "Staking Rewards",
-    title: "Staking Rewards",
+    imageSrc: "/images/thumbnail5.svg",
+    imageAlt: "Proof of Participation",
+    title: "Proof of Participation, Built for the Future",
     description:
-      "Put your crypto assets to work and earn passive income through staking, a feature that allows you to participate in network validation and reap rewards.",
+      "Presence Protocol turns event attendance into verifiable digital records on the Alephium blockchain. Secure, scalable, and simple to use, it brings new ways to engage and reward communities.",
     imagePosition: "left", // Image on the left
     blobImg: "/images/blob2.svg",
     listItems: [
-      "Share",
-      "Present", 
-      "Gather feedback",
-      "Interact with prototypes",
-      "Smart animate",
+      "Blockchain Verified: Tamper-proof attendance records",
+      "Mint a Presence: Digital proof of participation",
+      "Organizer Control: Create and manage events with ease",
+      "Seamless Fit: Perfect for any event, big or small",
+      "Future-Ready: Secure and scalable technology"
     ],
   },
   {
     id: 2,
-    imageSrc: "/images/thumbnail4.svg",
-    imageAlt: "Navigating the digital financial frontier",
-    title: "Navigating the digital financial frontier",
+    imageSrc: "/images/thumbnail2.svg", 
+    imageAlt: "Empowering Events & Communities",
+    title: "Empowering Events & Communities",
     description:
-      "Access a diverse range of cryptocurrencies in one unified platform, enabling you to explore and manage various digital assets effortlessly.",
+      "Unlock creative ways to connect, engage, and reward event participants. Whether it's a conference or a community meetup, Presence makes every event memorable.",
     imagePosition: "right", // Image on the right
     blobImg: "/images/blob4.svg",
+    listItems: [
+      "Engage Audiences: Reward attendees with collectible Presences",
+      "Event Passports: Track participation across events",
+      "Gamify Experiences: Offer challenges or incentives",
+      "Exclusive Perks: Unlock rewards for specific Presences",
+      "Preserve History: Build a lasting event legacy"
+    ],
     actionText: "Start Minting",
     actionLink: "/",
   },
@@ -57,11 +65,11 @@ export default function FeatureOne() {
             section.id % 2 === 0 ? "lg:grid-cols-2" : "lg:grid-cols-3"
           }`}>
           <div
-            className={`grid grid-cols-1 md:grid-cols-2 divide-y-2 divide-black md:divide-y-0 md:divide-x-2 ${
+            className={`grid grid-cols-1 md:grid-cols-2 divide-y-2 divide-black border-b-2 border-black md:divide-y-0 md:divide-x-2 ${
               section.imagePosition === "right" ? "lg:grid-flow-col-dense" : ""
             }`}>
             {section.imagePosition === "left" && (
-              <div className="block w-full aspect-square bg-green-500 h-full">
+              <div className="block w-full aspect-square bg-lila-300 h-full">
                 <img
                   className="object-cover"
                   src={section.imageSrc}
@@ -72,20 +80,20 @@ export default function FeatureOne() {
             <div className="relative p-8 lg:px-20 items-center gap-12 h-full lg:inline-flex bg-white">
               <div className="max-w-xl text-left">
                 <div>
-                  <img
+                  {/* <img
                     className="size-20"
                     src={section.blobImg}
                     alt="your alt-text"
-                  />
+                  /> */}
                   <p className="text-3xl mt-12 lg:text-5xl font-medium text-black">
                     {section.title}
                   </p>
-                  <p className="max-w-xl mt-4 xl:text-xl tracking-wide text-black">
+                  <p className="max-w-xl mt-4 xl:text-lg tracking-wide text-black">
                     {section.description}
                   </p>
                   {section.listItems && (
                     <ul
-                      className="xl:text-xl tracking-wide mt-6 text-black flex flex-col"
+                      className="xl:text-md tracking-wide mt-6 text-black flex flex-col"
                       role="list">
                       {section.listItems.map((item, index) => (
                         <li key={index} className="flex items-center gap-3">
@@ -107,11 +115,11 @@ export default function FeatureOne() {
                   {section.actionText && (
                     <div className="mt-8">
                       <a
-                        className="text-black items-center shadow shadow-red-600 text-lg font-semibold inline-flex px-6 focus:outline-none justify-center text-center bg-red-300 focus:bg-red-600 border-red-600 duration-300 outline-none focus:shadow-none border-2 sm:w-auto py-3 rounded-lg h-16 tracking-wide focus:translate-y-1 w-full hover:bg-red-500"
+                        className="text-black items-center shadow shadow-lila-600 text-lg font-semibold inline-flex px-6 focus:outline-none justify-center text-center bg-lila-300 focus:bg-lila-600 border-lila-600 duration-300 outline-none focus:shadow-none border-2 sm:w-auto py-3 rounded-lg h-16 tracking-wide focus:translate-y-1 w-full hover:bg-lila-500"
                         href={section.actionLink}
-                        title="link to your page"
-                        aria-label="your label">
-                        {section.actionText}
+                        aria-label="Explore all pages"
+                      >
+                        {section.actionText} <span className="ml-3">&rarr;</span>
                       </a>
                     </div>
                   )}
@@ -119,7 +127,7 @@ export default function FeatureOne() {
               </div>
             </div>
             {section.imagePosition === "right" && (
-              <div className="block w-full aspect-square bg-red-500 h-full">
+              <div className="block w-full aspect-square bg-lila-300 h-full">
                 <img
                   className="object-cover"
                   src={section.imageSrc}

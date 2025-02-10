@@ -38,7 +38,7 @@ export default function Footer() {
               <div>
                 <h3
                   className="text-3xl md:text-4xl text-white lg:text-5xl font-medium tracking-tight">
-                  Subscribe, get tips to grow the way you deserve.
+                  Your Presence, Forever on the Blockchain.
                 </h3>
               
                 <div className="mt-6">
@@ -47,7 +47,7 @@ export default function Footer() {
                 href="/new-event"
                 aria-label="Explore all pages"
               >
-                Get started <span className="ml-3">&rarr;</span>
+                Work with us <span className="ml-3">&rarr;</span>
               </Link>
             </div>
 

@@ -1,11 +1,11 @@
 'use client';
 
-interface ExplorerHeaderProps {
+interface EventsHeaderProps {
   totalEvents: number;
   last24Hours: number;
 }
 
-export default function ExplorerHeader({ totalEvents, last24Hours }: ExplorerHeaderProps) {
+export default function EventsHeader({ totalEvents, last24Hours }: EventsHeaderProps) {
   return (
     <section className="overflow-hidden relative">
       <div className="mx-auto bg-lila-300 relative overflow-hidden border-black border-b-2">
@@ -38,7 +38,7 @@ export default function ExplorerHeader({ totalEvents, last24Hours }: ExplorerHea
           />
           <div className="max-w-3xl mx-auto text-center lg:py-12">
           <h2 className="text-2xl lg:text-3xl font-semibold text-black text-center">
-              Presence Explorer
+              Explore Presence Events
             </h2>
             <p className="text-sm text-gray-500 mb-6">
             Discover and explore presence proofs on the blockchain

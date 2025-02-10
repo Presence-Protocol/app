@@ -1,6 +1,6 @@
 'use client';
 
-export default function ExplorerSearch() {
+export default function EventsSearch() {
   return (
     <section className="overflow-hidden relative">
       <div className="mx-auto  bg-lila-300 relative overflow-hidden">

@@ -17,11 +17,13 @@ import Image from 'next/image';
 import AlphLogo from "@/images/partner-logos/ALPH.svg"
 import PushValueLogo from "@/images/partner-logos/PV.png"
 import NTV from "@/images/partner-logos/NTV.png"
+import PineappleDAO from "@/images/partner-logos/pineapple-dao.png"
 
 const partnerLogos = [
   { src: AlphLogo, alt: "Alephium Logo" },
   { src: PushValueLogo, alt: "Push Value Logo" },
-  { src: NTV, alt: "NTV Logo" }
+  { src: NTV, alt: "NTV Logo" },
+  { src: PineappleDAO, alt: "Pineapple DAO Logo" }
 ];
 
 export default function LogoCloudOne() {
@@ -36,22 +38,9 @@ export default function LogoCloudOne() {
                 key={index}
                 src={logo.src}
                 alt={logo.alt}
-                className="max-h-12 w-auto object-contain mx-8"
-                width={108}
-                height={48}
-              />
-            ))}
-          </div>
-          {/* Second scroll container */}
-          <div className="flex absolute top-12 animate-marquee-left whitespace-nowrap">
-            {[...partnerLogos, ...partnerLogos, ...partnerLogos].map((logo, index) => (
-              <Image
-                key={`second-${index}`}
-                src={logo.src}
-                alt={logo.alt}
-                className="max-h-12 w-auto object-contain mx-8"
-                width={108}
-                height={48}
+                className="max-h-10 w-auto object-contain mx-10" 
+                width={48}
+                height={24}
               />
             ))}
           </div>

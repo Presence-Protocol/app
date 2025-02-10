@@ -37,8 +37,8 @@ export default function PoapProgress({ isOpen, onClose, progress }: PoapProgress
   return (
     <div className="w-full flex flex-col items-center">
     <div className="w-full overflow-y-auto ring-2 ring-inset ring-black text-black bg-white shadow-small rounded-xl p-8 mb-6">
-      <h2 className="text-lg font-semibold text-black lg:text-2xl mb-2">
-        Creating your POAP
+      <h2 className="text-lg font-semibold text-black lg:text-2xl md:text-xl mb-2">
+        Creating your Presence Event
       </h2>
       <p className="text-sm text-gray-500 mb-6">This won't take long, your presence is being deployed to the blockchain.</p>
 
