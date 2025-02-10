@@ -107,16 +107,12 @@ Contract PoapCollection(
   }
 
     pub fn validateNFT(nftId: ByteVec, nftIndex: U256) -> () {
-
+      let mut expectedTokenContract =  nftByIndex(nftIndex) 
         if (oneMintPerAddress){
-          let expectedTokenContract =  nftByAddress(callerAddress!())
-
-          assert!(nftId == contractId!(expectedTokenContract), ErrorCodes.NFTNotPartOfCollection)
-        }else {
-          let expectedTokenContract =  nftByIndex(nftIndex)
-          assert!(nftId == contractId!(expectedTokenContract), ErrorCodes.NFTNotPartOfCollection)
+          expectedTokenContract =  nftByAddress(callerAddress!())
         }
 
+        assert!(nftId == contractId!(expectedTokenContract), ErrorCodes.NFTNotPartOfCollection)
     }
 
     pub fn getIsPublic() -> (Bool) {
