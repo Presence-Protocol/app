@@ -27,6 +27,7 @@ export default function NewEvent() {
   const [description, setDescription] = useState('');
   const [amount, setAmount] = useState(0);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
+  const [imageString, setImageString] = useState<string | null>(null);
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [location, setLocation] = useState('');
@@ -74,6 +75,7 @@ export default function NewEvent() {
       const reader = new FileReader();
       reader.onloadend = () => {
         setPreviewImage(reader.result as string);
+        setImageString(reader.result as string);
         setIsImageValid(true);
       };
       reader.readAsDataURL(file);
@@ -122,6 +124,8 @@ export default function NewEvent() {
   const handleRemoveImage = () => {
     setPreviewImage(null);
     setIsImageValid(true);
+    setImageString(null);
+    setImageUrl('');
   };
 
   const isFormValid = () => {
@@ -208,12 +212,12 @@ export default function NewEvent() {
       const factoryContract = PoapFactory.at(deployment.contracts.PoapFactory.contractInstance.address);
 
       // Convert strings to hex format
-      const imageUri = stringToHex(previewImage || imageUrl);
+      const imageUri = stringToHex(imageString || imageUrl);
       const imageSvg = stringToHex(''); // If you have SVG version
       const eventName = stringToHex(title);
       const descriptionHex = stringToHex(description);
       const locationHex = stringToHex(location);
-      console.log(imageUri)
+
       // Call contract method using transact
       const result = await factoryContract.transact.mintNewCollection({
         args: {
