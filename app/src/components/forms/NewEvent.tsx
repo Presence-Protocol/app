@@ -182,11 +182,11 @@ export default function NewEvent() {
       const mintStart = new Date(startDate).getTime();
       const mintEnd = new Date(endDate).getTime();
 
-      if (eventEnd <= eventStart) {
+      if (eventEnd < eventStart) {
         throw new Error('Event end date must be after event start date');
       }
 
-      if (mintEnd <= mintStart) {
+      if (mintEnd < mintStart) {
         throw new Error('Minting end date must be after minting start date');
       }
 
