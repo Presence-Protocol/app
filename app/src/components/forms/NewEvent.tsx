@@ -622,7 +622,7 @@ export default function NewEvent() {
                       {previewImage ? (
                         <>
                           <img src={previewImage} alt="Preview" className="w-full h-full object-cover rounded-2xl" />
-                          {!isPublicEvent && (
+                          {/* {!isPublicEvent && (
                             <Tooltip text="Private Event">
                               <div className="absolute top-2 right-2 bg-black bg-opacity-50 p-2 rounded-full">
                                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-white" viewBox="0 0 20 20" fill="currentColor">
@@ -630,7 +630,7 @@ export default function NewEvent() {
                                 </svg>
                               </div>
                             </Tooltip>
-                          )}
+                          )} */}
                         </>
                       ) : (
                         <div className="w-full h-full flex items-center justify-center text-gray-400">No image uploaded</div>
@@ -678,9 +678,9 @@ export default function NewEvent() {
                             </svg>
                             <span>Mint Amount: {amount}</span>
                             {mintLimit && (
-                              <Tooltip text="Maximum 1 mint per address">
-                                <span className="ml-2 bg-black text-white text-xs px-1 rounded">1/wallet</span>
-                              </Tooltip>
+                              // <Tooltip text="Maximum 1 mint per address">
+                                <span className="ml-2 bg-lila-400 text-black text-[10px] px-1.5 py-0.5 rounded">1 per wallet</span>
+                              // </Tooltip>
                             )}
                           </div>
                         </Tooltip>

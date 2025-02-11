@@ -8,6 +8,7 @@ import colors from "tailwindcss/colors";
 
 export default {
   content: ['./src/**/*.{js,jsx,ts,tsx}'],
+  darkMode: 'class',
   theme: {
     extend: {
       fontFamily: {
@@ -65,22 +66,28 @@ export default {
         large: "0px 10px",
       },
       colors: {
+        primary: 'var(--color-primary)',
+        secondary: 'var(--color-secondary)',
+        background: 'var(--color-background)',
+        foreground: 'var(--color-foreground)',
+        muted: 'var(--color-muted)',
+        accent: 'var(--color-accent)',
         'neon-green': '#39ff14',
         'neon-pink': '#ff0066',
         'neon-blue': '#00ffff',
         'neon-purple': '#9900ff',
-        black: "#141520",
-        white: "#f5f5f5",
+        black: 'var(--color-foreground)',
+        white: 'var(--color-background)',
         green: {
           50: "#F8FBFC",
           100: "#F2F7F8",
           200: "#E1EDEF",
           300: "#D3E5E8",
           400: "#C6DDE2",
-          500: "#B7D4DA",
-          600: "#82B5BF",
-          700: "#51919E",
-          800: "#366068",
+          500: 'var(--color-secondary)',
+          600: 'var(--color-muted)',
+          700: 'var(--color-secondary)',
+          800: 'var(--color-muted)',
           900: "#1C3236"
         },
         lila: {
@@ -89,10 +96,10 @@ export default {
           200: "#EAE6FE",
           300: "#E2DCFE",
           400: "#D6CEFD",
-          500: "#C8BEFD",
+          500: 'var(--color-primary)',
           600: "#B4A6FC",
-          700: "#A08DFB",
-          800: "#836BFA",
+          700: 'var(--color-accent)',
+          800: 'var(--color-accent)',
           900: "#5534F9"
         },
         yellow: {
