@@ -488,8 +488,10 @@ export default function NewEvent() {
             <p className="text-xs text-gray-500 mb-2">Set a price for minting (in ALPH)</p>
             <input
               type="number"
-              min="0"
+              min=""
               step="0.1"
+              disabled={true}
+              placeholder='coming soon'
               value={Number(poapPrice) / 10**18}
               onChange={(e) => setPoapPrice(BigInt(Math.floor(Number(e.target.value) * 10**18)))}
               className="block w-full px-3 py-3 text-xl text-black border-2 border-black appearance-none placeholder-black focus:border-black focus:bg-lila-500 focus:outline-none focus:ring-black sm:text-sm rounded-2xl"
@@ -596,6 +598,7 @@ export default function NewEvent() {
             <p className="text-xs text-gray-500 mb-2">Token ID for the POAP (default: ALPH)</p>
             <input
               type="text"
+              disabled={true}
               value={tokenId}
               onChange={(e) => setTokenId(e.target.value)}
               className="block w-full px-3 py-3 text-xl text-black border-2 border-black appearance-none placeholder-black focus:border-black focus:bg-lila-500 focus:outline-none focus:ring-black sm:text-sm rounded-2xl"
