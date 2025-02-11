@@ -895,10 +895,10 @@ export default function NewEvent() {
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                           <div className="border-2 border-black divide-black shadow rounded-2xl overflow-hidden">
                             <div>
-                              <label htmlFor="startDate" className="block px-3 pt-2 pb-2 text-sm text-gray-600">Start Minting Date</label>
+                              <label htmlFor="startDate" className="block px-3 pt-2 pb-2 text-sm text-gray-600">Start Minting Date & Time</label>
                               <input
                                 id="startDate"
-                                type="date"
+                                type="datetime-local"
                                 placeholder="Start Minting Date"
                                 value={startDate}
                                 onChange={(e) => setStartDate(e.target.value)}
@@ -909,10 +909,10 @@ export default function NewEvent() {
 
                           <div className="border-2 border-black divide-black shadow rounded-2xl overflow-hidden">
                             <div>
-                              <label htmlFor="endDate" className="block px-3 pt-2 pb-2 text-sm text-gray-600">End Minting Date</label>
+                              <label htmlFor="endDate" className="block px-3 pt-2 pb-2 text-sm text-gray-600">End Minting Date & Time</label>
                               <input
                                 id="endDate"
-                                type="date"
+                                type="datetime-local"
                                 placeholder="End Minting Date"
                                 value={endDate}
                                 onChange={(e) => setEndDate(e.target.value)}
