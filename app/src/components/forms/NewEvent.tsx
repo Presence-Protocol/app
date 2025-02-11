@@ -146,10 +146,8 @@ export default function NewEvent() {
       eventStartDate.length > 0 &&
       eventEndDate.length > 0 &&
       location.length > 0 &&
-      isImageValid &&
-      previewImage !== null &&
-      eventEnd > eventStart &&
-      mintEnd > mintStart
+      eventEnd >= eventStart &&
+      mintEnd >= mintStart
     );
   };
 
