@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useEffect, useState } from 'react';
-import { web3, Contract, MINIMAL_CONTRACT_DEPOSIT, DUST_AMOUNT, Subscription, contractIdFromAddress, addressFromContractId, NetworkId, ALPH_TOKEN_ID } from '@alephium/web3'
+import { web3, Contract, MINIMAL_CONTRACT_DEPOSIT, DUST_AMOUNT, Subscription, contractIdFromAddress, addressFromContractId, NetworkId, ALPH_TOKEN_ID, ONE_ALPH } from '@alephium/web3'
 import { PoapFactory, PoapFactoryTypes } from '../../../../contracts/artifacts/ts/PoapFactory'
 import { toast } from 'react-hot-toast'
 import { useWallet } from '@alephium/web3-react'
@@ -238,7 +238,7 @@ export default function NewEvent() {
           amountPoapFees: 0n
         },
         signer: signer,
-        attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT+DUST_AMOUNT,
+        attoAlphAmount: storageFees <= 0 ? MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT : MINIMAL_CONTRACT_DEPOSIT + storageFees,
       });
 
       setProgressState({ 

@@ -23,6 +23,7 @@ interface NFTCollection {
   location: string;
   currentSupply: bigint;
   isPublic: boolean;
+  amountForStorageFees: bigint;
 }
 
 export default function MintNFTSimple() {
@@ -51,7 +52,8 @@ export default function MintNFTSimple() {
     eventEndDate: BigInt(0),
     location: '00',
     currentSupply: BigInt(0),
-    isPublic: false
+    isPublic: false,
+    amountForStorageFees: 0n
   });
 
   useEffect(() => {
@@ -98,7 +100,8 @@ export default function MintNFTSimple() {
             mintStartDate: collectionMetadata.fields.mintStartAt,
             mintEndDate: collectionMetadata.fields.mintEndAt,
             eventStartDate: collectionMetadata.fields.eventStartAt,
-            eventEndDate: collectionMetadata.fields.eventEndAt
+            eventEndDate: collectionMetadata.fields.eventEndAt,
+            amountForStorageFees: collectionMetadata.fields.amountForStorageFees
           });
           setIsLoading(false);
         })
@@ -129,12 +132,13 @@ export default function MintNFTSimple() {
         throw new Error('POAP collection not initialized')
       }
 
+      console.log(nftCollection.amountForStorageFees)
       const result = await factoryContract.transact.mintPoap({
         args: {
           collection: poapCollection.contractId,
         },
         signer: signer,
-        attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT
+        attoAlphAmount: nftCollection.amountForStorageFees > MINIMAL_CONTRACT_DEPOSIT ?  DUST_AMOUNT : MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT
       });
 
       setMintTxId(result.txId);
