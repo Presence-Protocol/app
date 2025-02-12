@@ -1,6 +1,6 @@
 "use client"
 
-import { addressFromContractId, contractIdFromAddress, DUST_AMOUNT, hexToString, MINIMAL_CONTRACT_DEPOSIT, NetworkId, stringToHex, web3 } from '@alephium/web3';
+import { addressFromContractId, contractIdFromAddress, DUST_AMOUNT, hexToString, MINIMAL_CONTRACT_DEPOSIT, NetworkId, stringToHex, waitForTxConfirmation, web3 } from '@alephium/web3';
 import { useWallet } from '@alephium/web3-react';
 import { PoapFactory, PoapCollection, PoapFactoryTypes, PoapFactoryInstance, PoapCollectionInstance } from 'my-contracts';
 import { loadDeployments } from 'my-contracts/deployments';
@@ -141,14 +141,18 @@ export default function MintNFTSimple() {
         attoAlphAmount: nftCollection.amountForStorageFees > MINIMAL_CONTRACT_DEPOSIT ?  DUST_AMOUNT : MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT
       });
 
-      setMintTxId(result.txId);
+      //setMintTxId(result.txId);
+      await waitForTxConfirmation(result.txId, 1, 5*1000);
+      setShowConfetti(true)
+          setIsMintSuccessOpen(true);
+          setIsMinting(false);
     } catch (error) {
       console.error('Error minting Presence:', error);
     }
   }
 
   // Add event subscription
-  useEffect(() => {
+ /* useEffect(() => {
     if (!poapCollection || !mintTxId || !account?.address) return;
 
     const subscription = poapCollection.subscribePoapMintedEvent({
@@ -171,7 +175,7 @@ export default function MintNFTSimple() {
     return () => {
       subscription.unsubscribe();
     };
-  }, [poapCollection, mintTxId, account?.address]);
+  }, [poapCollection, mintTxId, account?.address]);*/
 
   const formatDate = (timestamp: bigint): string => {
     const date = new Date(Number(timestamp));
