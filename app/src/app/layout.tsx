@@ -19,7 +19,7 @@ export const metadata: Metadata = {
     default: 'Presence Protocol',
   },
   description:
-    'Most bookkeeping software is accurate, but hard to use. We make the opposite trade-off, and hope you do not get audited.',
+    'Create unique events where participants can mint verifiable proof of their attendance on Alephium.',
 }
 
 export default function RootLayout({
