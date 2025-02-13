@@ -47,6 +47,8 @@ export namespace PoapCollectionTypes {
     oneMintPerAddress: boolean;
     poapPrice: bigint;
     tokenIdPoap: HexString;
+    tokenIdAirdrop: HexString;
+    amountAirdropPerUser: bigint;
     eventImage: HexString;
     eventName: HexString;
     description: HexString;
@@ -59,6 +61,7 @@ export namespace PoapCollectionTypes {
     amountForStorageFees: bigint;
     amountPoapFees: bigint;
     totalSupply: bigint;
+    amountAirdrop: bigint;
   };
 
   export type State = ContractState<Fields>;
@@ -319,7 +322,7 @@ export const PoapCollection = new Factory(
   Contract.fromJson(
     PoapCollectionContractJson,
     "",
-    "a359318da61e92aa9ea0a946a0a0d9035bbc18c07abccee17ad79a4903324c5b",
+    "fddcc06c3e23ca0c1aa3e242b16d751396bfe2cd0fe8196c06620641c42a8d57",
     AllStructs
   )
 );

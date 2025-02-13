@@ -70,6 +70,8 @@ export namespace PoapFactoryTypes {
         oneMintPerAddress: boolean;
         poapPrice: bigint;
         tokenIdPoap: HexString;
+        tokenIdAirdrop: HexString;
+        amountAirdropPerUser: bigint;
         eventImage: HexString;
         eventName: HexString;
         description: HexString;
@@ -81,6 +83,7 @@ export namespace PoapFactoryTypes {
         amountForStorageFees: bigint;
         amountPoapFees: bigint;
         totalSupply: bigint;
+        amountAirdrop: bigint;
       }>;
       result: CallContractResult<HexString>;
     };
@@ -118,6 +121,8 @@ export namespace PoapFactoryTypes {
         oneMintPerAddress: boolean;
         poapPrice: bigint;
         tokenIdPoap: HexString;
+        tokenIdAirdrop: HexString;
+        amountAirdropPerUser: bigint;
         eventImage: HexString;
         eventName: HexString;
         description: HexString;
@@ -129,6 +134,7 @@ export namespace PoapFactoryTypes {
         amountForStorageFees: bigint;
         amountPoapFees: bigint;
         totalSupply: bigint;
+        amountAirdrop: bigint;
       }>;
       result: SignExecuteScriptTxResult;
     };
@@ -176,6 +182,8 @@ class Factory extends ContractFactory<
           oneMintPerAddress: boolean;
           poapPrice: bigint;
           tokenIdPoap: HexString;
+          tokenIdAirdrop: HexString;
+          amountAirdropPerUser: bigint;
           eventImage: HexString;
           eventName: HexString;
           description: HexString;
@@ -187,6 +195,7 @@ class Factory extends ContractFactory<
           amountForStorageFees: bigint;
           amountPoapFees: bigint;
           totalSupply: bigint;
+          amountAirdrop: bigint;
         }
       >
     ): Promise<TestContractResultWithoutMaps<HexString>> => {
@@ -234,7 +243,7 @@ export const PoapFactory = new Factory(
   Contract.fromJson(
     PoapFactoryContractJson,
     "",
-    "81d0dd4f9bf0f2857f662b1de585b6680992ffd39a11fc9a1006518f4f44d3dd",
+    "7d69698052b0e0e6a94ec0287cac6fc13c57a037c91d9c78a1fd64f4e5f3eeaf",
     AllStructs
   )
 );

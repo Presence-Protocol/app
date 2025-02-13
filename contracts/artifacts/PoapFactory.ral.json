@@ -1,8 +1,8 @@
 {
   "version": "v3.11.2",
   "name": "PoapFactory",
-  "bytecode": "0303407c40d640e40103111601403ed3ccd72652b41711ce0116001601160216031604160516061607160816111609160a160b160c160d1406414c50480002131164160e160f161013036417131712d11714160e0c334c07160ed13413097b160e171416111614a2ce0016121613af1715a0000d2aa10005161516071611160c6116150201030108004032d3f652052cb417010c0d160001071702d117031602d1334c020c17030c0e160001091705170416017a1603a216051604a316010d0d1600010417060c0d1600010117070616061600160716010c0d1600010673010000000103d3c2aa9c01a00002",
-  "codeHash": "81d0dd4f9bf0f2857f662b1de585b6680992ffd39a11fc9a1006518f4f44d3dd",
+  "bytecode": "0303408b40e540f301031419014047d3448b84ccb41714ce011600160116021603160416051606160716081609160a1614160b160c160d160e160f1406414c50480002131364161016111612161313046417161715d1171716100c334c091610d13413097b161716102a171716147a1617a216061613a3ce0016151616af1718a0000d2aa10005161816091614160e6116180201030108004032d3f652052cb417010c0d160001071702d1170316020c334c020c17030c0e160001091705170416017a1603a216051604a316010d0d1600010417060c0d1600010117070616061600160716010c0d1600010673010000000103d3c2aa9c01a00002",
+  "codeHash": "7d69698052b0e0e6a94ec0287cac6fc13c57a037c91d9c78a1fd64f4e5f3eeaf",
   "fieldsSig": {
     "names": [
       "collectionTemplateId",
@@ -64,6 +64,8 @@
         "oneMintPerAddress",
         "poapPrice",
         "tokenIdPoap",
+        "tokenIdAirdrop",
+        "amountAirdropPerUser",
         "eventImage",
         "eventName",
         "description",
@@ -74,7 +76,8 @@
         "isBurnable",
         "amountForStorageFees",
         "amountPoapFees",
-        "totalSupply"
+        "totalSupply",
+        "amountAirdrop"
       ],
       "paramTypes": [
         "U256",
@@ -84,6 +87,8 @@
         "U256",
         "ByteVec",
         "ByteVec",
+        "U256",
+        "ByteVec",
         "ByteVec",
         "ByteVec",
         "ByteVec",
@@ -91,11 +96,15 @@
         "U256",
         "Bool",
         "Bool",
+        "U256",
         "U256",
         "U256",
         "U256"
       ],
       "paramIsMutable": [
+        false,
+        false,
+        false,
         false,
         false,
         false,

@@ -48,7 +48,10 @@ const deployTemplates: DeployFunction<Settings> = async (
       amountForStorageFees: 0n,
       poapPrice: 0n,
       tokenIdPoap: ALPH_TOKEN_ID,
-      amountPoapFees: 0n
+      amountPoapFees: 0n,
+      tokenIdAirdrop: '',
+      amountAirdropPerUser: 0n,
+      amountAirdrop: 0n
     }
   })
 

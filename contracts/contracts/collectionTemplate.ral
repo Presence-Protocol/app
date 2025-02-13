@@ -7,6 +7,8 @@ Contract PoapCollection(
     oneMintPerAddress: Bool,
     poapPrice: U256,
     tokenIdPoap: ByteVec,
+    tokenIdAirdrop: ByteVec,
+    amountAirdropPerUser: U256,
 
     //event properties
     eventImage: ByteVec,
@@ -21,7 +23,8 @@ Contract PoapCollection(
 
     mut amountForStorageFees: U256,
     mut amountPoapFees: U256,
-    mut totalSupply: U256
+    mut totalSupply: U256,
+    mut amountAirdrop: U256    
   ) implements INFTCollection {
 
    event PoapMinted(contractId: ByteVec, nftIndex: U256, caller: Address)
@@ -48,7 +51,7 @@ Contract PoapCollection(
 
      let mut payer = caller
      // pay storage fees if there's alph in contract
-     if(amountForStorageFees > minimalContractDeposit!()){
+     if(amountForStorageFees > 0){
         payer = selfAddress!()
         amountForStorageFees = amountForStorageFees - minimalContractDeposit!()
      }
@@ -56,6 +59,11 @@ Contract PoapCollection(
      if(poapPrice > 0){
         transferTokenToSelf!(caller, tokenIdPoap, poapPrice)
         amountPoapFees = amountPoapFees + poapPrice
+     }
+
+     if(amountAirdrop >= amountAirdropPerUser){
+        transferTokenFromSelf!(caller, tokenIdAirdrop, amountAirdropPerUser)
+        amountAirdrop = amountAirdrop - amountAirdropPerUser
      }
 
      let contractId = copyCreateSubContractWithToken!{payer -> ALPH: minimalContractDeposit!()}(
@@ -75,11 +83,6 @@ Contract PoapCollection(
    }
 
     pub fn getCollectionUri() -> ByteVec {
-
-     //if(imageSvg != #00){
-     //   return b`data:application/json,{"name": "` ++ eventName ++ b`", "description": "`++ description ++ b`", "image": "` ++ imageSvg ++ b`"}`
-     // }
-
       return b`data:application/json,{"name": "` ++ eventName ++ b`", "description": "`++ description ++ b`", "image": "` ++     eventImage ++ b`"}`
     }
     

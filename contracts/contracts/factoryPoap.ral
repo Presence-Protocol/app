@@ -16,6 +16,8 @@ Contract PoapFactory(
         oneMintPerAddress: Bool,
         poapPrice: U256,
         tokenIdPoap: ByteVec,
+        tokenIdAirdrop: ByteVec,
+        amountAirdropPerUser: U256,
 
         //event properties
         eventImage: ByteVec,
@@ -29,7 +31,8 @@ Contract PoapFactory(
 
         amountForStorageFees: U256,
         amountPoapFees: U256,
-        totalSupply: U256) -> (ByteVec){
+        totalSupply: U256,
+        amountAirdrop: U256) -> (ByteVec){
             let caller = callerAddress!()
 
             let (initialImmState, initialMutState) = PoapCollection.encodeFields!(poapTemplateId,
@@ -39,6 +42,8 @@ Contract PoapFactory(
                 oneMintPerAddress,
                 poapPrice,
                 tokenIdPoap,
+                tokenIdAirdrop,
+                amountAirdropPerUser,
                 eventImage,
                 eventName,
                 description,
@@ -50,15 +55,17 @@ Contract PoapFactory(
                 isBurnable,
                 amountForStorageFees,
                 amountPoapFees,
-                totalSupply)
+                totalSupply,
+                amountAirdrop    
+            )
             
             let mut amountForStorageFeesInContract = minimalContractDeposit!()
             if(amountForStorageFees > 0){
                 assert!(amountForStorageFees >= minimalContractDeposit!(), ErrorCodes.NotEnoughAlph)
-                amountForStorageFeesInContract = amountForStorageFees
+                amountForStorageFeesInContract = amountForStorageFeesInContract + amountForStorageFees
             }
 
-            let contractId = copyCreateContract!{caller -> ALPH: amountForStorageFeesInContract}(    
+            let contractId = copyCreateContract!{caller -> ALPH: amountForStorageFeesInContract, tokenIdAirdrop: amountAirdrop}(    
                 collectionTemplateId,
                 initialImmState,
                 initialMutState
@@ -78,7 +85,7 @@ Contract PoapFactory(
         let collectionAmountAlphInContract = collection.getAmountForStorageFees()
 
         let mut feesStorageAmount = minimalContractDeposit!()
-        if(collectionAmountAlphInContract > minimalContractDeposit!()){
+        if(collectionAmountAlphInContract > 0){
             feesStorageAmount = 0
         }
 
