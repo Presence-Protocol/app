@@ -2,10 +2,71 @@
 
 import Link from 'next/link';
 import { useState, FormEvent } from 'react';
+import { useWallet } from '@alephium/web3-react';
+import { AlephiumConnectButton } from '@alephium/web3-react';
+import { useWalletLoading } from '@/context/WalletLoadingContext';
+import Image from 'next/image';
+import TelegramQRCode from '@/images/social/telegram.jpeg';
+const buttonClasses = "text-black items-center shadow shadow-lila-600 text-lg font-semibold inline-flex px-6 focus:outline-none justify-center text-center bg-lila-300 focus:bg-lila-600 border-lila-600 duration-300 outline-none focus:shadow-none border-2 sm:w-auto py-3 rounded-lg h-16 tracking-wide focus:translate-y-1 w-full hover:bg-lila-500"
+const loadingClasses = "opacity-50 transition-opacity duration-200"
+
+function CustomWalletConnectButton() {
+  const { connectionStatus } = useWallet()
+  const { isWalletLoading } = useWalletLoading()
+
+  return (
+    <AlephiumConnectButton.Custom>
+      {({ show }) => {
+        const showLoading = isWalletLoading ||
+          connectionStatus === 'connecting' ||
+          // @ts-ignore
+          connectionStatus === 'loading'
+
+        return (
+          <button
+            className={`${buttonClasses} ${showLoading ? loadingClasses : ''}`}
+            onClick={show}
+            disabled={showLoading}
+          >
+            {showLoading ? 'Loading...' : 'Work with us'} <span className="ml-3">&rarr;</span>
+          </button>
+        )
+      }}
+    </AlephiumConnectButton.Custom>
+  )
+}
+
+function CustomGetStartedButton() {
+  const { connectionStatus } = useWallet()
+  const { isWalletLoading } = useWalletLoading()
+
+  return (
+    <AlephiumConnectButton.Custom>
+      {({ show }) => {
+        const showLoading = isWalletLoading ||
+          connectionStatus === 'connecting' ||
+          // @ts-ignore
+          connectionStatus === 'loading'
+
+        return (
+          <button
+            className="hover:text-lila-500 text-leftC"
+            onClick={show}
+            disabled={showLoading}
+          >
+            {showLoading ? 'Loading...' : 'Get Started'}
+          </button>
+        )
+      }}
+    </AlephiumConnectButton.Custom>
+  )
+}
 
 export default function Footer() {
   const [email, setEmail] = useState('');
   const [error, setError] = useState('');
+  const { connectionStatus } = useWallet()
+  const isConnected = connectionStatus === 'connected'
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -26,13 +87,10 @@ export default function Footer() {
   };
 
   return (
-
-
-
     <footer className="overflow-hidden">
       <div
         className="p-8 lg:p-20 pb-0 lg:pb-0  mx-auto bg-black border-b border-black">
-        <div className="h-full space-y-12 lg:space-y-0 pb-12 lg:pb-48">
+        <div className="h-full space-y-12 lg:space-y-0 pb-12 lg:pb-24">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 lg:gap-32 items-start">
             <div className="flex flex-col gap-6 lg:col-span-2 max-w-xl">
               <div>
@@ -40,17 +98,22 @@ export default function Footer() {
                   className="text-3xl md:text-4xl text-white lg:text-5xl font-medium tracking-tight">
                   Your Presence, Forever on the Blockchain.
                 </h3>
-              
-                <div className="mt-6">
-              <Link
-                className="text-black items-center shadow shadow-lila-600 text-lg font-semibold inline-flex px-6 focus:outline-none justify-center text-center bg-lila-300 focus:bg-lila-600 border-lila-600 duration-300 outline-none focus:shadow-none border-2 sm:w-auto py-3 rounded-lg h-16 tracking-wide focus:translate-y-1 w-full hover:bg-lila-500"
-                href="/new-event"
-                aria-label="Explore all pages"
-              >
-                Work with us <span className="ml-3">&rarr;</span>
-              </Link>
-            </div>
 
+
+
+                {/* <div className="mt-6">
+                  {isConnected ? (
+                    <Link
+                      className={buttonClasses}
+                      href="/new-event"
+                      aria-label="Explore all pages"
+                    >
+                      Work with us <span className="ml-3">&rarr;</span>
+                    </Link>
+                  ) : (
+                    <CustomWalletConnectButton />
+                  )}
+                </div> */}
 
               </div>
               <div
@@ -148,17 +211,37 @@ export default function Footer() {
                     </div>
                   </a>
                 </div>
+
+
+
+                <a 
+                  href="https://t.me/+gTNus1GdkRM4MTE0" target='_blank'
+                  className="mt-6 w-fit bg-white p-1 rounded-lg shadow block transition-transform duration-300 hover:scale-110"
+                >
+                  <Image
+                    src={TelegramQRCode}
+                    alt="Join our Telegram"
+                    width={72}
+                    height={72}
+                    className="rounded"
+                  />
+                </a>
               </div>
             </div>
             <nav
               className="grid grid-cols-1 gap-x-12 gap-y-4 l justify-between text-base tracking-wide items-center text-white"
               role="navigation">
-              <a
-                className="hover:text-lila-500"
-                title="link to your page"
-                aria-label="your label"
-                href="/"
-              >Get Started</a>
+              {isConnected ? (
+                <Link
+                  className="hover:text-lila-500"
+                  href="/new-event"
+                  aria-label="Get Started"
+                >
+                  Get Started
+                </Link>
+              ) : (
+                <CustomGetStartedButton />
+              )}
               <a
                 className="hover:text-lila-500"
                 title="link to your page"
@@ -166,7 +249,7 @@ export default function Footer() {
                 href="/documentation"
               >Documentation</a
               >
-       
+
               <a
                 className="hover:text-lila-500"
                 title="link to your page"
@@ -184,9 +267,8 @@ export default function Footer() {
             </nav>
           </div>
         </div>
-       
+
       </div>
     </footer>
-
   )
 }

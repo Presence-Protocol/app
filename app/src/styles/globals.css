@@ -2,7 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
-
+@layer base {
+  body {
+    @apply bg-background text-foreground;
+  }
+}
 
 :root {
   --astro-code-color-text: #f5f5f5;
@@ -16,6 +20,23 @@
   --astro-code-token-string-expression: #c6bef8;
   --astro-code-token-punctuation: #fae4c9;
   --astro-code-token-link: #c1d2d8;
+  /* Light mode variables */
+  --color-primary: #C8BEFD;     /* Your lila-500 */
+  --color-secondary: #B7D4DA;   /* Your green-500 */
+  --color-background: #f5f5f5;  /* Your white */
+  --color-foreground: #141520;  /* Your black */
+  --color-muted: #82B5BF;      /* Your green-600 */
+  --color-accent: #A08DFB;     /* Your lila-700 */
+}
+
+.dark {
+  /* Dark mode variables */
+  --color-primary: #1e293b;     /* Dark gray */
+  --color-secondary: #C8BEFD;   /* Light lila */
+  --color-background: #0f172a;  /* Darker gray for background */
+  --color-foreground: #f5f5f5;  /* White */
+  --color-muted: #A08DFB;      /* Darker lila */
+  --color-accent: #B4A6FC;     /* Medium lila */
 }
 /* Transition on the summary tag by faking the bottom maring*/
 details summary {
@@ -27,5 +48,5 @@ details[open] summary {
 }
 
 .prose-styles {
-  @apply text-xl prose prose-xl text-black  prose-a:font-normal prose-a:text-lila-800 hover:prose-a:text-black prose-h1:text-black  prose-img:border-transparent  prose-h2:text-black prose-img:shadow-large prose-headings:font-medium tracking-wide prose-blockquote:border-2 prose-blockquote:bg-yellow-500 prose-img:rounded-3xl prose-img:border-2 prose-img:border-black prose-blockquote:p-12 prose-blockquote:border-black prose-blockquote:rounded-3xl prose-blockquote:shadow-large  prose-pre:font-mono max-w-none prose-pre:border;
+  @apply text-xl prose prose-xl text-foreground prose-a:font-normal prose-a:text-accent hover:prose-a:text-foreground prose-h1:text-foreground prose-img:border-transparent prose-h2:text-foreground prose-img:shadow-large prose-headings:font-medium tracking-wide prose-blockquote:border-2 prose-blockquote:bg-primary prose-img:rounded-3xl prose-img:border-2 prose-img:border-foreground prose-blockquote:p-12 prose-blockquote:border-foreground prose-blockquote:rounded-3xl prose-blockquote:shadow-large prose-pre:font-mono max-w-none prose-pre:border;
 }

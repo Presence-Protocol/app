@@ -5,9 +5,11 @@ import { useWallet } from '@alephium/web3-react';
 import { AlephiumConnectButton } from '@alephium/web3-react';
 import { useWalletLoading } from '@/context/WalletLoadingContext';
 import Link from 'next/link';
+import Image from 'next/image';
+import PizzaImage from '../../../public/illustrations/pizza.png'
 
-// Add the button styles
-const buttonClasses = "text-black items-center shadow shadow-black text-lg font-semibold inline-flex px-6 focus:outline-none justify-center text-center bg-white border-black ease-in-out transform transition-all focus:ring-lila-700 focus:shadow-none border-2 duration-100 focus:bg-black focus:text-white sm:w-auto py-3 rounded-lg h-16 focus:translate-y-1 w-full hover:text-lila-800 tracing-wide"
+// Update button styles to use theme colors
+const buttonClasses = "text-foreground items-center shadow shadow-foreground text-lg font-semibold inline-flex px-6 focus:outline-none justify-center text-center bg-background border-foreground ease-in-out transform transition-all focus:ring-accent focus:shadow-none border-2 duration-100 focus:bg-foreground focus:text-background sm:w-auto py-3 rounded-lg h-16 focus:translate-y-1 w-full hover:text-accent tracing-wide"
 const loadingClasses = "opacity-50 transition-opacity duration-200"
 
 function CustomWalletConnectButton() {
@@ -60,7 +62,7 @@ export default function HeroThree() {
     {
       title: 'Presence Pizza Meetup',
       description: 'Redeem your presence for pizza!',
-      image: '/images/blob5.svg',
+      image: '/images/blob7.svg',
     },
     {
       title: 'Alephium Dev Meetup',
@@ -85,15 +87,17 @@ export default function HeroThree() {
   ];
 
   return (
-    <div className="bg-gradient-to-r from-lila-200 to-lila-400">
+    <div className="bg-gradient-to-r from-lila-200 via-lila-300 to-lila-400 dark:bg-slate-900 ">
       <main>
         <div className="relative isolate">
           <div className="overflow-hidden">
             <div className="mx-auto max-w-8xl px-6 sm:px-8 md:px-12 lg:px-20 pb-12 pt-24 sm:pt-16 lg:pt-6">
               <div className="mx-auto max-w-2xl gap-x-8 lg:mx-0 lg:flex lg:max-w-none lg:items-center justify-evenly">
                 <div className="relative w-full lg:max-w-xl lg:shrink-0 xl:max-w-2xl">
-                  <h2 className="text-pretty text-4xl sm:text-5xl lg:text-6xl font-semibold tracking-tight text-black">Proof You Were There.<br/> Powered by Alephium</h2>
-                  <p className="mt-8 text-pretty text-md lg:text-md font-medium text-black sm:max-w-md sm:text-lg/7 lg:max-w-none">
+                  <h2 className="text-pretty text-4xl sm:text-5xl lg:text-6xl font-semibold tracking-tight text-foreground">
+                    Proof You Were There.<br/> Powered by Alephium
+                  </h2>
+                  <p className="mt-8 text-pretty text-md lg:text-md font-medium text-foreground/80 sm:max-w-md sm:text-lg/7 lg:max-w-none">
                     Presence Protocol is built on the foundation of POAP, designed to leverage the power of the Alephium blockchain to provide verifiable proof of event attendance, known as a Presence.
                   </p>
                   <div className="mt-10">
@@ -129,14 +133,14 @@ export default function HeroThree() {
                         }}
                       >
                         <div 
-                          className="bg-white p-3 rounded-xl border-2 border-black shadow-large group overflow-hidden w-[200px] sm:w-[250px]"
+                          className="bg-background p-3 rounded-xl border-2 border-foreground shadow-large group overflow-hidden w-[200px] sm:w-[250px] transition-colors duration-200"
                           style={{
                             position: 'relative',
                             zIndex: cards.length - index,
                           }}
                         >
                           <div className="relative h-auto">
-                            <div className="aspect-square rounded-lg box-border bg-gradient-to-t from-lila-400 to-lila-300 p-2 h-full" />
+                            <div className="aspect-square rounded-lg box-border border-2 border-foreground bg-lila-300 dark:bg-gradient-to-t dark:from-primary dark:to-secondary p-2 h-full transition-colors duration-200" />
                             <img
                               src={card.image}
                               alt="Feature blob"
@@ -144,8 +148,8 @@ export default function HeroThree() {
                             />
                           </div>
                           <div className="h-[80px] flex flex-col justify-center">
-                            <h3 className="font-medium text-sm lg:text-base">{card.title}</h3>
-                            <p className="text-xs text-gray-600 lg:text-xs">{card.description}</p>
+                            <h3 className="font-medium text-sm lg:text-base text-foreground">{card.title}</h3>
+                            <p className="text-xs text-foreground/60 lg:text-xs">{card.description}</p>
                           </div>
                         </div>
                       </div>

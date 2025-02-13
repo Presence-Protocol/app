@@ -19,7 +19,9 @@
     "@alephium/web3": "^1.11.2",
     "autoprefixer": "^10.4.20",
     "next": "^15.1.4",
+    "next-themes": "^0.4.4",
     "postcss": "^8.5.1",
+    "react-confetti": "^6.2.2",
     "react-hot-toast": "^2.5.1",
     "tailwindcss": "^3.4.17"
   },

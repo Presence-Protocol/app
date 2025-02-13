@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useEffect, useState } from 'react';
-import { web3, Contract, MINIMAL_CONTRACT_DEPOSIT, DUST_AMOUNT, Subscription, contractIdFromAddress, addressFromContractId, NetworkId, ALPH_TOKEN_ID } from '@alephium/web3'
+import { web3, Contract, MINIMAL_CONTRACT_DEPOSIT, DUST_AMOUNT, Subscription, contractIdFromAddress, addressFromContractId, NetworkId, ALPH_TOKEN_ID, ONE_ALPH } from '@alephium/web3'
 import { PoapFactory, PoapFactoryTypes } from '../../../../contracts/artifacts/ts/PoapFactory'
 import { toast } from 'react-hot-toast'
 import { useWallet } from '@alephium/web3-react'
@@ -238,7 +238,7 @@ export default function NewEvent() {
           amountPoapFees: 0n
         },
         signer: signer,
-        attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT+DUST_AMOUNT,
+        attoAlphAmount: storageFees <= 0 ? MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT : MINIMAL_CONTRACT_DEPOSIT + storageFees,
       });
 
       setProgressState({ 
@@ -611,7 +611,7 @@ export default function NewEvent() {
 
   return (
     <>
-      <section>
+      <section className="bg-white">
         <div className="mx-auto mt-">
           <div className="relative justify-center max-h-[calc(100vh-82px)] lg:max-h-[calc(100vh-82px)] md:max-h-[calc(100vh-58px)] lg:px-0 md:px-12 grid lg:grid-cols-5 h-screen lg:divide-x-2 divide-black">
             <div className="hidden bg-lila-500 lg:col-span-2 lg:block lg:flex-1 lg:relative sm:contents">
@@ -622,7 +622,7 @@ export default function NewEvent() {
                       {previewImage ? (
                         <>
                           <img src={previewImage} alt="Preview" className="w-full h-full object-cover rounded-2xl" />
-                          {!isPublicEvent && (
+                          {/* {!isPublicEvent && (
                             <Tooltip text="Private Event">
                               <div className="absolute top-2 right-2 bg-black bg-opacity-50 p-2 rounded-full">
                                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-white" viewBox="0 0 20 20" fill="currentColor">
@@ -630,7 +630,7 @@ export default function NewEvent() {
                                 </svg>
                               </div>
                             </Tooltip>
-                          )}
+                          )} */}
                         </>
                       ) : (
                         <div className="w-full h-full flex items-center justify-center text-gray-400">No image uploaded</div>
@@ -678,9 +678,9 @@ export default function NewEvent() {
                             </svg>
                             <span>Mint Amount: {amount}</span>
                             {mintLimit && (
-                              <Tooltip text="Maximum 1 mint per address">
-                                <span className="ml-2 bg-black text-white text-xs px-1 rounded">1/wallet</span>
-                              </Tooltip>
+                              // <Tooltip text="Maximum 1 mint per address">
+                                <span className="ml-2 bg-lila-400 text-black text-[10px] px-1.5 py-0.5 rounded">1 per wallet</span>
+                              // </Tooltip>
                             )}
                           </div>
                         </Tooltip>
@@ -745,7 +745,7 @@ export default function NewEvent() {
               </div>
             </div>
 
-            <div className="relative z-10 flex flex-col flex-1 px-4 py-10 bg-white-500 lg:py-24 md:flex-none md:px-28 sm:justify-center lg:col-span-3">
+            <div className="relative z-10 flex flex-col bg-white flex-1 px-4 py-10 bg-white-500 lg:py-24 md:flex-none md:px-28 sm:justify-center lg:col-span-3">
               {isProgressOpen ? (
                 <div className="w-full mx-auto md:px-0 sm:px-4">
                   

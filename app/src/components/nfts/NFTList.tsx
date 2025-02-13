@@ -228,7 +228,7 @@ export default function NFTList({ account }: { account: string }) {
 
   return (
     <section className="py-24 px-4 md:px-8 bg-lila-200">
-      <div className="mx-auto max-w-7xl">
+      <div className="mx-auto ">
         <div className="flex items-center justify-center gap-4 mb-12">
           <h2 className="text-2xl lg:text-3xl font-semibold text-black text-center">
             Your Presence ({truncatedAccount})

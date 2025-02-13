@@ -81,7 +81,7 @@ export default function EventsSliders() {
   const freeEvents = events.slice(8, 12);
 
   return (
-    <div className="mx-auto">
+    <div className="mx-auto bg-lila-200 pb-24">
       <ExplorerHeader totalEvents={events.length} last24Hours={last24Hours} />
       
       <div className="space-y-24 py-8 px-8 max-w-7xl mx-auto mt-12">

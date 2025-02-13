@@ -1,45 +1,43 @@
 const faqs = [
   {
-    question: "How does end-to-end encryption work?",
+    question: "What is Presence Protocol?",
     answer:
-      "End-to-end encryption ensures that only the sender and recipient can access the content of a message. The information is encrypted on the sender's device and can only be decrypted by the intended recipient, preventing any intermediaries, including the platform provider, from accessing the data.",
+      "Presence Protocol is a blockchain-based system on Alephium that provides verifiable proof of event attendance through digital tokens called Presences.",
   },
   {
-    question: "Can I access my encrypted data if I forget my encryption key?",
+    question: "How does it work?",
     answer:
-      "No, forgetting or losing your encryption key means that your encrypted data cannot be accessed. This is a crucial security measure to ensure that even if someone gains unauthorized access to your account, they won't be able to decrypt and view your messages or files.",
+      "Organizers create events, and attendees claim Presences as proof of participation within a set timeframe. These are stored securely on the blockchain.",
   },
   {
-    question:
-      "Are there any limitations to the self-destructing messages feature?",
+    question: "Why use Presence instead of traditional check-ins?",
     answer:
-      "Self-destructing messages are designed to automatically delete themselves after a specific period or upon being read by the recipient. However, it's important to note that the feature only removes the message from the devices involved in the conversation. Recipients may take screenshots or use other means to capture the content, which is beyond the platform's control.",
+      "It ensures tamper-proof, verifiable attendance, enables NFT rewards, and offers premium event access for better community engagement.",
   },
   {
-    question:
-      "What happens if I enable two-factor authentication and lose my device?",
+    question: "What can I do with my Presence?",
     answer:
-      "Losing your device doesn't automatically compromise your account's security. It's recommended to contact our support team as soon as possible to disable the two-factor authentication on your lost device and set up the authentication on your new device. This process will help protect your account from unauthorized access while ensuring you can regain access to it.",
+      "Your Presence can unlock exclusive content, prove event participation, and earn rewards from event organizers.",
   },
   {
-    question: "Is my personal information shared or sold to third parties?",
+    question: "What are Claim Windows?",
     answer:
-      "No, we strictly adhere to a privacy-centric approach. Your personal information is never shared, sold, or monetized. We prioritize your privacy and ensure that your data remains confidential and only accessible to you.",
+      "Claim Windows are time-limited periods during which attendees must mint their Presence before the opportunity expires.",
   },
   {
-    question: "Can I use this platform on multiple devices?",
+    question: "Can one address claim multiple Presences for the same event?",
     answer:
-      "Yes, you can access our platform on multiple devices. Your encrypted data remains synced across all devices, allowing you to seamlessly communicate and access your files and messages from anywhere.",
+      "Yes, event organizers can configure whether to allow multiple claims per address. By default, each address can only claim one Presence per event to ensure fair participation.",
   },
   {
-    question: "Are there any storage limitations for files and documents?",
+    question: "What is Delegated Payment?",
     answer:
-      "Our platform provides ample storage space for your files and documents. However, there may be storage limitations based on the pricing plan you choose. We offer flexible plans to suit your needs and provide options to upgrade if you require additional storage capacity.",
+      "Organizers can cover the minting costs for attendees, making participation seamless and accessible.",
   },
   {
-    question: "Is it possible to export my data from the platform?",
+    question: "Is Presence an NFT?",
     answer:
-      "Yes, you can export your data from the platform. We offer export features that allow you to download your messages, files, and documents, ensuring you have a local copy for backup or migration purposes. It provides you with greater control and flexibility over your data.",
+      "Yes! Presence tokens are NFT-based digital proofs of attendance and can integrate with platforms like Deadrare and Alphaga.",
   },
 ];
 

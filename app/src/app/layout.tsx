@@ -5,6 +5,7 @@ import '@/styles/globals.css'
 import { AlephiumWalletProvider } from '@alephium/web3-react'
 import { tokenFaucetConfig } from '@/services/utils'
 import { WalletLoadingProvider } from '@/context/WalletLoadingContext'
+import { ThemeProvider } from 'next-themes'
 
 const bricolageGrotesque = Bricolage_Grotesque({
   subsets: ['latin'],
@@ -30,20 +31,23 @@ export default function RootLayout({
     <html
       lang="en"
       className={clsx(
-        'h-full scroll-smooth bg-white border-3 border-black antialiased',
+        'h-full scroll-smooth bg-background text-foreground antialiased',
         bricolageGrotesque.className
       )}
+      suppressHydrationWarning
     >
-      <body className="flex h-full flex-col">
-        <WalletLoadingProvider>
-          <AlephiumWalletProvider 
-            theme="retro" 
-            network={tokenFaucetConfig.network} 
-            addressGroup={tokenFaucetConfig.groupIndex}
-          >
-            {children}
-          </AlephiumWalletProvider>
-        </WalletLoadingProvider>
+      <body className="flex h-full flex-col bg-background transition-colors duration-200">
+        <ThemeProvider attribute="class">
+          <WalletLoadingProvider>
+            <AlephiumWalletProvider 
+              theme="retro" 
+              network={tokenFaucetConfig.network} 
+              addressGroup={tokenFaucetConfig.groupIndex}
+            >
+              {children}
+            </AlephiumWalletProvider>
+          </WalletLoadingProvider>
+        </ThemeProvider>
       </body>
     </html>
   )
