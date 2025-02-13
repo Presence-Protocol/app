@@ -235,7 +235,10 @@ export default function NewEvent() {
           amountForStorageFees: storageFees,
           poapPrice: poapPrice,
           tokenIdPoap: tokenId,
-          amountPoapFees: 0n
+          amountPoapFees: 0n,
+          tokenIdAirdrop: ALPH_TOKEN_ID,
+          amountAirdropPerUser: 0n,
+          amountAirdrop: 0n
         },
         signer: signer,
         attoAlphAmount: storageFees <= 0 ? MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT : MINIMAL_CONTRACT_DEPOSIT + storageFees,
