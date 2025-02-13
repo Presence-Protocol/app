@@ -1,5 +1,9 @@
 'use client';
 
+import { useWallet } from '@alephium/web3-react';
+import { AlephiumConnectButton } from '@alephium/web3-react';
+import { useWalletLoading } from '@/context/WalletLoadingContext';
+import Link from 'next/link';
 
 interface Section {
   id: number;
@@ -14,91 +18,218 @@ interface Section {
   actionLink?: string;
 }
 
+const cards = {
+  section1: {
+    title: 'Pizza & Web3 Meetup',
+    description: 'Mint your attendance, get free pizza!',
+    token: false,
+    image: '/images/blob11.svg',
+  },
+  section2: {
+    title: 'ETH Global London',
+    description: 'Exclusive access to workshops',
+    token: false,
+    image: '/images/blob10.svg',
+  },
+  section3: {
+    title: 'Alephium Builders',
+    description: 'Weekly community catchup',
+    token: false,
+    image: '/images/blob9.svg',
+  }
+};
+
 // Array combining both text and image content for each section,
 // along with a layout direction to determine the image position.
 const sections: Section[] = [
   {
     id: 1,
     imageSrc: "/images/thumbnail5.svg",
-    imageAlt: "Proof of Participation",
-    title: "Proof of Participation, Built for the Future",
+    imageAlt: "Proof of Attendance",
+    title: "Verifiable Attendance",
     description:
-      "Presence Protocol turns event attendance into verifiable digital records on the Alephium blockchain. Secure, scalable, and simple to use, it brings new ways to engage and reward communities.",
-    imagePosition: "left", // Image on the left
+      "Create unique events where participants can mint verifiable proof of their attendance on Alephium.",
+    imagePosition: "left",
     blobImg: "/images/blob2.svg",
     listItems: [
-      "Blockchain Verified: Tamper-proof attendance records",
-      "Mint a Presence: Digital proof of participation",
-      "Organizer Control: Create and manage events with ease",
-      "Seamless Fit: Perfect for any event, big or small",
-      "Future-Ready: Secure and scalable technology"
+      "Intuitive & Sleek UI",
+      "Public Event Explorer",
+      "User Activity Tracking",
+      "Premium Events",
+      "Delegated Payments"
     ],
   },
   {
     id: 2,
-    imageSrc: "/images/thumbnail2.svg", 
-    imageAlt: "Empowering Events & Communities",
-    title: "Empowering Events & Communities",
+    imageSrc: "/images/thumbnail2.svg",
+    imageAlt: "Event Features",
+    title: "Powerful Features",
     description:
-      "Unlock creative ways to connect, engage, and reward event participants. Whether it's a conference or a community meetup, Presence makes every event memorable.",
-    imagePosition: "right", // Image on the right
+      "Beyond attendance tracking with claim windows, unique participation enforcement, and NFT integration.",
+    imagePosition: "right",
     blobImg: "/images/blob4.svg",
     listItems: [
-      "Engage Audiences: Reward attendees with collectible Presences",
-      "Event Passports: Track participation across events",
-      "Gamify Experiences: Offer challenges or incentives",
-      "Exclusive Perks: Unlock rewards for specific Presences",
-      "Preserve History: Build a lasting event legacy"
+      "Timed Claim Windows",
+      "One Presence Per Address",
+      "NFT Integration",
+      "Event Integrity",
+      "Collectible Rewards"
     ],
     actionText: "Start Minting",
-    actionLink: "/",
+    actionLink: "/new-event",
   },
+  {
+    id: 3,
+    imageSrc: "/images/thumbnail3.svg",
+    imageAlt: "Community",
+    title: "Community-Driven",
+    description:
+      "Join a growing ecosystem where organizers and participants create meaningful experiences together.",
+    imagePosition: "left",
+    blobImg: "/images/blob3.svg",
+    listItems: [
+      "Browse Events",
+      "Track Engagement",
+      "Earn Rewards",
+      "Connect Together",
+      "Build Portfolio"
+    ],
+    actionText: "Explore Events",
+    actionLink: "/events",
+  }
 ];
 
+const buttonClasses = "text-black items-center shadow shadow-lila-600 text-lg font-semibold inline-flex px-6 focus:outline-none justify-center text-center bg-lila-300 focus:bg-lila-600 border-lila-600 duration-300 outline-none focus:shadow-none border-2 sm:w-auto py-3 rounded-lg h-12 tracking-wide focus:translate-y-1 w-full hover:bg-lila-500"
+const loadingClasses = "opacity-50 transition-opacity duration-200"
+
+function CustomWalletConnectButton() {
+  const { connectionStatus } = useWallet()
+  const { isWalletLoading } = useWalletLoading()
+
+  return (
+    <AlephiumConnectButton.Custom>
+      {({ show }) => {
+        const showLoading = isWalletLoading ||
+          connectionStatus === 'connecting' ||
+          // @ts-ignore
+          connectionStatus === 'loading'
+
+        return (
+          <button
+            className={`${buttonClasses} ${showLoading ? loadingClasses : ''}`}
+            onClick={show}
+            disabled={showLoading}
+          >
+            {showLoading ? 'Loading...' : 'Start Minting'} <span className="ml-3">&rarr;</span>
+          </button>
+        )
+      }}
+    </AlephiumConnectButton.Custom>
+  )
+}
+
+const renderCard = (section: Section) => {
+  let cardStyle = {};
+  let containerClass = "absolute inset-0 flex items-center justify-center";
+
+  switch (section.id) {
+    case 1:
+      // Original tilted card
+      cardStyle = {
+        transform: 'rotateY(-5deg) translateZ(20px)',
+      };
+      break;
+    case 2:
+      // Floating card with subtle bounce
+      containerClass += " animate-float";
+      cardStyle = {
+        transform: 'translateY(-10px)',
+      };
+      break;
+    case 3:
+      // Rotating card
+      containerClass += " animate-slow-spin";
+      break;
+  }
+
+  const card = cards[`section${section.id}` as keyof typeof cards];
+
+  return (
+    <div className={containerClass}>
+      <div className="perspective-1000">
+        <div 
+          className="transition-all duration-[1000ms] ease-in-out transform"
+          style={cardStyle}
+        >
+          <div className="bg-background p-3 rounded-xl border-2 border-foreground shadow-large group overflow-hidden w-[250px] transition-colors duration-200">
+            {card.token ? (
+              // Token card layout
+              <div className="relative h-auto">
+                <div className="aspect-square object-contain rounded-lg box-border border-2 border-foreground bg-lila-300 dark:bg-gradient-to-t dark:from-primary dark:to-secondary p-2 h-full transition-colors duration-200" />
+                <img
+                  src={card.image}
+                  alt="Feature blob"
+                  className="absolute inset-0 w-32 h-32 m-auto object-cover rounded-lg"
+                />
+              </div>
+            ) : (
+              // Non-token card layout with larger lila box
+              <div className="relative h-auto">
+                <div className="aspect-square rounded-lg box-border border-2 border-foreground bg-lila-300 dark:bg-gradient-to-t dark:from-primary dark:to-secondary p-0.5 h-full transition-colors duration-200">
+                  <img
+                    src={card.image}
+                    alt="Feature image"
+                    className="w-full h-full object-contain rounded-md"
+                  />
+                </div>
+              </div>
+            )}
+            <div className="h-[80px] flex flex-col justify-center">
+              <h3 className="font-medium text-base text-foreground">{card.title}</h3>
+              <p className="text-xs text-foreground/60">{card.description}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 export default function FeatureOne() {
+  const { connectionStatus } = useWallet()
+  const isConnected = connectionStatus === 'connected'
+  
   return (
     <section>
       {sections.map((section) => (
-        <div
-          key={section.id}
-          className={`relative items-center w-full divide-y-2 divide-black mx-auto  ${
-            section.id % 2 === 0 ? "lg:grid-cols-2" : "lg:grid-cols-3"
+        <div key={section.id} className={`relative items-center w-full divide-y-2 divide-black mx-auto ${
+          section.id % 2 === 0 ? "lg:grid-cols-2" : "lg:grid-cols-3"
+        }`}>
+          <div className={`grid grid-cols-1 md:grid-cols-2 divide-y-2 divide-black border-b-2 border-black md:divide-y-0 md:divide-x-2 ${
+            section.imagePosition === "right" ? "lg:grid-flow-col-dense" : ""
           }`}>
-          <div
-            className={`grid grid-cols-1 md:grid-cols-2 divide-y-2 divide-black border-b-2 border-black md:divide-y-0 md:divide-x-2 ${
-              section.imagePosition === "right" ? "lg:grid-flow-col-dense" : ""
-            }`}>
             {section.imagePosition === "left" && (
-              <div className="block w-full aspect-square bg-lila-300 h-full">
-                <img
-                  className="object-cover"
-                  src={section.imageSrc}
-                  alt={section.imageAlt}
-                />
+              <div className="block w-full aspect-square bg-lila-300 h-full relative">
+                {renderCard(section)}
               </div>
             )}
-            <div className="relative p-8 lg:px-20 items-center gap-12 h-full lg:inline-flex bg-white">
+            <div className="relative p-6 lg:px-24 items-center gap-8 h-full lg:inline-flex bg-white">
               <div className="max-w-xl text-left">
                 <div>
-                  {/* <img
-                    className="size-20"
-                    src={section.blobImg}
-                    alt="your alt-text"
-                  /> */}
-                  <p className="text-3xl mt-12 lg:text-5xl font-medium text-black">
+                  <p className="text-2xl lg:text-4xl font-medium text-black">
                     {section.title}
                   </p>
-                  <p className="max-w-xl mt-4 xl:text-lg tracking-wide text-black">
+                  <p className="max-w-xl mt-3 text-sm xl:text-base tracking-wide text-black">
                     {section.description}
                   </p>
                   {section.listItems && (
                     <ul
-                      className="xl:text-md tracking-wide mt-6 text-black flex flex-col"
+                      className="text-sm xl:text-base tracking-wide mt-4 text-black flex flex-col gap-2"
                       role="list">
                       {section.listItems.map((item, index) => (
                         <li key={index} className="flex items-center gap-3">
                           <svg
-                            className="size-6"
+                            className="size-5"
                             viewBox="0 0 36 36"
                             fill="none"
                             xmlns="http://www.w3.org/2000/svg">
@@ -113,26 +244,26 @@ export default function FeatureOne() {
                     </ul>
                   )}
                   {section.actionText && (
-                    <div className="mt-8">
-                      <a
-                        className="text-black items-center shadow shadow-lila-600 text-lg font-semibold inline-flex px-6 focus:outline-none justify-center text-center bg-lila-300 focus:bg-lila-600 border-lila-600 duration-300 outline-none focus:shadow-none border-2 sm:w-auto py-3 rounded-lg h-16 tracking-wide focus:translate-y-1 w-full hover:bg-lila-500"
-                        href={section.actionLink}
-                        aria-label="Explore all pages"
-                      >
-                        {section.actionText} <span className="ml-3">&rarr;</span>
-                      </a>
+                    <div className="mt-6">
+                      {isConnected ? (
+                        <Link
+                          className={buttonClasses}
+                          href={section.actionLink || '/new-event'}
+                          aria-label="Explore all pages"
+                        >
+                          {section.actionText} <span className="ml-3">&rarr;</span>
+                        </Link>
+                      ) : (
+                        <CustomWalletConnectButton />
+                      )}
                     </div>
                   )}
                 </div>
               </div>
             </div>
             {section.imagePosition === "right" && (
-              <div className="block w-full aspect-square bg-lila-300 h-full">
-                <img
-                  className="object-cover"
-                  src={section.imageSrc}
-                  alt={section.imageAlt}
-                />
+              <div className="block w-full aspect-square bg-lila-300 h-full relative">
+                {renderCard(section)}
               </div>
             )}
           </div>

@@ -9,7 +9,7 @@ export default function MintAmountInfo({ isOpen, onClose }: MintAmountInfoProps)
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70">
+    <div className="fixed inset-0 z-50 flex items-center justify-center" style={{backgroundColor: 'rgba(0,0,0,0.7)'}}>
       <div className="bg-white rounded-xl shadow p-6 w-full max-w-md border-black border-2 shadow-black">
         <h2 className="text-lg font-semibold text-black mb-4 flex items-center space-x-2">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-6 mr-2">

@@ -71,14 +71,15 @@ export default function Navigation() {
 
   useEffect(() => {
     setMounted(true)
+    setTheme('light')
   }, [])
 
   const isConnected = connectionStatus === 'connected'
 
-  const toggleTheme = () => {
-    console.log('Current theme:', theme)
-    setTheme(theme === 'light' ? 'dark' : 'light')
-  }
+  // const toggleTheme = () => {
+  //   console.log('Current theme:', theme)
+  //   setTheme(theme === 'light' ? 'dark' : 'light')
+  // }
 
   return (
     <>

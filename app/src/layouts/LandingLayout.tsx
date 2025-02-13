@@ -8,8 +8,8 @@ interface LandingLayoutProps {
 
 export default function LandingLayout({ children }: LandingLayoutProps) {
   return (
-    <div className=" bg-white flex flex-col min-h-screen">
-      <main className="flex-grow">{children}</main>
+    <div className=" bg-lila-200 flex flex-col min-h-screen">
+      <main className="flex-grow bg-lila-200">{children}</main>
     </div>
   );
 }

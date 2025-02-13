@@ -12,10 +12,10 @@ export default function Mint() {
   return (
     <LandingLayout>
       <Navigation />
-      <>
+      <div className="bg-lila-200 max-w-7xl mx-auto">
 
       
-      {/* {account?.address} */}
+
 
       {connectionStatus !== 'connected' ? (
         <div className="flex flex-col items-center justify-center min-h-[50vh] px-4 py-48 bg-lila-200">
@@ -45,7 +45,7 @@ export default function Mint() {
           account={account?.address}
         />
       )} 
-      </>
+      </div>
       <Footer />
     </LandingLayout>
   )

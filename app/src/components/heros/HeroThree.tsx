@@ -5,6 +5,8 @@ import { useWallet } from '@alephium/web3-react';
 import { AlephiumConnectButton } from '@alephium/web3-react';
 import { useWalletLoading } from '@/context/WalletLoadingContext';
 import Link from 'next/link';
+import Image from 'next/image';
+import PizzaImage from '../../../public/illustrations/pizza.png'
 
 // Update button styles to use theme colors
 const buttonClasses = "text-foreground items-center shadow shadow-foreground text-lg font-semibold inline-flex px-6 focus:outline-none justify-center text-center bg-background border-foreground ease-in-out transform transition-all focus:ring-accent focus:shadow-none border-2 duration-100 focus:bg-foreground focus:text-background sm:w-auto py-3 rounded-lg h-16 focus:translate-y-1 w-full hover:text-accent tracing-wide"
@@ -60,7 +62,7 @@ export default function HeroThree() {
     {
       title: 'Presence Pizza Meetup',
       description: 'Redeem your presence for pizza!',
-      image: '/images/blob5.svg',
+      image: '/images/blob7.svg',
     },
     {
       title: 'Alephium Dev Meetup',
@@ -138,7 +140,7 @@ export default function HeroThree() {
                           }}
                         >
                           <div className="relative h-auto">
-                            <div className="aspect-square rounded-lg box-border bg-lila-300 dark:bg-gradient-to-t dark:from-primary dark:to-secondary p-2 h-full transition-colors duration-200" />
+                            <div className="aspect-square rounded-lg box-border border-2 border-foreground bg-lila-300 dark:bg-gradient-to-t dark:from-primary dark:to-secondary p-2 h-full transition-colors duration-200" />
                             <img
                               src={card.image}
                               alt="Feature blob"

@@ -611,7 +611,7 @@ export default function NewEvent() {
 
   return (
     <>
-      <section>
+      <section className="bg-white">
         <div className="mx-auto mt-">
           <div className="relative justify-center max-h-[calc(100vh-82px)] lg:max-h-[calc(100vh-82px)] md:max-h-[calc(100vh-58px)] lg:px-0 md:px-12 grid lg:grid-cols-5 h-screen lg:divide-x-2 divide-black">
             <div className="hidden bg-lila-500 lg:col-span-2 lg:block lg:flex-1 lg:relative sm:contents">
@@ -745,7 +745,7 @@ export default function NewEvent() {
               </div>
             </div>
 
-            <div className="relative z-10 flex flex-col flex-1 px-4 py-10 bg-white-500 lg:py-24 md:flex-none md:px-28 sm:justify-center lg:col-span-3">
+            <div className="relative z-10 flex flex-col bg-white flex-1 px-4 py-10 bg-white-500 lg:py-24 md:flex-none md:px-28 sm:justify-center lg:col-span-3">
               {isProgressOpen ? (
                 <div className="w-full mx-auto md:px-0 sm:px-4">
                   
