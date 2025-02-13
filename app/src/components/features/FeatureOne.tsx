@@ -20,20 +20,20 @@ interface Section {
 
 const cards = {
   section1: {
-    title: 'Pizza & Web3 Meetup',
-    description: 'Mint your attendance, get free pizza!',
+    title: 'Presence is Everything',
+    description: 'The magic of presence is in the details.',
     token: false,
     image: '/images/blob11.svg',
   },
   section2: {
-    title: 'ETH Global London',
-    description: 'Exclusive access to workshops',
+    title: 'The Magic of Presence',
+    description: 'Features that make your event unforgettable',
     token: false,
     image: '/images/blob10.svg',
   },
   section3: {
-    title: 'Alephium Builders',
-    description: 'Weekly community catchup',
+    title: 'Presence brings us together',
+    description: 'Use presence to verify, discover, engage & reward.',
     token: false,
     image: '/images/blob9.svg',
   }
