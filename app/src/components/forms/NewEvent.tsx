@@ -241,7 +241,7 @@ export default function NewEvent() {
           amountAirdrop: 0n
         },
         signer: signer,
-        attoAlphAmount: storageFees <= 0 ? MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT : MINIMAL_CONTRACT_DEPOSIT + storageFees,
+        attoAlphAmount: storageFees <= 0 ? MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT : MINIMAL_CONTRACT_DEPOSIT + storageFees + DUST_AMOUNT,
       });
 
       setProgressState({ 
