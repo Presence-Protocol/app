@@ -55,7 +55,7 @@ const CtaOne = () => {
             <p className="text-3xl lg:text-5xl mt-8 tracking-tight font-medium text-white">
               Ready to dive in? Get started with <span className="md:block lg:text-lila-600">Presence Protocol</span>
             </p>
-            <p className="max-w-lg mx-auto mt-4 lg:text-xl tracking-wide text-white">
+            <p className="max-w-lg mx-auto mt-4 lg:text-lg tracking-wide text-white">
               Explore the limitless possibilities of digital finance and embark on a
               journey towards financial empowerment
             </p>

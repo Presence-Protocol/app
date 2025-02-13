@@ -214,7 +214,10 @@ export default function Footer() {
 
 
 
-                <div className="mt-6 w-fit bg-white p-1 rounded-lg shadow">
+                <a 
+                  href="https://t.me/+gTNus1GdkRM4MTE0" target='_blank'
+                  className="mt-6 w-fit bg-white p-1 rounded-lg shadow block transition-transform duration-300 hover:scale-110"
+                >
                   <Image
                     src={TelegramQRCode}
                     alt="Join our Telegram"
@@ -222,7 +225,7 @@ export default function Footer() {
                     height={72}
                     className="rounded"
                   />
-                </div>
+                </a>
               </div>
             </div>
             <nav

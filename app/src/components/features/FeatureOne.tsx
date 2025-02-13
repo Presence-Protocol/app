@@ -208,12 +208,17 @@ export default function FeatureOne() {
           <div className={`grid grid-cols-1 md:grid-cols-2 divide-y-2 divide-black border-b-2 border-black md:divide-y-0 md:divide-x-2 ${
             section.imagePosition === "right" ? "lg:grid-flow-col-dense" : ""
           }`}>
-            {section.imagePosition === "left" && (
-              <div className="block w-full aspect-square bg-lila-300 h-full relative">
-                {renderCard(section)}
-              </div>
-            )}
-            <div className="relative p-6 lg:px-24 items-center gap-8 h-full lg:inline-flex bg-white">
+            {/* Image section - always first on mobile */}
+            <div className={`block w-full aspect-square bg-lila-300 min-h-[500px] max-h-[500px] lg:max-h-[650px] lg:min-w-[650px] relative ${
+              section.imagePosition === "right" ? "order-first lg:order-last lg:border-l-2 lg:border-black" : ""
+            }`}>
+              {renderCard(section)}
+            </div>
+            
+            {/* Content section - always second on mobile */}
+            <div className={`relative p-6 lg:px-24 lg:py-0 py-12 items-center gap-8 h-full lg:inline-flex bg-white ${
+              section.imagePosition === "right" ? "order-last lg:order-first" : ""
+            }`}>
               <div className="max-w-xl text-left">
                 <div>
                   <p className="text-2xl lg:text-4xl font-medium text-black">
@@ -261,11 +266,6 @@ export default function FeatureOne() {
                 </div>
               </div>
             </div>
-            {section.imagePosition === "right" && (
-              <div className="block w-full aspect-square bg-lila-300 h-full relative">
-                {renderCard(section)}
-              </div>
-            )}
           </div>
         </div>
       ))}
