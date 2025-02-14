@@ -24,7 +24,8 @@ const deployTemplates: DeployFunction<Settings> = async (
       eventEndAt: 0n,
       isPublic: false,
       minter: NULL_CONTRACT_ADDRESS,
-      isBurnable: false
+      isBurnable: false,
+      hasParticipated: false
     }
   })
 

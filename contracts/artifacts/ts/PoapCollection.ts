@@ -71,6 +71,10 @@ export namespace PoapCollectionTypes {
     nftIndex: bigint;
     caller: Address;
   }>;
+  export type PoapParticipatedEvent = ContractEvent<{
+    organizerAddress: Address;
+    poapContractId: HexString;
+  }>;
 
   export interface CallMethodTable {
     getCollectionUri: {
@@ -92,6 +96,13 @@ export namespace PoapCollectionTypes {
     mint: {
       params: CallContractParams<{ callerAddr: Address }>;
       result: CallContractResult<HexString>;
+    };
+    setParticipatedPresence: {
+      params: CallContractParams<{
+        nftIndex: bigint;
+        presenceAddressValidate: Address;
+      }>;
+      result: CallContractResult<null>;
     };
     nftByAddress: {
       params: CallContractParams<{ caller: Address }>;
@@ -158,6 +169,13 @@ export namespace PoapCollectionTypes {
       params: SignExecuteContractMethodParams<{ callerAddr: Address }>;
       result: SignExecuteScriptTxResult;
     };
+    setParticipatedPresence: {
+      params: SignExecuteContractMethodParams<{
+        nftIndex: bigint;
+        presenceAddressValidate: Address;
+      }>;
+      result: SignExecuteScriptTxResult;
+    };
     nftByAddress: {
       params: SignExecuteContractMethodParams<{ caller: Address }>;
       result: SignExecuteScriptTxResult;
@@ -201,7 +219,7 @@ class Factory extends ContractFactory<
     );
   }
 
-  eventIndex = { PoapMinted: 0 };
+  eventIndex = { PoapMinted: 0, PoapParticipated: 1 };
 
   at(address: string): PoapCollectionInstance {
     return new PoapCollectionInstance(address);
@@ -252,6 +270,19 @@ class Factory extends ContractFactory<
       >
     ): Promise<TestContractResultWithoutMaps<HexString>> => {
       return testMethod(this, "mint", params, getContractByCodeHash);
+    },
+    setParticipatedPresence: async (
+      params: TestContractParamsWithoutMaps<
+        PoapCollectionTypes.Fields,
+        { nftIndex: bigint; presenceAddressValidate: Address }
+      >
+    ): Promise<TestContractResultWithoutMaps<null>> => {
+      return testMethod(
+        this,
+        "setParticipatedPresence",
+        params,
+        getContractByCodeHash
+      );
     },
     nftByAddress: async (
       params: TestContractParamsWithoutMaps<
@@ -322,7 +353,7 @@ export const PoapCollection = new Factory(
   Contract.fromJson(
     PoapCollectionContractJson,
     "",
-    "fddcc06c3e23ca0c1aa3e242b16d751396bfe2cd0fe8196c06620641c42a8d57",
+    "5e7c7ddab8f3faa0a9b99eb49321750294a0895ee6d1626fafed973ac11e93a8",
     AllStructs
   )
 );
@@ -351,6 +382,34 @@ export class PoapCollectionInstance extends ContractInstance {
       this,
       options,
       "PoapMinted",
+      fromCount
+    );
+  }
+
+  subscribePoapParticipatedEvent(
+    options: EventSubscribeOptions<PoapCollectionTypes.PoapParticipatedEvent>,
+    fromCount?: number
+  ): EventSubscription {
+    return subscribeContractEvent(
+      PoapCollection.contract,
+      this,
+      options,
+      "PoapParticipated",
+      fromCount
+    );
+  }
+
+  subscribeAllEvents(
+    options: EventSubscribeOptions<
+      | PoapCollectionTypes.PoapMintedEvent
+      | PoapCollectionTypes.PoapParticipatedEvent
+    >,
+    fromCount?: number
+  ): EventSubscription {
+    return subscribeContractEvents(
+      PoapCollection.contract,
+      this,
+      options,
       fromCount
     );
   }
@@ -407,6 +466,19 @@ export class PoapCollectionInstance extends ContractInstance {
         PoapCollection,
         this,
         "mint",
+        params,
+        getContractByCodeHash
+      );
+    },
+    setParticipatedPresence: async (
+      params: PoapCollectionTypes.CallMethodParams<"setParticipatedPresence">
+    ): Promise<
+      PoapCollectionTypes.CallMethodResult<"setParticipatedPresence">
+    > => {
+      return callMethod(
+        PoapCollection,
+        this,
+        "setParticipatedPresence",
         params,
         getContractByCodeHash
       );
@@ -513,6 +585,18 @@ export class PoapCollectionInstance extends ContractInstance {
       params: PoapCollectionTypes.SignExecuteMethodParams<"mint">
     ): Promise<PoapCollectionTypes.SignExecuteMethodResult<"mint">> => {
       return signExecuteMethod(PoapCollection, this, "mint", params);
+    },
+    setParticipatedPresence: async (
+      params: PoapCollectionTypes.SignExecuteMethodParams<"setParticipatedPresence">
+    ): Promise<
+      PoapCollectionTypes.SignExecuteMethodResult<"setParticipatedPresence">
+    > => {
+      return signExecuteMethod(
+        PoapCollection,
+        this,
+        "setParticipatedPresence",
+        params
+      );
     },
     nftByAddress: async (
       params: PoapCollectionTypes.SignExecuteMethodParams<"nftByAddress">

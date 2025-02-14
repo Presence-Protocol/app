@@ -9,4 +9,5 @@ enum ErrorCodes {
     InvalidCaller = 7
     NotBurnable = 8
     NotEnoughAlph = 9
+    AlreadySet = 10
 }

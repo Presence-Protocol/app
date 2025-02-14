@@ -12,12 +12,13 @@ Contract PoapNFT(
   eventEndAt: U256,
   isPublic: Bool,
   minter: Address,
-  isBurnable: Bool
+  isBurnable: Bool,
+  mut hasParticipated: Bool
 ) implements INFT {
   
   pub fn getTokenUri() -> ByteVec {
 
-    return b`data:application/json,{"name": "` ++ eventName ++ b`","image": "` ++ eventImage ++ b`", "attributes": [{"trait_type": "Event Name", "value": "` ++ eventName ++ b`"}, {"trait_type": "Description", "value": "` ++ description ++ b`"}, {"trait_type": "Organizer", "value": "` ++ organizer ++ b`"}, {"trait_type": "Location", "value": "` ++ location ++ b`"}, {"trait_type": "Event Start At", "value": ` ++ u256ToString!(eventStartAt) ++ b`}, {"trait_type": "Event End At", "value": ` ++ u256ToString!(eventEndAt) ++ b`}]}`
+    return b`data:application/json,{"name": "` ++ eventName ++ b`","image": "` ++ eventImage ++ b`", "attributes": [{"trait_type": "Event Name", "value": "` ++ eventName ++ b`"}, {"trait_type": "Description", "value": "` ++ description ++ b`"}, {"trait_type": "Organizer", "value": "` ++ organizer ++ b`"}, {"trait_type": "Location", "value": "` ++ location ++ b`"}, {"trait_type": "Event Start At", "value": ` ++ u256ToString!(eventStartAt) ++ b`}, {"trait_type": "Event End At", "value": ` ++ u256ToString!(eventEndAt) ++ b`},{"trait_type": "Has Particpated", "value": ` ++ boolToString!(hasParticipated) ++ b`}]}`
   }
 
   pub fn getCollectionIndex() -> (ByteVec, U256) {
@@ -43,7 +44,7 @@ Contract PoapNFT(
   }
 
 
-  pub fn getTraits() -> [Trait; 7] {
+  pub fn getTraits() -> [Trait; 8] {
 
     return [
         Trait {
@@ -72,13 +73,17 @@ Contract PoapNFT(
         },
         Trait {
             traitType: b`Public Event`,
-            value: toByteVec!(isPublic)
-        }
+            value: boolToString!(isPublic)
+        },
+        Trait {
+          traitType: b`Has Participated`,
+          value: boolToString!(hasParticipated)
+      }
     ]
   }
 
   pub fn getTraitCount() -> U256 {
-    return 7
+    return 8
   }
 
   pub fn getTraitAtIndex(index: U256) -> Trait {
@@ -92,6 +97,14 @@ Contract PoapNFT(
 
 
     destroySelf!(minter)
+  }
+
+  @using(checkExternalCaller = true, updateFields = true)
+  pub fn setParticipated() -> (){
+    checkCaller!(callerContractId!() == collectionId, ErrorCodes.InvalidCaller)
+    //assert!(!hasParticipated, ErrorCodes.AlreadySet)
+
+    hasParticipated = true
   }
 
 
