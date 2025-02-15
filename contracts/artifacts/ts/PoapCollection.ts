@@ -74,7 +74,8 @@ export namespace PoapCollectionTypes {
   }>;
   export type PoapParticipatedEvent = ContractEvent<{
     organizerAddress: Address;
-    poapContractId: HexString;
+    nftIndex: bigint;
+    presenceAddressValidate: Address;
   }>;
 
   export interface CallMethodTable {
@@ -376,7 +377,7 @@ export const PoapCollection = new Factory(
   Contract.fromJson(
     PoapCollectionContractJson,
     "",
-    "8e1d7454700a01a4729bf0c463866040c2770a95e547f4e927dd7214866b0a1e",
+    "d7a7aaa5dc8875edb55afdf2c09afb3096d6c70a9218a4d8824bc9e494440dcb",
     AllStructs
   )
 );

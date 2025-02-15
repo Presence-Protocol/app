@@ -31,9 +31,9 @@
     },
     "PoapCollection": {
       "sourceFile": "collectionTemplate.ral",
-      "sourceCodeHash": "b8b5920d01172638b3a32ea55a956850a4ecb1246eb56d6ac8a758d02c026335",
+      "sourceCodeHash": "69bece892b5078c083be8e89770c5b955b68d7cbf6f9d442fd6d33535c8d74ac",
       "bytecodeDebugPatch": "",
-      "codeHashDebug": "8e1d7454700a01a4729bf0c463866040c2770a95e547f4e927dd7214866b0a1e"
+      "codeHashDebug": "d7a7aaa5dc8875edb55afdf2c09afb3096d6c70a9218a4d8824bc9e494440dcb"
     },
     "PoapFactory": {
       "sourceFile": "factoryPoap.ral",
