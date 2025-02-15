@@ -130,10 +130,6 @@ export namespace PoapCollectionTypes {
       params: Omit<CallContractParams<{}>, "args">;
       result: CallContractResult<Address>;
     };
-    convert: {
-      params: CallContractParams<{ array: HexString }>;
-      result: CallContractResult<HexString>;
-    };
   }
   export type CallMethodParams<T extends keyof CallMethodTable> =
     CallMethodTable[T]["params"];
@@ -205,10 +201,6 @@ export namespace PoapCollectionTypes {
     };
     getOrganizer: {
       params: Omit<SignExecuteContractMethodParams<{}>, "args">;
-      result: SignExecuteScriptTxResult;
-    };
-    convert: {
-      params: SignExecuteContractMethodParams<{ array: HexString }>;
       result: SignExecuteScriptTxResult;
     };
   }
@@ -352,14 +344,6 @@ class Factory extends ContractFactory<
     ): Promise<TestContractResultWithoutMaps<Address>> => {
       return testMethod(this, "getOrganizer", params, getContractByCodeHash);
     },
-    convert: async (
-      params: TestContractParamsWithoutMaps<
-        PoapCollectionTypes.Fields,
-        { array: HexString }
-      >
-    ): Promise<TestContractResultWithoutMaps<HexString>> => {
-      return testMethod(this, "convert", params, getContractByCodeHash);
-    },
   };
 
   stateForTest(
@@ -376,7 +360,7 @@ export const PoapCollection = new Factory(
   Contract.fromJson(
     PoapCollectionContractJson,
     "",
-    "e4d95fca363fe69355817c79af6bf7cb45979b677e623c4311981a9f02f72f45",
+    "5a6a2c8fb216990519cd992a4191af7b1fda2ee8791c2b62967729970119a36d",
     AllStructs
   )
 );
@@ -574,17 +558,6 @@ export class PoapCollectionInstance extends ContractInstance {
         getContractByCodeHash
       );
     },
-    convert: async (
-      params: PoapCollectionTypes.CallMethodParams<"convert">
-    ): Promise<PoapCollectionTypes.CallMethodResult<"convert">> => {
-      return callMethod(
-        PoapCollection,
-        this,
-        "convert",
-        params,
-        getContractByCodeHash
-      );
-    },
   };
 
   transact = {
@@ -668,11 +641,6 @@ export class PoapCollectionInstance extends ContractInstance {
       params: PoapCollectionTypes.SignExecuteMethodParams<"getOrganizer">
     ): Promise<PoapCollectionTypes.SignExecuteMethodResult<"getOrganizer">> => {
       return signExecuteMethod(PoapCollection, this, "getOrganizer", params);
-    },
-    convert: async (
-      params: PoapCollectionTypes.SignExecuteMethodParams<"convert">
-    ): Promise<PoapCollectionTypes.SignExecuteMethodResult<"convert">> => {
-      return signExecuteMethod(PoapCollection, this, "convert", params);
     },
   };
 

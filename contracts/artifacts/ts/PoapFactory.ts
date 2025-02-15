@@ -109,6 +109,10 @@ export namespace PoapFactoryTypes {
       params: Omit<CallContractParams<{}>, "args">;
       result: CallContractResult<bigint>;
     };
+    convert: {
+      params: CallContractParams<{ array: HexString }>;
+      result: CallContractResult<HexString>;
+    };
   }
   export type CallMethodParams<T extends keyof CallMethodTable> =
     CallMethodTable[T]["params"];
@@ -166,6 +170,10 @@ export namespace PoapFactoryTypes {
     };
     getNumEventsCreated: {
       params: Omit<SignExecuteContractMethodParams<{}>, "args">;
+      result: SignExecuteScriptTxResult;
+    };
+    convert: {
+      params: SignExecuteContractMethodParams<{ array: HexString }>;
       result: SignExecuteScriptTxResult;
     };
   }
@@ -266,6 +274,14 @@ class Factory extends ContractFactory<
         getContractByCodeHash
       );
     },
+    convert: async (
+      params: TestContractParamsWithoutMaps<
+        PoapFactoryTypes.Fields,
+        { array: HexString }
+      >
+    ): Promise<TestContractResultWithoutMaps<HexString>> => {
+      return testMethod(this, "convert", params, getContractByCodeHash);
+    },
   };
 
   stateForTest(
@@ -282,7 +298,7 @@ export const PoapFactory = new Factory(
   Contract.fromJson(
     PoapFactoryContractJson,
     "",
-    "1ebac8848a4cea107a2f1b0578d6a93d47f64fca4c55c259559166a91228babe",
+    "57eab9ae3860e32a32a706b0129dbfd3e64880d73a50e85dff52c96df68e26de",
     AllStructs
   )
 );
@@ -404,6 +420,17 @@ export class PoapFactoryInstance extends ContractInstance {
         getContractByCodeHash
       );
     },
+    convert: async (
+      params: PoapFactoryTypes.CallMethodParams<"convert">
+    ): Promise<PoapFactoryTypes.CallMethodResult<"convert">> => {
+      return callMethod(
+        PoapFactory,
+        this,
+        "convert",
+        params,
+        getContractByCodeHash
+      );
+    },
   };
 
   transact = {
@@ -442,6 +469,11 @@ export class PoapFactoryInstance extends ContractInstance {
         "getNumEventsCreated",
         params
       );
+    },
+    convert: async (
+      params: PoapFactoryTypes.SignExecuteMethodParams<"convert">
+    ): Promise<PoapFactoryTypes.SignExecuteMethodResult<"convert">> => {
+      return signExecuteMethod(PoapFactory, this, "convert", params);
     },
   };
 
