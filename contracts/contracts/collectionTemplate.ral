@@ -26,7 +26,7 @@ Contract PoapCollection(
     mut amountPoapFees: U256,
     mut totalSupply: U256,
     mut amountAirdrop: U256    
-  ) implements INFTCollection {
+  )  extends Utils() implements INFTCollection {
 
    event PoapMinted(contractId: ByteVec, nftIndex: U256, caller: Address)
    event PoapParticipated(organizerAddress: Address, poapContractId: ByteVec)
@@ -42,7 +42,7 @@ Contract PoapCollection(
         caller = callerAddr
      }
 
-     let organizerAddressHex = PoapFactory(factoryContractId).convert(toByteVec!(organizer))
+     let organizerAddressHex = convert(toByteVec!(organizer))
      let (initialImmState, initialMutState) = PoapNFT.encodeFields!(selfContractId!(), totalSupply, eventImage, eventName, description, organizerAddressHex, location, eventStartAt, eventEndAt, isPublic, caller, isBurnable, false)
      
      let mut contractPath = toByteVec!(totalSupply)
