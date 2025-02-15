@@ -6,6 +6,7 @@ Contract PoapFactory(
 
     event EventCreated(contractId: ByteVec, eventName: ByteVec, organizer: Address, isPublic: Bool)
     event PoapMinted(contractId: ByteVec, collectionId: PoapCollection, nftIndex: U256 ,caller: Address, isPublic: Bool)
+    event PoapParticipatedIn(organizerAddress: Address, collectionId: PoapCollection, nftIndex: U256, presenceAddressValidate: Address)
 
 
     @using(preapprovedAssets = true, checkExternalCaller = false, updateFields = true)
@@ -35,7 +36,8 @@ Contract PoapFactory(
         amountAirdrop: U256) -> (ByteVec){
             let caller = callerAddress!()
 
-            let (initialImmState, initialMutState) = PoapCollection.encodeFields!(poapTemplateId,
+            let (initialImmState, initialMutState) = PoapCollection.encodeFields!(selfContractId!(),
+                poapTemplateId,
                 maxSupply,
                 mintStartAt,
                 mintEndAt,
@@ -96,6 +98,16 @@ Contract PoapFactory(
 
         emit PoapMinted(poapContractId, collection, collectionTotalSupply, caller, collection.getIsPublic())
 
+    }
+
+    pub fn setParticipatedPresence(collection: PoapCollection, nftIndex: U256, presenceAddressValidate: Address) -> (){
+        let caller = callerAddress!()
+
+        let organizer = collection.getOrganizer()
+        checkCaller!(callerAddress!() == organizer, ErrorCodes.InvalidCaller)
+        collection.setParticipatedPresence(caller, nftIndex, presenceAddressValidate)
+
+        emit PoapParticipatedIn(caller, collection, nftIndex, presenceAddressValidate)
     }
 
     pub fn getNumEventsCreated() -> U256{

@@ -40,6 +40,7 @@ import { Trait, AllStructs } from "./types";
 // Custom types for the contract
 export namespace PoapCollectionTypes {
   export type Fields = {
+    factoryContractId: HexString;
     nftTemplateId: HexString;
     maxSupply: bigint;
     mintStartAt: bigint;
@@ -99,6 +100,7 @@ export namespace PoapCollectionTypes {
     };
     setParticipatedPresence: {
       params: CallContractParams<{
+        callerAddr: Address;
         nftIndex: bigint;
         presenceAddressValidate: Address;
       }>;
@@ -123,6 +125,10 @@ export namespace PoapCollectionTypes {
     getPoapPrice: {
       params: Omit<CallContractParams<{}>, "args">;
       result: CallContractResult<[bigint, HexString]>;
+    };
+    getOrganizer: {
+      params: Omit<CallContractParams<{}>, "args">;
+      result: CallContractResult<Address>;
     };
     convert: {
       params: CallContractParams<{ array: HexString }>;
@@ -171,6 +177,7 @@ export namespace PoapCollectionTypes {
     };
     setParticipatedPresence: {
       params: SignExecuteContractMethodParams<{
+        callerAddr: Address;
         nftIndex: bigint;
         presenceAddressValidate: Address;
       }>;
@@ -193,6 +200,10 @@ export namespace PoapCollectionTypes {
       result: SignExecuteScriptTxResult;
     };
     getPoapPrice: {
+      params: Omit<SignExecuteContractMethodParams<{}>, "args">;
+      result: SignExecuteScriptTxResult;
+    };
+    getOrganizer: {
       params: Omit<SignExecuteContractMethodParams<{}>, "args">;
       result: SignExecuteScriptTxResult;
     };
@@ -274,7 +285,11 @@ class Factory extends ContractFactory<
     setParticipatedPresence: async (
       params: TestContractParamsWithoutMaps<
         PoapCollectionTypes.Fields,
-        { nftIndex: bigint; presenceAddressValidate: Address }
+        {
+          callerAddr: Address;
+          nftIndex: bigint;
+          presenceAddressValidate: Address;
+        }
       >
     ): Promise<TestContractResultWithoutMaps<null>> => {
       return testMethod(
@@ -329,6 +344,14 @@ class Factory extends ContractFactory<
     ): Promise<TestContractResultWithoutMaps<[bigint, HexString]>> => {
       return testMethod(this, "getPoapPrice", params, getContractByCodeHash);
     },
+    getOrganizer: async (
+      params: Omit<
+        TestContractParamsWithoutMaps<PoapCollectionTypes.Fields, never>,
+        "testArgs"
+      >
+    ): Promise<TestContractResultWithoutMaps<Address>> => {
+      return testMethod(this, "getOrganizer", params, getContractByCodeHash);
+    },
     convert: async (
       params: TestContractParamsWithoutMaps<
         PoapCollectionTypes.Fields,
@@ -353,7 +376,7 @@ export const PoapCollection = new Factory(
   Contract.fromJson(
     PoapCollectionContractJson,
     "",
-    "016f0f46b4e858a0adfef4668d0861f54e35aae1878fb8ce3f0f3cd9a3f0aea4",
+    "e4d95fca363fe69355817c79af6bf7cb45979b677e623c4311981a9f02f72f45",
     AllStructs
   )
 );
@@ -540,6 +563,17 @@ export class PoapCollectionInstance extends ContractInstance {
         getContractByCodeHash
       );
     },
+    getOrganizer: async (
+      params?: PoapCollectionTypes.CallMethodParams<"getOrganizer">
+    ): Promise<PoapCollectionTypes.CallMethodResult<"getOrganizer">> => {
+      return callMethod(
+        PoapCollection,
+        this,
+        "getOrganizer",
+        params === undefined ? {} : params,
+        getContractByCodeHash
+      );
+    },
     convert: async (
       params: PoapCollectionTypes.CallMethodParams<"convert">
     ): Promise<PoapCollectionTypes.CallMethodResult<"convert">> => {
@@ -629,6 +663,11 @@ export class PoapCollectionInstance extends ContractInstance {
       params: PoapCollectionTypes.SignExecuteMethodParams<"getPoapPrice">
     ): Promise<PoapCollectionTypes.SignExecuteMethodResult<"getPoapPrice">> => {
       return signExecuteMethod(PoapCollection, this, "getPoapPrice", params);
+    },
+    getOrganizer: async (
+      params: PoapCollectionTypes.SignExecuteMethodParams<"getOrganizer">
+    ): Promise<PoapCollectionTypes.SignExecuteMethodResult<"getOrganizer">> => {
+      return signExecuteMethod(PoapCollection, this, "getOrganizer", params);
     },
     convert: async (
       params: PoapCollectionTypes.SignExecuteMethodParams<"convert">

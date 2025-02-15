@@ -60,6 +60,12 @@ export namespace PoapFactoryTypes {
     caller: Address;
     isPublic: boolean;
   }>;
+  export type PoapParticipatedInEvent = ContractEvent<{
+    organizerAddress: Address;
+    collectionId: HexString;
+    nftIndex: bigint;
+    presenceAddressValidate: Address;
+  }>;
 
   export interface CallMethodTable {
     mintNewCollection: {
@@ -89,6 +95,14 @@ export namespace PoapFactoryTypes {
     };
     mintPoap: {
       params: CallContractParams<{ collection: HexString }>;
+      result: CallContractResult<null>;
+    };
+    setParticipatedPresence: {
+      params: CallContractParams<{
+        collection: HexString;
+        nftIndex: bigint;
+        presenceAddressValidate: Address;
+      }>;
       result: CallContractResult<null>;
     };
     getNumEventsCreated: {
@@ -142,6 +156,14 @@ export namespace PoapFactoryTypes {
       params: SignExecuteContractMethodParams<{ collection: HexString }>;
       result: SignExecuteScriptTxResult;
     };
+    setParticipatedPresence: {
+      params: SignExecuteContractMethodParams<{
+        collection: HexString;
+        nftIndex: bigint;
+        presenceAddressValidate: Address;
+      }>;
+      result: SignExecuteScriptTxResult;
+    };
     getNumEventsCreated: {
       params: Omit<SignExecuteContractMethodParams<{}>, "args">;
       result: SignExecuteScriptTxResult;
@@ -165,7 +187,7 @@ class Factory extends ContractFactory<
     );
   }
 
-  eventIndex = { EventCreated: 0, PoapMinted: 1 };
+  eventIndex = { EventCreated: 0, PoapMinted: 1, PoapParticipatedIn: 2 };
 
   at(address: string): PoapFactoryInstance {
     return new PoapFactoryInstance(address);
@@ -214,6 +236,23 @@ class Factory extends ContractFactory<
     ): Promise<TestContractResultWithoutMaps<null>> => {
       return testMethod(this, "mintPoap", params, getContractByCodeHash);
     },
+    setParticipatedPresence: async (
+      params: TestContractParamsWithoutMaps<
+        PoapFactoryTypes.Fields,
+        {
+          collection: HexString;
+          nftIndex: bigint;
+          presenceAddressValidate: Address;
+        }
+      >
+    ): Promise<TestContractResultWithoutMaps<null>> => {
+      return testMethod(
+        this,
+        "setParticipatedPresence",
+        params,
+        getContractByCodeHash
+      );
+    },
     getNumEventsCreated: async (
       params: Omit<
         TestContractParamsWithoutMaps<PoapFactoryTypes.Fields, never>,
@@ -243,7 +282,7 @@ export const PoapFactory = new Factory(
   Contract.fromJson(
     PoapFactoryContractJson,
     "",
-    "b91428cd6c742fd37ef6016253177f7758333ff5e388e13c3d25fb7d13aaf483",
+    "1ebac8848a4cea107a2f1b0578d6a93d47f64fca4c55c259559166a91228babe",
     AllStructs
   )
 );
@@ -289,9 +328,24 @@ export class PoapFactoryInstance extends ContractInstance {
     );
   }
 
+  subscribePoapParticipatedInEvent(
+    options: EventSubscribeOptions<PoapFactoryTypes.PoapParticipatedInEvent>,
+    fromCount?: number
+  ): EventSubscription {
+    return subscribeContractEvent(
+      PoapFactory.contract,
+      this,
+      options,
+      "PoapParticipatedIn",
+      fromCount
+    );
+  }
+
   subscribeAllEvents(
     options: EventSubscribeOptions<
-      PoapFactoryTypes.EventCreatedEvent | PoapFactoryTypes.PoapMintedEvent
+      | PoapFactoryTypes.EventCreatedEvent
+      | PoapFactoryTypes.PoapMintedEvent
+      | PoapFactoryTypes.PoapParticipatedInEvent
     >,
     fromCount?: number
   ): EventSubscription {
@@ -326,6 +380,19 @@ export class PoapFactoryInstance extends ContractInstance {
         getContractByCodeHash
       );
     },
+    setParticipatedPresence: async (
+      params: PoapFactoryTypes.CallMethodParams<"setParticipatedPresence">
+    ): Promise<
+      PoapFactoryTypes.CallMethodResult<"setParticipatedPresence">
+    > => {
+      return callMethod(
+        PoapFactory,
+        this,
+        "setParticipatedPresence",
+        params,
+        getContractByCodeHash
+      );
+    },
     getNumEventsCreated: async (
       params?: PoapFactoryTypes.CallMethodParams<"getNumEventsCreated">
     ): Promise<PoapFactoryTypes.CallMethodResult<"getNumEventsCreated">> => {
@@ -351,6 +418,18 @@ export class PoapFactoryInstance extends ContractInstance {
       params: PoapFactoryTypes.SignExecuteMethodParams<"mintPoap">
     ): Promise<PoapFactoryTypes.SignExecuteMethodResult<"mintPoap">> => {
       return signExecuteMethod(PoapFactory, this, "mintPoap", params);
+    },
+    setParticipatedPresence: async (
+      params: PoapFactoryTypes.SignExecuteMethodParams<"setParticipatedPresence">
+    ): Promise<
+      PoapFactoryTypes.SignExecuteMethodResult<"setParticipatedPresence">
+    > => {
+      return signExecuteMethod(
+        PoapFactory,
+        this,
+        "setParticipatedPresence",
+        params
+      );
     },
     getNumEventsCreated: async (
       params: PoapFactoryTypes.SignExecuteMethodParams<"getNumEventsCreated">

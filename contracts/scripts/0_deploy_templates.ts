@@ -52,7 +52,8 @@ const deployTemplates: DeployFunction<Settings> = async (
       amountPoapFees: 0n,
       tokenIdAirdrop: '',
       amountAirdropPerUser: 0n,
-      amountAirdrop: 0n
+      amountAirdrop: 0n,
+      factoryContractId: '00'
     }
   })
 
