@@ -1557,7 +1557,8 @@ describe('integration tests', () => {
         nftIndex: 0n,
         presenceAddressValidate: NULL_CONTRACT_ADDRESS
       },
-      signer: signer
+      signer: signer,
+      attoAlphAmount: 10n*DUST_AMOUNT
     })
     poapState = await poap.fetchState()
 
@@ -1596,7 +1597,8 @@ describe('integration tests', () => {
         nftIndex: 1n,
         presenceAddressValidate: NULL_CONTRACT_ADDRESS
       },
-      signer: signer
+      signer: signer,
+      attoAlphAmount: DUST_AMOUNT
     })
 
     poapState2 = await poap2.fetchState()
@@ -1619,7 +1621,184 @@ describe('integration tests', () => {
           nftIndex: 2n,
           presenceAddressValidate: NULL_CONTRACT_ADDRESS
         },
-        signer: minter
+        signer: minter,
+        attoAlphAmount: DUST_AMOUNT
+      })
+    ,collection.address, 7)
+
+    const poap3 = PoapNFT.at(addressFromContractId((await collection.view.nftByIndex({ args: { index: 1n } })).returns))
+    expect(
+      poap3.transact.setParticipated({
+        signer: minter,
+        attoAlphAmount: DUST_AMOUNT
+      })
+    ).rejects.toThrowError("ExpectAContract")
+   
+
+  }, 20000)
+
+
+  it('Mint poap trough Factory and set poap participated with address index', async () => {
+    const signer = await testNodeWallet()
+    const deployments = await deployToDevnet()
+    const factory = deployments.getInstance(PoapFactory)
+
+    expect(factory).toBeDefined()
+
+    if (!factory) {
+      throw new Error('Factory is undefined')
+    }
+
+    await factory.transact.mintNewCollection({
+      args: {
+        eventImage: stringToHex('https://arweave.net/Z1HAdT_PGnxPLct4-u7l1Zl_h4DNdxzKev7tCDAEflc'),
+        maxSupply: 10n,
+        mintStartAt: 1735823531000n,
+        mintEndAt: 1893595576000n,
+        eventName: stringToHex('Test 1'),
+        description: stringToHex('First poap test'),
+        location: stringToHex('Online'),
+        eventStartAt: 1735823531000n,
+        eventEndAt: 1735823531000n,
+        totalSupply: 0n,
+        isPublic: false,
+        oneMintPerAddress: true,
+        isBurnable: false,
+        amountForStorageFees: 0n,
+        poapPrice: 0n,
+        tokenIdPoap: ALPH_TOKEN_ID,
+        amountPoapFees: 0n,
+        tokenIdAirdrop: ALPH_TOKEN_ID,
+        amountAirdropPerUser: 0n,
+        amountAirdrop: 0n
+      },
+      signer: signer,
+      attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT
+    })
+
+    // Check that event is emitted
+    const { events } = await web3
+      .getCurrentNodeProvider()
+      .events.getEventsContractContractaddress(factory.address, { start: 0 })
+    expect(events.length).toEqual(1)
+
+    const creationEvent = events[0]
+    const poapCollectionMinted = creationEvent.fields[0].value as string
+
+    const collection = PoapCollection.at(addressFromContractId(poapCollectionMinted))
+
+    await collection.transact.mint({
+      signer: minter,
+      attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT,
+      args: {
+        callerAddr: minter.address
+      }
+    })
+
+     // get Poap for minter  
+     const poap = PoapNFT.at(addressFromContractId((await collection.view.nftByAddress({
+       args: {
+         caller: minter.address
+       }
+     })).returns))
+     let poapState = await poap.fetchState()
+     expect(hexToString(poapState.fields.eventName)).toBe('Test 1')
+     expect((await poap.view.getTraits()).returns.length).toBe(8)
+     expect(hexToString((await poap.view.getTraitAtIndex({
+      args: {
+        index: 7n
+      }
+    })).returns.traitType)).toBe('Has Participated')
+    expect(hexToString((await poap.view.getTraitAtIndex({
+     args: {
+       index: 7n
+     }
+   })).returns.value)).toBe("false")
+
+    await collection.transact.setParticipatedPresence({
+      args: {
+        nftIndex: 0n,
+        presenceAddressValidate: minter.address
+      },
+      signer: signer,
+      attoAlphAmount: DUST_AMOUNT
+    })
+    poapState = await poap.fetchState()
+
+    expect(poapState.fields.hasParticipated).toBe(true)
+
+
+    expect((await collection.view.totalSupply()).returns).toBe(1n)
+
+    
+    // get Poap for minter2
+    await factory.transact.mintPoap({
+      args: {
+        collection: collection.contractId,
+      },
+      signer: minter2,
+      attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT
+    })
+
+    const poap2 = PoapNFT.at(addressFromContractId((await collection.view.nftByAddress({
+      args: {
+        caller: minter2.address
+      }
+    })).returns))
+     let poapState2 = await poap2.fetchState()
+     expect(hexToString(poapState2.fields.eventName)).toBe('Test 1')
+     expect((await poap2.view.getTraits()).returns.length).toBe(8)
+     expect(hexToString((await poap2.view.getTraitAtIndex({
+       args: {
+         index: 7n
+       }
+     })).returns.traitType)).toBe('Has Participated')
+     expect(hexToString((await poap2.view.getTraitAtIndex({
+      args: {
+        index: 7n
+      }
+    })).returns.value)).toBe('false')
+
+    await collection.transact.setParticipatedPresence({
+      args: {
+        nftIndex: 0n,
+        presenceAddressValidate: minter2.address
+      },
+      attoAlphAmount: DUST_AMOUNT,
+      signer: signer
+    })
+
+    poapState2 = await poap2.fetchState()
+    expect(poapState2.fields.hasParticipated).toBe(true)
+
+    expectAssertionError(collection.transact.setParticipatedPresence({
+      args: {
+        nftIndex: 0n,
+        presenceAddressValidate: minter2.address
+      },
+      attoAlphAmount: DUST_AMOUNT,
+      signer: signer
+    }), poap2.address, 10)
+
+
+    expect((await collection.view.totalSupply()).returns).toBe(2n)
+
+    await factory.transact.mintPoap({
+      args: {
+        collection: collection.contractId,
+      },
+      signer: minter3,
+      attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT
+    })
+
+    expectAssertionError(
+      collection.transact.setParticipatedPresence({
+        args: {
+          nftIndex: 0n,
+          presenceAddressValidate: minter3.address
+        },
+        signer: minter,
+        attoAlphAmount: DUST_AMOUNT
       })
     ,collection.address, 7)
    

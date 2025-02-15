@@ -90,6 +90,10 @@ Contract PoapNFT(
       return getTraits()[index]
   }
 
+  pub fn getHasParticipated() -> (Bool) {
+    return hasParticipated
+  }
+
   @using(preapprovedAssets = true, assetsInContract = true, checkExternalCaller = false)
   pub fn burn() -> () {
     assert!(isBurnable, ErrorCodes.NotBurnable)
@@ -102,7 +106,7 @@ Contract PoapNFT(
   @using(checkExternalCaller = true, updateFields = true)
   pub fn setParticipated() -> (){
     checkCaller!(callerContractId!() == collectionId, ErrorCodes.InvalidCaller)
-    //assert!(!hasParticipated, ErrorCodes.AlreadySet)
+    assert!(!hasParticipated, ErrorCodes.AlreadySet)
 
     hasParticipated = true
   }
