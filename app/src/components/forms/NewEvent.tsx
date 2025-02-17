@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useEffect, useState } from 'react';
-import { web3, Contract, MINIMAL_CONTRACT_DEPOSIT, DUST_AMOUNT, Subscription, contractIdFromAddress, addressFromContractId, NetworkId, ALPH_TOKEN_ID, ONE_ALPH } from '@alephium/web3'
+import { web3, Contract, MINIMAL_CONTRACT_DEPOSIT, DUST_AMOUNT, Subscription, contractIdFromAddress, addressFromContractId, NetworkId, ALPH_TOKEN_ID, ONE_ALPH, NodeProvider } from '@alephium/web3'
 import { PoapFactory, PoapFactoryTypes } from '../../../../contracts/artifacts/ts/PoapFactory'
 import { toast } from 'react-hot-toast'
 import { useWallet } from '@alephium/web3-react'
@@ -243,12 +243,14 @@ export default function NewEvent() {
         signer: signer,
         attoAlphAmount: storageFees <= 0 ? MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT : MINIMAL_CONTRACT_DEPOSIT + storageFees + DUST_AMOUNT,
       });
+      
 
       setProgressState({ 
         currentStep: 'submitted', 
         txHash: result.txId 
       });
-      
+      await pollForEvents(web3.getCurrentNodeProvider(), result.txId);
+
       toast.success('Transaction submitted! Waiting for confirmation...');
     } catch (error) {
       console.error('Error creating event:', error);
@@ -292,8 +294,41 @@ export default function NewEvent() {
     console.log('Node provider setup complete');
   }, []);
 
+
+  const pollForEvents = async (provider: NodeProvider, txId: string, retries = 0): Promise<void> => {
+    if (retries >= 2000) {
+      throw new Error('Transaction confirmation timeout');
+    }
+    
+    const events = await provider?.events.getEventsTxIdTxid(txId);
+    //console.log('Events:', events);
+    if (events && Object.keys(events).length > 0) {
+      const eventKey = Object.keys(events)[0];
+      const eventArray = events[eventKey as keyof typeof events];
+      if (eventArray && eventArray.length > 0) {
+        const event = eventArray[0];
+
+        const contractAddress = event.fields[0].value as string;
+        //console.log('Contract ID:', contractAddress);
+
+        //const contractAddress = addressFromContractId(contractId);
+
+        setCreatedContractAddress(contractAddress);
+        setProgressState({
+          currentStep: 'completed',
+          txHash: txHash ?? undefined,
+          contractAddress
+        });
+        return;
+      }
+    }
+  
+    await new Promise(resolve => setTimeout(resolve, 3000));
+    return pollForEvents(provider, txId, retries + 1);
+  };
+
   // Event subscription with logging
-  useEffect(() => {
+  /*useEffect(() => {
     const deployment = loadDeployments(process.env.NEXT_PUBLIC_NETWORK as NetworkId ?? 'testnet'); // TODO use getNetwork()
       const factoryContract = PoapFactory.at(deployment.contracts.PoapFactory.contractInstance.address);
 
@@ -326,7 +361,7 @@ export default function NewEvent() {
     }
     subscribeEvents();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, []);*/
 
   // Add location input field in the form
   const locationInput = (

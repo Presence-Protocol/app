@@ -28,9 +28,12 @@ export default function PoapProgress({ isOpen, onClose, progress }: PoapProgress
   const getStepStatus = (step: ProgressStep) => {
     const stepOrder = steps.findIndex(s => s.key === step);
     const currentOrder = steps.findIndex(s => s.key === progress.currentStep);
-    
+
+    if (step === 'completed' && progress.currentStep === 'completed') return 'completed'; // Auto-complete the last step
+
     if (stepOrder < currentOrder) return 'completed';
     if (stepOrder === currentOrder) return 'current';
+
     return 'pending';
   };
 
