@@ -126,9 +126,11 @@ export default function Footer() {
                 </p>
                 <div className="flex gap-4">
                   <a
-                    title="link to your page"
-                    aria-label="your label"
-                    href="#_"
+                    title="Presence X account"
+                    aria-label="Presence X account"
+                    target='_blank'
+                    rel="noopener noreferrer"
+                    href="https://twitter.com/PresenceProto"
                     className="flex h-10 w-10 items-center justify-center hover:shadow-none hover:border-white border-2 border-black shadow-tiny duration-300 shadow-white hover:translate-x-1 hover:translate-y-1 rounded-full bg-white focus:bg-black focus:text-white">
                     <div>
                       <svg
@@ -151,39 +153,49 @@ export default function Footer() {
                     </div>
                   </a>
                   <a
-                    title="link to your page"
-                    aria-label="your label"
-                    href="#_"
+                    title="Alephium website"
+                    aria-label="Alephium website"
+                    target='_blank'
+                    rel="noopener noreferrer"
+                    href="https://alephium.org/"
                     className="flex h-10 w-10 items-center justify-center hover:shadow-none hover:border-white border-2 border-black shadow-tiny duration-300 shadow-white hover:translate-x-1 hover:translate-y-1 rounded-full bg-white focus:bg-black focus:text-white">
                     <div>
                       <svg
+                        width="100%"
+                        height="100%"
+                        viewBox="0 0 1000 1000"
+                        version="1.1"
                         xmlns="http://www.w3.org/2000/svg"
-                        className="icon icon-tabler icon-tabler-currency-bitcoin size-4"
-                        viewBox="0 0 24 24"
-                        strokeWidth="2"
-                        stroke="currentColor"
-                        fill="none"
-                        strokeLinecap="round"
-                        strokeLinejoin="round">
-                        <path
-                          stroke="none"
-                          d="M0 0h24v24H0z"
-                          fill="none"
-                        ></path>
-                        <path d="M6 6h8a3 3 0 0 1 0 6a3 3 0 0 1 0 6h-8"></path>
-                        <path d="M8 6l0 12"></path>
-                        <path d="M8 12l6 0"></path>
-                        <path d="M9 3l0 3"></path>
-                        <path d="M13 3l0 3"></path>
-                        <path d="M9 18l0 3"></path>
-                        <path d="M13 18l0 3"></path>
+                        xmlnsXlink="http://www.w3.org/1999/xlink"
+                        xmlSpace="preserve"
+                        style={{ fillRule: 'evenodd', clipRule: 'evenodd', strokeLinejoin: 'round', strokeMiterlimit: 2 }}
+                        className="size-6"
+                      >
+                        <g transform="matrix(1,0,0,1,-3372,0)">
+                          <g transform="matrix(0.714286,0,0,0.4876,2336.29,0)">
+                            <rect x="1450" y="0" width="1400" height="2050.86" style={{ fill: 'none' }}/>
+                            <g transform="matrix(2.15145,0,0,3.06273,1741.93,-13470.9)">
+                              <g transform="matrix(0.46324,0,0,0.476693,59.5258,4506.4)">
+                                <path d="M187.296,627.61C187.296,615.272 177.581,606.969 165.616,609.078L21.68,634.454C9.715,636.564 -0,648.293 -0,660.63L-0,932.485C-0,944.822 9.715,953.126 21.68,951.016L165.616,925.64C177.581,923.531 187.296,911.802 187.296,899.464L187.296,627.61Z" style={{ fillRule: 'nonzero' }}/>
+                              </g>
+                              <g transform="matrix(0.46324,0,0,0.476693,59.5258,4506.4)">
+                                <path d="M561.888,18.859C561.888,6.522 552.173,-1.782 540.207,0.327L396.272,25.704C384.306,27.813 374.592,39.542 374.592,51.88L374.592,323.734C374.592,336.072 384.306,344.375 396.272,342.266L540.207,316.89C552.173,314.78 561.888,303.051 561.888,290.714L561.888,18.859Z" style={{ fillRule: 'nonzero' }}/>
+                              </g>
+                              <g transform="matrix(0.46324,0,0,0.476693,59.5258,4506.4)">
+                                <path d="M210.743,82.363C205.186,70.124 190.266,62.023 177.446,64.283L23.229,91.472C10.408,93.732 4.512,105.503 10.069,117.742L351.145,868.949C356.702,881.188 371.622,889.29 384.442,887.029L538.659,859.841C551.479,857.581 557.376,845.809 551.819,833.57L210.743,82.363Z" style={{ fillRule: 'nonzero' }}/>
+                              </g>
+                            </g>
+                          </g>
+                        </g>
                       </svg>
                     </div>
                   </a>
                   <a
-                    title="link to your page"
-                    aria-label="your label"
-                    href="#_"
+                    title="Github repository"
+                    aria-label="Github repository"
+                    target='_blank'
+                    rel="noopener noreferrer"
+                    href="https://github.com/Presence-Protocol"
                     className="flex h-10 w-10 items-center justify-center hover:shadow-none hover:border-white border-2 border-black shadow-tiny duration-300 shadow-white hover:translate-x-1 hover:translate-y-1 rounded-full bg-white focus:bg-black focus:text-white">
                     <div>
                       <svg
@@ -246,7 +258,9 @@ export default function Footer() {
                 className="hover:text-lila-500"
                 title="link to your page"
                 aria-label="your label"
-                href="/documentation"
+                target='_blank'
+                rel="noopener noreferrer"
+                href="https://github.com/Presence-Protocol/app"
               >Documentation</a
               >
 
@@ -254,14 +268,9 @@ export default function Footer() {
                 className="hover:text-lila-500"
                 title="link to your page"
                 aria-label="your label"
-                href="https://www.lexingtonthemes.com/documentation/quick-start"
-              >Work with Us</a
-              >
-              <a
-                className="hover:text-lila-500"
-                title="link to your page"
-                aria-label="your label"
-                href="https://www.lexingtonthemes.com/legal/license"
+                target='_blank'
+                rel="noopener noreferrer"
+                href="https://twitter.com/PresenceProto"
               >Contact Us</a
               >
             </nav>
