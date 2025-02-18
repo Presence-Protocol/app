@@ -41,9 +41,9 @@ export default function PoapProgress({ isOpen, onClose, progress }: PoapProgress
     <div className="w-full flex flex-col items-center">
     <div className="w-full overflow-y-auto ring-2 ring-inset ring-black text-black bg-white shadow-small rounded-xl p-8 mb-6">
       <h2 className="text-lg font-semibold text-black lg:text-2xl md:text-xl mb-2">
-        Creating your Presence Event
+        {progress.currentStep === 'completed' ? 'Presence Event Created' : 'Creating your Presence Event'}
       </h2>
-      <p className="text-sm text-gray-500 mb-6">This won't take long, your presence is being deployed to the blockchain.</p>
+      <p className="text-sm text-gray-500 mb-6">{progress.currentStep === 'completed' ? 'Your Presence Event has been created. You can leave this page now.' : 'This won\'t take long, your presence is being deployed to the blockchain.'}</p>
 
       <div className="space-y-4">
         {steps.map(({ key, label }) => {
@@ -87,12 +87,15 @@ export default function PoapProgress({ isOpen, onClose, progress }: PoapProgress
             View on Explorer
           </Link>
           
-          <Link 
-            href={`/mint-presence/#id=${progress.contractAddress}`}
+          <button
+            onClick={() => navigator.clipboard.writeText(`${window.location.origin}/mint-presence/#id=${progress.contractAddress}`)}
             className="text-black items-center shadow shadow-black text-sm font-semibold inline-flex px-4 focus:outline-none justify-center text-center bg-lila-400 border-black ease-in-out transform transition-all focus:ring-lila-700 focus:shadow-none border-2 duration-100 focus:bg-black focus:text-white py-2 rounded-lg tracking-wide focus:translate-y-1 w-full hover:text-lila-800"
           >
-            Share Mint Link
-          </Link>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 mr-2">
+              <path fillRule="evenodd" d="M15.75 4.5a3 3 0 1 1 .825 2.066l-8.421 4.679a3.002 3.002 0 0 1 0 1.51l8.421 4.679a3 3 0 1 1-.729 1.31l-8.421-4.678a3 3 0 1 1 0-4.132l8.421-4.679a3 3 0 0 1-.096-.755Z" clipRule="evenodd" />
+            </svg>
+            Copy Mint Link
+          </button>
           
          
         </div>

@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import ExplorerHeader from './EventsHeader';
+import { useRouter } from 'next/navigation';
 
 interface Event {
   contractId: string;
@@ -134,6 +135,8 @@ function EventSection({ title, events, viewAllLink }: {
 }
 
 function EventCard({ event }: { event: Event }) {
+  const router = useRouter();
+  
   const getRelativeTime = (date: Date) => {
     try {
       return date.toRelativeTimeString();
@@ -142,9 +145,20 @@ function EventCard({ event }: { event: Event }) {
     }
   };
 
+  const addressFromContractId = (contractId: string) => {
+    return contractId.replace(/^wasm\./, '');
+  };
+
+  const handleClick = () => {
+    router.push(`/mint-presence?id=${addressFromContractId(event.contractId)}`);
+  };
+
   return (
-    <div className="bg-white p-4 rounded-xl border-2 border-black shadow-large">
-      <div className="aspect-video rounded-lg bg-lila-300 mb-4 flex flex-col items-center justify-center p-2">
+    <div 
+      onClick={handleClick}
+      className="bg-white p-4 rounded-xl border-2 border-black shadow-large cursor-pointer transition-transform block"
+    >
+      <div className="aspect-video rounded-lg bg-lila-500 mb-4 flex flex-col items-center justify-center p-2">
         <span className="text-sm font-medium text-black">
           {new Date(event.createdAt).toLocaleDateString()}
         </span>

@@ -37,7 +37,7 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <body className="flex h-full flex-col bg-background transition-colors duration-200">
-        <ThemeProvider attribute="class">
+        {/* <ThemeProvider attribute="class"> */}
           <WalletLoadingProvider>
             <AlephiumWalletProvider 
               theme="retro" 
@@ -47,7 +47,7 @@ export default function RootLayout({
               {children}
             </AlephiumWalletProvider>
           </WalletLoadingProvider>
-        </ThemeProvider>
+        {/* </ThemeProvider> */}
       </body>
     </html>
   )

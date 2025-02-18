@@ -16,10 +16,10 @@ export default function LargeImageWarning({ isOpen, onClose }: LargeImageWarning
                             xmlns="http://www.w3.org/2000/svg"
                             className="icon size-6 icon-tabler icon-tabler-alert-triangle text-danger-600 mr-2"
                             viewBox="0 0 24 24"
-                            stroke-width="2"
+                            strokeWidth="2"
                             stroke="currentColor"
                             fill="none"
-                            stroke-linecap="round"
+                            strokeLinecap="round"
                             strokeLinecap="round"
                           >
                             <path stroke="none" d="M0 0h24v24H0z" fill="none"

@@ -7,12 +7,14 @@ import { useWalletLoading } from '@/context/WalletLoadingContext';
 import Image from 'next/image';
 import { addressFromContractId, hexToString, web3 } from '@alephium/web3';
 import { PoapCollection, PoapNFT } from 'my-contracts';
+import Snackbar from '../ui/Snackbar';
 
 interface NFTMetadata {
   title: string;
   description: string;
   image: string;
   tokenId: string;
+  oneMintPerAddress: boolean;
   eventDateStart: string;
   eventDateEnd: string;
   collectionId: string;
@@ -52,6 +54,7 @@ export default function NFTList({ account }: { account: string }) {
   const [isLoading, setIsLoading] = useState(true);
   const [events, setEvents] = useState<EventResponse[]>([]);
   const [showAllEvents, setShowAllEvents] = useState(false);
+  const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
 
 
 
@@ -63,12 +66,12 @@ export default function NFTList({ account }: { account: string }) {
       undefined
     );
     console.log('Node provider setup complete');
-    
+
     // Fetching all events for the account
     const fetchEvents = async () => {
       try {
         const minLoadingTime = new Promise(resolve => setTimeout(resolve, 1000));
-        
+
         const response = await fetch(`https://presenceprotocol.notrustverify.ch/api/events/${account}?limit=10`);
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
@@ -76,7 +79,7 @@ export default function NFTList({ account }: { account: string }) {
         const eventsData: EventResponse[] = await response.json();
 
         console.log('eventsData', eventsData);
-        
+
         // Fetch collection metadata for each event
         const eventsWithMetadata = await Promise.all(eventsData.map(async (event) => {
           try {
@@ -110,7 +113,7 @@ export default function NFTList({ account }: { account: string }) {
       try {
         // Create a minimum loading time promise
         const minLoadingTime = new Promise(resolve => setTimeout(resolve, 1000));
-        
+
         // Fetch POAP data
         const response = await fetch(`https://presenceprotocol.notrustverify.ch/api/poap/${account}`);
         const poapData: POAPResponse[] = await response.json();
@@ -154,12 +157,18 @@ export default function NFTList({ account }: { account: string }) {
   const displayedNFTs = showAllNFTs ? nfts : nfts.slice(0, 6);
   const displayedEvents = showAllEvents ? events : events.slice(0, 6);
 
+  const handleShare = async (contractId: string) => {
+    const url = `${window.location.origin}/mint-presence/#id=${contractId}`;
+    await navigator.clipboard.writeText(url);
+    setIsSnackbarOpen(true);
+  };
+
   if (isLoading) {
     return (
       <section className="py-32 min-h-[calc(100vh-80px)] flex items-center justify-center px-4 md:px-8 bg-lila-200">
         <div className="mx-auto max-w-7xl flex flex-col my-auto items-center justify-center space-y-8">
           <div className="animate-spin">
-            <Image 
+            <Image
               src="/images/blob5.svg"
               alt="Loading..."
               width={80}
@@ -171,7 +180,7 @@ export default function NFTList({ account }: { account: string }) {
           <div className="text-2xl font-semibold text-black/70">
             Loading your Presence...
           </div>
-          <div style={{marginTop: '10px'}} className="text-sm mt-0 pt-0 text-gray-500/70">
+          <div style={{ marginTop: '10px' }} className="text-sm mt-0 pt-0 text-gray-500/70">
             Please wait while we fetch your event memories
           </div>
         </div>
@@ -216,7 +225,7 @@ export default function NFTList({ account }: { account: string }) {
                   href="/new-event"
                   className="text-black items-center shadow shadow-black text-base font-semibold inline-flex px-6 focus:outline-none justify-center text-center bg-lila-300 border-black ease-in-out transform transition-all focus:ring-lila-700 focus:shadow-none border-2 duration-100 focus:bg-black focus:text-white py-3 rounded-lg h-12 focus:translate-y-1 hover:text-lila-800 tracking-wide"
                 >
-                  Create Event <span className="ml-2">✨</span>
+                  Create Event
                 </Link>
               </div>
             </div>
@@ -252,15 +261,15 @@ export default function NFTList({ account }: { account: string }) {
               </div>
             </div>
           </div>
-          
+
           {nfts.length === 0 ? (
-            <div className="bg-white p-8 rounded-xl border-2 border-black shadow-large">
+            <div className="bg-lila-200 p-8 rounded-xl">
               <div className="max-w-lg mx-auto text-center">
                 <Image
                   src="/images/blob5.svg"
                   alt="No presences"
-                  width={100}
-                  height={100}
+                  width={40}
+                  height={40}
                   className="mx-auto mb-6 opacity-80"
                   priority
                 />
@@ -293,7 +302,7 @@ export default function NFTList({ account }: { account: string }) {
                         className="w-full h-full object-cover"
                       />
                       <button
-                        onClick={() => navigator.clipboard.writeText(`${window.location.origin}/mint-presence/#id=${nft.collectionId}`)}
+                        onClick={() => handleShare(nft.collectionId)}
                         className="absolute top-2 right-2 text-black items-center shadow shadow-black text-[10px] font-semibold inline-flex px-2 bg-white border-black ease-in-out transform transition-all focus:ring-lila-700 focus:shadow-none border-2 duration-100 focus:bg-black focus:text-white py-1 rounded-lg h-6 focus:translate-y-1 hover:text-lila-800 tracking-wide"
                       >
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-2.5 h-2.5 mr-1">
@@ -317,7 +326,7 @@ export default function NFTList({ account }: { account: string }) {
                   </div>
                 ))}
               </div>
-              
+
               {nfts.length > 6 && (
                 <div className="flex justify-center mt-8">
                   <button
@@ -341,22 +350,22 @@ export default function NFTList({ account }: { account: string }) {
                 {events.length} Events
               </div>
             </div>
-            <Link
+            {/* <Link
               className="text-black items-center shadow shadow-black text-xs font-semibold inline-flex px-4 focus:outline-none justify-center text-center bg-white border-black ease-in-out transform transition-all focus:ring-lila-700 focus:shadow-none border-2 duration-100 focus:bg-black focus:text-white py-2 rounded-lg h-10 focus:translate-y-1 hover:text-lila-800 tracking-wide"
               href="/new-event"
             >
               New Event <span className="ml-1">&rarr;</span>
-            </Link>
+            </Link> */}
           </div>
-          
+
           {events.length === 0 ? (
-            <div className="bg-white p-8 rounded-xl border-2 border-black shadow-large">
+            <div className="bg-lila-200 p-8 rounded-xl">
               <div className="max-w-lg mx-auto text-center">
                 <Image
-                  src="/images/blob4.svg"
-                  alt="No events"
-                  width={100}
-                  height={100}
+                  src="/images/blob5.svg"
+                  alt="No presences"
+                  width={40}
+                  height={40}
                   className="mx-auto mb-6 opacity-80"
                   priority
                 />
@@ -370,7 +379,7 @@ export default function NFTList({ account }: { account: string }) {
                   href="/new-event"
                   className="text-black items-center shadow shadow-black text-base font-semibold inline-flex px-6 focus:outline-none justify-center text-center bg-lila-300 border-black ease-in-out transform transition-all focus:ring-lila-700 focus:shadow-none border-2 duration-100 focus:bg-black focus:text-white py-3 rounded-lg h-12 focus:translate-y-1 hover:text-lila-800 tracking-wide"
                 >
-                  Create Event <span className="ml-3">&rarr;</span>
+                  Create Event
                 </Link>
               </div>
             </div>
@@ -408,20 +417,36 @@ export default function NFTList({ account }: { account: string }) {
                           )}
                         </div>
                       </div>
-                      <button
-                        onClick={() => navigator.clipboard.writeText(`${window.location.origin}/mint-presence/#id=${addressFromContractId(event.contractId)}`)}
-                        className="mt-4 w-full text-black items-center shadow shadow-black text-xs font-semibold inline-flex px-4 justify-center bg-white border-black ease-in-out transform transition-all focus:ring-lila-700 focus:shadow-none border-2 duration-100 focus:bg-black focus:text-white py-2 rounded-lg h-10 focus:translate-y-1 hover:text-lila-800 tracking-wide"
-                      >
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-3 h-3 mr-1">
-                          <path fillRule="evenodd" d="M15.75 4.5a3 3 0 1 1 .825 2.066l-8.421 4.679a3.002 3.002 0 0 1 0 1.51l8.421 4.679a3 3 0 1 1-.729 1.31l-8.421-4.678a3 3 0 1 1 0-4.132l8.421-4.679a3 3 0 0 1-.096-.755Z" clipRule="evenodd" />
-                        </svg>
-                        Share
-                      </button>
+                      <div className="flex justify-between items-center gap-4 pt-3">
+                        <button
+                          onClick={() => handleShare(addressFromContractId(event.contractId))}
+                          className="mt-4 w-full text-black items-center shadow shadow-black text-xs font-semibold inline-flex px-4 justify-center bg-white border-black ease-in-out transform transition-all focus:ring-lila-700 focus:shadow-none border-2 duration-100 focus:bg-black focus:text-white py-2 rounded-lg h-10 focus:translate-y-1 hover:text-lila-800 tracking-wide"
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-3 h-3 mr-1">
+                            <path fillRule="evenodd" d="M15.75 4.5a3 3 0 1 1 .825 2.066l-8.421 4.679a3.002 3.002 0 0 1 0 1.51l8.421 4.679a3 3 0 1 1-.729 1.31l-8.421-4.678a3 3 0 1 1 0-4.132l8.421-4.679a3 3 0 0 1-.096-.755Z" clipRule="evenodd" />
+                          </svg>
+                          Share
+                        </button>
+
+                        <Link
+                          href={`/mint-presence/#id=${addressFromContractId(event.contractId)}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="mt-4 w-full text-black items-center shadow shadow-black text-xs font-semibold inline-flex px-4 justify-center bg-white border-black ease-in-out transform transition-all focus:ring-lila-700 focus:shadow-none border-2 duration-100 focus:bg-black focus:text-white py-2 rounded-lg h-10 focus:translate-y-1 hover:text-lila-800 tracking-wide"
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="size-4 mr-1">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                          </svg>
+
+                          Preview
+                        </Link>
+                      </div>
                     </div>
                   </div>
                 ))}
               </div>
-              
+
               {events.length > 6 && (
                 <div className="flex justify-center mt-8">
                   <button
@@ -436,11 +461,16 @@ export default function NFTList({ account }: { account: string }) {
           )}
         </div>
 
-       
-        
-  
-        
+
+
+
+
       </div>
+      <Snackbar 
+        message="Link copied to clipboard!" 
+        isOpen={isSnackbarOpen} 
+        onClose={() => setIsSnackbarOpen(false)} 
+      />
     </section>
   );
 }

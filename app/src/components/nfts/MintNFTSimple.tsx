@@ -9,6 +9,7 @@ import Image from 'next/image';
 import MintSuccessModal from '../Modals/MintSuccessModal';
 import Confetti from 'react-confetti'
 import useWindowSize from '@/hooks/useWindowSize'
+import AlreadyMintedWarning from '../Modals/AlreadyMintedWarning';
 
 interface NFTCollection {
   title: string;
@@ -24,6 +25,7 @@ interface NFTCollection {
   currentSupply: bigint;
   isPublic: boolean;
   amountForStorageFees: bigint;
+  oneMintPerAddress: boolean;
 }
 
 export default function MintNFTSimple() {
@@ -38,8 +40,9 @@ export default function MintNFTSimple() {
   const [error, setError] = useState<string | null>(null);
   const [isMintSuccessOpen, setIsMintSuccessOpen] = useState(false);
   const [mintTxId, setMintTxId] = useState<string | null>(null);
-  const [showConfetti, setShowConfetti] = useState(true)
-  const { width, height } = useWindowSize()
+  const [showConfetti, setShowConfetti] = useState(false);
+  const { width, height } = useWindowSize();
+  const [isAlreadyMintedOpen, setIsAlreadyMintedOpen] = useState(false);
 
   const [nftCollection, setNftCollection] = useState<NFTCollection>({
     title: '00',
@@ -54,7 +57,8 @@ export default function MintNFTSimple() {
     location: '00',
     currentSupply: BigInt(0),
     isPublic: false,
-    amountForStorageFees: 0n
+    amountForStorageFees: 0n,
+    oneMintPerAddress: false
   });
 
   useEffect(() => {
@@ -71,6 +75,7 @@ export default function MintNFTSimple() {
   }, []);
 
   useEffect(() => {
+    console.log('UseEffect running')
     web3.setCurrentNodeProvider(
       process.env.NEXT_PUBLIC_NODE_URL ?? "https://node.testnet.alephium.org",
       undefined,
@@ -78,6 +83,7 @@ export default function MintNFTSimple() {
     );
     const deployment = loadDeployments(process.env.NEXT_PUBLIC_NETWORK as NetworkId ?? 'testnet');
     setFactoryContract(PoapFactory.at(deployment.contracts.PoapFactory.contractInstance.address));
+
 
     if (contractId) {
       const collectionAddress = contractId;
@@ -89,6 +95,7 @@ export default function MintNFTSimple() {
       
       collection.fetchState()
         .then((collectionMetadata) => {
+          console.log(collectionMetadata)
           setNftCollection({ 
             title: hexToString(collectionMetadata.fields.eventName),
             description: hexToString(collectionMetadata.fields.description),
@@ -102,7 +109,8 @@ export default function MintNFTSimple() {
             mintEndDate: collectionMetadata.fields.mintEndAt,
             eventStartDate: collectionMetadata.fields.eventStartAt,
             eventEndDate: collectionMetadata.fields.eventEndAt,
-            amountForStorageFees: collectionMetadata.fields.amountForStorageFees
+            amountForStorageFees: collectionMetadata.fields.amountForStorageFees,
+            oneMintPerAddress: collectionMetadata.fields.oneMintPerAddress
           });
           setIsLoading(false);
         })
@@ -133,22 +141,28 @@ export default function MintNFTSimple() {
         throw new Error('POAP collection not initialized')
       }
 
-      console.log(nftCollection.amountForStorageFees)
       const result = await factoryContract.transact.mintPoap({
         args: {
           collection: poapCollection.contractId,
         },
         signer: signer,
-        attoAlphAmount: nftCollection.amountForStorageFees > MINIMAL_CONTRACT_DEPOSIT ?  DUST_AMOUNT : MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT
+        attoAlphAmount: nftCollection.amountForStorageFees > MINIMAL_CONTRACT_DEPOSIT ? DUST_AMOUNT : MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT
       });
 
-      //setMintTxId(result.txId);
       await waitForTxConfirmation(result.txId, 1, 5*1000);
       setShowConfetti(true)
-          setIsMintSuccessOpen(true);
-          setIsMinting(false);
-    } catch (error) {
+      setIsMintSuccessOpen(true);
+      setIsMinting(false);
+    } catch (error: any) {
       console.error('Error minting Presence:', error);
+      setIsMinting(false);
+      
+      // Check for already minted error
+      if (error.message?.includes('Assertion Failed in Contract') && error.message?.includes('Error Code: 6')) {
+        setIsAlreadyMintedOpen(true);
+      } else {
+        setError('Failed to mint Presence. Please try again later.');
+      }
     }
   }
 
@@ -187,16 +201,28 @@ export default function MintNFTSimple() {
     });
   };
 
+  // Add useEffect to control confetti duration
+  useEffect(() => {
+    if (showConfetti) {
+      const timer = setTimeout(() => {
+        setShowConfetti(false);
+      }, 3000); // 3 seconds
+
+      return () => clearTimeout(timer);
+    }
+  }, [showConfetti]);
+
   return (
     <section>
       {showConfetti && (
         <Confetti
           width={width}
           height={height}
-          recycle={true}
+          recycle={false}
           numberOfPieces={200}
           gravity={0.3}
-          tweenDuration={4000}
+          colors={['#E5D4FF', '#FFF3DA', '#FFD1DA', '#D0BFFF']} // lila color palette
+          tweenDuration={3000}
           style={{ position: 'fixed', top: 0, left: 0, zIndex: 100 }}
         />
       )}
@@ -223,10 +249,10 @@ export default function MintNFTSimple() {
                             xmlns="http://www.w3.org/2000/svg"
                             className="icon size-6 icon-tabler icon-tabler-alert-triangle text-white mr-1"
                             viewBox="0 0 24 24"
-                            stroke-width="2"
+                            strokeWidth="2"
                             stroke="currentColor"
                             fill="none"
-                            stroke-linecap="round"
+                            strokeLinecap="round"
                             strokeLinecap="round"
                           >
                             <path stroke="none" d="M0 0h24v24H0z" fill="none"
@@ -252,19 +278,29 @@ export default function MintNFTSimple() {
 
                   <div className="mt-4 flex flex-col gap-4">
                     <div className="flex justify-center gap-4">
-                      <div className="text-black items-center shadow shadow-lila-600 text-xs font-semibold inline-flex px-6 bg-lila-300 border-lila-600 border-2 py-3 rounded-lg h-8 tracking-wide">
+                      <div className="text-black items-center shadow shadow-lila-600 text-xs font-semibold inline-flex px-4 bg-lila-300 border-lila-600 border-2 py-2 rounded-lg h-8 tracking-wide">
                         {nftCollection.currentSupply.toString()} / {nftCollection.maxSupply.toString()}
                       </div>
-                      <div className="text-black items-center shadow shadow-lila-600 text-xs font-semibold inline-flex px-6 bg-lila-300 border-lila-600 border-2 py-3 rounded-lg h-8 tracking-wide">
-                        {nftCollection.price} ALPH
-                      </div>
+                      {nftCollection.oneMintPerAddress && (
+                        <div className="text-black items-center shadow shadow-lila-600 text-xs font-semibold inline-flex px-4 bg-lila-300 border-lila-600 border-2 py-2 rounded-lg h-8 tracking-wide">
+                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="h-4 w-4 mr-1">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 5.25a3 3 0 013 3m3 0a6 6 0 01-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1121.75 8.25z" />
+                          </svg>
+                          <span>1 Per Wallet</span>
+                        </div>
+                      )}
+                      {nftCollection.price > 0 && (
+                        <div className="text-black items-center shadow shadow-lila-600 text-xs font-semibold inline-flex px-6 bg-lila-300 border-lila-600 border-2 py-3 rounded-lg h-8 tracking-wide">
+                          {nftCollection.price} ALPH
+                        </div>
+                      )}
                     </div>
 
                     <div className="flex flex-col gap-2 mt-">
                       <div className="flex items-center justify-center gap-2 text-sm">
                         <span className="text-gray-600">{nftCollection.location}</span>
                         <span className="text-gray-400">•</span>
-                        <span className={`${nftCollection.isPublic ? 'text-black' : 'text-gray-600'}`}>
+                        <span className="text-gray-600">
                           {nftCollection.isPublic ? 'Public Event' : 'Private Event'}
                         </span>
                         <span className="text-gray-400">•</span>
@@ -324,6 +360,10 @@ export default function MintNFTSimple() {
         nftImage={nftCollection.image}
         nftTitle={nftCollection.title}
         eventDate={`${formatDate(nftCollection.eventStartDate)} - ${formatDate(nftCollection.eventEndDate)}`}
+      />
+      <AlreadyMintedWarning
+        isOpen={isAlreadyMintedOpen}
+        onClose={() => setIsAlreadyMintedOpen(false)}
       />
     </section>
   );
