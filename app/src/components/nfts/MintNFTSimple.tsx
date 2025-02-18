@@ -43,6 +43,11 @@ export default function MintNFTSimple() {
   const [showConfetti, setShowConfetti] = useState(false);
   const { width, height } = useWindowSize();
   const [isAlreadyMintedOpen, setIsAlreadyMintedOpen] = useState(false);
+  const [mintEvents, setMintEvents] = useState<Array<{
+    caller: string;
+    nftIndex: bigint;
+    timestamp: number;
+  }>>([]);
 
   const [nftCollection, setNftCollection] = useState<NFTCollection>({
     title: '00',
@@ -167,30 +172,45 @@ export default function MintNFTSimple() {
   }
 
   // Add event subscription
- /* useEffect(() => {
-    if (!poapCollection || !mintTxId || !account?.address) return;
+  useEffect(() => {
+    if (!poapCollection) return;
 
+    let isSubscribed = true;
     const subscription = poapCollection.subscribePoapMintedEvent({
       pollingInterval: 5000,
       messageCallback: async (event) => {
-        if (event.fields.to === account.address) {
-          setShowConfetti(true)
-          setIsMintSuccessOpen(true);
-          setIsMinting(false);
+        console.log('Minted event:', event);
+        if (isSubscribed) {
+          setMintEvents(prev => {
+            const exists = prev.some(e => 
+              e.caller === event.fields.caller && 
+              e.nftIndex === event.fields.nftIndex
+            );
+            if (exists) return prev;
+            
+            return [...prev, {
+              caller: event.fields.caller,
+              nftIndex: event.fields.nftIndex,
+              timestamp: Number(event.fields.timestamp)
+            }];
+          });
         }
         return Promise.resolve();
       },
       errorCallback: (error, subscription) => {
         console.error('Error from collection contract:', error);
-        subscription.unsubscribe();
+        if (isSubscribed) {
+          subscription.unsubscribe();
+        }
         return Promise.resolve();
       }
     });
 
     return () => {
+      isSubscribed = false;
       subscription.unsubscribe();
     };
-  }, [poapCollection, mintTxId, account?.address]);*/
+  }, [poapCollection]);
 
   const formatDate = (timestamp: bigint): string => {
     const date = new Date(Number(timestamp));
@@ -213,7 +233,7 @@ export default function MintNFTSimple() {
   }, [showConfetti]);
 
   return (
-    <section className="bg-lila-200 pt-16 pb-16 sm:pt-0 sm:pb-0 ">
+    <section className="bg-lila-200 pt-16 pb-16 sm:pt-0 sm:pb-0">
       {showConfetti && (
         <Confetti
           width={width}
@@ -227,8 +247,8 @@ export default function MintNFTSimple() {
         />
       )}
       <div className="mx-auto bg-lila-200">
-        <div className="relative justify-center h-[calc(100vh-80px)] overflow-hidden px-4">
-          <div className="w-full h-full flex flex-col items-center justify-center">
+        <div className="relative justify-center overflow-hidden px-4 pb-8">
+          <div className="w-full flex flex-col items-center justify-center">
             <div className="w-full max-w-lg p-8 text-center">
               {isLoading ? (
                 <div className="flex items-center justify-center">
@@ -357,6 +377,39 @@ export default function MintNFTSimple() {
             </div>
           </div>
         </div>
+
+        {/* Mint Events Table */}
+        {mintEvents.length > 0 && (
+          <div className="max-w-lg mx-auto px-4 pb-8">
+            <h3 className="text-xl font-medium text-black mb-4">Recent Mints</h3>
+            <div className="overflow-x-auto">
+              <table className="min-w-full border-2 border-black rounded-lg bg-white">
+                <thead className="bg-lila-300 border-b-2 border-black">
+                  <tr>
+                    <th className="px-4 py-2 text-left">Minter</th>
+                    <th className="px-4 py-2 text-left">Time</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y-2 divide-black">
+                  {[...mintEvents]
+                    .reverse()
+                    .map((event, index) => (
+                      <tr key={index}>
+                        <td className="px-4 py-2">
+                          <span className="font-mono text-sm">
+                            {`${event.caller.slice(0, 6)}...${event.caller.slice(-4)}`}
+                          </span>
+                        </td>
+                        <td className="px-4 py-2">
+                          {new Date(event.timestamp).toLocaleTimeString()}
+                        </td>
+                      </tr>
+                    ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
       </div>
       <MintSuccessModal
         isOpen={isMintSuccessOpen}

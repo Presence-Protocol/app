@@ -52,6 +52,7 @@ export namespace PoapFactoryTypes {
     eventName: HexString;
     organizer: Address;
     isPublic: boolean;
+    timestamp: bigint;
   }>;
   export type PoapMintedEvent = ContractEvent<{
     contractId: HexString;
@@ -59,6 +60,7 @@ export namespace PoapFactoryTypes {
     nftIndex: bigint;
     caller: Address;
     isPublic: boolean;
+    timestamp: bigint;
   }>;
   export type PoapParticipatedInEvent = ContractEvent<{
     organizerAddress: Address;
@@ -282,7 +284,7 @@ export const PoapFactory = new Factory(
   Contract.fromJson(
     PoapFactoryContractJson,
     "",
-    "8942b4b7bbc31a499238928b68342fdaa53b10399926cf8ce0a650f7835d89cb",
+    "258dd01727a87207573a12e33d66d3b49091da38a0c1b56032828a62cec70414",
     AllStructs
   )
 );
