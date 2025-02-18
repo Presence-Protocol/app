@@ -4,6 +4,8 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import ExplorerHeader from './EventsHeader';
 import { useRouter } from 'next/navigation';
+import { addressFromContractId } from '@alephium/web3';
+import EventSlider from '../nfts/EventSlider';
 
 interface Event {
   contractId: string;
@@ -13,6 +15,16 @@ interface Event {
   updatedAt: string;
   // Add any additional fields needed for event type classification
   eventType?: 'free' | 'premium' | 'live';
+}
+
+interface EventMetadata {
+  contractId: string;
+  eventName: string;
+  description?: string;
+  image?: string;
+  eventDateStart?: string;
+  eventDateEnd?: string;
+  createdAt: string;
 }
 
 export default function EventsSliders() {
@@ -37,11 +49,13 @@ export default function EventsSliders() {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         
+        
         const data = await response.json();
         const filteredEvents = data.filter((event: Event) => 
           !['test', 'asdsad', 'ffd', 'asdas', 'sdd'].includes(event.eventName.toLowerCase())
         );
         setEvents(filteredEvents);
+        console.log('filteredEvents', filteredEvents);
       } catch (error) {
         console.error('Error fetching events:', error);
         setError('Failed to load events. Please try again later.');
@@ -110,6 +124,7 @@ export default function EventsSliders() {
     </div>
   );
 }
+
 function EventSection({ title, events, viewAllLink }: { 
   title: string; 
   events: Event[]; 
@@ -145,12 +160,9 @@ function EventCard({ event }: { event: Event }) {
     }
   };
 
-  const addressFromContractId = (contractId: string) => {
-    return contractId.replace(/^wasm\./, '');
-  };
 
   const handleClick = () => {
-    router.push(`/mint-presence?id=${addressFromContractId(event.contractId)}`);
+    router.push(`/mint-presence/#id=${addressFromContractId(event.contractId)}`);
   };
 
   return (

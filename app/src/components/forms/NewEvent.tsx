@@ -666,66 +666,65 @@ export default function NewEvent() {
                   <div className="w-full max-w-lg p-8 text-center fixed">
                     <div className="relative w-64 h-64 mx-auto rounded-2xl border-2 border-black shadow bg-white">
                       {previewImage ? (
-                        <>
-                          <img src={previewImage} alt="Preview" className="w-full h-full object-cover rounded-2xl" />
-                        </>
+                        <img src={previewImage} alt="Preview" className="w-full h-full object-cover rounded-2xl" />
                       ) : (
-                        <div className="w-full h-full flex items-center justify-center text-gray-400">No image uploaded</div>
+                        <div className="w-full h-full flex items-center justify-center text-gray-400">
+                          No image uploaded
+                        </div>
                       )}
                     </div>
                     <h3 className="mt-6 text-2xl font-medium text-black">{title || 'Event Title Preview'}</h3>
+                    <p className="mt-2 text-sm text-black">{description || 'Description Preview'}</p>
+
                     <div className="mt-4 flex flex-col gap-4">
-                      <div className="space-y-2">
-                        <p className="mt-2 text-sm text-black">{description || 'Description Preview'}</p>
-                        {location && (
-                          <div className="flex items-center justify-center gap-2 text-sm">
-                            <span className="text-gray-600">{location}</span>
+                      <div className="flex justify-center gap-4">
+                      <Tooltip text="Total amount of Presence that can be minted">
+
+                        <div className="text-black items-center shadow shadow-lila-600 text-xs font-semibold inline-flex px-4 bg-lila-300 border-lila-600 border-2 py-2 rounded-lg h-8 tracking-wide">
+                          {amount || 0} / {amount || 0}
+                        </div>
+                        </Tooltip>
+                        {/* {Number(poapPrice) > 0 && (
+                          <div className="text-black items-center shadow shadow-lila-600 text-xs font-semibold inline-flex px-4 bg-lila-300 border-lila-600 border-2 py-2 rounded-lg h-8 tracking-wide">
+                            {Number(poapPrice) / 10**18} ALPH
                           </div>
-                        )}
+                        )} */}
+                                               <Tooltip text="Cost to mint this Presence">
+
+                          <div className="text-black items-center shadow shadow-lila-600 text-xs font-semibold inline-flex px-4 bg-lila-300 border-lila-600 border-2 py-2 rounded-lg h-8 tracking-wide">
+                            0.1 ALPH
+                          </div>
+                          </Tooltip>
+                        
                       </div>
 
-                      {(eventStartDate || eventEndDate) && (
+                      <div className="flex flex-col gap-2">
                         <div className="flex items-center justify-center gap-2 text-sm">
+                          <span className="text-gray-600">{location}</span>
+                          {location && <span className="text-gray-400">•</span>}
+                          <span className="text-gray-600">
+                            {isPublicEvent ? 'Public Event' : 'Private Event'}
+                          </span>
+                          {(eventStartDate || eventEndDate) && <span className="text-gray-400">•</span>}
                           <span className="text-gray-600">
                             {eventStartDate && new Date(eventStartDate).toLocaleDateString()} - 
                             {eventEndDate && new Date(eventEndDate).toLocaleDateString()}
                           </span>
                         </div>
-                      )}
-                      {(startDate || endDate) && (
-                        <div className="text-xs text-gray-500">
-                          Minting period: {startDate && new Date(startDate).toLocaleDateString()} - 
-                          {endDate && new Date(endDate).toLocaleDateString()}
-                        </div>
-                      )}
-                    </div>
+                      </div>
 
-                    <div className="space-y-2 mt-8">
-                      <div className="flex justify-center flex-wrap gap-2">
-                        <Tooltip text="Total amount of Presence that can be minted">
+                      <div className="flex justify-center gap-2">
+                        {/* <Tooltip text="Total amount of Presence that can be minted">
                           <div className="text-black items-center shadow shadow-lila-600 text-xs font-semibold inline-flex px-4 bg-lila-300 border-lila-600 border-2 py-2 rounded-lg h-8 tracking-wide">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="h-4 w-4 mr-1">
                               <path strokeLinecap="round" strokeLinejoin="round" d="M5.25 8.25h15m-16.5 7.5h15m-1.8-13.5-3.9 19.5m-2.1-19.5-3.9 19.5" />
                             </svg>
                             <span>Mint Amount: {amount}</span>
                             {mintLimit && (
-                              // <Tooltip text="Maximum 1 mint per address">
-                                <span className="ml-2 bg-lila-400 text-black text-[10px] px-1.5 py-0.5 rounded">1 per wallet</span>
-                              // </Tooltip>
+                              <span className="ml-2 bg-lila-400 text-black text-[10px] px-1.5 py-0.5 rounded">1 per wallet</span>
                             )}
                           </div>
-                        </Tooltip>
-
-                        {Number(poapPrice) > 0 && (
-                          <Tooltip text="Price to mint this Presence">
-                            <div className="text-black items-center shadow shadow-lila-600 text-xs font-semibold inline-flex px-4 bg-lila-300 border-lila-600 border-2 py-2 rounded-lg h-8 tracking-wide">
-                              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="h-4 w-4 mr-1">
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v12m-3-2.818.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                              </svg>
-                              <span>{Number(poapPrice) / 10**18} ALPH</span>
-                            </div>
-                          </Tooltip>
-                        )}
+                        </Tooltip> */}
 
                         {Number(storageFees) > 0 && (
                           <Tooltip text="Storage fees for this Presence">
@@ -748,28 +747,11 @@ export default function NewEvent() {
                             </div>
                           </Tooltip>
                         )}
-
-                        <Tooltip text={`This event is ${isPublicEvent ? 'visible on the explore events page' : 'hidden on the explore events page'}`}>
-                          <div className="text-black items-center shadow shadow-lila-600 text-xs font-semibold inline-flex px-4 bg-lila-300 border-lila-600 border-2 py-2 rounded-lg h-8 tracking-wide">
-                            {isPublicEvent ? (
-                              <>
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="h-4 w-4 mr-1">
-                                  <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
-                                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-                                </svg>
-                                <span>Public</span>
-                              </>
-                            ) : (
-                              <>
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="h-4 w-4 mr-1">
-                                  <path strokeLinecap="round" strokeLinejoin="round" d="M3.98 8.223A10.477 10.477 0 0 0 1.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.451 10.451 0 0 1 12 4.5c4.756 0 8.773 3.162 10.065 7.498a10.522 10.522 0 0 1-4.293 5.774M6.228 6.228 3 3m3.228 3.228 3.65 3.65m7.894 7.894L21 21m-3.228-3.228-3.65-3.65m0 0a3 3 0 1 0-4.243-4.243m4.242 4.242L9.88 9.88" />
-                                </svg>
-                                <span>Private</span>
-                              </>
-                            )}
-                          </div>
-                        </Tooltip>
                       </div>
+                    </div>
+
+                    <div className="text-xs text-gray-500 mt-5">
+                      Minting available: {startDate && new Date(startDate).toLocaleDateString()} - {endDate && new Date(endDate).toLocaleDateString()}
                     </div>
                   </div>
                 </div>
