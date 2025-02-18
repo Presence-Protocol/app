@@ -213,7 +213,7 @@ export default function MintNFTSimple() {
   }, [showConfetti]);
 
   return (
-    <section className="bg-lila-200 pt-8 pb-12 sm:pt-0 sm:pb-0 ">
+    <section className="bg-lila-200 pt-16 pb-16 sm:pt-0 sm:pb-0 ">
       {showConfetti && (
         <Confetti
           width={width}
