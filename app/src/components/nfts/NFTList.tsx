@@ -14,7 +14,6 @@ interface NFTMetadata {
   description: string;
   image: string;
   tokenId: string;
-  oneMintPerAddress: boolean;
   eventDateStart: string;
   eventDateEnd: string;
   collectionId: string;

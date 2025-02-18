@@ -20,7 +20,6 @@ export default function LargeImageWarning({ isOpen, onClose }: LargeImageWarning
                             stroke="currentColor"
                             fill="none"
                             strokeLinecap="round"
-                            strokeLinecap="round"
                           >
                             <path stroke="none" d="M0 0h24v24H0z" fill="none"
                             ></path>
