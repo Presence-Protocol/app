@@ -213,7 +213,7 @@ export default function MintNFTSimple() {
   }, [showConfetti]);
 
   return (
-    <section>
+    <section className="bg-lila-200 pt-8 pb-12 sm:pt-0 sm:pb-0 ">
       {showConfetti && (
         <Confetti
           width={width}
@@ -295,15 +295,21 @@ export default function MintNFTSimple() {
                       )}
                     </div>
 
-                    <div className="flex flex-col gap-2 mt-">
-                      <div className="flex items-center justify-center gap-2 text-sm">
-                        <span className="text-gray-600">{nftCollection.location}</span>
-                        <span className="text-gray-400">•</span>
-                        <span className="text-gray-600">
-                          {nftCollection.isPublic ? 'Public Event' : 'Private Event'}
-                        </span>
-                        <span className="text-gray-400">•</span>
-                        <span className="text-gray-600">{formatDate(nftCollection.eventStartDate)} - {formatDate(nftCollection.eventEndDate)}</span>
+                    <div className="flex flex-col gap-2">
+                      <div className="flex flex-col sm:flex-row items-center justify-center gap-2 text-sm">
+                        <div className="flex items-center gap-2">
+                          <span className="text-gray-600">{nftCollection.location}</span>
+                          {nftCollection.location && <span className="text-gray-400 hidden sm:inline">•</span>}
+                          <span className="text-gray-600">
+                            {nftCollection.isPublic ? 'Public Event' : 'Private Event'}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-gray-400 hidden sm:inline">•</span>
+                          <span className="text-gray-600">
+                            {formatDate(nftCollection.eventStartDate)} - {formatDate(nftCollection.eventEndDate)}
+                          </span>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -354,7 +360,7 @@ export default function MintNFTSimple() {
       </div>
       <MintSuccessModal
         isOpen={isMintSuccessOpen}
-        // isOpen={true}
+        isMinting={isMinting}
         onClose={() => setIsMintSuccessOpen(false)}
         nftImage={nftCollection.image}
         nftTitle={nftCollection.title}
