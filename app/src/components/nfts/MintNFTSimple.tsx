@@ -218,6 +218,8 @@ export default function MintNFTSimple() {
       month: 'short',
       day: 'numeric',
       year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
     });
   };
 
@@ -339,7 +341,7 @@ export default function MintNFTSimple() {
                       onClick={handleSubmit}
                       type="button"
                       aria-label="mint"
-                      disabled={isMinting || connectionStatus !== 'connected'}
+                      disabled={isMinting || connectionStatus !== 'connected' || Date.now() < Number(nftCollection.mintStartDate)}
                       className="text-black items-center shadow shadow-black text-lg font-semibold inline-flex px-6 focus:outline-none justify-center text-center bg-white 
                       border-black ease-in-out transform transition-all focus:ring-lila-700 focus:shadow-none border-2 duration-100   py-3 rounded-lg h-16 tracking-wide focus:translate-y-1 w-full hover:text-lila-800 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
@@ -357,8 +359,18 @@ export default function MintNFTSimple() {
                           </div>
                           <span>Minting...</span>
                         </div>
+                      ) : connectionStatus !== 'connected' ? (
+                        'Connect Wallet'
+                      ) : Date.now() < Number(nftCollection.mintStartDate) ? (
+                        `Minting starts ${formatDate(nftCollection.mintStartDate)}`
                       ) : (
-                        connectionStatus !== 'connected' ? 'Connect Wallet' : 'Mint Presence'
+                        <div className="flex items-center justify-center gap-2">
+                          <div className="relative flex h-3 w-3">
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-lila-600 opacity-75"></span>
+                            <span className="relative inline-flex rounded-full h-3 w-3 bg-lila-800"></span>
+                          </div>
+                          <span>Mint Presence</span>
+                        </div>
                       )}
                     </button>
 
@@ -369,7 +381,11 @@ export default function MintNFTSimple() {
                     </div>
 
                     <div className="text-xs text-gray-500 mt-5">
-                      Minting available until {formatDate(nftCollection.mintEndDate)}
+                      {Date.now() < Number(nftCollection.mintStartDate) ? (
+                        <>Minting starts {formatDate(nftCollection.mintStartDate)} and ends {formatDate(nftCollection.mintEndDate)}</>
+                      ) : (
+                        <>Minting available until {formatDate(nftCollection.mintEndDate)}</>
+                      )}
                     </div>
                   </div>
                 </>
@@ -401,7 +417,13 @@ export default function MintNFTSimple() {
                           </span>
                         </td>
                         <td className="px-4 py-2">
-                          {new Date(event.timestamp).toLocaleTimeString()}
+                          {new Date(event.timestamp).toLocaleString('en-US', {
+                            month: 'short',
+                            day: 'numeric',
+                            year: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                          })}
                         </td>
                       </tr>
                     ))}
