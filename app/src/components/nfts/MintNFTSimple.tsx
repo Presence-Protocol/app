@@ -341,7 +341,10 @@ export default function MintNFTSimple() {
                       onClick={handleSubmit}
                       type="button"
                       aria-label="mint"
-                      disabled={isMinting || connectionStatus !== 'connected' || Date.now() < Number(nftCollection.mintStartDate)}
+                      disabled={isMinting || 
+                        connectionStatus !== 'connected' || 
+                        Date.now() < Number(nftCollection.mintStartDate) ||
+                        nftCollection.currentSupply >= nftCollection.maxSupply}
                       className="text-black items-center shadow shadow-black text-lg font-semibold inline-flex px-6 focus:outline-none justify-center text-center bg-white 
                       border-black ease-in-out transform transition-all focus:ring-lila-700 focus:shadow-none border-2 duration-100   py-3 rounded-lg h-16 tracking-wide focus:translate-y-1 w-full hover:text-lila-800 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
@@ -351,8 +354,8 @@ export default function MintNFTSimple() {
                             <Image 
                               src="/images/blob5.svg"
                               alt="Minting..."
-                              width={30}
-                              height={30}
+                              width={60}
+                              height={60}
                               className="opacity-70"
                               priority
                             />
@@ -361,6 +364,8 @@ export default function MintNFTSimple() {
                         </div>
                       ) : connectionStatus !== 'connected' ? (
                         'Connect Wallet'
+                      ) : nftCollection.currentSupply >= nftCollection.maxSupply ? (
+                        'Max Supply Reached'
                       ) : Date.now() < Number(nftCollection.mintStartDate) ? (
                         `Minting starts ${formatDate(nftCollection.mintStartDate)}`
                       ) : (
@@ -381,11 +386,7 @@ export default function MintNFTSimple() {
                     </div>
 
                     <div className="text-xs text-gray-500 mt-5">
-                      {Date.now() < Number(nftCollection.mintStartDate) ? (
-                        <>Minting starts {formatDate(nftCollection.mintStartDate)} and ends {formatDate(nftCollection.mintEndDate)}</>
-                      ) : (
-                        <>Minting available until {formatDate(nftCollection.mintEndDate)}</>
-                      )}
+                      <>Minting available until {formatDate(nftCollection.mintEndDate)}</>
                     </div>
                   </div>
                 </>
