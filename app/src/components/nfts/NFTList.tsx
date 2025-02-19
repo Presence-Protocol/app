@@ -187,6 +187,9 @@ export default function NFTList({ account }: { account: string }) {
     );
   }
 
+  console.log('nfts', nfts);
+  console.log('events', events);
+
   if (nfts.length === 0 && events.length === 0) {
     return (
       <section className="py-36 px-4 md:px-8 bg-lila-200">
@@ -197,16 +200,16 @@ export default function NFTList({ account }: { account: string }) {
             </h2>
           </div>
 
-          <div className="max-w-2xl mx-auto text-center">
-            <div className="bg-white p-8 rounded-xl border-2 border-black shadow-large">
-              <Image
-                src="/images/blob4.svg"
-                alt="No presence"
-                width={140}
-                height={140}
-                className="mx-auto mb-6 opacity-80"
-                priority
-              />
+          <div className="bg-lila-200 p-8 rounded-xl">
+          <div className="max-w-lg mx-auto text-center">
+          <Image
+                  src="/images/blob5.svg"
+                  alt="No presences"
+                  width={40}
+                  height={40}
+                  className="mx-auto mb-6 opacity-80"
+                  priority
+                />
               <h3 className="text-2xl font-semibold text-black mb-4">
                 No Presence Yet
               </h3>
@@ -216,13 +219,14 @@ export default function NFTList({ account }: { account: string }) {
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Link
                   href="/events"
-                  className="text-black items-center shadow shadow-black text-base font-semibold inline-flex px-6 focus:outline-none justify-center text-center bg-white border-black ease-in-out transform transition-all focus:ring-lila-700 focus:shadow-none border-2 duration-100 focus:bg-black focus:text-white py-3 rounded-lg h-12 focus:translate-y-1 hover:text-lila-800 tracking-wide"
+                  className="text-black items-center shadow shadow-black text-base font-semibold inline-flex px-6 focus:outline-none justify-center text-center bg-lila-300 border-black ease-in-out transform transition-all focus:ring-lila-700 focus:shadow-none border-2 duration-100 focus:bg-black focus:text-white py-3 rounded-lg h-12 focus:translate-y-1 hover:text-lila-800 tracking-wide"
                 >
                   Explore Events <span className="ml-3">&rarr;</span>
                 </Link>
                 <Link
                   href="/new-event"
-                  className="text-black items-center shadow shadow-black text-base font-semibold inline-flex px-6 focus:outline-none justify-center text-center bg-lila-300 border-black ease-in-out transform transition-all focus:ring-lila-700 focus:shadow-none border-2 duration-100 focus:bg-black focus:text-white py-3 rounded-lg h-12 focus:translate-y-1 hover:text-lila-800 tracking-wide"
+                  className="text-black items-center shadow shadow-black text-base font-semibold inline-flex px-6 focus:outline-none justify-center text-center bg-white border-black ease-in-out transform transition-all focus:ring-lila-700 focus:shadow-none border-2 duration-100 focus:bg-black focus:text-white py-3 rounded-lg h-12 focus:translate-y-1 hover:text-lila-800 tracking-wide"
+
                 >
                   Create Event
                 </Link>

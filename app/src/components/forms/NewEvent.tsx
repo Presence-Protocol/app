@@ -681,7 +681,7 @@ export default function NewEvent() {
                       <Tooltip text="Total amount of Presence that can be minted">
 
                         <div className="text-black items-center shadow shadow-lila-600 text-xs font-semibold inline-flex px-4 bg-lila-300 border-lila-600 border-2 py-2 rounded-lg h-8 tracking-wide">
-                          {amount || 0} / {amount || 0}
+                          0 / {amount || 0}
                         </div>
                         </Tooltip>
                         {/* {Number(poapPrice) > 0 && (
