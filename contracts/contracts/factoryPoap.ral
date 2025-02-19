@@ -4,8 +4,8 @@ Contract PoapFactory(
     mut numMintedCollection: U256
 ){
 
-    event EventCreated(contractId: ByteVec, eventName: ByteVec, organizer: Address, isPublic: Bool)
-    event PoapMinted(contractId: ByteVec, collectionId: PoapCollection, nftIndex: U256 ,caller: Address, isPublic: Bool)
+    event EventCreated(contractId: ByteVec, eventName: ByteVec, organizer: Address, isPublic: Bool, timestamp: U256)
+    event PoapMinted(contractId: ByteVec, collectionId: PoapCollection, nftIndex: U256 ,caller: Address, isPublic: Bool, timestamp: U256)
     event PoapParticipatedIn(organizerAddress: Address, collectionId: PoapCollection, nftIndex: U256, presenceAddressValidate: Address)
 
 
@@ -74,7 +74,7 @@ Contract PoapFactory(
             )
 
             numMintedCollection = numMintedCollection + 1
-            emit EventCreated(contractId, eventName, caller, isPublic)
+            emit EventCreated(contractId, eventName, caller, isPublic, blockTimeStamp!())
 
             return contractId
         
@@ -96,7 +96,7 @@ Contract PoapFactory(
         let poapContractId = collection.mint{caller -> ALPH: feesStorageAmount, poapTokenId: poapPrice}(caller)
         let collectionTotalSupply = collection.totalSupply()
 
-        emit PoapMinted(poapContractId, collection, collectionTotalSupply, caller, collection.getIsPublic())
+        emit PoapMinted(poapContractId, collection, collectionTotalSupply, caller, collection.getIsPublic(), blockTimeStamp!())
 
     }
 

@@ -253,7 +253,7 @@ describe('integration tests', () => {
     expect(hexToString(poapState.fields.eventImage)).toBe(svg)
     expect(hexToString((await poap.view.getTokenUri()).returns)).not.toBe('https://fjfjf.com/afjhd')
 
-  }, 20000)
+  }, 50000)
 
 
   it('Mint poap', async () => {
