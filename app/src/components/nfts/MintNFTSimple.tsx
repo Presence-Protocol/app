@@ -351,8 +351,8 @@ export default function MintNFTSimple() {
                             <Image 
                               src="/images/blob5.svg"
                               alt="Minting..."
-                              width={60}
-                              height={60}
+                              width={30}
+                              height={30}
                               className="opacity-70"
                               priority
                             />
