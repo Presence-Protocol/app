@@ -65,7 +65,7 @@ export default function FeatureSix() {
             Supercharge your attendance and memory management with Presence Protocol, the ultimate solution for preserving and sharing your most cherished moments.
           </p>
 
-          <p className="text-black mt-4 mb-4 items-center shadow shadow-black text-xs font-semibold inline-flex px-6 focus:outline-none justify-center text-center bg-white border-black ease-in-out transform transition-all focus:ring-lila-700 focus:shadow-none border-2 duration-100 focus:bg-black focus:text-white sm:w-auto py-3 rounded-lg h-8 tracking-wide focus:translate-y-1 w-full hover:text-lila-800">
+          <p className="text-black mt-4 mb-4 items-center shadow shadow-black text-xs font-semibold inline-flex px-6 focus:outline-none justify-center text-center bg-white border-black ease-in-out transform transition-all focus:ring-lila-700 focus:shadow-none border-2 duration-100   sm:w-auto py-3 rounded-lg h-8 tracking-wide focus:translate-y-1 w-full hover:text-lila-800">
             <a href="https://alephium.org" target="_blank" className="hover:text-lila-600">Built on Alephium</a>
           </p>
           

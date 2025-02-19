@@ -772,7 +772,7 @@ export default function NewEvent() {
                     {progressState.currentStep === 'completed' && (
                       <button
                         onClick={() => setIsProgressOpen(false)}
-                        className="mt-8 text-black items-center shadow shadow-black text-lg font-semibold inline-flex px-6 focus:outline-none justify-center text-center bg-white border-black ease-in-out transform transition-all focus:ring-lila-700 focus:shadow-none border-2 duration-100 focus:bg-black focus:text-white py-3 rounded-2xl h-16 tracking-wide focus:translate-y-1 w-full hover:text-lila-800"
+                        className="mt-8 text-black items-center shadow shadow-black text-lg font-semibold inline-flex px-6 focus:outline-none justify-center text-center bg-white border-black ease-in-out transform transition-all focus:ring-lila-700 focus:shadow-none border-2 duration-100   py-3 rounded-2xl h-16 tracking-wide focus:translate-y-1 w-full hover:text-lila-800"
                       >
                         Create New Event
                       </button>
@@ -1094,7 +1094,7 @@ export default function NewEvent() {
                             <span>Share this link with your attendees:</span>
                             <button
                               onClick={() => handleShare(createdContractAddress)}
-                              className="text-black items-center shadow shadow-black text-xs font-semibold inline-flex px-3 focus:outline-none justify-center text-center bg-white border-black ease-in-out transform transition-all focus:ring-lila-700 focus:shadow-none border-2 duration-100 focus:bg-black focus:text-white py-1 rounded-lg tracking-wide focus:translate-y-1 hover:text-lila-800"
+                              className="text-black items-center shadow shadow-black text-xs font-semibold inline-flex px-3 focus:outline-none justify-center text-center bg-white border-black ease-in-out transform transition-all focus:ring-lila-700 focus:shadow-none border-2 duration-100   py-1 rounded-lg tracking-wide focus:translate-y-1 hover:text-lila-800"
                             >
                               Share Link
                             </button>
@@ -1106,7 +1106,7 @@ export default function NewEvent() {
                         <button
                           type="submit"
                           disabled={isSubmitting || !isFormValid()}
-                          className={`text-black items-center shadow shadow-black text-lg font-semibold inline-flex px-6 focus:outline-none justify-center text-center bg-white border-black ease-in-out transform transition-all focus:ring-lila-700 focus:shadow-none border-2 duration-100 focus:bg-black focus:text-white py-3 rounded-2xl h-16 tracking-wide focus:translate-y-1 w-full hover:text-lila-800 ${(isSubmitting || creationProgress !== false || !isFormValid()) ? 'opacity-50 cursor-not-allowed' : ''}`}
+                          className={`text-black items-center shadow shadow-black text-lg font-semibold inline-flex px-6 focus:outline-none justify-center text-center bg-white border-black ease-in-out transform transition-all focus:ring-lila-700 focus:shadow-none border-2 duration-100   py-3 rounded-2xl h-16 tracking-wide focus:translate-y-1 w-full hover:text-lila-800 ${(isSubmitting || creationProgress !== false || !isFormValid()) ? 'opacity-50 cursor-not-allowed' : ''}`}
                         >
                           {isSubmitting ? 'Creating...' : isFormValid() ? 'Create Event' : 'Please fill out all fields'}
                         </button>

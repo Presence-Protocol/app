@@ -9,15 +9,17 @@ import { AlephiumConnectButton, AlephiumConnectButtonCustom } from '@alephium/we
 import { useWallet } from '@alephium/web3-react';
 import { useWalletLoading } from '@/context/WalletLoadingContext';
 import { useTheme,  } from 'next-themes'
+import Snackbar from '../ui/Snackbar';
 
-const buttonClasses = "text-foreground items-center shadow shadow-foreground text-base font-semibold inline-flex px-6 h-[50px] focus:outline-none justify-center text-center bg-background border-foreground ease-in-out transform transition-all focus:ring-accent focus:shadow-none border-2 duration-100 focus:bg-foreground focus:text-background w-full sm:w-auto py-2 rounded-lg h-14 focus:translate-y-1 hover:text-accent tracing-wide"
+const buttonClasses = "text-foreground items-center shadow shadow-foreground text-base font-semibold inline-flex px-6 h-[50px] focus:outline-none justify-center text-center bg-background border-foreground ease-in-out transform transition-all hover:text-accent border-2 duration-100 w-full sm:w-auto py-2 rounded-lg h-14 tracking-wide"
 const loadingClasses = "opacity-50 transition-opacity duration-200"
 
 
 function CustomWalletConnectButton() {
   const { account, connectionStatus } = useWallet()
   const { isWalletLoading, setIsWalletLoading } = useWalletLoading()
-
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false)
+  const [isSnackbarOpen, setIsSnackbarOpen] = useState(false)
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -25,39 +27,108 @@ function CustomWalletConnectButton() {
     }
   }, [])
 
+  const truncateAddress = (address: string) => {
+    if (!address) return ''
+    return `${address.slice(0, 4)}...${address.slice(-4)}`
+  }
+
+  const handleCopyAddress = async () => {
+    if (account?.address) {
+      await navigator.clipboard.writeText(account.address)
+      setIsSnackbarOpen(true)
+      setIsDropdownOpen(false)
+    }
+  }
+
   return (
-    <AlephiumConnectButton.Custom>
-      {({ isConnected, disconnect, show }) => {
-        const showLoading = isWalletLoading ||
-          connectionStatus === 'connecting' ||
+    <>
+      <AlephiumConnectButton.Custom>
+        {({ isConnected, disconnect, show }) => {
+          const showLoading = isWalletLoading ||
+            connectionStatus === 'connecting' ||
+            // @ts-ignore - We need this check even though types don't overlap
+            connectionStatus === 'loading'
+
           // @ts-ignore - We need this check even though types don't overlap
-          connectionStatus === 'loading'
+          if (connectionStatus === 'loading') {
+            return null
+          }
 
-        // @ts-ignore - We need this check even though types don't overlap
-        if (connectionStatus === 'loading') {
-          return null
-        }
+          return isConnected ? (
+            <div className="relative">
+              <button
+                className={`${buttonClasses} ${showLoading ? loadingClasses : ''}`}
+                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                disabled={showLoading}
+              >
+                <div className="flex items-center gap-2">
+                  {showLoading ? 'Loading...' : truncateAddress(account?.address || '')}
+                  <svg
+                    className={`w-4 h-4 transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : 'rotate-0'}`}
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    fill="none"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M6 9l6 6l6 -6" />
+                  </svg>
+                </div>
+              </button>
 
-        return isConnected ? (
-          // null
-          <button
-            className={`${buttonClasses} ${showLoading ? loadingClasses : ''}`}
-            onClick={disconnect}
-            disabled={showLoading}
-          >
-            {showLoading ? 'Loading...' : 'Disconnect'}
-          </button>
-        ) : (
-          <button
-            className={`${buttonClasses} ${showLoading ? loadingClasses : ''}`}
-            onClick={show}
-            disabled={showLoading}
-          >
-            {showLoading ? 'Loading...' : 'Connect Wallet'}
-          </button>
-        )
-      }}
-    </AlephiumConnectButton.Custom>
+              {isDropdownOpen && (
+                <div 
+                  className="absolute right-0 z-10 w-full mt-2 origin-top-right rounded-lg bg-background ring-2 ring-foreground shadow-lg"
+                  role="menu"
+                >
+                  <div className="py-1" role="none">
+                    <button
+                      onClick={handleCopyAddress}
+                      className="flex w-full items-center px-4 py-2 text-sm font-semibold text-foreground hover:text-accent text-left"
+                      role="menuitem"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="size-4 mr-2">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 0 1-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 0 1 1.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 0 0-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 0 1-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 0 0-3.375-3.375h-1.5a1.125 1.125 0 0 1-1.125-1.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H9.75" />
+                      </svg>
+                      Copy Address
+                    </button>
+                    <button
+                      onClick={() => {
+                        disconnect()
+                        setIsDropdownOpen(false)
+                      }}
+                      className="flex w-full items-center px-4 py-2 text-sm font-semibold text-foreground hover:text-accent text-left "
+                      role="menuitem"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" className="size-4 mr-2">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 9V5.25A2.25 2.25 0 0 1 10.5 3h6a2.25 2.25 0 0 1 2.25 2.25v13.5A2.25 2.25 0 0 1 16.5 21h-6a2.25 2.25 0 0 1-2.25-2.25V15m-3 0-3-3m0 0 3-3m-3 3H15" />
+                      </svg>
+                      Disconnect
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          ) : (
+            <button
+              className={`${buttonClasses} ${showLoading ? loadingClasses : ''}`}
+              onClick={show}
+              disabled={showLoading}
+            >
+              {showLoading ? 'Loading...' : 'Connect Wallet'}
+            </button>
+          )
+        }}
+      </AlephiumConnectButton.Custom>
+      
+      <Snackbar 
+        message="Address copied to clipboard!" 
+        isOpen={isSnackbarOpen} 
+        onClose={() => setIsSnackbarOpen(false)} 
+      />
+    </>
   )
 }
 

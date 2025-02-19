@@ -131,7 +131,7 @@ export default function Footer() {
                     target='_blank'
                     rel="noopener noreferrer"
                     href="https://twitter.com/PresenceProto"
-                    className="flex h-10 w-10 items-center justify-center hover:shadow-none hover:border-white border-2 border-black shadow-tiny duration-300 shadow-white hover:translate-x-1 hover:translate-y-1 rounded-full bg-white focus:bg-black focus:text-white">
+                    className="flex h-10 w-10 items-center justify-center hover:shadow-none hover:border-white border-2 border-black shadow-tiny duration-300 shadow-white hover:translate-x-1 hover:translate-y-1 rounded-full bg-white  ">
                     <div>
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -158,7 +158,7 @@ export default function Footer() {
                     target='_blank'
                     rel="noopener noreferrer"
                     href="https://alephium.org/"
-                    className="flex h-10 w-10 items-center justify-center hover:shadow-none hover:border-white border-2 border-black shadow-tiny duration-300 shadow-white hover:translate-x-1 hover:translate-y-1 rounded-full bg-white focus:bg-black focus:text-white">
+                    className="flex h-10 w-10 items-center justify-center hover:shadow-none hover:border-white border-2 border-black shadow-tiny duration-300 shadow-white hover:translate-x-1 hover:translate-y-1 rounded-full bg-white  ">
                     <div>
                       <svg
                         width="100%"
@@ -196,7 +196,7 @@ export default function Footer() {
                     target='_blank'
                     rel="noopener noreferrer"
                     href="https://github.com/Presence-Protocol"
-                    className="flex h-10 w-10 items-center justify-center hover:shadow-none hover:border-white border-2 border-black shadow-tiny duration-300 shadow-white hover:translate-x-1 hover:translate-y-1 rounded-full bg-white focus:bg-black focus:text-white">
+                    className="flex h-10 w-10 items-center justify-center hover:shadow-none hover:border-white border-2 border-black shadow-tiny duration-300 shadow-white hover:translate-x-1 hover:translate-y-1 rounded-full bg-white  ">
                     <div>
                       <svg
                         xmlns="http://www.w3.org/2000/svg"

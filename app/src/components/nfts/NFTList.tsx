@@ -170,8 +170,8 @@ export default function NFTList({ account }: { account: string }) {
             <Image
               src="/images/blob5.svg"
               alt="Loading..."
-              width={80}
-              height={80}
+              width={60}
+              height={60}
               className="opacity-70"
               priority
             />
@@ -194,19 +194,19 @@ export default function NFTList({ account }: { account: string }) {
     return (
       <section className="py-36 px-4 md:px-8 bg-lila-200">
         <div className="mx-auto max-w-7xl">
-          <div className="flex items-center justify-center gap-4 mb-12">
+          {/* <div className="flex items-center justify-center gap-4 mb-12">
             <h2 className="text-2xl lg:text-3xl font-semibold text-black text-center">
               Your Presence ({truncatedAccount})
             </h2>
-          </div>
+          </div> */}
 
           <div className="bg-lila-200 p-8 rounded-xl">
           <div className="max-w-lg mx-auto text-center">
           <Image
                   src="/images/blob5.svg"
                   alt="No presences"
-                  width={40}
-                  height={40}
+                  width={60}
+                  height={60}
                   className="mx-auto mb-6 opacity-80"
                   priority
                 />
@@ -219,13 +219,13 @@ export default function NFTList({ account }: { account: string }) {
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Link
                   href="/events"
-                  className="text-black items-center shadow shadow-black text-base font-semibold inline-flex px-6 focus:outline-none justify-center text-center bg-lila-300 border-black ease-in-out transform transition-all focus:ring-lila-700 focus:shadow-none border-2 duration-100 focus:bg-black focus:text-white py-3 rounded-lg h-12 focus:translate-y-1 hover:text-lila-800 tracking-wide"
+                  className="text-black items-center shadow shadow-black text-base font-semibold inline-flex px-6 focus:outline-none justify-center text-center bg-lila-400 border-black ease-in-out transform transition-all focus:ring-lila-700 focus:shadow-none border-2 duration-100   py-3 rounded-lg h-12 focus:translate-y-1 hover:text-lila-800 tracking-wide"
                 >
                   Explore Events <span className="ml-3">&rarr;</span>
                 </Link>
                 <Link
                   href="/new-event"
-                  className="text-black items-center shadow shadow-black text-base font-semibold inline-flex px-6 focus:outline-none justify-center text-center bg-white border-black ease-in-out transform transition-all focus:ring-lila-700 focus:shadow-none border-2 duration-100 focus:bg-black focus:text-white py-3 rounded-lg h-12 focus:translate-y-1 hover:text-lila-800 tracking-wide"
+                  className="text-black items-center shadow shadow-black text-base font-semibold inline-flex px-6 focus:outline-none justify-center text-center bg-white border-black ease-in-out transform transition-all focus:ring-lila-700 focus:shadow-none border-2 duration-100   py-3 rounded-lg h-12 focus:translate-y-1 hover:text-lila-800 tracking-wide"
 
                 >
                   Create Event
@@ -241,29 +241,23 @@ export default function NFTList({ account }: { account: string }) {
   return (
     <section className="py-24 px-4 md:px-8 bg-lila-200">
       <div className="mx-auto ">
-        <div className="flex items-center justify-center gap-4 mb-12">
+        {/* <div className="flex items-center justify-center gap-4 mb-12">
           <h2 className="text-2xl lg:text-3xl font-semibold text-black text-center">
             Your Presence ({truncatedAccount})
           </h2>
-          {/* <div className="text-black items-center shadow shadow-black text-xs font-semibold inline-flex px-4 bg-white border-black border-2 py-2 rounded-lg tracking-wide">
-            {nfts.length} NFTs
-          </div>
-
-          <div className="text-black items-center shadow shadow-black text-xs font-semibold inline-flex px-4 bg-white border-black border-2 py-2 rounded-lg tracking-wide">
-            {events.length} Events
-          </div> */}
-        </div>
+     
+        </div> */}
 
 
         <div className="mb-24">
-          <div className="flex items-center justify-between mb-8">
+          {/* <div className="flex items-center justify-between mb-8">
             <div className="flex items-center gap-4">
               <h3 className="text-2xl font-semibold text-black">Your Presences</h3>
               <div className="text-black items-center shadow shadow-black text-xs font-semibold inline-flex px-4 bg-white border-black border-2 py-2 rounded-lg tracking-wide">
                 {nfts.length} Presences
               </div>
             </div>
-          </div>
+          </div> */}
 
           {nfts.length === 0 ? (
             <div className="bg-lila-200 p-8 rounded-xl">
@@ -271,8 +265,8 @@ export default function NFTList({ account }: { account: string }) {
                 <Image
                   src="/images/blob5.svg"
                   alt="No presences"
-                  width={40}
-                  height={40}
+                  width={60}
+                  height={60}
                   className="mx-auto mb-6 opacity-80"
                   priority
                 />
@@ -284,7 +278,7 @@ export default function NFTList({ account }: { account: string }) {
                 </p>
                 <Link
                   href="/events"
-                  className="text-black items-center shadow shadow-black text-base font-semibold inline-flex px-6 focus:outline-none justify-center text-center bg-white border-black ease-in-out transform transition-all focus:ring-lila-700 focus:shadow-none border-2 duration-100 focus:bg-black focus:text-white py-3 rounded-lg h-12 focus:translate-y-1 hover:text-lila-800 tracking-wide"
+                  className="text-black items-center shadow shadow-black text-base font-semibold inline-flex px-6 focus:outline-none justify-center text-center bg-white border-black ease-in-out transform transition-all focus:ring-lila-700 focus:shadow-none border-2 duration-100   py-3 rounded-lg h-12 focus:translate-y-1 hover:text-lila-800 tracking-wide"
                 >
                   Explore Events <span className="ml-3">&rarr;</span>
                 </Link>
@@ -306,7 +300,7 @@ export default function NFTList({ account }: { account: string }) {
                       />
                       <button
                         onClick={() => handleShare(nft.collectionId)}
-                        className="absolute top-2 right-2 text-black items-center shadow shadow-black text-[10px] font-semibold inline-flex px-2 bg-white border-black ease-in-out transform transition-all focus:ring-lila-700 focus:shadow-none border-2 duration-100 focus:bg-black focus:text-white py-1 rounded-lg h-6 focus:translate-y-1 hover:text-lila-800 tracking-wide"
+                        className="absolute top-2 right-2 text-black items-center shadow shadow-black text-[10px] font-semibold inline-flex px-2 bg-white border-black ease-in-out transform transition-all focus:ring-lila-700 focus:shadow-none border-2 duration-100   py-1 rounded-lg h-6 focus:translate-y-1 hover:text-lila-800 tracking-wide"
                       >
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-2.5 h-2.5 mr-1">
                           <path fillRule="evenodd" d="M15.75 4.5a3 3 0 1 1 .825 2.066l-8.421 4.679a3.002 3.002 0 0 1 0 1.51l8.421 4.679a3 3 0 1 1-.729 1.31l-8.421-4.678a3 3 0 1 1 0-4.132l8.421-4.679a3 3 0 0 1-.096-.755Z" clipRule="evenodd" />
@@ -334,7 +328,7 @@ export default function NFTList({ account }: { account: string }) {
                 <div className="flex justify-center mt-8">
                   <button
                     onClick={() => setShowAllNFTs(!showAllNFTs)}
-                    className="text-black items-center shadow shadow-black text-base font-semibold inline-flex px-6 focus:outline-none justify-center text-center bg-white border-black ease-in-out transform transition-all focus:ring-lila-700 focus:shadow-none border-2 duration-100 focus:bg-black focus:text-white py-2 rounded-lg h-12 focus:translate-y-1 hover:text-lila-800 tracking-wide"
+                    className="text-black items-center shadow shadow-black text-base font-semibold inline-flex px-6 focus:outline-none justify-center text-center bg-white border-black ease-in-out transform transition-all focus:ring-lila-700 focus:shadow-none border-2 duration-100   py-2 rounded-lg h-12 focus:translate-y-1 hover:text-lila-800 tracking-wide"
                   >
                     {showAllNFTs ? 'Show Less' : 'Show More'}
                   </button>
@@ -354,7 +348,7 @@ export default function NFTList({ account }: { account: string }) {
               </div>
             </div>
             {/* <Link
-              className="text-black items-center shadow shadow-black text-xs font-semibold inline-flex px-4 focus:outline-none justify-center text-center bg-white border-black ease-in-out transform transition-all focus:ring-lila-700 focus:shadow-none border-2 duration-100 focus:bg-black focus:text-white py-2 rounded-lg h-10 focus:translate-y-1 hover:text-lila-800 tracking-wide"
+              className="text-black items-center shadow shadow-black text-xs font-semibold inline-flex px-4 focus:outline-none justify-center text-center bg-white border-black ease-in-out transform transition-all focus:ring-lila-700 focus:shadow-none border-2 duration-100   py-2 rounded-lg h-10 focus:translate-y-1 hover:text-lila-800 tracking-wide"
               href="/new-event"
             >
               New Event <span className="ml-1">&rarr;</span>
@@ -367,8 +361,8 @@ export default function NFTList({ account }: { account: string }) {
                 <Image
                   src="/images/blob5.svg"
                   alt="No presences"
-                  width={40}
-                  height={40}
+                  width={60}
+                  height={60}
                   className="mx-auto mb-6 opacity-80"
                   priority
                 />
@@ -380,7 +374,7 @@ export default function NFTList({ account }: { account: string }) {
                 </p>
                 <Link
                   href="/new-event"
-                  className="text-black items-center shadow shadow-black text-base font-semibold inline-flex px-6 focus:outline-none justify-center text-center bg-lila-300 border-black ease-in-out transform transition-all focus:ring-lila-700 focus:shadow-none border-2 duration-100 focus:bg-black focus:text-white py-3 rounded-lg h-12 focus:translate-y-1 hover:text-lila-800 tracking-wide"
+                  className="text-black items-center shadow shadow-black text-base font-semibold inline-flex px-6 focus:outline-none justify-center text-center bg-lila-300 border-black ease-in-out transform transition-all focus:ring-lila-700 focus:shadow-none border-2 duration-100   py-3 rounded-lg h-12 focus:translate-y-1 hover:text-lila-800 tracking-wide"
                 >
                   Create Event
                 </Link>
@@ -423,7 +417,7 @@ export default function NFTList({ account }: { account: string }) {
                       <div className="flex justify-between items-center gap-4 pt-3">
                         <button
                           onClick={() => handleShare(addressFromContractId(event.contractId))}
-                          className="mt-4 w-full text-black items-center shadow shadow-black text-xs font-semibold inline-flex px-4 justify-center bg-white border-black ease-in-out transform transition-all focus:ring-lila-700 focus:shadow-none border-2 duration-100 focus:bg-black focus:text-white py-2 rounded-lg h-10 focus:translate-y-1 hover:text-lila-800 tracking-wide"
+                          className="mt-4 w-full text-black items-center shadow shadow-black text-xs font-semibold inline-flex px-4 justify-center bg-white border-black ease-in-out transform transition-all focus:ring-lila-700 focus:shadow-none border-2 duration-100   py-2 rounded-lg h-10 focus:translate-y-1 hover:text-lila-800 tracking-wide"
                         >
                           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-3 h-3 mr-1">
                             <path fillRule="evenodd" d="M15.75 4.5a3 3 0 1 1 .825 2.066l-8.421 4.679a3.002 3.002 0 0 1 0 1.51l8.421 4.679a3 3 0 1 1-.729 1.31l-8.421-4.678a3 3 0 1 1 0-4.132l8.421-4.679a3 3 0 0 1-.096-.755Z" clipRule="evenodd" />
@@ -435,7 +429,7 @@ export default function NFTList({ account }: { account: string }) {
                           href={`/mint-presence/#id=${addressFromContractId(event.contractId)}`}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="mt-4 w-full text-black items-center shadow shadow-black text-xs font-semibold inline-flex px-4 justify-center bg-white border-black ease-in-out transform transition-all focus:ring-lila-700 focus:shadow-none border-2 duration-100 focus:bg-black focus:text-white py-2 rounded-lg h-10 focus:translate-y-1 hover:text-lila-800 tracking-wide"
+                          className="mt-4 w-full text-black items-center shadow shadow-black text-xs font-semibold inline-flex px-4 justify-center bg-white border-black ease-in-out transform transition-all focus:ring-lila-700 focus:shadow-none border-2 duration-100   py-2 rounded-lg h-10 focus:translate-y-1 hover:text-lila-800 tracking-wide"
                         >
                           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="size-4 mr-1">
                             <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
@@ -454,7 +448,7 @@ export default function NFTList({ account }: { account: string }) {
                 <div className="flex justify-center mt-8">
                   <button
                     onClick={() => setShowAllEvents(!showAllEvents)}
-                    className="text-black items-center shadow shadow-black text-base font-semibold inline-flex px-6 focus:outline-none justify-center text-center bg-white border-black ease-in-out transform transition-all focus:ring-lila-700 focus:shadow-none border-2 duration-100 focus:bg-black focus:text-white py-2 rounded-lg h-12 focus:translate-y-1 hover:text-lila-800 tracking-wide"
+                    className="text-black items-center shadow shadow-black text-base font-semibold inline-flex px-6 focus:outline-none justify-center text-center bg-white border-black ease-in-out transform transition-all focus:ring-lila-700 focus:shadow-none border-2 duration-100   py-2 rounded-lg h-12 focus:translate-y-1 hover:text-lila-800 tracking-wide"
                   >
                     {showAllEvents ? 'Show Less' : 'Show More'}
                   </button>

@@ -9,7 +9,7 @@ import Image from 'next/image';
 import PizzaImage from '../../../public/illustrations/pizza.png'
 
 // Update button styles to use theme colors
-const buttonClasses = "text-foreground items-center shadow shadow-foreground text-lg font-semibold inline-flex px-6 focus:outline-none justify-center text-center bg-background border-foreground ease-in-out transform transition-all focus:ring-accent focus:shadow-none border-2 duration-100 focus:bg-foreground focus:text-background sm:w-auto py-3 rounded-lg h-16 focus:translate-y-1 w-full hover:text-accent tracing-wide"
+const buttonClasses = "text-foreground items-center shadow shadow-foreground text-lg font-semibold inline-flex px-6 focus:outline-none justify-center text-center bg-background border-foreground ease-in-out transform transition-all focus:ring-accent focus:shadow-none border-2 duration-100 focus:text-background sm:w-auto py-3 rounded-lg h-16 focus:translate-y-1 w-full hover:text-accent tracing-wide"
 const loadingClasses = "opacity-50 transition-opacity duration-200"
 
 function CustomWalletConnectButton() {

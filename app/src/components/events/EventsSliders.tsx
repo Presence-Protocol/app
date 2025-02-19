@@ -15,6 +15,10 @@ interface Event {
   updatedAt: string;
   // Add any additional fields needed for event type classification
   eventType?: 'free' | 'premium' | 'live';
+  image?: string;
+  description?: string;
+  eventDateStart?: string;
+  eventDateEnd?: string;
 }
 
 interface EventMetadata {
@@ -152,43 +156,68 @@ function EventSection({ title, events, viewAllLink }: {
 function EventCard({ event }: { event: Event }) {
   const router = useRouter();
   
-  const getRelativeTime = (date: Date) => {
-    try {
-      return date.toRelativeTimeString();
-    } catch (e) {
-      return date.toLocaleDateString();
-    }
-  };
-
-
   const handleClick = () => {
     router.push(`/mint-presence/#id=${addressFromContractId(event.contractId)}`);
   };
 
+  const handleShare = async () => {
+    const url = `${window.location.origin}/mint-presence/#id=${addressFromContractId(event.contractId)}`;
+    await navigator.clipboard.writeText(url);
+    // Note: You might want to add Snackbar functionality here
+  };
+
   return (
-    <div 
-      onClick={handleClick}
-      className="bg-white p-4 rounded-xl border-2 border-black shadow-large cursor-pointer transition-transform block"
-    >
-      <div className="aspect-video rounded-lg bg-lila-500 mb-4 flex flex-col items-center justify-center p-2">
-        <span className="text-sm font-medium text-black">
-          {new Date(event.createdAt).toLocaleDateString()}
-        </span>
-        <span className="text-xs text-black mt-1">
-          {new Date(event.createdAt).toLocaleTimeString()}
-        </span>
+    <div className="border-2 border-black rounded-xl overflow-hidden bg-white shadow">
+      <div className="relative aspect-square overflow-hidden border-b-2 border-black">
+        {event.image ? (
+          <img
+            src={event.image}
+            alt={event.eventName}
+            className="w-full h-full object-cover"
+          />
+        ) : (
+          <div className="w-full h-full bg-lila-500 flex flex-col items-center justify-center p-2">
+            <span className="text-sm font-medium text-black">
+              {new Date(event.createdAt).toLocaleDateString()}
+            </span>
+            <span className="text-xs text-black mt-1">
+              {new Date(event.createdAt).toLocaleTimeString()}
+            </span>
+          </div>
+        )}
+        <button
+          onClick={handleShare}
+          className="absolute top-2 right-2 text-black items-center shadow shadow-black text-[10px] font-semibold inline-flex px-2 bg-white border-black ease-in-out transform transition-all focus:ring-lila-700 focus:shadow-none border-2 duration-100 py-1 rounded-lg h-6 focus:translate-y-1 hover:text-lila-800 tracking-wide"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-2.5 h-2.5 mr-1">
+            <path fillRule="evenodd" d="M15.75 4.5a3 3 0 1 1 .825 2.066l-8.421 4.679a3.002 3.002 0 0 1 0 1.51l8.421 4.679a3 3 0 1 1-.729 1.31l-8.421-4.678a3 3 0 1 1 0-4.132l8.421-4.679a3 3 0 0 1-.096-.755Z" clipRule="evenodd" />
+          </svg>
+          Share
+        </button>
       </div>
-      <h3 className="font-medium text-lg truncate">{event.eventName}</h3>
-      <div className="mt-2 space-y-1">
-        <p className="text-sm text-gray-600 truncate">
-          Created by: {event.caller.slice(0, 6)}...{event.caller.slice(-4)}
-        </p>
-        <p className="text-sm text-gray-600 truncate">
-          ID: {event.contractId.slice(0, 8)}...
-        </p>
-        <div className="mt-2 text-xs inline-flex items-center px-2 py-1 rounded-full bg-lila-100 text-black">
-          {getRelativeTime(new Date(event.createdAt))}
+      <div className="p-4 pb-5 bg-white">
+        <h3 className="text-base font-semibold text-black mb-1">{event.eventName}</h3>
+        {event.description && (
+          <p className="text-xs text-black mb-3 line-clamp-2">{event.description}</p>
+        )}
+        <div className="flex justify-between items-center pt-3 border-t-2 border-black">
+          <div className="text-black items-center shadow shadow-lila-600 text-[10px] font-semibold inline-flex px-2 bg-lila-300 border-lila-600 border-2 py-1 rounded-lg tracking-wide">
+            Event
+          </div>
+          <div className="text-xs text-black font-medium">
+            {event.eventDateStart || new Date(event.createdAt).toLocaleDateString()}
+          </div>
         </div>
+        <button
+          onClick={handleClick}
+          className="mt-4 w-full text-black items-center shadow shadow-black text-xs font-semibold inline-flex px-4 justify-center bg-white border-black ease-in-out transform transition-all focus:ring-lila-700 focus:shadow-none border-2 duration-100 py-2 rounded-lg h-10 focus:translate-y-1 hover:text-lila-800 tracking-wide"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="size-4 mr-1">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
+            <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+          </svg>
+          View Event
+        </button>
       </div>
     </div>
   );

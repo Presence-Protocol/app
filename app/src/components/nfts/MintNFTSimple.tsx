@@ -247,8 +247,8 @@ export default function MintNFTSimple() {
         />
       )}
       <div className="mx-auto bg-lila-200">
-        <div className="relative justify-center overflow-hidden px-4 pb-8">
-          <div className="w-full flex flex-col items-center justify-center">
+        <div className="relative justify-center overflow-hidden px-4 pb-8 ">
+          <div className="w-full flex flex-col items-center justify-center min-h-[calc(100vh-82px)]">
             <div className="w-full max-w-lg p-8 text-center">
               {isLoading ? (
                 <div className="flex items-center justify-center">
@@ -256,8 +256,8 @@ export default function MintNFTSimple() {
                     <Image 
                       src="/images/blob5.svg"
                       alt="Loading..."
-                      width={48}
-                      height={48}
+                      width={60}
+                      height={60}
                       className="opacity-70"
                       priority
                     />
@@ -341,7 +341,7 @@ export default function MintNFTSimple() {
                       aria-label="mint"
                       disabled={isMinting || connectionStatus !== 'connected'}
                       className="text-black items-center shadow shadow-black text-lg font-semibold inline-flex px-6 focus:outline-none justify-center text-center bg-white 
-                      border-black ease-in-out transform transition-all focus:ring-lila-700 focus:shadow-none border-2 duration-100 focus:bg-black focus:text-white py-3 rounded-lg h-16 tracking-wide focus:translate-y-1 w-full hover:text-lila-800 disabled:opacity-50 disabled:cursor-not-allowed"
+                      border-black ease-in-out transform transition-all focus:ring-lila-700 focus:shadow-none border-2 duration-100   py-3 rounded-lg h-16 tracking-wide focus:translate-y-1 w-full hover:text-lila-800 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       {isMinting ? (
                         <div className="flex items-center justify-center gap-3">
@@ -349,8 +349,8 @@ export default function MintNFTSimple() {
                             <Image 
                               src="/images/blob5.svg"
                               alt="Minting..."
-                              width={24}
-                              height={24}
+                              width={60}
+                              height={60}
                               className="opacity-70"
                               priority
                             />
