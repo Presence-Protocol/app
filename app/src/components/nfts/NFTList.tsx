@@ -343,7 +343,7 @@ export default function NFTList({ account }: { account: string }) {
           <div className="flex items-center justify-between mb-8">
             <div className="flex items-center gap-4">
               <h3 className="text-2xl font-semibold text-black">Your Events</h3>
-              <div className="text-black items-center shadow shadow-black text-xs font-semibold inline-flex px-4 bg-white border-black border-2 py-2 rounded-lg tracking-wide">
+              <div className="text-black items-center bg-lila-300 shadow shadow-lila-600 text-xs font-semibold inline-flex px-2  border-lila-600 border-2 py-1 rounded-lg tracking-wide">
                 {events.length} {events.length === 1 ? 'Event' : 'Events'}
               </div>
             </div>
