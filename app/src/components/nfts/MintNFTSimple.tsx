@@ -48,6 +48,7 @@ export default function MintNFTSimple() {
     nftIndex: bigint;
     timestamp: number;
   }>>([]);
+  const [countdown, setCountdown] = useState<string | null>(null);
 
   const [nftCollection, setNftCollection] = useState<NFTCollection>({
     title: '00',
@@ -234,6 +235,35 @@ export default function MintNFTSimple() {
     }
   }, [showConfetti]);
 
+  useEffect(() => {
+    const updateCountdown = () => {
+      const now = Date.now();
+      let targetDate: number;
+
+      if (now < Number(nftCollection.mintStartDate)) {
+        targetDate = Number(nftCollection.mintStartDate);
+      } else if (now < Number(nftCollection.mintEndDate)) {
+        targetDate = Number(nftCollection.mintEndDate);
+      } else {
+        setCountdown(null);
+        return;
+      }
+
+      const timeLeft = targetDate - now;
+      const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+
+      setCountdown(`${days}d ${hours}h ${minutes}m ${seconds}s`);
+    };
+
+    const intervalId = setInterval(updateCountdown, 1000);
+    updateCountdown(); // Initial call to set the countdown immediately
+
+    return () => clearInterval(intervalId);
+  }, [nftCollection.mintStartDate, nftCollection.mintEndDate]);
+
   return (
     <section className="bg-lila-200 pt-16 pb-16 sm:pt-0 sm:pb-0">
       {showConfetti && (
@@ -258,8 +288,8 @@ export default function MintNFTSimple() {
                     <Image 
                       src="/images/blob5.svg"
                       alt="Loading..."
-                      width={30}
-                      height={30}
+                      width={40}
+                      height={40}
                       className="opacity-70"
                       priority
                     />
@@ -317,8 +347,8 @@ export default function MintNFTSimple() {
                       )}
                     </div>
 
-                    <div className="flex flex-col gap-2">
-                      <div className="flex flex-col sm:flex-row items-center justify-center gap-2 text-sm">
+                    <div className="flex flex-col gap-2 min-w-72 mt-2">
+                      <div className="flex flex-col sm:flex-row items-center justify-center gap-2 text-xs">
                         <div className="flex items-center gap-2">
                           <span className="text-gray-600">{nftCollection.location}</span>
                           {nftCollection.location && <span className="text-gray-400 hidden sm:inline">•</span>}
@@ -326,12 +356,24 @@ export default function MintNFTSimple() {
                             {nftCollection.isPublic ? 'Public Event' : 'Private Event'}
                           </span>
                         </div>
-                        <div className="flex items-center gap-2">
+                        {/* <div className="flex items-center gap-2">
                           <span className="text-gray-400 hidden sm:inline">•</span>
                           <span className="text-gray-600">
                             {formatDate(nftCollection.eventStartDate)} - {formatDate(nftCollection.eventEndDate)}
                           </span>
-                        </div>
+                        </div> */}
+                                                  <span className="text-gray-400 hidden sm:inline">•</span>
+
+                        {countdown && (
+                          <div className="flex items-center gap-2">
+                            <span className="text-gray-600">
+                              {Date.now() < Number(nftCollection.mintStartDate) ? 'Minting starts in:' : 'Minting ends in:'}
+                            </span>
+                            <span className="text-gray-600 font-mono font-semibold bg-lila-200" style={{ minWidth: '80px', textAlign: 'right' }}>
+                              {countdown}
+                            </span>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -373,9 +415,9 @@ export default function MintNFTSimple() {
                         'Minting Ended'
                       ) : (
                         <div className="flex items-center justify-center gap-2">
-                          <div className="relative flex h-3 w-3">
+                          <div className="relative flex h-2 w-2">
                             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-lila-600 opacity-75"></span>
-                            <span className="relative inline-flex rounded-full h-3 w-3 bg-lila-800"></span>
+                            <span className="relative inline-flex rounded-full h-2 w-2 bg-lila-800"></span>
                           </div>
                           <span>Mint Presence</span>
                         </div>
@@ -400,39 +442,53 @@ export default function MintNFTSimple() {
 
         {/* Mint Events Table */}
         {mintEvents.length > 0 && (
-          <div className="max-w-lg mx-auto px-4 pb-8">
-            <h3 className="text-xl font-medium text-black mb-4">Recent Mints</h3>
-            <div className="overflow-x-auto">
-              <table className="min-w-full border-2 border-black rounded-lg bg-white">
-                <thead className="bg-lila-300 border-b-2 border-black">
-                  <tr>
-                    <th className="px-4 py-2 text-left">Minter</th>
-                    <th className="px-4 py-2 text-left">Time</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y-2 divide-black">
-                  {[...mintEvents]
-                    .reverse()
-                    .map((event, index) => (
-                      <tr key={index}>
-                        <td className="px-4 py-2">
-                          <span className="font-mono text-sm">
-                            {`${event.caller.slice(0, 6)}...${event.caller.slice(-4)}`}
-                          </span>
-                        </td>
-                        <td className="px-4 py-2">
-                          {new Date(event.timestamp).toLocaleString('en-US', {
-                            month: 'short',
-                            day: 'numeric',
-                            year: 'numeric',
-                            hour: '2-digit',
-                            minute: '2-digit'
-                          })}
-                        </td>
+          <div className="p-8 lg:p-20 max-w-3xl mx-auto">
+            <h3 className="text-xl font-medium leading-6 text-black text-left flex items-center justify-left gap-2">
+              <div className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-lila-600 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-lila-800"></span>
+              </div>
+              Recent Mints
+            </h3>
+            <div className="mt-4 flow-root mx-auto">
+              <div className="overflow-x-auto border-2 border-black rounded-2xl shadow">
+                <div className="inline-block w-full align-middle rounded-xl overflow-hidden">
+                  <table className="min-w-full divide-y-2 divide-black w-full">
+                    <thead className="bg-lila-500">
+                      <tr>
+                        <th scope="col" className="p-5 text-left uppercase text-base font-semibold text-black">
+                          Minter Address
+                        </th>
+                        <th scope="col" className="p-5 text-right text-base uppercase font-semibold text-black">
+                          Mint Time
+                        </th>
                       </tr>
-                    ))}
-                </tbody>
-              </table>
+                    </thead>
+                    <tbody className="divide-y-2 divide-black">
+                      {[...mintEvents]
+                        .reverse()
+                        .map((event, index) => (
+                          <tr key={index} className={index % 2 === 0 ? 'bg-lila-200' : 'bg-white'}>
+                            <td className="whitespace-nowrap p-5 text-base uppercase text-black">
+                              <span className="block text-black font-mono font-medium">
+                                {`${event.caller.slice(0, 6)}...${event.caller.slice(-4)}`}
+                              </span>
+                            </td>
+                            <td className="whitespace-nowrap p-5 text-base text-black text-right">
+                              {new Date(event.timestamp).toLocaleString('en-US', {
+                                month: 'short',
+                                day: 'numeric',
+                                year: 'numeric',
+                                hour: '2-digit',
+                                minute: '2-digit'
+                              })}
+                            </td>
+                          </tr>
+                        ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
             </div>
           </div>
         )}

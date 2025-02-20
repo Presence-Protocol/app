@@ -250,14 +250,14 @@ export default function NFTList({ account }: { account: string }) {
 
 
         <div className="mb-24">
-          {/* <div className="flex items-center justify-between mb-8">
+          <div className="flex items-center justify-between mb-8">
             <div className="flex items-center gap-4">
               <h3 className="text-2xl font-semibold text-black">Your Presences</h3>
-              <div className="text-black items-center shadow shadow-black text-xs font-semibold inline-flex px-4 bg-white border-black border-2 py-2 rounded-lg tracking-wide">
-                {nfts.length} Presences
+              <div className="text-black items-center bg-lila-300 shadow shadow-lila-600 text-xs font-semibold inline-flex px-2  border-lila-600 border-2 py-1 rounded-lg tracking-wide">
+                {nfts.length} {nfts.length === 1 ? 'Presence' : 'Presences'}
               </div>
             </div>
-          </div> */}
+          </div>
 
           {nfts.length === 0 ? (
             <div className="bg-lila-200 p-8 rounded-xl">
@@ -344,7 +344,7 @@ export default function NFTList({ account }: { account: string }) {
             <div className="flex items-center gap-4">
               <h3 className="text-2xl font-semibold text-black">Your Events</h3>
               <div className="text-black items-center shadow shadow-black text-xs font-semibold inline-flex px-4 bg-white border-black border-2 py-2 rounded-lg tracking-wide">
-                {events.length} Events
+                {events.length} {events.length === 1 ? 'Event' : 'Events'}
               </div>
             </div>
             {/* <Link
