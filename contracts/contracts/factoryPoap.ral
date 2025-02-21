@@ -19,6 +19,7 @@ Contract PoapFactory(
         tokenIdPoap: ByteVec,
         tokenIdAirdrop: ByteVec,
         amountAirdropPerUser: U256,
+        airdropWhenHasParticipated: Bool,
 
         //event properties
         eventImage: ByteVec,
@@ -46,6 +47,7 @@ Contract PoapFactory(
                 tokenIdPoap,
                 tokenIdAirdrop,
                 amountAirdropPerUser,
+                airdropWhenHasParticipated,
                 eventImage,
                 eventName,
                 description,
@@ -100,12 +102,13 @@ Contract PoapFactory(
 
     }
 
+    @using(preapprovedAssets = true)
     pub fn setParticipatedPresence(collection: PoapCollection, nftIndex: U256, presenceAddressValidate: Address) -> (){
         let caller = callerAddress!()
 
         let organizer = collection.getOrganizer()
         checkCaller!(callerAddress!() == organizer, ErrorCodes.InvalidCaller)
-        collection.setParticipatedPresence(caller, nftIndex, presenceAddressValidate)
+        collection.setParticipatedPresence{organizer -> ALPH: dustAmount!()}(caller, nftIndex, presenceAddressValidate)
 
         emit PoapParticipatedIn(caller, collection, nftIndex, presenceAddressValidate)
     }

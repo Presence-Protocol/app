@@ -80,6 +80,7 @@ export namespace PoapFactoryTypes {
         tokenIdPoap: HexString;
         tokenIdAirdrop: HexString;
         amountAirdropPerUser: bigint;
+        airdropWhenHasParticipated: boolean;
         eventImage: HexString;
         eventName: HexString;
         description: HexString;
@@ -139,6 +140,7 @@ export namespace PoapFactoryTypes {
         tokenIdPoap: HexString;
         tokenIdAirdrop: HexString;
         amountAirdropPerUser: bigint;
+        airdropWhenHasParticipated: boolean;
         eventImage: HexString;
         eventName: HexString;
         description: HexString;
@@ -208,6 +210,7 @@ class Factory extends ContractFactory<
           tokenIdPoap: HexString;
           tokenIdAirdrop: HexString;
           amountAirdropPerUser: bigint;
+          airdropWhenHasParticipated: boolean;
           eventImage: HexString;
           eventName: HexString;
           description: HexString;
@@ -284,7 +287,7 @@ export const PoapFactory = new Factory(
   Contract.fromJson(
     PoapFactoryContractJson,
     "",
-    "258dd01727a87207573a12e33d66d3b49091da38a0c1b56032828a62cec70414",
+    "80e6e550a11a17127049b1ad3cdb9980f1f1f1276263c0c7da7daff3ab123ce9",
     AllStructs
   )
 );

@@ -53,7 +53,8 @@ const deployTemplates: DeployFunction<Settings> = async (
       tokenIdAirdrop: '',
       amountAirdropPerUser: 0n,
       amountAirdrop: 0n,
-      factoryContractId: '00'
+      factoryContractId: '00',
+      airdropWhenHasParticipated: false
     }
   })
 

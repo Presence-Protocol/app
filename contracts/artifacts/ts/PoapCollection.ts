@@ -50,6 +50,7 @@ export namespace PoapCollectionTypes {
     tokenIdPoap: HexString;
     tokenIdAirdrop: HexString;
     amountAirdropPerUser: bigint;
+    airdropWhenHasParticipated: boolean;
     eventImage: HexString;
     eventName: HexString;
     description: HexString;
@@ -110,6 +111,10 @@ export namespace PoapCollectionTypes {
         nftIndex: bigint;
         presenceAddressValidate: Address;
       }>;
+      result: CallContractResult<null>;
+    };
+    sendAirdrop: {
+      params: CallContractParams<{ addressToAirdrop: Address }>;
       result: CallContractResult<null>;
     };
     nftByAddress: {
@@ -187,6 +192,10 @@ export namespace PoapCollectionTypes {
         nftIndex: bigint;
         presenceAddressValidate: Address;
       }>;
+      result: SignExecuteScriptTxResult;
+    };
+    sendAirdrop: {
+      params: SignExecuteContractMethodParams<{ addressToAirdrop: Address }>;
       result: SignExecuteScriptTxResult;
     };
     nftByAddress: {
@@ -309,6 +318,14 @@ class Factory extends ContractFactory<
         getContractByCodeHash
       );
     },
+    sendAirdrop: async (
+      params: TestContractParamsWithoutMaps<
+        PoapCollectionTypes.Fields,
+        { addressToAirdrop: Address }
+      >
+    ): Promise<TestContractResultWithoutMaps<null>> => {
+      return testMethod(this, "sendAirdrop", params, getContractByCodeHash);
+    },
     nftByAddress: async (
       params: TestContractParamsWithoutMaps<
         PoapCollectionTypes.Fields,
@@ -378,7 +395,7 @@ export const PoapCollection = new Factory(
   Contract.fromJson(
     PoapCollectionContractJson,
     "",
-    "1856d95ed8d7b917d510e5b5ebd1312d3492ecd6edb3d39310ff910fcb0c0edf",
+    "1ad5676bdba73e1ccbf98882c6c877e8185a062f583fdcbc72605f8695583645",
     AllStructs
   )
 );
@@ -519,6 +536,17 @@ export class PoapCollectionInstance extends ContractInstance {
         getContractByCodeHash
       );
     },
+    sendAirdrop: async (
+      params: PoapCollectionTypes.CallMethodParams<"sendAirdrop">
+    ): Promise<PoapCollectionTypes.CallMethodResult<"sendAirdrop">> => {
+      return callMethod(
+        PoapCollection,
+        this,
+        "sendAirdrop",
+        params,
+        getContractByCodeHash
+      );
+    },
     nftByAddress: async (
       params: PoapCollectionTypes.CallMethodParams<"nftByAddress">
     ): Promise<PoapCollectionTypes.CallMethodResult<"nftByAddress">> => {
@@ -638,6 +666,11 @@ export class PoapCollectionInstance extends ContractInstance {
         "setParticipatedPresence",
         params
       );
+    },
+    sendAirdrop: async (
+      params: PoapCollectionTypes.SignExecuteMethodParams<"sendAirdrop">
+    ): Promise<PoapCollectionTypes.SignExecuteMethodResult<"sendAirdrop">> => {
+      return signExecuteMethod(PoapCollection, this, "sendAirdrop", params);
     },
     nftByAddress: async (
       params: PoapCollectionTypes.SignExecuteMethodParams<"nftByAddress">

@@ -10,6 +10,7 @@ Contract PoapCollection(
     tokenIdPoap: ByteVec,
     tokenIdAirdrop: ByteVec,
     amountAirdropPerUser: U256,
+    airdropWhenHasParticipated: Bool,
 
     //event properties
     eventImage: ByteVec,
@@ -63,9 +64,8 @@ Contract PoapCollection(
         amountPoapFees = amountPoapFees + poapPrice
      }
 
-     if(amountAirdrop >= amountAirdropPerUser){
-        transferTokenFromSelf!(caller, tokenIdAirdrop, amountAirdropPerUser)
-        amountAirdrop = amountAirdrop - amountAirdropPerUser
+     if(!airdropWhenHasParticipated){
+        sendAirdrop{organizer -> ALPH: 0}(caller)
      }
 
      let contractId = copyCreateSubContractWithToken!{payer -> ALPH: minimalContractDeposit!()}(
@@ -84,7 +84,7 @@ Contract PoapCollection(
      return contractId
    }
 
-   @using(checkExternalCaller = true)
+   @using(checkExternalCaller = true, preapprovedAssets = true)
    pub fn setParticipatedPresence(callerAddr: Address, nftIndex: U256, presenceAddressValidate: Address) -> (){
       let mut caller = callerAddress!()
      
@@ -94,7 +94,7 @@ Contract PoapCollection(
       }
 
       checkCaller!(caller == organizer, ErrorCodes.InvalidCaller)
-      let mut poapContractId = zeros!(32)
+      let mut poapContractId = #00
 
       if(oneMintPerAddress){
         poapContractId = subContractId!(toByteVec!(presenceAddressValidate))
@@ -104,9 +104,28 @@ Contract PoapCollection(
 
       assert!(contractExists!(poapContractId), ErrorCodes.IncorrectTokenIndex)
       PoapNFT(poapContractId).setParticipated()
+      
+      if(airdropWhenHasParticipated){
+        let minter = PoapNFT(poapContractId).getMinter()
+        sendAirdrop{organizer -> ALPH: dustAmount!()}(minter)
+      }
+
 
       emit PoapParticipated(caller, nftIndex, presenceAddressValidate)
 
+   }
+
+   @using(assetsInContract = true, updateFields = true, preapprovedAssets = true)
+   fn sendAirdrop(addressToAirdrop: Address) -> (){
+    if(amountAirdrop >= amountAirdropPerUser){
+
+      // dustamount is needed for minimal
+      if(airdropWhenHasParticipated){
+      transferToken!(organizer, addressToAirdrop, ALPH, dustAmount!())
+    }
+      transferTokenFromSelf!(addressToAirdrop, tokenIdAirdrop, amountAirdropPerUser)
+      amountAirdrop = amountAirdrop - amountAirdropPerUser
+    }
    }
 
     pub fn getCollectionUri() -> ByteVec {
