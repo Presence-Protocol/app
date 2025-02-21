@@ -172,6 +172,10 @@ Contract PoapCollection(
         return amountForStorageFees
     }
 
+    pub fn getAirdropWhenHasParticipated() -> Bool {
+        return airdropWhenHasParticipated
+    }
+
     @using(assetsInContract = true, updateFields = true)
     pub fn claimFunds(amountToClaim: U256) -> () {
         checkCaller!(callerAddress!() == organizer, ErrorCodes.InvalidCaller)

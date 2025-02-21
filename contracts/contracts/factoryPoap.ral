@@ -108,7 +108,13 @@ Contract PoapFactory(
 
         let organizer = collection.getOrganizer()
         checkCaller!(callerAddress!() == organizer, ErrorCodes.InvalidCaller)
-        collection.setParticipatedPresence{organizer -> ALPH: dustAmount!()}(caller, nftIndex, presenceAddressValidate)
+
+        let mut amountDust = 0
+        if(collection.getAirdropWhenHasParticipated()){
+            amountDust = dustAmount!()
+        }
+        
+        collection.setParticipatedPresence{organizer -> ALPH: amountDust}(caller, nftIndex, presenceAddressValidate)
 
         emit PoapParticipatedIn(caller, collection, nftIndex, presenceAddressValidate)
     }

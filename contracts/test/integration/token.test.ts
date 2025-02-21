@@ -1155,7 +1155,7 @@ describe('integration tests', () => {
 
     const collection = PoapCollection.at(addressFromContractId(poapCollectionMinted))
 
-    await transferTokenTo(minter.address, customTokenA.contractId, 1n)
+    await transferTokenTo(minter.address, customTokenA.contractId, 2n)
 
     await factory.transact.mintPoap({
       signer: minter,
@@ -1169,9 +1169,21 @@ describe('integration tests', () => {
       }
     })
 
-    expect((await collection.view.totalSupply()).returns).toBe(1n)
+    await factory.transact.mintPoap({
+      signer: minter,
+      attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT,
+      tokens: [{
+        id: customTokenA.contractId,
+        amount: 1n
+      }],
+      args: {
+        collection: collection.contractId
+      }
+    })
+
+    expect((await collection.view.totalSupply()).returns).toBe(2n)
     expect((await alphBalanceOf(collection.address))).toBe(MINIMAL_CONTRACT_DEPOSIT)
-    expect((await balanceOf(collection.address, customTokenA.contractId)).amount).toBe("1")
+    expect((await balanceOf(collection.address, customTokenA.contractId)).amount).toBe("2")
 
     
     await expect(factory.transact.mintPoap({
@@ -1182,10 +1194,32 @@ describe('integration tests', () => {
         amount: 1n
       }],
       args: {
-        collection: collection.contractId
+        collection: collection.contractId 
       }
     })).rejects.toThrowError()
-    
+
+    expect(number256ToBigint((await balanceOf(collection.address, customTokenA.contractId)).amount)).toBe(2n)
+
+    await collection.transact.claimFunds({
+      args: {
+        amountToClaim: 1n
+      },
+      attoAlphAmount: DUST_AMOUNT,
+      signer: signer
+    })
+
+    expect(number256ToBigint((await balanceOf(collection.address, customTokenA.contractId)).amount)).toBe(1n)
+
+    await collection.transact.claimFunds({
+      args: {
+        amountToClaim: 1n
+      },
+      attoAlphAmount: DUST_AMOUNT,
+      signer: signer
+    })
+
+    expect(number256ToBigint((await balanceOf(collection.address, customTokenA.contractId)).amount)).toBe(0n)
+
     /*await expectAssertionError( factory.transact.mintPoap({
       signer: minter,
       attoAlphAmount: ONE_ALPH + MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT,
