@@ -61,6 +61,7 @@ export namespace PoapCollectionTypes {
     isPublic: boolean;
     isBurnable: boolean;
     amountForStorageFees: bigint;
+    amountForChainFees: bigint;
     amountPoapFees: bigint;
     totalSupply: bigint;
     amountAirdrop: bigint;
@@ -128,6 +129,10 @@ export namespace PoapCollectionTypes {
     getAmountForStorageFees: {
       params: Omit<CallContractParams<{}>, "args">;
       result: CallContractResult<bigint>;
+    };
+    getAirdropWhenHasParticipated: {
+      params: Omit<CallContractParams<{}>, "args">;
+      result: CallContractResult<boolean>;
     };
     claimFunds: {
       params: CallContractParams<{ amountToClaim: bigint }>;
@@ -207,6 +212,10 @@ export namespace PoapCollectionTypes {
       result: SignExecuteScriptTxResult;
     };
     getAmountForStorageFees: {
+      params: Omit<SignExecuteContractMethodParams<{}>, "args">;
+      result: SignExecuteScriptTxResult;
+    };
+    getAirdropWhenHasParticipated: {
       params: Omit<SignExecuteContractMethodParams<{}>, "args">;
       result: SignExecuteScriptTxResult;
     };
@@ -355,6 +364,19 @@ class Factory extends ContractFactory<
         getContractByCodeHash
       );
     },
+    getAirdropWhenHasParticipated: async (
+      params: Omit<
+        TestContractParamsWithoutMaps<PoapCollectionTypes.Fields, never>,
+        "testArgs"
+      >
+    ): Promise<TestContractResultWithoutMaps<boolean>> => {
+      return testMethod(
+        this,
+        "getAirdropWhenHasParticipated",
+        params,
+        getContractByCodeHash
+      );
+    },
     claimFunds: async (
       params: TestContractParamsWithoutMaps<
         PoapCollectionTypes.Fields,
@@ -395,7 +417,7 @@ export const PoapCollection = new Factory(
   Contract.fromJson(
     PoapCollectionContractJson,
     "",
-    "1ad5676bdba73e1ccbf98882c6c877e8185a062f583fdcbc72605f8695583645",
+    "ce878c0f39650229a387a80f633068f777758c53b383cb2b6aa46b36fed4fb93",
     AllStructs
   )
 );
@@ -582,6 +604,19 @@ export class PoapCollectionInstance extends ContractInstance {
         getContractByCodeHash
       );
     },
+    getAirdropWhenHasParticipated: async (
+      params?: PoapCollectionTypes.CallMethodParams<"getAirdropWhenHasParticipated">
+    ): Promise<
+      PoapCollectionTypes.CallMethodResult<"getAirdropWhenHasParticipated">
+    > => {
+      return callMethod(
+        PoapCollection,
+        this,
+        "getAirdropWhenHasParticipated",
+        params === undefined ? {} : params,
+        getContractByCodeHash
+      );
+    },
     claimFunds: async (
       params: PoapCollectionTypes.CallMethodParams<"claimFunds">
     ): Promise<PoapCollectionTypes.CallMethodResult<"claimFunds">> => {
@@ -691,6 +726,18 @@ export class PoapCollectionInstance extends ContractInstance {
         PoapCollection,
         this,
         "getAmountForStorageFees",
+        params
+      );
+    },
+    getAirdropWhenHasParticipated: async (
+      params: PoapCollectionTypes.SignExecuteMethodParams<"getAirdropWhenHasParticipated">
+    ): Promise<
+      PoapCollectionTypes.SignExecuteMethodResult<"getAirdropWhenHasParticipated">
+    > => {
+      return signExecuteMethod(
+        PoapCollection,
+        this,
+        "getAirdropWhenHasParticipated",
         params
       );
     },

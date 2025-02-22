@@ -90,6 +90,7 @@ export namespace PoapFactoryTypes {
         isPublic: boolean;
         isBurnable: boolean;
         amountForStorageFees: bigint;
+        amountForChainFees: bigint;
         amountPoapFees: bigint;
         totalSupply: bigint;
         amountAirdrop: bigint;
@@ -150,6 +151,7 @@ export namespace PoapFactoryTypes {
         isPublic: boolean;
         isBurnable: boolean;
         amountForStorageFees: bigint;
+        amountForChainFees: bigint;
         amountPoapFees: bigint;
         totalSupply: bigint;
         amountAirdrop: bigint;
@@ -220,6 +222,7 @@ class Factory extends ContractFactory<
           isPublic: boolean;
           isBurnable: boolean;
           amountForStorageFees: bigint;
+          amountForChainFees: bigint;
           amountPoapFees: bigint;
           totalSupply: bigint;
           amountAirdrop: bigint;
@@ -287,7 +290,7 @@ export const PoapFactory = new Factory(
   Contract.fromJson(
     PoapFactoryContractJson,
     "",
-    "80e6e550a11a17127049b1ad3cdb9980f1f1f1276263c0c7da7daff3ab123ce9",
+    "ad34dd2e5f3a4e7200d641426891126f5d7a68847a0d4983aecf2d162d829a76",
     AllStructs
   )
 );

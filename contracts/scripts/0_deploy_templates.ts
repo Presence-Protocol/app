@@ -54,7 +54,8 @@ const deployTemplates: DeployFunction<Settings> = async (
       amountAirdropPerUser: 0n,
       amountAirdrop: 0n,
       factoryContractId: '00',
-      airdropWhenHasParticipated: false
+      airdropWhenHasParticipated: false,
+      amountForChainFees: 0n
     }
   })
 

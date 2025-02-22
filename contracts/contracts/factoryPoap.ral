@@ -32,6 +32,7 @@ Contract PoapFactory(
         isBurnable: Bool,
 
         amountForStorageFees: U256,
+        amountForChainFees: U256,
         amountPoapFees: U256,
         totalSupply: U256,
         amountAirdrop: U256) -> (ByteVec){
@@ -58,6 +59,7 @@ Contract PoapFactory(
                 isPublic,
                 isBurnable,
                 amountForStorageFees,
+                amountForChainFees,
                 amountPoapFees,
                 totalSupply,
                 amountAirdrop    
@@ -67,6 +69,10 @@ Contract PoapFactory(
             if(amountForStorageFees > 0){
                 assert!(amountForStorageFees >= minimalContractDeposit!(), ErrorCodes.NotEnoughAlph)
                 amountForStorageFeesInContract = amountForStorageFeesInContract + amountForStorageFees
+            }
+            
+            if(amountForChainFees > 0){
+                amountForStorageFeesInContract = amountForStorageFeesInContract + amountForChainFees
             }
 
             let contractId = copyCreateContract!{caller -> ALPH: amountForStorageFeesInContract, tokenIdAirdrop: amountAirdrop}(    

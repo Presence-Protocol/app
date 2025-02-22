@@ -57,6 +57,7 @@ export default function NewEvent() {
   const [isBurnable, setIsBurnable] = useState(false);
   const [poapPrice, setPoapPrice] = useState(0n);
   const [storageFees, setStorageFees] = useState(0n);
+  const [chainFees, setChainFees] = useState(0n);
   const [poapFees, setPoapFees] = useState(0n);
   const [tokenId, setTokenId] = useState(ALPH_TOKEN_ID);
   const [showAdvancedSettings, setShowAdvancedSettings] = useState(false);
@@ -153,6 +154,26 @@ export default function NewEvent() {
     );
   };
 
+  const calculateFinalAmount = (chainFees: bigint, storageFees: bigint): bigint => {
+      // Case 1: Chain fees set and storage fees >= minimum deposit
+      if (chainFees > 0n && storageFees >= MINIMAL_CONTRACT_DEPOSIT) {
+        return chainFees + storageFees + DUST_AMOUNT + MINIMAL_CONTRACT_DEPOSIT;
+      }
+      
+      // Case 2: Storage fees >= minimum deposit but no chain fees
+      if (storageFees >= MINIMAL_CONTRACT_DEPOSIT && chainFees <= 0n) {
+        return storageFees + DUST_AMOUNT + MINIMAL_CONTRACT_DEPOSIT;
+      }
+      
+      // Case 3: Storage fees present but below minimum
+      if (chainFees > 0n && storageFees < MINIMAL_CONTRACT_DEPOSIT) {
+        return chainFees + DUST_AMOUNT + MINIMAL_CONTRACT_DEPOSIT;
+      }
+    
+      // Default case: Use minimum deposit + dust
+      return MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT;
+    }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -217,7 +238,6 @@ export default function NewEvent() {
       const eventName = stringToHex(title);
       const descriptionHex = stringToHex(description);
       const locationHex = stringToHex(location);
-
       // Call contract method using transact
       const result = await factoryContract.transact.mintNewCollection({
         args: {
@@ -241,10 +261,11 @@ export default function NewEvent() {
           tokenIdAirdrop: ALPH_TOKEN_ID,
           amountAirdropPerUser: 0n,
           amountAirdrop: 0n,
-          airdropWhenHasParticipated: false
+          airdropWhenHasParticipated: false,
+          amountForChainFees: chainFees,
         },
         signer: signer,
-        attoAlphAmount: storageFees <= 0 ? MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT : MINIMAL_CONTRACT_DEPOSIT + storageFees + DUST_AMOUNT,
+        attoAlphAmount: calculateFinalAmount(chainFees, storageFees),
       });
       
 
@@ -571,6 +592,41 @@ export default function NewEvent() {
               step="0.1"
               value={Number(storageFees) / 10**18}
               onChange={(e) => setStorageFees(BigInt(Math.floor(Number(e.target.value) * 10**18)))}
+              className="block w-full px-3 py-3 text-xl text-black border-2 border-black appearance-none placeholder-black focus:border-black focus:bg-lila-500 focus:outline-none focus:ring-black sm:text-sm rounded-2xl"
+            />
+          </div>
+          <div className="p-4 bg-white">
+            <div className="flex items-center justify-between">
+              <label className="text-sm font-medium text-black">Gas Fees</label>
+              <button
+                type="button"
+                onClick={() => setIsStorageFeesInfoOpen(true)}
+                className="ml-2"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5 text-gray-800 hover:text-black"
+                  viewBox="0 0 24 24"
+                  strokeWidth="2"
+                  stroke="currentColor"
+                  fill="none"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                  <path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" />
+                  <path d="M12 8l.01 0" />
+                  <path d="M11 12l1 0l0 4l1 0" />
+                </svg>
+              </button>
+            </div>
+            <p className="text-xs text-gray-500 mb-2">Pay gas fees on behalf of the users (in ALPH)</p>
+            <input
+              type="number"
+              min="0"
+              step="0.1"
+              value={Number(chainFees) / 10**18}
+              onChange={(e) => setChainFees(BigInt(Math.floor(Number(e.target.value) * 10**18)))}
               className="block w-full px-3 py-3 text-xl text-black border-2 border-black appearance-none placeholder-black focus:border-black focus:bg-lila-500 focus:outline-none focus:ring-black sm:text-sm rounded-2xl"
             />
           </div>

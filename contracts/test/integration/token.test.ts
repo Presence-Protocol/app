@@ -63,7 +63,8 @@ describe('integration tests', () => {
         tokenIdAirdrop: ALPH_TOKEN_ID,
         amountAirdropPerUser: 0n,
         amountAirdrop: 0n,
-        airdropWhenHasParticipated: false
+        airdropWhenHasParticipated: false,
+        amountForChainFees: 0n
       },
       signer: signer,
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT
@@ -120,7 +121,8 @@ describe('integration tests', () => {
         tokenIdAirdrop: ALPH_TOKEN_ID,
         amountAirdropPerUser: 0n,
         amountAirdrop: 0n,
-        airdropWhenHasParticipated: false
+        airdropWhenHasParticipated: false,
+        amountForChainFees: 0n
       },
       signer: signer,
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT
@@ -208,7 +210,8 @@ describe('integration tests', () => {
         tokenIdAirdrop: ALPH_TOKEN_ID,
         amountAirdropPerUser: 0n,
         amountAirdrop: 0n,
-        airdropWhenHasParticipated: false
+        airdropWhenHasParticipated: false,
+        amountForChainFees: 0n
       },
       signer: signer,
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT
@@ -292,7 +295,8 @@ describe('integration tests', () => {
         tokenIdAirdrop: ALPH_TOKEN_ID,
         amountAirdropPerUser: 0n,
         amountAirdrop: 0n,
-        airdropWhenHasParticipated: false
+        airdropWhenHasParticipated: false,
+        amountForChainFees: 0n
       },
       signer: signer,
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT
@@ -362,7 +366,8 @@ describe('integration tests', () => {
         tokenIdAirdrop: ALPH_TOKEN_ID,
         amountAirdropPerUser: 0n,
         amountAirdrop: 0n,
-        airdropWhenHasParticipated: false
+        airdropWhenHasParticipated: false,
+        amountForChainFees: 0n
       },
       signer: signer,
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + 2n*10n ** 17n + DUST_AMOUNT
@@ -471,7 +476,8 @@ describe('integration tests', () => {
         tokenIdAirdrop: ALPH_TOKEN_ID,
         amountAirdropPerUser: 0n,
         amountAirdrop: 0n,
-        airdropWhenHasParticipated: false
+        airdropWhenHasParticipated: false,
+        amountForChainFees: 0n
       },
       signer: signer,
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT
@@ -542,7 +548,8 @@ describe('integration tests', () => {
         tokenIdAirdrop: ALPH_TOKEN_ID,
         amountAirdropPerUser: 0n,
         amountAirdrop: 0n,
-        airdropWhenHasParticipated: false
+        airdropWhenHasParticipated: false,
+        amountForChainFees: 0n
       },
       signer: signer,
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT
@@ -601,7 +608,8 @@ describe('integration tests', () => {
         tokenIdAirdrop: ALPH_TOKEN_ID,
         amountAirdropPerUser: 0n,
         amountAirdrop: 0n,
-        airdropWhenHasParticipated: false
+        airdropWhenHasParticipated: false,
+        amountForChainFees: 0n
       },
       signer: signer,
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT
@@ -662,7 +670,8 @@ describe('integration tests', () => {
         tokenIdAirdrop: ALPH_TOKEN_ID,
         amountAirdropPerUser: 0n,
         amountAirdrop: 0n,
-        airdropWhenHasParticipated: false
+        airdropWhenHasParticipated: false,
+        amountForChainFees: 0n
       },
       signer: signer,
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT
@@ -740,7 +749,8 @@ describe('integration tests', () => {
         tokenIdAirdrop: ALPH_TOKEN_ID,
         amountAirdropPerUser: 0n,
         amountAirdrop: 0n,
-        airdropWhenHasParticipated: false
+        airdropWhenHasParticipated: false,
+        amountForChainFees: 0n
       },
       signer: signer,
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT
@@ -818,7 +828,8 @@ describe('integration tests', () => {
         tokenIdAirdrop: ALPH_TOKEN_ID,
         amountAirdropPerUser: 0n,
         amountAirdrop: 0n,
-        airdropWhenHasParticipated: false
+        airdropWhenHasParticipated: false,
+        amountForChainFees: 0n
       },
       signer: signer,
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT
@@ -900,7 +911,8 @@ describe('integration tests', () => {
         tokenIdAirdrop: ALPH_TOKEN_ID,
         amountAirdropPerUser: 0n,
         amountAirdrop: 0n,
-        airdropWhenHasParticipated: false
+        airdropWhenHasParticipated: false,
+        amountForChainFees: 0n
       },
       signer: signer,
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT
@@ -975,7 +987,8 @@ describe('integration tests', () => {
         tokenIdAirdrop: ALPH_TOKEN_ID,
         amountAirdropPerUser: 0n,
         amountAirdrop: 0n,
-        airdropWhenHasParticipated: false
+        airdropWhenHasParticipated: false,
+        amountForChainFees: 0n
       },
       signer: signer,
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT
@@ -1045,7 +1058,8 @@ describe('integration tests', () => {
         tokenIdAirdrop: ALPH_TOKEN_ID,
         amountAirdropPerUser: 0n,
         amountAirdrop: 0n,
-        airdropWhenHasParticipated: false
+        airdropWhenHasParticipated: false,
+        amountForChainFees: 0n
       },
       signer: signer,
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT
@@ -1138,7 +1152,8 @@ describe('integration tests', () => {
         tokenIdAirdrop: ALPH_TOKEN_ID,
         amountAirdropPerUser: 0n,
         amountAirdrop: 0n,
-        airdropWhenHasParticipated: false
+        airdropWhenHasParticipated: false,
+        amountForChainFees: 0n
       },
       signer: signer,
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT
@@ -1280,7 +1295,8 @@ describe('integration tests', () => {
         tokenIdAirdrop: customTokenA.contractId,
         amountAirdropPerUser: 10n,
         amountAirdrop: 20n,
-        airdropWhenHasParticipated: false
+        airdropWhenHasParticipated: false,
+        amountForChainFees: 0n
       },
       signer: signer,
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT,
@@ -1377,7 +1393,8 @@ describe('integration tests', () => {
         tokenIdAirdrop: ALPH_TOKEN_ID,
         amountAirdropPerUser: 10n * ONE_ALPH,
         amountAirdrop: 20n * ONE_ALPH,
-        airdropWhenHasParticipated: false
+        airdropWhenHasParticipated: false,
+        amountForChainFees: 0n
       },
       signer: signer,
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT + 20n * ONE_ALPH,
@@ -1473,7 +1490,8 @@ describe('integration tests', () => {
         tokenIdAirdrop: customTokenA.contractId,
         amountAirdropPerUser: 10n,
         amountAirdrop: 20n,
-        airdropWhenHasParticipated: false
+        airdropWhenHasParticipated: false,
+        amountForChainFees: 0n
       },
       signer: signer,
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT + 2n*10n**17n,
@@ -1572,7 +1590,8 @@ describe('integration tests', () => {
         tokenIdAirdrop: ALPH_TOKEN_ID,
         amountAirdropPerUser: 0n,
         amountAirdrop: 0n,
-        airdropWhenHasParticipated: false
+        airdropWhenHasParticipated: false,
+        amountForChainFees: 0n
       },
       signer: signer,
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT
@@ -1738,7 +1757,8 @@ describe('integration tests', () => {
         tokenIdAirdrop: customTokenA.tokenId,
         amountAirdropPerUser: 10n,
         amountAirdrop: 20n,
-        airdropWhenHasParticipated: true
+        airdropWhenHasParticipated: true,
+        amountForChainFees: 0n
       },
       signer: signer,
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT,
@@ -1911,7 +1931,8 @@ describe('integration tests', () => {
         tokenIdAirdrop: ALPH_TOKEN_ID,
         amountAirdropPerUser: 0n,
         amountAirdrop: 0n,
-        airdropWhenHasParticipated: false
+        airdropWhenHasParticipated: false,
+        amountForChainFees: 0n
       },
       signer: signer,
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT
@@ -2083,7 +2104,8 @@ describe('integration tests', () => {
         tokenIdAirdrop: ALPH_TOKEN_ID,
         amountAirdropPerUser: 0n,
         amountAirdrop: 0n,
-        airdropWhenHasParticipated: false
+        airdropWhenHasParticipated: false,
+        amountForChainFees: 0n
       },
       signer: signer,
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT
@@ -2219,6 +2241,116 @@ describe('integration tests', () => {
       })
     ,factory.address, 7)
    
+
+  }, 20000)
+
+
+  it('Mint poap with Gas paid and Storage fees', async () => {
+    const signer = await testNodeWallet()
+    const deployments = await deployToDevnet()
+    const factory = deployments.getInstance(PoapFactory)
+
+    expect(factory).toBeDefined()
+
+    if (!factory) {
+      throw new Error('Factory is undefined')
+    }
+
+    await factory.transact.mintNewCollection({
+      args: {
+        eventImage: stringToHex('https://arweave.net/Z1HAdT_PGnxPLct4-u7l1Zl_h4DNdxzKev7tCDAEflc'),
+        maxSupply: 10n,
+        mintStartAt: 1735823531000n,
+        mintEndAt: 1893595576000n,
+        eventName: stringToHex('Test 1'),
+        description: stringToHex('First poap test'),
+        location: stringToHex('Online'),
+        eventStartAt: 1735823531000n,
+        eventEndAt: 1735823531000n,
+        totalSupply: 0n,
+        isPublic: false,
+        oneMintPerAddress: false,
+        isBurnable: false,
+        poapPrice: 0n,
+        tokenIdPoap: ALPH_TOKEN_ID,
+        amountPoapFees: 0n,
+        tokenIdAirdrop: ALPH_TOKEN_ID,
+        amountAirdropPerUser: 0n,
+        amountAirdrop: 0n,
+        amountForChainFees: 10n * ONE_ALPH,
+        airdropWhenHasParticipated: false,
+        amountForStorageFees: 2n * 10n ** 17n
+      },
+      signer: signer,
+      attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + 2n*10n ** 17n + DUST_AMOUNT  + 10n * ONE_ALPH
+    })
+
+    // Check that event is emitted
+    const { events } = await web3
+      .getCurrentNodeProvider()
+      .events.getEventsContractContractaddress(factory.address, { start: 0 })
+    expect(events.length).toEqual(1)
+
+    const creationEvent = events[0]
+    const poapCollectionMinted = creationEvent.fields[0].value as string
+
+    
+
+    const collection = PoapCollection.at(addressFromContractId(poapCollectionMinted))
+    let collectionState = await collection.fetchState()
+    expect((await alphBalanceOf(collection.address))).toEqual(collectionState.fields.amountForStorageFees + MINIMAL_CONTRACT_DEPOSIT + collectionState.fields.amountForChainFees)
+    expect((await alphBalanceOf(collection.address))).toEqual(3n*10n**17n + 10n * ONE_ALPH)
+
+    await collection.transact.mint({
+      signer: minter,
+      attoAlphAmount: 0n,
+      args: {
+        callerAddr: minter.address
+      }
+    })
+
+    collectionState = await collection.fetchState()
+    //expect((await alphBalanceOf(collection.address))).toEqual(collectionState.fields.amountForStorageFees + MINIMAL_CONTRACT_DEPOSIT)
+    //expect((await alphBalanceOf(collection.address))).toEqual(2n*10n**17n)
+
+    expect((await collection.view.totalSupply()).returns).toBe(1n)
+
+    await collection.transact.mint({
+      signer: minter,
+      attoAlphAmount: 0n,
+      args: {
+        callerAddr: minter.address
+      }
+    })
+
+    collectionState = await collection.fetchState()
+    expect(collectionState.fields.amountForStorageFees).toEqual(0n) //the storage fees for the collection contract
+    //expect((await alphBalanceOf(collection.address))).toEqual(MINIMAL_CONTRACT_DEPOSIT)
+
+    // contract is empty, user need to pay for storage
+    await collection.transact.mint({
+      signer: minter2,
+      attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT,
+      args: {
+        callerAddr: minter.address
+      }
+    })
+
+    // should failed because there's no ALPH left in the sc to pay the storage fees
+   await collection.transact.mint({
+      signer: minter2,
+      attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT,
+      args: {
+        callerAddr: minter.address
+      }
+    })
+
+    // get Poap    
+    const poap = PoapNFT.at(addressFromContractId((await collection.view.nftByIndex({ args: { index: 0n } })).returns))
+    const poapState = await poap.fetchState()
+    expect(hexToString(poapState.fields.eventName)).toBe('Test 1')
+
+    expect((await poap.view.getTraits()).returns.length).toBe(8)
 
   }, 20000)
 

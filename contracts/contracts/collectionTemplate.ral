@@ -24,6 +24,7 @@ Contract PoapCollection(
     isBurnable: Bool,
 
     mut amountForStorageFees: U256,
+    mut amountForChainFees: U256,
     mut amountPoapFees: U256,
     mut totalSupply: U256,
     mut amountAirdrop: U256    
@@ -76,6 +77,13 @@ Contract PoapCollection(
          1,
          caller
      )
+
+     let gasFees = txGasFee!()
+     if(amountForChainFees >= gasFees){
+      payGasFee!(selfAddress!(), gasFees)
+      amountForChainFees = amountForChainFees - gasFees
+    }
+
 
      emit PoapMinted(contractId, totalSupply, caller, blockTimeStamp!())
 
