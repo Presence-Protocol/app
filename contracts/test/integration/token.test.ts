@@ -1208,6 +1208,14 @@ describe('integration tests', () => {
       signer: signer
     })
 
+    expectAssertionError(collection.transact.claimFunds({
+      args: {
+        amountToClaim: 1n
+      },
+      attoAlphAmount: DUST_AMOUNT,
+      signer: minter
+    }), collection.address, 7)
+
     expect(number256ToBigint((await balanceOf(collection.address, customTokenA.contractId)).amount)).toBe(1n)
 
     await collection.transact.claimFunds({
