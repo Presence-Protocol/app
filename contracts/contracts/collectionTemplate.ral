@@ -194,6 +194,26 @@ Contract PoapCollection(
         amountPoapFees = amountPoapFees - amountToClaim
     }
 
+    @using(assetsInContract = true, updateFields = true)
+    pub fn withdrawStorageFees(amount: U256) -> () {
+        checkCaller!(callerAddress!() == organizer, ErrorCodes.InvalidCaller)
+        assert!(amount <= amountForStorageFees, ErrorCodes.NotEnoughAlph)
+
+        transferTokenFromSelf!(organizer, ALPH, amount)
+
+        amountPoapFees = amountPoapFees - amount
+    }
+
+    @using(assetsInContract = true, updateFields = true)
+    pub fn withdrawChainFees(amount: U256) -> () {
+        checkCaller!(callerAddress!() == organizer, ErrorCodes.InvalidCaller)
+        assert!(amount <= amountForChainFees, ErrorCodes.NotEnoughAlph)
+
+        transferTokenFromSelf!(organizer, ALPH, amount)
+
+        amountForChainFees = amountForChainFees - amount
+    }
+
     pub fn getPoapPrice() -> (U256,ByteVec) {
         return poapPrice, tokenIdPoap
     }
