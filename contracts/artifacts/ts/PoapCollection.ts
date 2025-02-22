@@ -146,6 +146,14 @@ export namespace PoapCollectionTypes {
       params: CallContractParams<{ amount: bigint }>;
       result: CallContractResult<null>;
     };
+    depositStorageFees: {
+      params: CallContractParams<{ amount: bigint }>;
+      result: CallContractResult<null>;
+    };
+    depositChainFees: {
+      params: CallContractParams<{ amount: bigint }>;
+      result: CallContractResult<null>;
+    };
     getPoapPrice: {
       params: Omit<CallContractParams<{}>, "args">;
       result: CallContractResult<[bigint, HexString]>;
@@ -236,6 +244,14 @@ export namespace PoapCollectionTypes {
       result: SignExecuteScriptTxResult;
     };
     withdrawChainFees: {
+      params: SignExecuteContractMethodParams<{ amount: bigint }>;
+      result: SignExecuteScriptTxResult;
+    };
+    depositStorageFees: {
+      params: SignExecuteContractMethodParams<{ amount: bigint }>;
+      result: SignExecuteScriptTxResult;
+    };
+    depositChainFees: {
       params: SignExecuteContractMethodParams<{ amount: bigint }>;
       result: SignExecuteScriptTxResult;
     };
@@ -427,6 +443,32 @@ class Factory extends ContractFactory<
         getContractByCodeHash
       );
     },
+    depositStorageFees: async (
+      params: TestContractParamsWithoutMaps<
+        PoapCollectionTypes.Fields,
+        { amount: bigint }
+      >
+    ): Promise<TestContractResultWithoutMaps<null>> => {
+      return testMethod(
+        this,
+        "depositStorageFees",
+        params,
+        getContractByCodeHash
+      );
+    },
+    depositChainFees: async (
+      params: TestContractParamsWithoutMaps<
+        PoapCollectionTypes.Fields,
+        { amount: bigint }
+      >
+    ): Promise<TestContractResultWithoutMaps<null>> => {
+      return testMethod(
+        this,
+        "depositChainFees",
+        params,
+        getContractByCodeHash
+      );
+    },
     getPoapPrice: async (
       params: Omit<
         TestContractParamsWithoutMaps<PoapCollectionTypes.Fields, never>,
@@ -459,7 +501,7 @@ export const PoapCollection = new Factory(
   Contract.fromJson(
     PoapCollectionContractJson,
     "",
-    "3bd5a1a783b6971c77265b4229fd6bda42e1cf9b767c00e24aa1c7052a00e72e",
+    "40546ba794e4f4883ec91d30f614ce12f1c2f707bba4ff451a440a07969d3008",
     AllStructs
   )
 );
@@ -692,6 +734,28 @@ export class PoapCollectionInstance extends ContractInstance {
         getContractByCodeHash
       );
     },
+    depositStorageFees: async (
+      params: PoapCollectionTypes.CallMethodParams<"depositStorageFees">
+    ): Promise<PoapCollectionTypes.CallMethodResult<"depositStorageFees">> => {
+      return callMethod(
+        PoapCollection,
+        this,
+        "depositStorageFees",
+        params,
+        getContractByCodeHash
+      );
+    },
+    depositChainFees: async (
+      params: PoapCollectionTypes.CallMethodParams<"depositChainFees">
+    ): Promise<PoapCollectionTypes.CallMethodResult<"depositChainFees">> => {
+      return callMethod(
+        PoapCollection,
+        this,
+        "depositChainFees",
+        params,
+        getContractByCodeHash
+      );
+    },
     getPoapPrice: async (
       params?: PoapCollectionTypes.CallMethodParams<"getPoapPrice">
     ): Promise<PoapCollectionTypes.CallMethodResult<"getPoapPrice">> => {
@@ -831,6 +895,30 @@ export class PoapCollectionInstance extends ContractInstance {
         PoapCollection,
         this,
         "withdrawChainFees",
+        params
+      );
+    },
+    depositStorageFees: async (
+      params: PoapCollectionTypes.SignExecuteMethodParams<"depositStorageFees">
+    ): Promise<
+      PoapCollectionTypes.SignExecuteMethodResult<"depositStorageFees">
+    > => {
+      return signExecuteMethod(
+        PoapCollection,
+        this,
+        "depositStorageFees",
+        params
+      );
+    },
+    depositChainFees: async (
+      params: PoapCollectionTypes.SignExecuteMethodParams<"depositChainFees">
+    ): Promise<
+      PoapCollectionTypes.SignExecuteMethodResult<"depositChainFees">
+    > => {
+      return signExecuteMethod(
+        PoapCollection,
+        this,
+        "depositChainFees",
         params
       );
     },

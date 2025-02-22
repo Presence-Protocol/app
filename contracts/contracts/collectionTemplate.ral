@@ -198,10 +198,10 @@ Contract PoapCollection(
     pub fn withdrawStorageFees(amount: U256) -> () {
         checkCaller!(callerAddress!() == organizer, ErrorCodes.InvalidCaller)
         assert!(amount <= amountForStorageFees, ErrorCodes.NotEnoughAlph)
-
+        
         transferTokenFromSelf!(organizer, ALPH, amount)
 
-        amountPoapFees = amountPoapFees - amount
+        amountForStorageFees = amountForStorageFees - amount
     }
 
     @using(assetsInContract = true, updateFields = true)
@@ -212,6 +212,25 @@ Contract PoapCollection(
         transferTokenFromSelf!(organizer, ALPH, amount)
 
         amountForChainFees = amountForChainFees - amount
+    }
+
+    @using(assetsInContract = true, updateFields = true, preapprovedAssets = true)
+    pub fn depositStorageFees(amount: U256) -> () {
+        checkCaller!(callerAddress!() == organizer, ErrorCodes.InvalidCaller)
+        assert!(amount >= minimalContractDeposit!(), ErrorCodes.NotEnoughAlph)
+
+        transferTokenToSelf!(organizer, ALPH, amount)
+
+        amountForStorageFees = amountForStorageFees + amount
+    }
+
+    @using(assetsInContract = true, updateFields = true, preapprovedAssets = true)
+    pub fn depositChainFees(amount: U256) -> () {
+        checkCaller!(callerAddress!() == organizer, ErrorCodes.InvalidCaller)
+
+        transferTokenToSelf!(organizer, ALPH, amount)
+
+        amountForChainFees = amountForChainFees + amount
     }
 
     pub fn getPoapPrice() -> (U256,ByteVec) {

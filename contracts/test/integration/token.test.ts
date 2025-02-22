@@ -5,6 +5,7 @@ import { PoapFactory, PoapCollection, PoapCollectionInstance, PoapNFT } from '..
 import { PrivateKeyWallet } from '@alephium/web3-wallet'
 import { alphBalanceOf, balanceOf, getCollectionPath, getRandomSigner, loadSvg, transferAlphTo, transferTokenTo } from '../utils'
 import exp from 'constants'
+import { sign } from 'crypto'
 
 describe('integration tests', () => {
   const defaultGroup = 0
@@ -1087,14 +1088,6 @@ describe('integration tests', () => {
     expect((await collection.view.totalSupply()).returns).toBe(1n)
     expect((await alphBalanceOf(collection.address))).toBe(ONE_ALPH + MINIMAL_CONTRACT_DEPOSIT)
 
-    /*await expectAssertionError( factory.transact.mintPoap({
-      signer: minter,
-      attoAlphAmount:  MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT,
-      args: {
-        collection: collection.contractId
-      }
-    }), addressFromContractId(collection.contractId), 9)*/
-
     await collection.transact.claimFunds({
       args: {
         amountToClaim: ONE_ALPH
@@ -1242,18 +1235,6 @@ describe('integration tests', () => {
     })
 
     expect(number256ToBigint((await balanceOf(collection.address, customTokenA.contractId)).amount)).toBe(0n)
-
-    /*await expectAssertionError( factory.transact.mintPoap({
-      signer: minter,
-      attoAlphAmount: ONE_ALPH + MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT,
-      tokens: [{
-        id: customTokenA.contractId,
-        amount: 1n
-      }],
-      args: {
-        collection: collection.contractId
-      }
-    }), addressFromContractId(collection.contractId), 9)*/
 
    
   }, 20000)
@@ -2352,7 +2333,220 @@ describe('integration tests', () => {
 
     expect((await poap.view.getTraits()).returns.length).toBe(8)
 
+  }, 20000) 
+
+  it('Deposit withdraw gas + storage fees', async () => {
+    const signer = await testNodeWallet()
+    const deployments = await deployToDevnet()
+    const factory = deployments.getInstance(PoapFactory)
+
+    expect(factory).toBeDefined()
+
+    if (!factory) {
+      throw new Error('Factory is undefined')
+    }
+
+    await factory.transact.mintNewCollection({
+      args: {
+        eventImage: stringToHex('https://arweave.net/Z1HAdT_PGnxPLct4-u7l1Zl_h4DNdxzKev7tCDAEflc'),
+        maxSupply: 10n,
+        mintStartAt: 1735823531000n,
+        mintEndAt: 1893595576000n,
+        eventName: stringToHex('Test 1'),
+        description: stringToHex('First poap test'),
+        location: stringToHex('Online'),
+        eventStartAt: 1735823531000n,
+        eventEndAt: 1735823531000n,
+        totalSupply: 0n,
+        isPublic: false,
+        oneMintPerAddress: false,
+        isBurnable: false,
+        amountForStorageFees: 10n * ONE_ALPH,
+        poapPrice: 0n,
+        tokenIdPoap: ALPH_TOKEN_ID,
+        amountPoapFees: 0n,
+        tokenIdAirdrop: ALPH_TOKEN_ID,
+        amountAirdropPerUser: 0n,
+        amountAirdrop: 0n,
+        airdropWhenHasParticipated: false,
+        amountForChainFees: 0n
+      },
+      signer: signer,
+      attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT + 10n * ONE_ALPH
+    })
+
+    // Check that event is emitted
+    const { events } = await web3
+      .getCurrentNodeProvider()
+      .events.getEventsContractContractaddress(factory.address, { start: 0 })
+    expect(events.length).toEqual(1)
+
+    const creationEvent = events[0]
+    const poapCollectionMinted = creationEvent.fields[0].value as string
+
+    const collection = PoapCollection.at(addressFromContractId(poapCollectionMinted))
+    let collectionState = await collection.fetchState()
+    expect((await alphBalanceOf(collection.address))).toEqual(collectionState.fields.amountForStorageFees + MINIMAL_CONTRACT_DEPOSIT)
+    
+    await collection.transact.mint({
+      signer: minter,
+      attoAlphAmount: DUST_AMOUNT,
+      args: {
+        callerAddr: minter.address
+      }
+    })
+
+    expect((await collection.view.totalSupply()).returns).toBe(1n)
+
+    await factory.transact.mintPoap({
+      args: {
+        collection: collection.contractId,
+      },
+      signer: minter,
+      attoAlphAmount: DUST_AMOUNT
+    })
+
+    collectionState = await collection.fetchState()
+    expect(collectionState.fields.amountForStorageFees).toBe(10n * ONE_ALPH - 2n * 10n **17n)
+    expect((await alphBalanceOf(collection.address))).toEqual(MINIMAL_CONTRACT_DEPOSIT + 10n * ONE_ALPH - 2n * 10n **17n)
+
+    await collection.transact.withdrawStorageFees({
+      args: {
+        amount: collectionState.fields.amountForStorageFees
+      },
+      signer: signer
+    })
+
+    collectionState = await collection.fetchState()
+    expect(collectionState.fields.amountForStorageFees).toBe(0n)
+
+    await collection.transact.depositStorageFees({
+      args: {
+        amount: 10n * ONE_ALPH
+      },
+      attoAlphAmount: 10n * ONE_ALPH,
+      signer: signer
+    })
+
+    collectionState = await collection.fetchState()
+    expect(collectionState.fields.amountForStorageFees).toBe(10n * ONE_ALPH)
+    expect((await alphBalanceOf(collection.address))).toEqual(10n * ONE_ALPH + MINIMAL_CONTRACT_DEPOSIT)
+
+
+    expect((await collection.view.totalSupply()).returns).toBe(2n)
+
+
+    await collection.transact.depositChainFees({
+      args: {
+        amount: 5n * ONE_ALPH
+      },
+      attoAlphAmount: 5n * ONE_ALPH,
+      signer: signer
+    })
+
+    collectionState = await collection.fetchState()
+    expect(collectionState.fields.amountForStorageFees).toBe(10n * ONE_ALPH)
+    expect(collectionState.fields.amountForChainFees).toBe(5n * ONE_ALPH)
+    expect((await alphBalanceOf(collection.address))).toEqual(5n * ONE_ALPH + 10n * ONE_ALPH + MINIMAL_CONTRACT_DEPOSIT)
+
+    await collection.transact.mint({
+      signer: minter,
+      attoAlphAmount: 0n,
+      args: {
+        callerAddr: minter.address
+      }
+    })
+
+    await factory.transact.mintPoap({
+      args: {
+        collection: collection.contractId,
+      },
+      signer: minter,
+      attoAlphAmount: 0n
+    })
+
+
+    collectionState = await collection.fetchState()
+    expect(collectionState.fields.amountForStorageFees).toBe(10n * ONE_ALPH - 2n * 10n **17n)
+    expect(collectionState.fields.amountForChainFees).toBeLessThan(5n * ONE_ALPH)
+
+    expectAssertionError(
+      collection.transact.withdrawChainFees({
+        args: {
+          amount: 10n * ONE_ALPH
+        },
+        signer: minter,
+      }), collection.address, 7)
+
+      expectAssertionError(
+        collection.transact.withdrawChainFees({
+          args: {
+            amount: 11n * ONE_ALPH
+          },
+          signer: signer,
+        }), collection.address, 9)
+
+        expectAssertionError(
+          collection.transact.withdrawStorageFees({
+            args: {
+              amount: 11n * ONE_ALPH
+            },
+            signer: signer,
+          }), collection.address, 9)
+
+    // get Poap    
+    const poap = PoapNFT.at(addressFromContractId((await collection.view.nftByIndex({ args: { index: 0n } })).returns))
+    const poapState = await poap.fetchState()
+    expect(hexToString(poapState.fields.eventName)).toBe('Test 1')
+
+    expect((await poap.view.getTraits()).returns.length).toBe(8)
+
+    await collection.transact.withdrawChainFees({
+      args: {
+        amount: collectionState.fields.amountForChainFees
+      },
+      attoAlphAmount: collectionState.fields.amountForChainFees,
+      signer: signer
+    })
+
+    await collection.transact.withdrawStorageFees({
+      args: {
+        amount: collectionState.fields.amountForStorageFees
+      },
+      attoAlphAmount: collectionState.fields.amountForStorageFees,
+      signer: signer
+    })
+
+    collectionState = await collection.fetchState()
+    expect(collectionState.fields.amountForChainFees).toBe(0n)
+    expect(collectionState.fields.amountForStorageFees).toBe(0n)
+    expect((await alphBalanceOf(collection.address))).toEqual(MINIMAL_CONTRACT_DEPOSIT)
+
+    expect((await collection.view.totalSupply()).returns).toBe(4n)
+
+    collectionState = await collection.fetchState()
+
+    await collection.transact.mint({
+      signer: minter,
+      attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT,
+      args: {
+        callerAddr: minter.address
+      }
+    })
+
+    await factory.transact.mintPoap({
+      args: {
+        collection: collection.contractId,
+      },
+      signer: minter,
+      attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT
+    })
+
+    expect((await collection.view.totalSupply()).returns).toBe(6n)
+
+
   }, 20000)
+
 
 })
 
