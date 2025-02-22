@@ -94,6 +94,10 @@ Contract PoapNFT(
     return hasParticipated
   }
 
+  pub fn getMinter() -> Address {
+    return minter
+  }
+
   @using(preapprovedAssets = true, assetsInContract = true, checkExternalCaller = false)
   pub fn burn() -> () {
     assert!(isBurnable, ErrorCodes.NotBurnable)
