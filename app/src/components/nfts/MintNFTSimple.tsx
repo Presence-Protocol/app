@@ -4,7 +4,7 @@ import { addressFromContractId, contractIdFromAddress, DUST_AMOUNT, hexToString,
 import { useWallet } from '@alephium/web3-react';
 import { PoapFactory, PoapCollection, PoapFactoryTypes, PoapFactoryInstance, PoapCollectionInstance } from 'my-contracts';
 import { loadDeployments } from 'my-contracts/deployments';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import Image from 'next/image';
 import MintSuccessModal from '../Modals/MintSuccessModal';
 import Confetti from 'react-confetti'
@@ -68,6 +68,14 @@ export default function MintNFTSimple() {
     amountForChainFees: 0n,
     oneMintPerAddress: false
   });
+
+  const mintEventsRef = useRef<HTMLDivElement | null>(null);
+
+  const scrollToMintEvents = () => {
+    if (mintEventsRef.current) {
+      mintEventsRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
 
   useEffect(() => {
     // console.log('UseEffect running');
@@ -461,6 +469,13 @@ export default function MintNFTSimple() {
                     <div className="text-xs text-gray-500 mt-5">
                       <>Minting available until {formatDate(nftCollection.mintEndDate)}</>
                     </div>
+
+                    <p
+                      onClick={scrollToMintEvents} 
+                      className="mt-6 text-black text-sm font-semibold text-center cursor-pointer hover:text-lila-800"
+                    >
+                      View All Mints &darr;
+                    </p>
                   </div>
                 </>
               )}
@@ -470,7 +485,7 @@ export default function MintNFTSimple() {
 
         {/* Mint Events Table */}
         {mintEvents.length > 0 && (
-          <div className="p-8 lg:p-20 max-w-3xl mx-auto">
+          <div ref={mintEventsRef} className="p-8 lg:p-20 max-w-3xl mx-auto">
             <h3 className="text-xl font-medium leading-6 text-black text-left flex items-center justify-left gap-2">
               <div className="relative flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-lila-600 opacity-75"></span>

@@ -23,8 +23,21 @@ export default {
         'spin-reverse': 'spin-reverse 1s linear infinite',
         scan: 'scan 2s ease-in-out infinite',
         'card-appear': 'cardAppear 0.5s ease-out',
+        bounce: 'bounce 4s ease-in-out infinite',
       },
       keyframes: {
+        bounce: {
+          '0%, 100%': { transform: 'translateY(0)' },
+          '10%': { transform: 'translateY(-3px)' },
+          '20%': { transform: 'translateY(0)' },
+          '30%': { transform: 'translateY(-6px)' },
+          '40%': { transform: 'translateY(0)' },
+          '50%': { transform: 'translateY(-12px)' },
+          '60%': { transform: 'translateY(0)' },
+          '70%': { transform: 'translateY(-8px)' },
+          '80%': { transform: 'translateY(0)' },
+          '90%': { transform: 'translateY(-4px)' },
+        },
         marqueeLeft: {
           '0%': { transform: 'translateX(0)' },
           '100%': { transform: 'translateX(-33.33%)' },
