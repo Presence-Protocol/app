@@ -25,6 +25,7 @@ interface NFTCollection {
   currentSupply: bigint;
   isPublic: boolean;
   amountForStorageFees: bigint;
+  amountForChainFees: bigint;
   oneMintPerAddress: boolean;
 }
 
@@ -64,6 +65,7 @@ export default function MintNFTSimple() {
     currentSupply: BigInt(0),
     isPublic: false,
     amountForStorageFees: 0n,
+    amountForChainFees: 0n,
     oneMintPerAddress: false
   });
 
@@ -116,6 +118,7 @@ export default function MintNFTSimple() {
             eventStartDate: collectionMetadata.fields.eventStartAt,
             eventEndDate: collectionMetadata.fields.eventEndAt,
             amountForStorageFees: collectionMetadata.fields.amountForStorageFees,
+            amountForChainFees: collectionMetadata.fields.amountForChainFees,
             oneMintPerAddress: collectionMetadata.fields.oneMintPerAddress
           });
           setIsLoading(false);
@@ -132,10 +135,35 @@ export default function MintNFTSimple() {
     }
   }, [contractId]);
 
+  const calculateFinalAmount = (chainFees: bigint, storageFees: bigint): bigint => {
+    // Case 1: Chain fees set and storage fees >= minimum deposit
+    if (chainFees > 0n && storageFees >= MINIMAL_CONTRACT_DEPOSIT) {
+      return 0n;
+    }
+    
+    // Case 2: Storage fees >= minimum deposit but no chain fees
+    if (storageFees >= MINIMAL_CONTRACT_DEPOSIT && chainFees <= 0n) {
+      return DUST_AMOUNT;
+    }
+    
+    // Case 3: Storage fees present but below minimum
+    if (chainFees > 0n && storageFees < MINIMAL_CONTRACT_DEPOSIT) {
+      return MINIMAL_CONTRACT_DEPOSIT;
+    }
+  
+    // Default case: Use minimum deposit + dust
+    return MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT;
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsMinting(true);
 
+    const finalAttoAmount = calculateFinalAmount(
+      nftCollection.amountForChainFees, 
+      nftCollection.amountForStorageFees
+    );
+    console.log('Final amount:', finalAttoAmount);
     try {
       if (!signer) {
         throw new Error('Signer not available')
@@ -152,7 +180,7 @@ export default function MintNFTSimple() {
           collection: poapCollection.contractId,
         },
         signer: signer,
-        attoAlphAmount: nftCollection.amountForStorageFees > MINIMAL_CONTRACT_DEPOSIT ? DUST_AMOUNT : MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT
+        attoAlphAmount: finalAttoAmount
       });
 
       await waitForTxConfirmation(result.txId, 1, 5*1000);

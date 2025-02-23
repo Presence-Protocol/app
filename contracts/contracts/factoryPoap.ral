@@ -19,6 +19,7 @@ Contract PoapFactory(
         tokenIdPoap: ByteVec,
         tokenIdAirdrop: ByteVec,
         amountAirdropPerUser: U256,
+        airdropWhenHasParticipated: Bool,
 
         //event properties
         eventImage: ByteVec,
@@ -31,6 +32,7 @@ Contract PoapFactory(
         isBurnable: Bool,
 
         amountForStorageFees: U256,
+        amountForChainFees: U256,
         amountPoapFees: U256,
         totalSupply: U256,
         amountAirdrop: U256) -> (ByteVec){
@@ -46,6 +48,7 @@ Contract PoapFactory(
                 tokenIdPoap,
                 tokenIdAirdrop,
                 amountAirdropPerUser,
+                airdropWhenHasParticipated,
                 eventImage,
                 eventName,
                 description,
@@ -56,6 +59,7 @@ Contract PoapFactory(
                 isPublic,
                 isBurnable,
                 amountForStorageFees,
+                amountForChainFees,
                 amountPoapFees,
                 totalSupply,
                 amountAirdrop    
@@ -65,6 +69,10 @@ Contract PoapFactory(
             if(amountForStorageFees > 0){
                 assert!(amountForStorageFees >= minimalContractDeposit!(), ErrorCodes.NotEnoughAlph)
                 amountForStorageFeesInContract = amountForStorageFeesInContract + amountForStorageFees
+            }
+            
+            if(amountForChainFees > 0){
+                amountForStorageFeesInContract = amountForStorageFeesInContract + amountForChainFees
             }
 
             let contractId = copyCreateContract!{caller -> ALPH: amountForStorageFeesInContract, tokenIdAirdrop: amountAirdrop}(    
@@ -100,12 +108,19 @@ Contract PoapFactory(
 
     }
 
+    @using(preapprovedAssets = true)
     pub fn setParticipatedPresence(collection: PoapCollection, nftIndex: U256, presenceAddressValidate: Address) -> (){
         let caller = callerAddress!()
 
         let organizer = collection.getOrganizer()
         checkCaller!(callerAddress!() == organizer, ErrorCodes.InvalidCaller)
-        collection.setParticipatedPresence(caller, nftIndex, presenceAddressValidate)
+
+        let mut amountDust = 0
+        if(collection.getAirdropWhenHasParticipated()){
+            amountDust = dustAmount!()
+        }
+        
+        collection.setParticipatedPresence{organizer -> ALPH: amountDust}(caller, nftIndex, presenceAddressValidate)
 
         emit PoapParticipatedIn(caller, collection, nftIndex, presenceAddressValidate)
     }

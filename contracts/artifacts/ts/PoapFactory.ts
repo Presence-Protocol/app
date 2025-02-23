@@ -80,6 +80,7 @@ export namespace PoapFactoryTypes {
         tokenIdPoap: HexString;
         tokenIdAirdrop: HexString;
         amountAirdropPerUser: bigint;
+        airdropWhenHasParticipated: boolean;
         eventImage: HexString;
         eventName: HexString;
         description: HexString;
@@ -89,6 +90,7 @@ export namespace PoapFactoryTypes {
         isPublic: boolean;
         isBurnable: boolean;
         amountForStorageFees: bigint;
+        amountForChainFees: bigint;
         amountPoapFees: bigint;
         totalSupply: bigint;
         amountAirdrop: bigint;
@@ -139,6 +141,7 @@ export namespace PoapFactoryTypes {
         tokenIdPoap: HexString;
         tokenIdAirdrop: HexString;
         amountAirdropPerUser: bigint;
+        airdropWhenHasParticipated: boolean;
         eventImage: HexString;
         eventName: HexString;
         description: HexString;
@@ -148,6 +151,7 @@ export namespace PoapFactoryTypes {
         isPublic: boolean;
         isBurnable: boolean;
         amountForStorageFees: bigint;
+        amountForChainFees: bigint;
         amountPoapFees: bigint;
         totalSupply: bigint;
         amountAirdrop: bigint;
@@ -208,6 +212,7 @@ class Factory extends ContractFactory<
           tokenIdPoap: HexString;
           tokenIdAirdrop: HexString;
           amountAirdropPerUser: bigint;
+          airdropWhenHasParticipated: boolean;
           eventImage: HexString;
           eventName: HexString;
           description: HexString;
@@ -217,6 +222,7 @@ class Factory extends ContractFactory<
           isPublic: boolean;
           isBurnable: boolean;
           amountForStorageFees: bigint;
+          amountForChainFees: bigint;
           amountPoapFees: bigint;
           totalSupply: bigint;
           amountAirdrop: bigint;
@@ -284,7 +290,7 @@ export const PoapFactory = new Factory(
   Contract.fromJson(
     PoapFactoryContractJson,
     "",
-    "258dd01727a87207573a12e33d66d3b49091da38a0c1b56032828a62cec70414",
+    "c03d29d7124c5f83df84178a7226d87a732dfc71a0979bd36e563bec12c0c7a9",
     AllStructs
   )
 );
