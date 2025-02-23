@@ -87,7 +87,7 @@ export default function HeroThree() {
   ];
 
   return (
-    <div className="bg-gradient-to-r from-lila-200 via-lila-300 to-lila-400 dark:bg-slate-900 ">
+    <div className="bg-lila-300 dark:bg-slate-900 ">
       <main>
         <div className="relative isolate">
           <div className="overflow-hidden">
@@ -140,7 +140,7 @@ export default function HeroThree() {
                           }}
                         >
                           <div className="relative h-auto">
-                            <div className="aspect-square rounded-lg box-border border-2 border-foreground bg-lila-300 dark:bg-gradient-to-t dark:from-primary dark:to-secondary p-2 h-full transition-colors duration-200" />
+                            <div className="aspect-square rounded-lg box-border border-2 border-foreground bg-lila-400 dark:bg-gradient-to-t dark:from-primary dark:to-secondary p-2 h-full transition-colors duration-200" />
                             <img
                               src={card.image}
                               alt="Feature blob"

@@ -41,15 +41,15 @@ const CtaOne = () => {
 
   return (
     <section>
-      <div className="items-center w-full mx-auto bg-black p-8 lg:p-20 2xl:px-0 2xl:border-x-2 border-black">
+      <div className="items-center w-full mx-auto bg-black p-8 py-16 lg:p-20 2xl:px-0 2xl:border-x-2 border-black">
         <div className="items-center gap-12 h-full">
           <div className="text-center max-w-3xl mx-auto">
             <Image
               className="mx-auto justify-center shadow shadow-white rounded-full"
               src="/images/blob5.svg"
               alt="Decorative blob"
-              width={128}
-              height={128}
+              width={80}
+              height={80}
             />
 
             <p className="text-3xl lg:text-5xl mt-8 tracking-tight font-medium text-white">
