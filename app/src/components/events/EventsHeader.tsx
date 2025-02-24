@@ -46,17 +46,17 @@ export default function EventsHeader({ totalEvents, last24Hours }: EventsHeaderP
            
             
             <div className="mt-8 flex justify-center gap-6">
-              <button className="bg-white  border-2 border-black shadow shadow-black rounded-xl p-6 text-center">
+              <button className="bg-white cursor-default border-2 border-black shadow shadow-black rounded-xl p-6 text-center">
                 <div className="text-3xl font-bold text-black">{totalEvents}</div>
                 <div className="text-sm text-gray-600 mt-1">Total Events</div>
               </button>
               
-              <button className="bg-white border-2 border-black shadow  shadow-black rounded-xl p-6 text-center">
+              <button className="bg-white cursor-default border-2 border-black shadow  shadow-black rounded-xl p-6 text-center">
                 <div className="text-3xl font-bold text-black">{last24Hours}</div>
                 <div className="text-sm text-gray-600 mt-1">Last 24h</div>
               </button>
               
-              <button className="bg-white border-2 border-black shadow shadow-black rounded-xl p-6 text-center">
+              <button className="bg-white cursor-default border-2 border-black shadow shadow-black rounded-xl p-6 text-center">
                 <div className="text-3xl font-bold text-black">
                   {((last24Hours / totalEvents) * 100).toFixed(1)}%
                 </div>

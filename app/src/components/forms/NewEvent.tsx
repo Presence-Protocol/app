@@ -16,8 +16,10 @@ import PoapFeesInfo from '../Modals/PoapFeesInfo';
 import TokenIdInfo from '../Modals/TokenIdInfo';
 import PresencePriceInfo from '../Modals/PresencePriceInfo';
 import BurnableInfo from '../Modals/BurnableInfo';
+import GasFeesInfo from '../Modals/GasFeesInfo';
 import Tooltip from '../ui/Tooltip';
 import Snackbar from '../ui/Snackbar';
+import TemplateSelect from './TemplateSelect';
 const MAX_TITLE_LENGTH = 50;
 const MAX_DESCRIPTION_LENGTH = 180;
 
@@ -66,7 +68,16 @@ export default function NewEvent() {
   const [isTokenIdInfoOpen, setIsTokenIdInfoOpen] = useState(false);
   const [isPresencePriceInfoOpen, setIsPresencePriceInfoOpen] = useState(false);
   const [isBurnableInfoOpen, setIsBurnableInfoOpen] = useState(false);
+  const [isGasFeesInfoOpen, setIsGasFeesInfoOpen] = useState(false);
   const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
+  const [selectedTemplate, setSelectedTemplate] = useState<'custom' | 'template1' | 'template2'>('custom');
+  const [isTemplateMenuOpen, setIsTemplateMenuOpen] = useState(false);
+
+  const handleTemplateSelect = (template: 'custom' | 'template1' | 'template2') => {
+    setSelectedTemplate(template);
+    setIsTemplateMenuOpen(false);
+    // Add logic to apply the selected template
+  };
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -600,7 +611,7 @@ export default function NewEvent() {
               <label className="text-sm font-medium text-black">Gas Fees</label>
               <button
                 type="button"
-                onClick={() => setIsStorageFeesInfoOpen(true)}
+                onClick={() => setIsGasFeesInfoOpen(true)}
                 className="ml-2"
               >
                 <svg
@@ -621,14 +632,32 @@ export default function NewEvent() {
               </button>
             </div>
             <p className="text-xs text-gray-500 mb-2">Pay gas fees on behalf of the users (in ALPH)</p>
-            <input
-              type="number"
-              min="0"
-              step="0.1"
-              value={Number(chainFees) / 10**18}
-              onChange={(e) => setChainFees(BigInt(Math.floor(Number(e.target.value) * 10**18)))}
-              className="block w-full px-3 py-3 text-xl text-black border-2 border-black appearance-none placeholder-black focus:border-black focus:bg-lila-500 focus:outline-none focus:ring-black sm:text-sm rounded-2xl"
-            />
+            <div className="relative">
+              <input
+                type="number"
+                min="0"
+                step="0.1"
+                value={Number(chainFees) / 10**18}
+                onChange={(e) => setChainFees(BigInt(Math.floor(Number(e.target.value) * 10**18)))}
+                className="block w-full px-3 py-3 text-xl text-black border-2 border-black appearance-none placeholder-black focus:border-black focus:bg-lila-500 focus:outline-none focus:ring-black sm:text-sm rounded-2xl"
+              />
+              <div className="absolute right-2 top-1/2 -translate-y-1/2 flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => setChainFees(BigInt(Math.floor(0.5 * 10**18)))}
+                  className="px-2 py-1 text-xs font-medium text-black bg-white border-2 border-black rounded-lg hover:bg-lila-500"
+                >
+                  50%
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setChainFees(BigInt(Math.floor(1 * 10**18)))}
+                  className="px-2 py-1 text-xs font-medium text-black bg-white border-2 border-black rounded-lg hover:bg-lila-500"
+                >
+                  Max
+                </button>
+              </div>
+            </div>
           </div>
 
          {/* <div className="p-4 bg-white">
@@ -715,6 +744,7 @@ export default function NewEvent() {
   return (
     <>
       <section className="bg-white">
+
         <div className="mx-auto mt-">
           <div className="relative justify-center max-h-[calc(100vh-82px)] lg:max-h-[calc(100vh-82px)] md:max-h-[calc(100vh-58px)] lg:px-0 md:px-12 grid lg:grid-cols-5 h-screen lg:divide-x-2 divide-black">
             <div className="hidden bg-lila-500 lg:col-span-2 lg:block lg:flex-1 lg:relative sm:contents">
@@ -844,6 +874,19 @@ export default function NewEvent() {
                   <p className="text-sm text-gray-500 mb-6">
                     Create a New Event & Share your Presence
                   </p>
+
+                  <div className="space-y-2">
+                      <div className="flex items-center text-left justify-between p-4 gap-4">
+                        <div>
+                          <h3 className="text-sm font-medium text-black">Select a Template</h3>
+                          <p className="text-xs text-gray-500">Templates are pre-defined designs that can kickstart your Presence Event</p>
+                        </div>
+                        <div className="items-center inline-flex my-auto">
+                        <TemplateSelect selectedTemplate={selectedTemplate} onSelect={handleTemplateSelect} />
+
+                        </div>
+                      </div>
+                      </div>
          
 
                   <form className="mt-6" onSubmit={handleSubmit}>
@@ -1203,6 +1246,10 @@ export default function NewEvent() {
         <BurnableInfo 
           isOpen={isBurnableInfoOpen}
           onClose={() => setIsBurnableInfoOpen(false)}
+        />
+        <GasFeesInfo 
+          isOpen={isGasFeesInfoOpen}
+          onClose={() => setIsGasFeesInfoOpen(false)}
         />
         <Snackbar 
           message="Link copied to clipboard!" 
