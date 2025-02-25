@@ -55,7 +55,7 @@ export default function MintNFTSimple() {
     title: '00',
     description: '00',
     image: null,
-    price: 0.1, 
+    price: 0.1,
     maxSupply: BigInt(0),
     mintEndDate: BigInt(0),
     mintStartDate: BigInt(0),
@@ -80,7 +80,7 @@ export default function MintNFTSimple() {
   useEffect(() => {
     // console.log('UseEffect running');
     // Setup web3
-    
+
 
     if (typeof window !== 'undefined') {
       const hash = window.location.hash;
@@ -105,14 +105,14 @@ export default function MintNFTSimple() {
       const collectionAddress = contractId;
       setIsLoading(true);
       setError(null);
-      
+
       const collection = PoapCollection.at(collectionAddress);
       setPoapCollection(collection);
-      
+
       collection.fetchState()
         .then((collectionMetadata) => {
           console.log(collectionMetadata)
-          setNftCollection({ 
+          setNftCollection({
             title: hexToString(collectionMetadata.fields.eventName),
             description: hexToString(collectionMetadata.fields.description),
             image: hexToString(collectionMetadata.fields.eventImage),
@@ -148,17 +148,17 @@ export default function MintNFTSimple() {
     if (chainFees > 0n && storageFees >= MINIMAL_CONTRACT_DEPOSIT) {
       return 0n;
     }
-    
+
     // Case 2: Storage fees >= minimum deposit but no chain fees
     if (storageFees >= MINIMAL_CONTRACT_DEPOSIT && chainFees <= 0n) {
       return DUST_AMOUNT;
     }
-    
+
     // Case 3: Storage fees present but below minimum
     if (chainFees > 0n && storageFees < MINIMAL_CONTRACT_DEPOSIT) {
       return MINIMAL_CONTRACT_DEPOSIT;
     }
-  
+
     // Default case: Use minimum deposit + dust
     return MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT;
   }
@@ -168,7 +168,7 @@ export default function MintNFTSimple() {
     setIsMinting(true);
 
     const finalAttoAmount = calculateFinalAmount(
-      nftCollection.amountForChainFees, 
+      nftCollection.amountForChainFees,
       nftCollection.amountForStorageFees
     );
     console.log('Final amount:', finalAttoAmount);
@@ -191,14 +191,14 @@ export default function MintNFTSimple() {
         attoAlphAmount: finalAttoAmount
       });
 
-      await waitForTxConfirmation(result.txId, 1, 5*1000);
+      await waitForTxConfirmation(result.txId, 1, 5 * 1000);
       setShowConfetti(true)
       setIsMintSuccessOpen(true);
       setIsMinting(false);
     } catch (error: any) {
       console.error('Error minting Presence:', error);
       setIsMinting(false);
-      
+
       // Check for already minted error
       if (error.message?.includes('Assertion Failed in Contract') && error.message?.includes('Error Code: 6')) {
         setIsAlreadyMintedOpen(true);
@@ -219,12 +219,12 @@ export default function MintNFTSimple() {
         console.log('Minted event:', event);
         if (isSubscribed) {
           setMintEvents(prev => {
-            const exists = prev.some(e => 
-              e.caller === event.fields.caller && 
+            const exists = prev.some(e =>
+              e.caller === event.fields.caller &&
               e.nftIndex === event.fields.nftIndex
             );
             if (exists) return prev;
-            
+
             return [...prev, {
               caller: event.fields.caller,
               nftIndex: event.fields.nftIndex,
@@ -317,11 +317,11 @@ export default function MintNFTSimple() {
       <div className="mx-auto bg-lila-200">
         <div className="relative justify-center overflow-hidden px-4 pb-8 ">
           <div className="w-full flex flex-col items-center justify-center min-h-[calc(100vh-82px)]">
-            <div className="w-full max-w-lg p-8 text-center">
+            <div className="w-full max-w-xl p-8 text-center">
               {isLoading ? (
                 <div className="flex items-center justify-center">
                   <div className="animate-spin">
-                    <Image 
+                    <Image
                       src="/images/blob5.svg"
                       alt="Loading..."
                       width={60}
@@ -334,31 +334,42 @@ export default function MintNFTSimple() {
               ) : error ? (
                 <div className="bg-red-800 p-4 rounded-lg text-white border flex items-center justify-center gap-2  ">
                   <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="icon size-6 icon-tabler icon-tabler-alert-triangle text-white mr-1"
-                            viewBox="0 0 24 24"
-                            strokeWidth="2"
-                            stroke="currentColor"
-                            fill="none"
-                            strokeLinecap="round"
-                          >
-                            <path stroke="none" d="M0 0h24v24H0z" fill="none"
-                            ></path>
-                            <path d="M12 9v4"></path>
-                            <path
-                              d="M10.363 3.591l-8.106 13.534a1.914 1.914 0 0 0 1.636 2.871h16.214a1.914 1.914 0 0 0 1.636 -2.87l-8.106 -13.536a1.914 1.914 0 0 0 -3.274 0z"
-                            ></path>
-                            <path d="M12 16h.01"></path>
-                          </svg>{error}
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="icon size-6 icon-tabler icon-tabler-alert-triangle text-white mr-1"
+                    viewBox="0 0 24 24"
+                    strokeWidth="2"
+                    stroke="currentColor"
+                    fill="none"
+                    strokeLinecap="round"
+                  >
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none"
+                    ></path>
+                    <path d="M12 9v4"></path>
+                    <path
+                      d="M10.363 3.591l-8.106 13.534a1.914 1.914 0 0 0 1.636 2.871h16.214a1.914 1.914 0 0 0 1.636 -2.87l-8.106 -13.536a1.914 1.914 0 0 0 -3.274 0z"
+                    ></path>
+                    <path d="M12 16h.01"></path>
+                  </svg>{error}
                 </div>
               ) : (
                 <>
-                  <div className="w-64 h-64 mx-auto rounded-2xl border-2 border-black shadow bg-white">
-                    <img 
-                      src={nftCollection.image ?? undefined}
-                      alt={nftCollection.title} 
-                      className="w-full h-full object-cover rounded-xl"
-                    />
+                  <div className="w-64 h-64 mx-auto rounded-2xl border-2 border-black shadow bg-white nft-image">
+                    {nftCollection.image ? (
+                      <img
+                        src={nftCollection.image}
+                        alt={nftCollection.title}
+                        className="w-full h-full object-cover rounded-xl"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex flex-col items-center justify-center p-4 rounded-xl bg-gradient-to-br from-lila-100 to-lila-300">
+                        <h4 className="text-xl font-semibold text-black text-center mb-2">{nftCollection.title}</h4>
+                        {nftCollection.eventStartDate && (
+                          <p className="text-sm text-gray-600 text-center">
+                            {formatDate(nftCollection.eventStartDate)}
+                          </p>
+                        )}
+                      </div>
+                    )}
                   </div>
                   <h3 className="mt-6 text-2xl font-medium text-black">{nftCollection.title}</h3>
                   <p className="mt-2 text-sm text-black">{nftCollection.description}</p>
@@ -388,19 +399,28 @@ export default function MintNFTSimple() {
                         <div className="flex items-center gap-2">
                           <span className="text-gray-600">{nftCollection.location}</span>
                           {nftCollection.location && <span className="text-gray-400 hidden sm:inline">•</span>}
-                          <span className="text-gray-600">
-                            {nftCollection.isPublic ? 'Public Event' : 'Private Event'}
-                          </span>
+                          <div className="flex items-center gap-2">
+                            <span className="text-gray-600">
+                              {formatDate(nftCollection.eventStartDate)}
+                            </span>
+                          </div>
+                         
                         </div>
+
+
                         {/* <div className="flex items-center gap-2">
                           <span className="text-gray-400 hidden sm:inline">•</span>
                           <span className="text-gray-600">
                             {formatDate(nftCollection.eventStartDate)} - {formatDate(nftCollection.eventEndDate)}
                           </span>
                         </div> */}
-                                                  <span className="text-gray-400 hidden sm:inline">•</span>
+                        <span className="text-gray-400 hidden sm:inline">•</span>
 
-                        {countdown && (
+                        <span className="text-gray-600">
+                            {nftCollection.isPublic ? 'Public Event' : 'Private Event'}
+                          </span>
+
+                        {/* {countdown && (
                           <div className="flex items-center gap-2">
                             <span className="text-gray-600">
                               {Date.now() < Number(nftCollection.mintStartDate) ? 'Minting starts in:' : 'Minting ends in:'}
@@ -409,7 +429,7 @@ export default function MintNFTSimple() {
                               {countdown}
                             </span>
                           </div>
-                        )}
+                        )} */}
                       </div>
                     </div>
                   </div>
@@ -419,18 +439,18 @@ export default function MintNFTSimple() {
                       onClick={handleSubmit}
                       type="button"
                       aria-label="mint"
-                      disabled={isMinting || 
-                        connectionStatus !== 'connected' || 
+                      disabled={isMinting ||
+                        connectionStatus !== 'connected' ||
                         Date.now() < Number(nftCollection.mintStartDate) ||
                         Date.now() > Number(nftCollection.mintEndDate) ||
                         nftCollection.currentSupply >= nftCollection.maxSupply}
-                      className="text-black items-center shadow shadow-black text-lg font-semibold inline-flex px-6 focus:outline-none justify-center text-center bg-white 
+                      className="text-black items-center shadow shadow-black max-w-md text-lg font-semibold inline-flex px-6 focus:outline-none justify-center text-center bg-white 
                       border-black ease-in-out transform transition-all focus:ring-lila-700 focus:shadow-none border-2 duration-100   py-3 rounded-lg h-16 tracking-wide focus:translate-y-1 w-full hover:text-lila-800 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       {isMinting ? (
                         <div className="flex items-center justify-center gap-3">
                           <div className="animate-spin">
-                            <Image 
+                            <Image
                               src="/images/blob5.svg"
                               alt="Minting..."
                               width={30}
@@ -462,20 +482,44 @@ export default function MintNFTSimple() {
 
                     <div className="text-sm text-center">
                       <div className="text-gray-600">
-                        
+
                       </div>
                     </div>
 
-                    <div className="text-xs text-gray-500 mt-5">
-                      <>Minting available until {formatDate(nftCollection.mintEndDate)}</>
+                    <div className="text-xs text-gray-500 mt-5 flex">
+                      {/* <>Minting available until {formatDate(nftCollection.mintEndDate)}</> */}
+                      {countdown && (
+                        <div className="flex items-center gap-2 mx-auto">
+                          <span className="text-gray-600">
+                            {Date.now() < Number(nftCollection.mintStartDate) ? 'Minting starts in:' : 'Minting ends in:'}
+                          </span>
+                          <span className="text-gray-600 font-mono font-semibold bg-lila-200" style={{ minWidth: '80px', textAlign: 'right' }}>
+                            {countdown}
+                          </span>
+                        </div>
+                      )}
                     </div>
 
-                    <p
-                      onClick={scrollToMintEvents} 
-                      className="mt-6 text-black text-sm font-semibold text-center cursor-pointer hover:text-lila-800"
-                    >
-                      View All Mints &darr;
-                    </p>
+
+                    {
+                      mintEvents.length > 0 ? (
+                        <p
+                          onClick={scrollToMintEvents}
+                          className="mt-6 text-black text-sm font-semibold text-center cursor-pointer hover:text-lila-800"
+                        >
+                          View All Mints &darr;
+                        </p>
+                      )
+                        :
+                        null
+                      // <p
+                      //   onClick={scrollToMintEvents}
+                      //   className="mt-6 text-black text-sm font-semibold text-center cursor-pointer"
+                      // >
+                      //   Be the <span className="font-bold italic">first</span> to mint this presence
+                      // </p>
+
+                    }
                   </div>
                 </>
               )}

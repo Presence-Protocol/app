@@ -70,13 +70,12 @@ export default function NewEvent() {
   const [isBurnableInfoOpen, setIsBurnableInfoOpen] = useState(false);
   const [isGasFeesInfoOpen, setIsGasFeesInfoOpen] = useState(false);
   const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
-  const [selectedTemplate, setSelectedTemplate] = useState<'custom' | 'template1' | 'template2'>('custom');
+  const [selectedTemplate, setSelectedTemplate] = useState<'custom' | null>(null);
   const [isTemplateMenuOpen, setIsTemplateMenuOpen] = useState(false);
 
-  const handleTemplateSelect = (template: 'custom' | 'template1' | 'template2') => {
+  const handleTemplateSelect = (template: 'custom') => {
     setSelectedTemplate(template);
     setIsTemplateMenuOpen(false);
-    // Add logic to apply the selected template
   };
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -745,8 +744,8 @@ export default function NewEvent() {
     <>
       <section className="bg-white">
 
-        <div className="mx-auto mt-">
-          <div className="relative justify-center max-h-[calc(100vh-82px)] lg:max-h-[calc(100vh-82px)] md:max-h-[calc(100vh-58px)] lg:px-0 md:px-12 grid lg:grid-cols-5 h-screen lg:divide-x-2 divide-black">
+        <div className="mx-auto">
+          <div className="relative justify-center max-h-[calc(100vh-62px)] lg:max-h-[calc(100vh-62px)] md:max-h-[calc(100vh-58px)] lg:px-0 md:px-12 grid lg:grid-cols-5 h-screen lg:divide-x-2 divide-black">
             <div className="hidden bg-lila-500 lg:col-span-2 lg:block lg:flex-1 lg:relative sm:contents">
               <div className="absolute inset-0 object-cover w-full h-full bg-lila-300">
                 <div className="w-full h-[calc(100vh-82px)] flex flex-col items-center justify-center">
@@ -755,7 +754,10 @@ export default function NewEvent() {
                       {previewImage ? (
                         <img src={previewImage} alt="Preview" className="w-full h-full object-cover rounded-2xl" />
                       ) : (
-                        <div className="w-full h-full flex items-center justify-center text-gray-400">
+                        <div className="w-full h-full flex flex-col items-center justify-center text-gray-400">
+                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1} stroke="currentColor" className="w-12 h-12 mb-2">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 0 0 1.5-1.5V6a1.5 1.5 0 0 0-1.5-1.5H3.75A1.5 1.5 0 0 0 2.25 6v12a1.5 1.5 0 0 0 1.5 1.5Zm10.5-11.25h.008v.008h-.008V8.25Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
+                          </svg>
                           No image uploaded
                         </div>
                       )}
@@ -845,7 +847,7 @@ export default function NewEvent() {
               </div>
             </div>
 
-            <div className="relative z-10 flex flex-col bg-white flex-1 px-4 py-10 bg-white-500 lg:py-24 md:flex-none md:px-28 sm:justify-center lg:col-span-3">
+            <div className={`relative z-10 flex flex-col bg-white flex-1 px-4 py-10 bg-white-500 lg:py-24 md:flex-none md:px-28 lg:col-span-3 ${isProgressOpen ? 'justify-center' : 'justify-normal'}`}>
               {isProgressOpen ? (
                 <div className="w-full mx-auto md:px-0 sm:px-4">
                   
@@ -876,136 +878,52 @@ export default function NewEvent() {
                   </p>
 
                   <div className="space-y-2">
-                      <div className="flex items-center text-left justify-between p-4 gap-4">
-                        <div>
-                          <h3 className="text-sm font-medium text-black">Select a Template</h3>
-                          <p className="text-xs text-gray-500">Templates are pre-defined designs that can kickstart your Presence Event</p>
-                        </div>
-                        <div className="items-center inline-flex my-auto">
+                    <div className="flex items-center text-left justify-between pl-4 pb-4 pt-4 gap-4">
+                      <div>
+                        <h3 className="text-sm font-medium text-black">Event Template</h3>
+                        <p className="text-xs text-gray-500">Select a template to get started</p>
+                      </div>
+                      <div className="items-center inline-flex my-auto">
                         <TemplateSelect selectedTemplate={selectedTemplate} onSelect={handleTemplateSelect} />
-
-                        </div>
                       </div>
-                      </div>
-         
+                    </div>
+                  </div>
 
-                  <form className="mt-6" onSubmit={handleSubmit}>
-                    <div className="space-y-6">
-                      <div className="border-2 border-black divide-black shadow rounded-2xl overflow-hidden">
-                        <div>
-                          <label htmlFor="title" className="sr-only">Title</label>
-                          <input
-                            id="title"
-                            type="text"
-                            placeholder="Event Title"
-                            value={title}
-                            maxLength={MAX_TITLE_LENGTH}
-                            onChange={(e) => setTitle(e.target.value)}
-                            className="block w-full px-3 py-3 text-xl text-black border-2 border-transparent appearance-none placeholder-black border-black focus:border-black focus:bg-lila-500 focus:outline-none focus:ring-black sm:text-sm rounded-2xl"
-                          />
-                          <div className="px-3 py-1 text-sm text-gray-500">
-                            {title.length}/{MAX_TITLE_LENGTH} characters
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="border-2 border-black divide-black shadow rounded-2xl overflow-hidden">
-                        <div>
-                          <label htmlFor="description" className="sr-only">Description</label>
-                          <textarea
-                            id="description"
-                            placeholder="Event Description"
-                            value={description}
-                            maxLength={MAX_DESCRIPTION_LENGTH}
-                            onChange={(e) => setDescription(e.target.value)}
-                            rows={3}
-                            className="block w-full px-3 py-3 text-xl text-black border-2 border-transparent appearance-none placeholder-black border-black focus:border-black focus:bg-lila-500 focus:outline-none focus:ring-black sm:text-sm rounded-2xl"
-                          />
-                          <div className="px-3 py-1 text-sm text-gray-500">
-                            {description.length}/{MAX_DESCRIPTION_LENGTH} characters
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                  {selectedTemplate && (
+                    <form className="mt-6" onSubmit={handleSubmit}>
+                      <div className="space-y-6">
                         <div className="border-2 border-black divide-black shadow rounded-2xl overflow-hidden">
                           <div>
-                            <label htmlFor="location" className="sr-only">Location</label>
+                            <label htmlFor="title" className="sr-only">Title</label>
                             <input
-                              id="location"
+                              id="title"
                               type="text"
-                              placeholder="Event Location"
-                              value={location}
-                              onChange={(e) => setLocation(e.target.value)}
-                              className="block w-full px-3 py-3 text-xl text-black border-2 border-transparent appearance-none rounded-2xl placeholder-black border-black focus:border-black focus:bg-lila-500 focus:outline-none focus:ring-black sm:text-sm"
+                              placeholder="Event Title"
+                              value={title}
+                              maxLength={MAX_TITLE_LENGTH}
+                              onChange={(e) => setTitle(e.target.value)}
+                              className="block w-full px-3 py-3 text-xl text-black border-2 border-transparent appearance-none placeholder-black border-black focus:border-black focus:bg-lila-500 focus:outline-none focus:ring-black sm:text-sm rounded-2xl"
                             />
+                            <div className="px-3 py-1 text-sm text-gray-500">
+                              {title.length}/{MAX_TITLE_LENGTH} characters
+                            </div>
                           </div>
                         </div>
 
                         <div className="border-2 border-black divide-black shadow rounded-2xl overflow-hidden">
-                          <div className="relative">
-                            <label htmlFor="amount" className="sr-only">Amount</label>
-                            <input
-                              id="amount"
-                              type="number"
-                              min="1"
-                              placeholder="Presence Amount"
-                              value={amount || ''}
-                              onChange={(e) => setAmount(parseInt(e.target.value) || 0)}
-                              className="block w-full px-3 py-3 text-xl text-black border-2 border-transparent appearance-none placeholder-black border-black focus:border-black focus:bg-lila-500 focus:outline-none focus:ring-black sm:text-sm rounded-2xl pr-10"
+                          <div>
+                            <label htmlFor="description" className="sr-only">Description</label>
+                            <textarea
+                              id="description"
+                              placeholder="Event Description"
+                              value={description}
+                              maxLength={MAX_DESCRIPTION_LENGTH}
+                              onChange={(e) => setDescription(e.target.value)}
+                              rows={3}
+                              className="block w-full px-3 py-3 text-xl text-black border-2 border-transparent appearance-none placeholder-black border-black focus:border-black focus:bg-lila-500 focus:outline-none focus:ring-black sm:text-sm rounded-2xl"
                             />
-                            <button
-                              type="button"
-                              onClick={() => setIsMintAmountInfoOpen(true)}
-                              className="absolute right-3 top-1/2 -translate-y-1/2"
-                            >
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                className="h-5 w-5 text-gray-800 hover:text-black"
-                                viewBox="0 0 24 24"
-                                strokeWidth="2"
-                                stroke="currentColor"
-                                fill="none"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                              >
-                                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                                <path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" />
-                                <path d="M12 8l.01 0" />
-                                <path d="M11 12l1 0l0 4l1 0" />
-                              </svg>
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="space-y-4">
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                          <div className="border-2 border-black divide-black shadow rounded-2xl overflow-hidden">
-                            <div>
-                              <label htmlFor="eventStartDate" className="block px-3 pt-2 pb-2 text-sm text-gray-600">Event Start Date</label>
-                              <input
-                                id="eventStartDate"
-                                type="date"
-                                placeholder="Event Start Date"
-                                value={eventStartDate}
-                                onChange={(e) => setEventStartDate(e.target.value)}
-                                className="block w-full px-3 py-2 text-xl text-black border-2 border-transparent appearance-none placeholder-black border-black focus:border-black focus:bg-lila-500 focus:outline-none focus:ring-black sm:text-sm rounded-2xl"
-                              />
-                            </div>
-                          </div>
-
-                          <div className="border-2 border-black divide-black shadow rounded-2xl overflow-hidden">
-                            <div>
-                              <label htmlFor="eventEndDate" className="block px-3 pt-2 pb-2 text-sm text-gray-600">Event End Date</label>
-                              <input
-                                id="eventEndDate"
-                                type="date"
-                                placeholder="Event End Date"
-                                value={eventEndDate}
-                                onChange={(e) => setEventEndDate(e.target.value)}
-                                className="block w-full px-3 py-2 text-xl text-black border-2 border-transparent appearance-none placeholder-black border-black focus:border-black focus:bg-lila-500 focus:outline-none focus:ring-black sm:text-sm rounded-2xl"
-                              />
+                            <div className="px-3 py-1 text-sm text-gray-500">
+                              {description.length}/{MAX_DESCRIPTION_LENGTH} characters
                             </div>
                           </div>
                         </div>
@@ -1013,206 +931,290 @@ export default function NewEvent() {
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                           <div className="border-2 border-black divide-black shadow rounded-2xl overflow-hidden">
                             <div>
-                              <label htmlFor="startDate" className="block px-3 pt-2 pb-2 text-sm text-gray-600">Start Minting Date & Time</label>
+                              <label htmlFor="location" className="sr-only">Location</label>
                               <input
-                                id="startDate"
-                                type="datetime-local"
-                                placeholder="Start Minting Date"
-                                value={startDate}
-                                onChange={(e) => setStartDate(e.target.value)}
-                                className="block w-full px-3 py-2 text-xl text-black border-2 border-transparent appearance-none placeholder-black border-black focus:border-black focus:bg-lila-500 focus:outline-none focus:ring-black sm:text-sm rounded-2xl"
+                                id="location"
+                                type="text"
+                                placeholder="Event Location"
+                                value={location}
+                                onChange={(e) => setLocation(e.target.value)}
+                                className="block w-full px-3 py-3 text-xl text-black border-2 border-transparent appearance-none rounded-2xl placeholder-black border-black focus:border-black focus:bg-lila-500 focus:outline-none focus:ring-black sm:text-sm"
                               />
                             </div>
                           </div>
 
                           <div className="border-2 border-black divide-black shadow rounded-2xl overflow-hidden">
-                            <div>
-                              <label htmlFor="endDate" className="block px-3 pt-2 pb-2 text-sm text-gray-600">End Minting Date & Time</label>
+                            <div className="relative">
+                              <label htmlFor="amount" className="sr-only">Amount</label>
                               <input
-                                id="endDate"
-                                type="datetime-local"
-                                placeholder="End Minting Date"
-                                value={endDate}
-                                onChange={(e) => setEndDate(e.target.value)}
-                                className="block w-full px-3 py-2 text-xl text-black border-2 border-transparent appearance-none placeholder-black border-black focus:border-black focus:bg-lila-500 focus:outline-none focus:ring-black sm:text-sm rounded-2xl"
-                              />
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className={`border-2 border-black ${previewImage !== null ? 'bg-lila-100' : 'bg-white'} divide-black shadow rounded-2xl overflow-hidden`}>
-                        <div className="flex items-center justify-center border-b-2 border-black">
-                          <button
-                            type="button"
-                            onClick={() => setActiveTab('url')}
-                            disabled={previewImage !== null && activeTab !== 'url'}
-                            className={`flex-1 py-3 px-6 focus:outline-none block text-sm ${
-                              activeTab === 'url' 
-                                ? 'bg-lila-100 border-r-2 border-black text-black' 
-                                : 'bg-white text-gray-600'
-                            } ${previewImage !== null && activeTab !== 'url' ? 'opacity-50 cursor-not-allowed' : ''}`}
-                          >
-                            Event Image from URL
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => setActiveTab('upload')}
-                            disabled={previewImage !== null && activeTab !== 'upload'}
-                            className={`flex-1 py-3 px-6 focus:outline-none block text-sm ${
-                              activeTab === 'upload' 
-                                ? 'bg-lila-100 border-l-2 border-black text-black' 
-                                : 'bg-white text-gray-600'
-                            } ${previewImage !== null && activeTab !== 'upload' ? 'opacity-50 cursor-not-allowed' : ''}`}
-                          >
-                            Event Image from Upload
-                          </button>
-                        </div>
-
-                        <div className="p-4">
-                          {previewImage ? (
-                            <div className="relative w-full bg-lila-100">
-                              <img 
-                                src={previewImage} 
-                                alt="Preview" 
-                                className="w-full h-[100px] object-contain"
+                                id="amount"
+                                type="number"
+                                min="1"
+                                placeholder="Presence Amount"
+                                value={amount || ''}
+                                onChange={(e) => setAmount(parseInt(e.target.value) || 0)}
+                                className="block w-full px-3 py-3 text-xl text-black border-2 border-transparent appearance-none placeholder-black border-black focus:border-black focus:bg-lila-500 focus:outline-none focus:ring-black sm:text-sm rounded-2xl pr-10"
                               />
                               <button
                                 type="button"
-                                onClick={handleRemoveImage}
-                                className="absolute top-2 right-2 bg-red-800 -mt-2 -mr-2 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-700 transition-colors"
+                                onClick={() => setIsMintAmountInfoOpen(true)}
+                                className="absolute right-3 top-1/2 -translate-y-1/2"
                               >
-                                ×
-                              </button>
-                            </div>
-                          ) : activeTab === 'url' ? (
-                            <div className="flex flex-col justify-center min-h-[120px] max-h-[120px] space-y-3.5">
-                              <input
-                                type="text"
-                                value={imageUrl}
-                                onChange={(e) => setImageUrl(e.target.value)}
-                                placeholder="Paste image URL here"
-                                className="w-full p-2 text-sm border-2 border-black rounded-lg focus:outline-none focus:ring-2 focus:ring-lila-500"
-                              />
-                              <button 
-                                onClick={handleUrlSubmit}
-                                disabled={!imageUrl}
-                                className={`w-full px-3 py-2 text-sm text-black border-2 border-black rounded-lg hover:bg-lila-500 focus:outline-none focus:ring-2 focus:ring-lila-500 shadow ${
-                                  !imageUrl ? 'opacity-50 cursor-not-allowed' : ''
-                                }`}
-                              >
-                                {imageUrl ? 'Load from URL' : 'Add URL to Load Image'}
-                              </button>
-                            </div>
-                          ) : (
-                            <label htmlFor="file-upload" className="relative cursor-pointer w-full">
-                              <div className="flex flex-col items-center justify-center p-6 min-h-[120px] max-h-[120px]">
-                                <svg xmlns="http://www.w3.org/2000/svg" className="w-8 h-8 text-black mb-2" viewBox="0 0 24 24" strokeWidth="1" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
-                                  <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                                  <path d="M14 3v4a1 1 0 0 0 1 1h4"></path>
-                                  <path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z"></path>
-                                  <path d="M12 11v6"></path>
-                                  <path d="M9.5 13.5l2.5 -2.5l2.5 2.5"></path>
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  className="h-5 w-5 text-gray-800 hover:text-black"
+                                  viewBox="0 0 24 24"
+                                  strokeWidth="2"
+                                  stroke="currentColor"
+                                  fill="none"
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                >
+                                  <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                  <path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" />
+                                  <path d="M12 8l.01 0" />
+                                  <path d="M11 12l1 0l0 4l1 0" />
                                 </svg>
-                                <p className="text-sm text-black">Upload Event Image (PNG, JPG, GIF up to 2KB)</p>
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="space-y-4">
+                          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                            <div className="border-2 border-black divide-black shadow rounded-2xl overflow-hidden">
+                              <div>
+                                <label htmlFor="eventStartDate" className="block px-3 pt-2 pb-2 text-sm text-gray-600">Event Start Date</label>
+                                <input
+                                  id="eventStartDate"
+                                  type="date"
+                                  placeholder="Event Start Date"
+                                  value={eventStartDate}
+                                  onChange={(e) => setEventStartDate(e.target.value)}
+                                  className="block w-full px-3 py-2 text-xl text-black border-2 border-transparent appearance-none placeholder-black border-black focus:border-black focus:bg-lila-500 focus:outline-none focus:ring-black sm:text-sm rounded-2xl"
+                                />
                               </div>
-                              <input 
-                                id="file-upload" 
-                                name="file-upload" 
-                                type="file" 
-                                className="sr-only" 
-                                accept="image/*"
-                                onChange={handleImageUpload}
-                              />
-                            </label>
-                          )}
-                        </div>
-                      </div>
+                            </div>
 
-
-                    
-                      <div className="space-y-2">
-                        <div className="flex items-center text-left justify-between p-4">
-                          <div>
-                            <h3 className="text-sm font-medium text-black">{isPublicEvent ? 'Public Event' : 'Private Event'}</h3>
-                            <p className="text-xs text-gray-500">{isPublicEvent ? 'Anyone will be able to see your Presence' : 'Presence will not appear on Event Explorer'}</p>
+                            <div className="border-2 border-black divide-black shadow rounded-2xl overflow-hidden">
+                              <div>
+                                <label htmlFor="eventEndDate" className="block px-3 pt-2 pb-2 text-sm text-gray-600">Event End Date</label>
+                                <input
+                                  id="eventEndDate"
+                                  type="date"
+                                  placeholder="Event End Date"
+                                  value={eventEndDate}
+                                  onChange={(e) => setEventEndDate(e.target.value)}
+                                  className="block w-full px-3 py-2 text-xl text-black border-2 border-transparent appearance-none placeholder-black border-black focus:border-black focus:bg-lila-500 focus:outline-none focus:ring-black sm:text-sm rounded-2xl"
+                                />
+                              </div>
+                            </div>
                           </div>
-                          <div className="items-center inline-flex">
+
+                          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                            <div className="border-2 border-black divide-black shadow rounded-2xl overflow-hidden">
+                              <div>
+                                <label htmlFor="startDate" className="block px-3 pt-2 pb-2 text-sm text-gray-600">Start Minting Date & Time</label>
+                                <input
+                                  id="startDate"
+                                  type="datetime-local"
+                                  placeholder="Start Minting Date"
+                                  value={startDate}
+                                  onChange={(e) => setStartDate(e.target.value)}
+                                  className="block w-full px-3 py-2 text-xl text-black border-2 border-transparent appearance-none placeholder-black border-black focus:border-black focus:bg-lila-500 focus:outline-none focus:ring-black sm:text-sm rounded-2xl"
+                                />
+                              </div>
+                            </div>
+
+                            <div className="border-2 border-black divide-black shadow rounded-2xl overflow-hidden">
+                              <div>
+                                <label htmlFor="endDate" className="block px-3 pt-2 pb-2 text-sm text-gray-600">End Minting Date & Time</label>
+                                <input
+                                  id="endDate"
+                                  type="datetime-local"
+                                  placeholder="End Minting Date"
+                                  value={endDate}
+                                  onChange={(e) => setEndDate(e.target.value)}
+                                  className="block w-full px-3 py-2 text-xl text-black border-2 border-transparent appearance-none placeholder-black border-black focus:border-black focus:bg-lila-500 focus:outline-none focus:ring-black sm:text-sm rounded-2xl"
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className={`border-2 border-black ${previewImage !== null ? 'bg-lila-100' : 'bg-white'} divide-black shadow rounded-2xl overflow-hidden`}>
+                          <div className="flex items-center justify-center border-b-2 border-black">
                             <button
                               type="button"
-                              role="switch"
-                              aria-checked={isPublicEvent}
-                              onClick={() => setIsPublicEvent(!isPublicEvent)}
-                              className={`relative inline-flex w-10 rounded-full py-1 transition border-2 shadow-small border-black ${
-                                isPublicEvent ? 'bg-lila-400' : 'bg-white'
-                              }`}
+                              onClick={() => setActiveTab('url')}
+                              disabled={previewImage !== null && activeTab !== 'url'}
+                              className={`flex-1 py-3 px-6 focus:outline-none block text-sm ${
+                                activeTab === 'url' 
+                                  ? 'bg-lila-100 border-r-2 border-black text-black' 
+                                  : 'bg-white text-gray-600'
+                              } ${previewImage !== null && activeTab !== 'url' ? 'opacity-50 cursor-not-allowed' : ''}`}
                             >
-                              <span
-                                className={`h-2 w-2 rounded-full transition shadow-md ${
-                                  isPublicEvent ? 'translate-x-6 bg-lila-800' : 'translate-x-1 bg-gray-500'
-                                }`}
-                                aria-hidden="true"
-                              />
+                              Event Image from URL
                             </button>
-                          </div>
-                        </div>
-
-                        <div className="flex items-center text-left justify-between p-4">
-                          <div>
-                            <h3 className="text-sm font-medium text-black">{mintLimit ? 'Limit Address Presence' : 'No Limit'}</h3>
-                            <p className="text-xs text-gray-500">{mintLimit ? 'This will limit the number of Presence per address to 1' : 'There is no limit to the number of Presence per address'}</p>
-                          </div>
-                          <div className="items-center inline-flex">
                             <button
                               type="button"
-                              role="switch"
-                              aria-checked={mintLimit}
-                              onClick={() => setMintLimit(!mintLimit)}
-                              className={`relative inline-flex w-10 rounded-full py-1 transition border-2 shadow-small border-black ${
-                                mintLimit ? 'bg-lila-400' : 'bg-white'
-                              }`}
+                              onClick={() => setActiveTab('upload')}
+                              disabled={previewImage !== null && activeTab !== 'upload'}
+                              className={`flex-1 py-3 px-6 focus:outline-none block text-sm ${
+                                activeTab === 'upload' 
+                                  ? 'bg-lila-100 border-l-2 border-black text-black' 
+                                  : 'bg-white text-gray-600'
+                              } ${previewImage !== null && activeTab !== 'upload' ? 'opacity-50 cursor-not-allowed' : ''}`}
                             >
-                              <span
-                                className={`h-2 w-2 rounded-full transition shadow-md ${
-                                  mintLimit ? 'translate-x-6 bg-lila-800' : 'translate-x-1 bg-gray-500'
+                              Event Image from Upload
+                            </button>
+                          </div>
+
+                          <div className="p-4">
+                            {previewImage ? (
+                              <div className="relative w-full bg-lila-100">
+                                <img 
+                                  src={previewImage} 
+                                  alt="Preview" 
+                                  className="w-full h-[100px] object-contain"
+                                />
+                                <button
+                                  type="button"
+                                  onClick={handleRemoveImage}
+                                  className="absolute top-2 right-2 bg-red-800 -mt-2 -mr-2 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-700 transition-colors"
+                                >
+                                  ×
+                                </button>
+                              </div>
+                            ) : activeTab === 'url' ? (
+                              <div className="flex flex-col justify-center min-h-[120px] max-h-[120px] space-y-3.5">
+                                <input
+                                  type="text"
+                                  value={imageUrl}
+                                  onChange={(e) => setImageUrl(e.target.value)}
+                                  placeholder="Paste image URL here"
+                                  className="w-full p-2 text-sm border-2 border-black rounded-lg focus:outline-none focus:ring-2 focus:ring-lila-500"
+                                />
+                                <button 
+                                  onClick={handleUrlSubmit}
+                                  disabled={!imageUrl}
+                                  className={`w-full px-3 py-2 text-sm text-black border-2 border-black rounded-lg hover:bg-lila-500 focus:outline-none focus:ring-2 focus:ring-lila-500 shadow ${
+                                    !imageUrl ? 'opacity-50 cursor-not-allowed' : ''
+                                  }`}
+                                >
+                                  {imageUrl ? 'Load from URL' : 'Add URL to Load Image'}
+                                </button>
+                              </div>
+                            ) : (
+                              <label htmlFor="file-upload" className="relative cursor-pointer w-full">
+                                <div className="flex flex-col items-center justify-center p-6 min-h-[120px] max-h-[120px]">
+                                  <svg xmlns="http://www.w3.org/2000/svg" className="w-8 h-8 text-black mb-2" viewBox="0 0 24 24" strokeWidth="1" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                    <path d="M14 3v4a1 1 0 0 0 1 1h4"></path>
+                                    <path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z"></path>
+                                    <path d="M12 11v6"></path>
+                                    <path d="M9.5 13.5l2.5 -2.5l2.5 2.5"></path>
+                                  </svg>
+                                  <p className="text-sm text-black">Upload Event Image (PNG, JPG, GIF up to 2KB)</p>
+                                </div>
+                                <input 
+                                  id="file-upload" 
+                                  name="file-upload" 
+                                  type="file" 
+                                  className="sr-only" 
+                                  accept="image/*"
+                                  onChange={handleImageUpload}
+                                />
+                              </label>
+                            )}
+                          </div>
+                        </div>
+
+
+                      
+                        <div className="space-y-2">
+                          <div className="flex items-center text-left justify-between p-4">
+                            <div>
+                              <h3 className="text-sm font-medium text-black">{isPublicEvent ? 'Public Event' : 'Private Event'}</h3>
+                              <p className="text-xs text-gray-500">{isPublicEvent ? 'Anyone will be able to see your Presence' : 'Presence will not appear on Event Explorer'}</p>
+                            </div>
+                            <div className="items-center inline-flex">
+                              <button
+                                type="button"
+                                role="switch"
+                                aria-checked={isPublicEvent}
+                                onClick={() => setIsPublicEvent(!isPublicEvent)}
+                                className={`relative inline-flex w-10 rounded-full py-1 transition border-2 shadow-small border-black ${
+                                  isPublicEvent ? 'bg-lila-400' : 'bg-white'
                                 }`}
-                                aria-hidden="true"
-                              />
-                            </button>
+                              >
+                                <span
+                                  className={`h-2 w-2 rounded-full transition shadow-md ${
+                                    isPublicEvent ? 'translate-x-6 bg-lila-800' : 'translate-x-1 bg-gray-500'
+                                  }`}
+                                  aria-hidden="true"
+                                />
+                              </button>
+                            </div>
+                          </div>
+
+                          <div className="flex items-center text-left justify-between p-4">
+                            <div>
+                              <h3 className="text-sm font-medium text-black">{mintLimit ? 'Limit Address Presence' : 'No Limit'}</h3>
+                              <p className="text-xs text-gray-500">{mintLimit ? 'This will limit the number of Presence per address to 1' : 'There is no limit to the number of Presence per address'}</p>
+                            </div>
+                            <div className="items-center inline-flex">
+                              <button
+                                type="button"
+                                role="switch"
+                                aria-checked={mintLimit}
+                                onClick={() => setMintLimit(!mintLimit)}
+                                className={`relative inline-flex w-10 rounded-full py-1 transition border-2 shadow-small border-black ${
+                                  mintLimit ? 'bg-lila-400' : 'bg-white'
+                                }`}
+                              >
+                                <span
+                                  className={`h-2 w-2 rounded-full transition shadow-md ${
+                                    mintLimit ? 'translate-x-6 bg-lila-800' : 'translate-x-1 bg-gray-500'
+                                  }`}
+                                  aria-hidden="true"
+                                />
+                              </button>
+                            </div>
                           </div>
                         </div>
-                      </div>
 
-                      {advancedSettingsSection}
+                        {advancedSettingsSection}
 
-                      {renderProgress()}
+                        {renderProgress()}
 
-                      {createdContractAddress && (
-                        <div className="border-2 border-black divide-black shadow rounded-2xl overflow-hidden bg-lila-100 p-4">
-                          <p className="text-sm font-medium text-black">Event Created Successfully!</p>
-                          <div className="text-xs break-all mt-1 flex items-center gap-2">
-                            <span>Share this link with your attendees:</span>
-                            <button
-                              onClick={() => handleShare(createdContractAddress)}
-                              className="text-black items-center shadow shadow-black text-xs font-semibold inline-flex px-3 focus:outline-none justify-center text-center bg-white border-black ease-in-out transform transition-all focus:ring-lila-700 focus:shadow-none border-2 duration-100   py-1 rounded-lg tracking-wide focus:translate-y-1 hover:text-lila-800"
-                            >
-                              Share Link
-                            </button>
+                        {createdContractAddress && (
+                          <div className="border-2 border-black divide-black shadow rounded-2xl overflow-hidden bg-lila-100 p-4">
+                            <p className="text-sm font-medium text-black">Event Created Successfully!</p>
+                            <div className="text-xs break-all mt-1 flex items-center gap-2">
+                              <span>Share this link with your attendees:</span>
+                              <button
+                                onClick={() => handleShare(createdContractAddress)}
+                                className="text-black items-center shadow shadow-black text-xs font-semibold inline-flex px-3 focus:outline-none justify-center text-center bg-white border-black ease-in-out transform transition-all focus:ring-lila-700 focus:shadow-none border-2 duration-100   py-1 rounded-lg tracking-wide focus:translate-y-1 hover:text-lila-800"
+                              >
+                                Share Link
+                              </button>
+                            </div>
                           </div>
-                        </div>
-                      )}
+                        )}
 
-                      <div className="mt-8">
-                        <button
-                          type="submit"
-                          disabled={isSubmitting || !isFormValid()}
-                          className={`text-black items-center shadow shadow-black text-lg font-semibold inline-flex px-6 focus:outline-none justify-center text-center bg-white border-black ease-in-out transform transition-all focus:ring-lila-700 focus:shadow-none border-2 duration-100   py-3 rounded-2xl h-16 tracking-wide focus:translate-y-1 w-full hover:text-lila-800 ${(isSubmitting || creationProgress !== false || !isFormValid()) ? 'opacity-50 cursor-not-allowed' : ''}`}
-                        >
-                          {isSubmitting ? 'Creating...' : isFormValid() ? 'Create Event' : 'Please fill out all fields'}
-                        </button>
+                        <div className="mt-8">
+                          <button
+                            type="submit"
+                            disabled={isSubmitting || !isFormValid()}
+                            className={`text-black items-center shadow shadow-black text-lg font-semibold inline-flex px-6 focus:outline-none justify-center text-center bg-white border-black ease-in-out transform transition-all focus:ring-lila-700 focus:shadow-none border-2 duration-100   py-3 rounded-2xl h-16 tracking-wide focus:translate-y-1 w-full hover:text-lila-800 ${(isSubmitting || creationProgress !== false || !isFormValid()) ? 'opacity-50 cursor-not-allowed' : ''}`}
+                          >
+                            {isSubmitting ? 'Creating...' : isFormValid() ? 'Create Event' : 'Please fill out all fields'}
+                          </button>
+                        </div>
                       </div>
-                    </div>
-                  </form>
+                    </form>
+                  )}
                 </div>
               )}
             </div>

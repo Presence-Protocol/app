@@ -51,4 +51,37 @@
 
 .cards-container > div:last-child {
   animation: cardAppear 0.5s ease-out;
+}
+
+/* Define the shine effect */
+@keyframes shine {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+.nft-image {
+  position: relative;
+  overflow: hidden;
+}
+
+.nft-image::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 200%;
+  height: 100%;
+  background: linear-gradient(120deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.5) 50%, rgba(255, 255, 255, 0.2) 100%);
+  transition: opacity 0.3s;
+  opacity: 0;
+  pointer-events: none; /* Ensure the pseudo-element doesn't interfere with hover */
+}
+
+.nft-image:hover::after {
+  animation: shine 1.5s linear infinite;
+  opacity: 1;
 } 

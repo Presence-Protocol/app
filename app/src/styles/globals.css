@@ -50,3 +50,40 @@ details[open] summary {
 .prose-styles {
   @apply text-xl prose prose-xl text-foreground prose-a:font-normal prose-a:text-accent hover:prose-a:text-foreground prose-h1:text-foreground prose-img:border-transparent prose-h2:text-foreground prose-img:shadow-large prose-headings:font-medium tracking-wide prose-blockquote:border-2 prose-blockquote:bg-primary prose-img:rounded-3xl prose-img:border-2 prose-img:border-foreground prose-blockquote:p-12 prose-blockquote:border-foreground prose-blockquote:rounded-3xl prose-blockquote:shadow-large prose-pre:font-mono max-w-none prose-pre:border;
 }
+
+/* Define the shine effect */
+@keyframes shine {
+  100% {
+    left: 125%;
+  }
+}
+
+.nft-image {
+  position: relative;
+  overflow: hidden;
+}
+
+.nft-image::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -75%;
+  width: 40%;
+  height: 100%;
+  background: linear-gradient(
+    to right,
+    rgba(255, 255, 255, 1) 0%,
+    rgba(255, 255, 255, 0.7) 100%
+  );
+  transform: skewX(-25deg);
+  z-index: 2;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.nft-image:hover::after,
+.nft-image:focus::after {
+  animation: shine 1s;
+  opacity: 0.5;
+  animation-delay: 0.2s;
+} 
