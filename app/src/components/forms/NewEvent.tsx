@@ -72,6 +72,8 @@ export default function NewEvent() {
   const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
   const [selectedTemplate, setSelectedTemplate] = useState<'custom' | null>(null);
   const [isTemplateMenuOpen, setIsTemplateMenuOpen] = useState(false);
+  const [coverMintFees, setCoverMintFees] = useState(false);
+  const [minterFee, setMinterFee] = useState(0n);
 
   const handleTemplateSelect = (template: 'custom') => {
     setSelectedTemplate(template);
@@ -273,6 +275,8 @@ export default function NewEvent() {
           amountAirdrop: 0n,
           airdropWhenHasParticipated: false,
           amountForChainFees: chainFees,
+          coverMintFees: coverMintFees,
+          minterFee: minterFee,
         },
         signer: signer,
         attoAlphAmount: calculateFinalAmount(chainFees, storageFees),
@@ -316,6 +320,8 @@ export default function NewEvent() {
     setPoapFees(0n);
     setTokenId(ALPH_TOKEN_ID);
     setShowAdvancedSettings(false);
+    setCoverMintFees(false);
+    setMinterFee(0n);
   }, []);
 
   useEffect(() => {
@@ -485,31 +491,133 @@ export default function NewEvent() {
       {showAdvancedSettings && (
         <div className="divide-y-2 divide-black">
           <div className="flex items-center text-left justify-between p-4 bg-white">
-            <div className="flex-1">
-              <div className="flex items-center">
-                <h3 className="text-sm font-medium text-black">Burnable Presence</h3>
-                {/* <button
-                  type="button"
-                  onClick={() => setIsBurnableInfoOpen(true)}
-                  className="ml-2"
+            <div>
+              <h3 className="text-sm font-medium text-black">{coverMintFees ? 'Cover % of Fees' : 'Users Cover Fees'}</h3>
+              <p className="text-xs text-gray-500">{coverMintFees ? 'Pay mint fees on behalf of the users' : 'Users pay for minting'}</p>
+            </div>
+            <div className="items-center inline-flex">
+              <button
+                type="button"
+                role="switch"
+                aria-checked={coverMintFees}
+                onClick={() => {
+                  setCoverMintFees(!coverMintFees);
+                  if (!coverMintFees) {
+                    setStorageFees(0n);
+                    setChainFees(0n);
+                  }
+                }}
+                className={`relative inline-flex w-10 rounded-full py-1 transition border-2 shadow-small border-black ${
+                  coverMintFees ? 'bg-lila-400' : 'bg-white'
+                }`}
+              >
+                <span
+                  className={`h-2 w-2 rounded-full transition shadow-md ${
+                    coverMintFees ? 'translate-x-6 bg-lila-800' : 'translate-x-1 bg-gray-500'
+                  }`}
+                  aria-hidden="true"
+                />
+              </button>
+            </div>
+          </div>
+
+          <div className="p-4 bg-white">
+            <div className="flex items-center justify-between">
+              <label className="text-sm font-medium text-black">Storage Fees</label>
+              <button
+                type="button"
+                onClick={() => setIsStorageFeesInfoOpen(true)}
+                className="ml-2"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className={`h-5 w-5 ${coverMintFees ? 'text-gray-800 hover:text-black' : 'text-gray-400'}`}
+                  viewBox="0 0 24 24"
+                  strokeWidth="2"
+                  stroke="currentColor"
+                  fill="none"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                 >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5 text-gray-800 hover:text-black"
-                    viewBox="0 0 24 24"
-                    strokeWidth="2"
-                    stroke="currentColor"
-                    fill="none"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                    <path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" />
-                    <path d="M12 8l.01 0" />
-                    <path d="M11 12l1 0l0 4l1 0" />
-                  </svg>
-                </button> */}
+                  <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                  <path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" />
+                  <path d="M12 8l.01 0" />
+                  <path d="M11 12l1 0l0 4l1 0" />
+                </svg>
+              </button>
+            </div>
+            <p className="text-xs text-gray-500 mb-2">Pay storage fees on behalf of the users (in ALPH)</p>
+            <input
+              type="number"
+              min="0"
+              step="0.1"
+              disabled={!coverMintFees}
+              value={Number(storageFees) / 10**18}
+              onChange={(e) => setStorageFees(BigInt(Math.floor(Number(e.target.value) * 10**18)))}
+              className={`block w-full px-3 py-3 text-xl text-black border-2 border-black appearance-none placeholder-black focus:border-black focus:bg-lila-500 focus:outline-none focus:ring-black sm:text-sm rounded-2xl ${!coverMintFees ? 'opacity-50 cursor-not-allowed' : ''}`}
+            />
+          </div>
+
+          <div className="p-4 bg-white">
+            <div className="flex items-center justify-between">
+              <label className="text-sm font-medium text-black">Gas Fees</label>
+              <button
+                type="button"
+                onClick={() => setIsGasFeesInfoOpen(true)}
+                className="ml-2"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className={`h-5 w-5 ${coverMintFees ? 'text-gray-800 hover:text-black' : 'text-gray-400'}`}
+                  viewBox="0 0 24 24"
+                  strokeWidth="2"
+                  stroke="currentColor"
+                  fill="none"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                  <path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" />
+                  <path d="M12 8l.01 0" />
+                  <path d="M11 12l1 0l0 4l1 0" />
+                </svg>
+              </button>
+            </div>
+            <p className="text-xs text-gray-500 mb-2">Pay gas fees on behalf of the users (in ALPH)</p>
+            <div className="relative">
+              <input
+                type="number"
+                min="0"
+                step="0.1"
+                disabled={!coverMintFees}
+                value={Number(chainFees) / 10**18}
+                onChange={(e) => setChainFees(BigInt(Math.floor(Number(e.target.value) * 10**18)))}
+                className={`block w-full px-3 py-3 text-xl text-black border-2 border-black appearance-none placeholder-black focus:border-black focus:bg-lila-500 focus:outline-none focus:ring-black sm:text-sm rounded-2xl ${!coverMintFees ? 'opacity-50 cursor-not-allowed' : ''}`}
+              />
+              <div className="absolute right-2 top-1/2 -translate-y-1/2 flex gap-2">
+                <button
+                  type="button"
+                  disabled={!coverMintFees}
+                  onClick={() => setChainFees(BigInt(Math.floor(0.5 * 10**18)))}
+                  className={`px-2 py-1 text-xs font-medium text-black bg-white border-2 border-black rounded-lg hover:bg-lila-500 ${!coverMintFees ? 'opacity-50 cursor-not-allowed' : ''}`}
+                >
+                  50%
+                </button>
+                <button
+                  type="button"
+                  disabled={!coverMintFees}
+                  onClick={() => setChainFees(BigInt(Math.floor(1 * 10**18)))}
+                  className={`px-2 py-1 text-xs font-medium text-black bg-white border-2 border-black rounded-lg hover:bg-lila-500 ${!coverMintFees ? 'opacity-50 cursor-not-allowed' : ''}`}
+                >
+                  Max
+                </button>
               </div>
+            </div>
+          </div>
+
+          <div className="flex items-center text-left justify-between p-4 bg-white">
+            <div>
+              <h3 className="text-sm font-medium text-black">Burnable Presence</h3>
               <p className="text-xs text-gray-500">Allow users to burn their Presence NFT</p>
             </div>
             <div className="items-center inline-flex">
@@ -531,204 +639,6 @@ export default function NewEvent() {
               </button>
             </div>
           </div>
-
-          {/*<div className="p-4 bg-white">
-            <div className="flex items-center justify-between">
-              <label className="text-sm font-medium text-black">Presence Price</label>
-              <button
-                type="button"
-                onClick={() => setIsPresencePriceInfoOpen(true)}
-                className="ml-2"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5 text-gray-800 hover:text-black"
-                  viewBox="0 0 24 24"
-                  strokeWidth="2"
-                  stroke="currentColor"
-                  fill="none"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                  <path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" />
-                  <path d="M12 8l.01 0" />
-                  <path d="M11 12l1 0l0 4l1 0" />
-                </svg>
-              </button>
-            </div>
-            <p className="text-xs text-gray-500 mb-2">Set a price for minting (in ALPH)</p>
-            <input
-              type="number"
-              min=""
-              step="0.1"
-              disabled={true}
-              placeholder='coming soon'
-              value={Number(poapPrice) / 10**18}
-              onChange={(e) => setPoapPrice(BigInt(Math.floor(Number(e.target.value) * 10**18)))}
-              className="block w-full px-3 py-3 text-xl text-black border-2 border-black appearance-none placeholder-black focus:border-black focus:bg-lila-500 focus:outline-none focus:ring-black sm:text-sm rounded-2xl"
-            />
-          </div>*/}
-
-          <div className="p-4 bg-white">
-            <div className="flex items-center justify-between">
-              <label className="text-sm font-medium text-black">Storage Fees</label>
-              <button
-                type="button"
-                onClick={() => setIsStorageFeesInfoOpen(true)}
-                className="ml-2"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5 text-gray-800 hover:text-black"
-                  viewBox="0 0 24 24"
-                  strokeWidth="2"
-                  stroke="currentColor"
-                  fill="none"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                  <path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" />
-                  <path d="M12 8l.01 0" />
-                  <path d="M11 12l1 0l0 4l1 0" />
-                </svg>
-              </button>
-            </div>
-            <p className="text-xs text-gray-500 mb-2">Pay storage fees on behalf of the users (in ALPH)</p>
-            <input
-              type="number"
-              min="0"
-              step="0.1"
-              value={Number(storageFees) / 10**18}
-              onChange={(e) => setStorageFees(BigInt(Math.floor(Number(e.target.value) * 10**18)))}
-              className="block w-full px-3 py-3 text-xl text-black border-2 border-black appearance-none placeholder-black focus:border-black focus:bg-lila-500 focus:outline-none focus:ring-black sm:text-sm rounded-2xl"
-            />
-          </div>
-          <div className="p-4 bg-white">
-            <div className="flex items-center justify-between">
-              <label className="text-sm font-medium text-black">Gas Fees</label>
-              <button
-                type="button"
-                onClick={() => setIsGasFeesInfoOpen(true)}
-                className="ml-2"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5 text-gray-800 hover:text-black"
-                  viewBox="0 0 24 24"
-                  strokeWidth="2"
-                  stroke="currentColor"
-                  fill="none"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                  <path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" />
-                  <path d="M12 8l.01 0" />
-                  <path d="M11 12l1 0l0 4l1 0" />
-                </svg>
-              </button>
-            </div>
-            <p className="text-xs text-gray-500 mb-2">Pay gas fees on behalf of the users (in ALPH)</p>
-            <div className="relative">
-              <input
-                type="number"
-                min="0"
-                step="0.1"
-                value={Number(chainFees) / 10**18}
-                onChange={(e) => setChainFees(BigInt(Math.floor(Number(e.target.value) * 10**18)))}
-                className="block w-full px-3 py-3 text-xl text-black border-2 border-black appearance-none placeholder-black focus:border-black focus:bg-lila-500 focus:outline-none focus:ring-black sm:text-sm rounded-2xl"
-              />
-              <div className="absolute right-2 top-1/2 -translate-y-1/2 flex gap-2">
-                <button
-                  type="button"
-                  onClick={() => setChainFees(BigInt(Math.floor(0.5 * 10**18)))}
-                  className="px-2 py-1 text-xs font-medium text-black bg-white border-2 border-black rounded-lg hover:bg-lila-500"
-                >
-                  50%
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setChainFees(BigInt(Math.floor(1 * 10**18)))}
-                  className="px-2 py-1 text-xs font-medium text-black bg-white border-2 border-black rounded-lg hover:bg-lila-500"
-                >
-                  Max
-                </button>
-              </div>
-            </div>
-          </div>
-
-         {/* <div className="p-4 bg-white">
-            <div className="flex items-center justify-between">
-              <label className="text-sm font-medium text-black">POAP Fees</label>
-              <button
-                type="button"
-                onClick={() => setIsPoapFeesInfoOpen(true)}
-                className="ml-2"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5 text-gray-800 hover:text-black"
-                  viewBox="0 0 24 24"
-                  strokeWidth="2"
-                  stroke="currentColor"
-                  fill="none"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                  <path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" />
-                  <path d="M12 8l.01 0" />
-                  <path d="M11 12l1 0l0 4l1 0" />
-                </svg>
-              </button>
-            </div>
-            <p className="text-xs text-gray-500 mb-2">Additional fees for POAP (in ALPH)</p>
-            <input
-              type="number"
-              min="0"
-              step="0.1"
-              value={Number(poapFees) / 10**18}
-              onChange={(e) => setPoapFees(BigInt(Math.floor(Number(e.target.value) * 10**18)))}
-              className="block w-full px-3 py-3 text-xl text-black border-2 border-black appearance-none placeholder-black focus:border-black focus:bg-lila-500 focus:outline-none focus:ring-black sm:text-sm rounded-2xl"
-            />
-          </div>*/}
-
-          {/*<div className="p-4 bg-white">
-            <div className="flex items-center justify-between">
-              <label className="text-sm font-medium text-black">Token ID</label>
-              <button
-                type="button"
-                onClick={() => setIsTokenIdInfoOpen(true)}
-                className="ml-2"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5 text-gray-800 hover:text-black"
-                  viewBox="0 0 24 24"
-                  strokeWidth="2"
-                  stroke="currentColor"
-                  fill="none"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                  <path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" />
-                  <path d="M12 8l.01 0" />
-                  <path d="M11 12l1 0l0 4l1 0" />
-                </svg>
-              </button>
-            </div>
-            <p className="text-xs text-gray-500 mb-2">Token ID for the POAP (default: ALPH)</p>
-            <input
-              type="text"
-              disabled={true}
-              value={tokenId}
-              onChange={(e) => setTokenId(e.target.value)}
-              className="block w-full px-3 py-3 text-xl text-black border-2 border-black appearance-none placeholder-black focus:border-black focus:bg-lila-500 focus:outline-none focus:ring-black sm:text-sm rounded-2xl"
-            />
-          </div>*/}
         </div>
       )}
     </div>
