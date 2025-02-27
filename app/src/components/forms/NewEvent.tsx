@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useEffect, useState } from 'react';
-import { web3, Contract, MINIMAL_CONTRACT_DEPOSIT, DUST_AMOUNT, Subscription, contractIdFromAddress, addressFromContractId, NetworkId, ALPH_TOKEN_ID, ONE_ALPH, NodeProvider } from '@alephium/web3'
+import { web3, Contract, MINIMAL_CONTRACT_DEPOSIT, DUST_AMOUNT, Subscription, contractIdFromAddress, addressFromContractId, NetworkId, ALPH_TOKEN_ID, ONE_ALPH, NodeProvider, number256ToNumber } from '@alephium/web3'
 import { PoapFactory, PoapFactoryTypes } from '../../../../contracts/artifacts/ts/PoapFactory'
 import { toast } from 'react-hot-toast'
 import { useWallet } from '@alephium/web3-react'
@@ -20,10 +20,52 @@ import GasFeesInfo from '../Modals/GasFeesInfo';
 import Tooltip from '../ui/Tooltip';
 import Snackbar from '../ui/Snackbar';
 import TemplateSelect from './TemplateSelect';
+import { getTokenList, TokenList, Token } from '../../services/utils';
+import TokenSelector from '../ui/TokenSelector';
+
 const MAX_TITLE_LENGTH = 50;
 const MAX_DESCRIPTION_LENGTH = 180;
 
+// Add these utility functions at the top of the file, after the imports
+const formatTokenAmount = (amount: bigint, decimals: number): string => {
+  if (amount === 0n) return '0';
+  
+  const factor = 10n ** BigInt(decimals);
+  const integerPart = amount / factor;
+  const fractionalPart = amount % factor;
+  
+  if (fractionalPart === 0n) {
+    return integerPart.toString();
+  }
+  
+  // Convert fractional part to string and pad with leading zeros
+  let fractionalStr = fractionalPart.toString().padStart(decimals, '0');
+  
+  // Remove trailing zeros
+  //fractionalStr = fractionalStr.replace(/0+$/, '');
+  
+  return `${integerPart}.${fractionalStr}`;
+};
 
+const parseTokenAmount = (input: string, decimals: number): bigint => {
+  if (!input || input === '0') return 0n;
+  
+  const parts = input.split('.');
+  const integerPart = parts[0] || '0';
+  let fractionalPart = parts.length > 1 ? parts[1] : '';
+  
+  // Pad or truncate fractional part based on token decimals
+  if (fractionalPart.length > decimals) {
+    fractionalPart = fractionalPart.substring(0, decimals);
+  } else {
+    fractionalPart = fractionalPart.padEnd(decimals, '0');
+  }
+  
+  // Combine integer and fractional parts
+  const fullValue = BigInt(integerPart) * (10n ** BigInt(decimals)) + BigInt(fractionalPart);
+  console.log(fullValue);
+  return fullValue;
+};
 
 export default function NewEvent() {
   const [title, setTitle] = useState('');
@@ -58,6 +100,7 @@ export default function NewEvent() {
   const [activeTab, setActiveTab] = useState<'upload' | 'url'>('url');
   const [isBurnable, setIsBurnable] = useState(false);
   const [poapPrice, setPoapPrice] = useState(0n);
+  const [poapPriceInput, setPoapPriceInput] = useState('');
   const [storageFees, setStorageFees] = useState(0n);
   const [chainFees, setChainFees] = useState(0n);
   const [poapFees, setPoapFees] = useState(0n);
@@ -69,11 +112,31 @@ export default function NewEvent() {
   const [isPresencePriceInfoOpen, setIsPresencePriceInfoOpen] = useState(false);
   const [isBurnableInfoOpen, setIsBurnableInfoOpen] = useState(false);
   const [isGasFeesInfoOpen, setIsGasFeesInfoOpen] = useState(false);
+  const [isPaidPoapTokenIdInfoOpen, setIsPaidPoapTokenIdInfoOpen] = useState(false);
+  const [isPaidPoapInfoOpen, setIsPaidPoapInfoOpen] = useState(false);
+
+
   const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
   const [selectedTemplate, setSelectedTemplate] = useState<'custom' | null>(null);
   const [isTemplateMenuOpen, setIsTemplateMenuOpen] = useState(false);
   const [coverMintFees, setCoverMintFees] = useState(false);
+  const [paidPresence, setPaidPresence] = useState(false);
   const [minterFee, setMinterFee] = useState(0n);
+  const [paidPoapTokenId, setPaidPoapTokenId] = useState(ALPH_TOKEN_ID);
+
+  // Add this state to the main component
+  const [globalTokenList, setGlobalTokenList] = useState<Token[]>([]);
+  const [isTokenListLoading, setIsTokenListLoading] = useState(false);
+
+  // Add this state to the main component
+  const [selectedToken, setSelectedToken] = useState<Token | undefined>({
+    id: ALPH_TOKEN_ID,
+    name: "Alephium",
+    symbol: "ALPH",
+    decimals: 18,
+    description: "Native token of Alephium blockchain",
+    logoURI: ""
+  });
 
   const handleTemplateSelect = (template: 'custom') => {
     setSelectedTemplate(template);
@@ -251,6 +314,9 @@ export default function NewEvent() {
       const descriptionHex = stringToHex(description);
       const locationHex = stringToHex(location);
       // Call contract method using transact
+
+      console.log('poapPrice', poapPrice)
+      console.log('paidPoapTokenId', paidPoapTokenId)
       const result = await factoryContract.transact.mintNewCollection({
         args: {
           eventImage: imageUri,
@@ -266,18 +332,18 @@ export default function NewEvent() {
           isPublic: isPublicEvent,
           oneMintPerAddress: mintLimit,
           isBurnable: isBurnable,
-          amountForStorageFees: storageFees,
+          amountForStorageFees: coverMintFees ? storageFees : 0n,
           poapPrice: poapPrice,
-          tokenIdPoap: tokenId,
+          tokenIdPoap: paidPoapTokenId,
           amountPoapFees: 0n,
           tokenIdAirdrop: ALPH_TOKEN_ID,
           amountAirdropPerUser: 0n,
           amountAirdrop: 0n,
           airdropWhenHasParticipated: false,
-          amountForChainFees: chainFees,
+          amountForChainFees: coverMintFees ? chainFees : 0n,
         },
         signer: signer,
-        attoAlphAmount: calculateFinalAmount(chainFees, storageFees),
+        attoAlphAmount: calculateFinalAmount(coverMintFees ? chainFees : 0n, coverMintFees ? storageFees : 0n),
       });
       
 
@@ -314,11 +380,13 @@ export default function NewEvent() {
     setIsImageValid(true);
     setIsBurnable(false);
     setPoapPrice(0n);
+    setPoapPriceInput('');
     setStorageFees(0n);
     setPoapFees(0n);
     setTokenId(ALPH_TOKEN_ID);
     setShowAdvancedSettings(false);
     setCoverMintFees(false);
+    setPaidPresence(false);
     setMinterFee(0n);
   }, []);
 
@@ -332,6 +400,22 @@ export default function NewEvent() {
     console.log('Node provider setup complete');
   }, []);
 
+  // Add this useEffect to load the token list once when the component mounts
+  useEffect(() => {
+    const loadTokenList = async () => {
+      setIsTokenListLoading(true);
+      try {
+        const tokenList = await getTokenList();
+        setGlobalTokenList(tokenList);
+      } catch (error) {
+        console.error('Failed to load tokens:', error);
+      } finally {
+        setIsTokenListLoading(false);
+      }
+    };
+    
+    loadTokenList();
+  }, []);
 
   const pollForEvents = async (provider: NodeProvider, txId: string, retries = 0): Promise<void> => {
     if (retries >= 2000) {
@@ -488,6 +572,142 @@ export default function NewEvent() {
 
       {showAdvancedSettings && (
         <div className="divide-y-2 divide-black">
+
+<div className="flex items-center text-left justify-between p-4 bg-white">
+            <div>
+              <h3 className="text-sm font-medium text-black">{paidPresence ? 'Paid Presence' : 'Free Presence'}</h3>
+              <p className="text-xs text-gray-500">{paidPresence ?  'Users pay for minting' : 'Pay mint fees on behalf of the users'}</p>
+            </div>
+            <div className="items-center inline-flex">
+              <button
+                type="button"
+                role="switch"
+                aria-checked={paidPresence}
+                onClick={() => {
+                  setPaidPresence(!paidPresence);
+                  if (!paidPresence) {
+                    //setPoapPrice(0n);
+                    //setPaidPoapTokenId(ALPH_TOKEN_ID);
+                  } else {
+                    setPoapPrice(0n);
+                    setPaidPoapTokenId(ALPH_TOKEN_ID);
+                  }
+                }}
+                className={`relative inline-flex w-10 rounded-full py-1 transition border-2 shadow-small border-black ${
+                  paidPresence ? 'bg-lila-400' : 'bg-white'
+                }`}
+              >
+                <span
+                  className={`h-2 w-2 rounded-full transition shadow-md ${
+                    paidPresence ? 'translate-x-6 bg-lila-800' : 'translate-x-1 bg-gray-500'
+                  }`}
+                  aria-hidden="true"
+                />
+              </button>
+            </div>
+          </div>
+
+          <div className="p-4 bg-white">
+            <div className="flex items-center justify-between">
+              <label className="text-sm font-medium text-black">Token</label>
+              <button
+                type="button"
+                onClick={() => setIsPaidPoapInfoOpen(true)}
+                className="ml-2"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className={`h-5 w-5 ${paidPresence ? 'text-gray-800 hover:text-black' : 'text-gray-400'}`}
+                  viewBox="0 0 24 24"
+                  strokeWidth="2"
+                  stroke="currentColor"
+                  fill="none"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                  <path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" />
+                  <path d="M12 8l.01 0" />
+                  <path d="M11 12l1 0l0 4l1 0" />
+                </svg>
+              </button>
+            </div>
+            <p className="text-xs text-gray-500 mb-2">Token used to pay for presence</p>
+            <TokenSelector 
+              disabled={!paidPresence} 
+              value={paidPoapTokenId} 
+              onChange={setPaidPoapTokenId}
+              onTokenChange={setSelectedToken}
+              tokens={globalTokenList}
+              isLoading={isTokenListLoading}
+            />
+          </div>
+
+          <div className="p-4 bg-white">
+            <div className="flex items-center justify-between">
+              <label className="text-sm font-medium text-black">Price</label>
+              <button
+                type="button"
+                onClick={() => setIsPaidPoapInfoOpen(true)}
+                className="ml-2"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className={`h-5 w-5 ${paidPresence ? 'text-gray-800 hover:text-black' : 'text-gray-400'}`}
+                  viewBox="0 0 24 24"
+                  strokeWidth="2"
+                  stroke="currentColor"
+                  fill="none"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                  <path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" />
+                  <path d="M12 8l.01 0" />
+                  <path d="M11 12l1 0l0 4l1 0" />
+                </svg>
+              </button>
+            </div>
+            <p className="text-xs text-gray-500 mb-2">Price of the Presence people will pay for</p>
+            <div className="relative">
+              <input
+                type="text"
+                inputMode="decimal"
+                placeholder="0.00"
+                disabled={!paidPresence}
+                value={poapPriceInput}
+                onChange={(e) => {
+                  const inputValue = e.target.value;
+                  
+                  // Only allow valid decimal number patterns
+                  if (!/^[0-9]*\.?[0-9]*$/.test(inputValue) && inputValue !== '') {
+                    return;
+                  }
+                  
+                  // Update the input state
+                  setPoapPriceInput(inputValue);
+                  
+                  // Convert to BigInt if not empty
+                  if (inputValue === '' || inputValue === '.') {
+                    setPoapPrice(0n);
+                  } else {
+                    try {
+                      const decimals = selectedToken?.decimals ?? 18;
+                      setPoapPrice(parseTokenAmount(inputValue, decimals));
+                    } catch (error) {
+                      console.error('Error converting price:', error);
+                    }
+                  }
+                }}
+                className={`block w-full px-3 py-3 text-xl text-black border-2 border-black appearance-none placeholder-black focus:border-black focus:bg-lila-500 focus:outline-none focus:ring-black sm:text-sm rounded-2xl ${!paidPresence ? 'opacity-50 cursor-not-allowed' : ''}`}
+              />
+              <div className="absolute right-3 top-1/2 -translate-y-1/2 text-sm font-medium text-gray-500">
+                {selectedToken?.symbol || 'ALPH'}
+              </div>
+            </div>
+          </div>
+
+
           <div className="flex items-center text-left justify-between p-4 bg-white">
             <div>
               <h3 className="text-sm font-medium text-black">{coverMintFees ? 'Cover % of Fees' : 'Users Cover Fees'}</h3>
@@ -1168,14 +1388,14 @@ export default function NewEvent() {
           isOpen={isStorageFeesInfoOpen}
           onClose={() => setIsStorageFeesInfoOpen(false)}
         />
-        {/*<PoapFeesInfo 
+        <PoapFeesInfo 
           isOpen={isPoapFeesInfoOpen}
           onClose={() => setIsPoapFeesInfoOpen(false)}
-        />*/}
-       {/* <TokenIdInfo 
+        />
+       <TokenIdInfo 
           isOpen={isTokenIdInfoOpen}
           onClose={() => setIsTokenIdInfoOpen(false)}
-        />*/}
+        />
         <PresencePriceInfo 
           isOpen={isPresencePriceInfoOpen}
           onClose={() => setIsPresencePriceInfoOpen(false)}
