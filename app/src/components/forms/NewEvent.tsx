@@ -275,8 +275,6 @@ export default function NewEvent() {
           amountAirdrop: 0n,
           airdropWhenHasParticipated: false,
           amountForChainFees: chainFees,
-          coverMintFees: coverMintFees,
-          minterFee: minterFee,
         },
         signer: signer,
         attoAlphAmount: calculateFinalAmount(chainFees, storageFees),
