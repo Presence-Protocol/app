@@ -503,6 +503,8 @@ export default function NewEvent() {
                 onClick={() => {
                   setCoverMintFees(!coverMintFees);
                   if (!coverMintFees) {
+                    setStorageFees(BigInt(Math.floor(0.1 * amount * 10**18)));
+                  } else {
                     setStorageFees(0n);
                     setChainFees(0n);
                   }
@@ -547,15 +549,35 @@ export default function NewEvent() {
               </button>
             </div>
             <p className="text-xs text-gray-500 mb-2">Pay storage fees on behalf of the users (in ALPH)</p>
-            <input
-              type="number"
-              min="0"
-              step="0.1"
-              disabled={!coverMintFees}
-              value={Number(storageFees) / 10**18}
-              onChange={(e) => setStorageFees(BigInt(Math.floor(Number(e.target.value) * 10**18)))}
-              className={`block w-full px-3 py-3 text-xl text-black border-2 border-black appearance-none placeholder-black focus:border-black focus:bg-lila-500 focus:outline-none focus:ring-black sm:text-sm rounded-2xl ${!coverMintFees ? 'opacity-50 cursor-not-allowed' : ''}`}
-            />
+            <div className="relative">
+              <input
+                type="number"
+                min="0"
+                step="0.1"
+                disabled={!coverMintFees}
+                value={Number(storageFees) / 10**18}
+                onChange={(e) => setStorageFees(BigInt(Math.floor(Number(e.target.value) * 10**18)))}
+                className={`block w-full px-3 py-3 text-xl text-black border-2 border-black appearance-none placeholder-black focus:border-black focus:bg-lila-500 focus:outline-none focus:ring-black sm:text-sm rounded-2xl ${!coverMintFees ? 'opacity-50 cursor-not-allowed' : ''}`}
+              />
+              <div className="absolute right-2 top-1/2 -translate-y-1/2 flex gap-2">
+                <button
+                  type="button"
+                  disabled={!coverMintFees}
+                  onClick={() => setStorageFees(BigInt(Math.floor((0.1 * amount * 10**18) / 2)))}
+                  className={`px-2 py-1 text-xs font-medium text-black bg-white border-2 border-black rounded-lg hover:bg-lila-500 ${!coverMintFees ? 'opacity-50 cursor-not-allowed' : ''}`}
+                >
+                  50%
+                </button>
+                <button
+                  type="button"
+                  disabled={!coverMintFees}
+                  onClick={() => setStorageFees(BigInt(Math.floor(0.1 * amount * 10**18)))}
+                  className={`px-2 py-1 text-xs font-medium text-black bg-white border-2 border-black rounded-lg hover:bg-lila-500 ${!coverMintFees ? 'opacity-50 cursor-not-allowed' : ''}`}
+                >
+                  100%
+                </button>
+              </div>
+            </div>
           </div>
 
           <div className="p-4 bg-white">
@@ -862,7 +884,12 @@ export default function NewEvent() {
                                 min="1"
                                 placeholder="Presence Amount"
                                 value={amount || ''}
-                                onChange={(e) => setAmount(parseInt(e.target.value) || 0)}
+                                onChange={(e) => {
+                                  const newAmount = parseInt(e.target.value) || 0;
+                                  setAmount(newAmount);
+                                  // Set storage fees to 0.1 ALPH * amount when amount changes
+                                  setStorageFees(BigInt(Math.floor(0.1 * newAmount * 10**18)));
+                                }}
                                 className="block w-full px-3 py-3 text-xl text-black border-2 border-transparent appearance-none placeholder-black border-black focus:border-black focus:bg-lila-500 focus:outline-none focus:ring-black sm:text-sm rounded-2xl pr-10"
                               />
                               <button
