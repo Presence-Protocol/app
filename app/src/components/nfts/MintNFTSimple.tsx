@@ -1,6 +1,6 @@
 "use client"
 
-import { addressFromContractId, contractIdFromAddress, DUST_AMOUNT, hexToString, MINIMAL_CONTRACT_DEPOSIT, NetworkId, stringToHex, waitForTxConfirmation, web3 } from '@alephium/web3';
+import { addressFromContractId, ALPH_TOKEN_ID, contractIdFromAddress, DUST_AMOUNT, hexToString, MINIMAL_CONTRACT_DEPOSIT, NetworkId, stringToHex, waitForTxConfirmation, web3 } from '@alephium/web3';
 import { useWallet } from '@alephium/web3-react';
 import { PoapFactory, PoapCollection, PoapFactoryTypes, PoapFactoryInstance, PoapCollectionInstance } from 'my-contracts';
 import { loadDeployments } from 'my-contracts/deployments';
@@ -27,6 +27,8 @@ interface NFTCollection {
   amountForStorageFees: bigint;
   amountForChainFees: bigint;
   oneMintPerAddress: boolean;
+  tokenIdPaidPoap: string;
+  tokenPricePaidPoap: bigint;
 }
 
 export default function MintNFTSimple() {
@@ -66,7 +68,9 @@ export default function MintNFTSimple() {
     isPublic: false,
     amountForStorageFees: 0n,
     amountForChainFees: 0n,
-    oneMintPerAddress: false
+    oneMintPerAddress: false,
+    tokenIdPaidPoap: ALPH_TOKEN_ID,
+    tokenPricePaidPoap: 0n,
   });
 
   const mintEventsRef = useRef<HTMLDivElement | null>(null);
@@ -116,7 +120,7 @@ export default function MintNFTSimple() {
             title: hexToString(collectionMetadata.fields.eventName),
             description: hexToString(collectionMetadata.fields.description),
             image: hexToString(collectionMetadata.fields.eventImage),
-            price: 0.1,
+            price:  collectionMetadata.fields.amountForStorageFees >= 10n**17n ? 0.1 : 0,
             maxSupply: collectionMetadata.fields.maxSupply,
             currentSupply: collectionMetadata.fields.totalSupply,
             isPublic: collectionMetadata.fields.isPublic,
@@ -127,7 +131,9 @@ export default function MintNFTSimple() {
             eventEndDate: collectionMetadata.fields.eventEndAt,
             amountForStorageFees: collectionMetadata.fields.amountForStorageFees,
             amountForChainFees: collectionMetadata.fields.amountForChainFees,
-            oneMintPerAddress: collectionMetadata.fields.oneMintPerAddress
+            oneMintPerAddress: collectionMetadata.fields.oneMintPerAddress,
+            tokenIdPaidPoap: collectionMetadata.fields.tokenIdPoap,
+            tokenPricePaidPoap: collectionMetadata.fields.poapPrice
           });
           setIsLoading(false);
         })
@@ -144,23 +150,31 @@ export default function MintNFTSimple() {
   }, [contractId]);
 
   const calculateFinalAmount = (chainFees: bigint, storageFees: bigint): bigint => {
+
+    let amount = 0n;
     // Case 1: Chain fees set and storage fees >= minimum deposit
     if (chainFees > 0n && storageFees >= MINIMAL_CONTRACT_DEPOSIT) {
-      return 0n;
+      amount = 0n;
     }
 
     // Case 2: Storage fees >= minimum deposit but no chain fees
     if (storageFees >= MINIMAL_CONTRACT_DEPOSIT && chainFees <= 0n) {
-      return DUST_AMOUNT;
+      amount = DUST_AMOUNT;
     }
 
     // Case 3: Storage fees present but below minimum
     if (chainFees > 0n && storageFees < MINIMAL_CONTRACT_DEPOSIT) {
-      return MINIMAL_CONTRACT_DEPOSIT;
+      amount = MINIMAL_CONTRACT_DEPOSIT;
     }
 
     // Default case: Use minimum deposit + dust
-    return MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT;
+    amount = MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT;
+
+    if (nftCollection.tokenIdPaidPoap === ALPH_TOKEN_ID) {
+      amount += nftCollection.tokenPricePaidPoap;
+    }
+
+    return amount;
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -171,7 +185,7 @@ export default function MintNFTSimple() {
       nftCollection.amountForChainFees,
       nftCollection.amountForStorageFees
     );
-    console.log('Final amount:', finalAttoAmount);
+
     try {
       if (!signer) {
         throw new Error('Signer not available')
@@ -183,12 +197,18 @@ export default function MintNFTSimple() {
         throw new Error('POAP collection not initialized')
       }
 
+      console.log('nftCollection.tokenIdPaidPoap', nftCollection.tokenIdPaidPoap)
+
       const result = await factoryContract.transact.mintPoap({
         args: {
           collection: poapCollection.contractId,
         },
         signer: signer,
-        attoAlphAmount: finalAttoAmount
+        attoAlphAmount: finalAttoAmount,
+        tokens: nftCollection.tokenIdPaidPoap !== ALPH_TOKEN_ID ? [{
+          id: nftCollection.tokenIdPaidPoap,
+          amount: nftCollection.tokenPricePaidPoap
+        }] : []
       });
 
       await waitForTxConfirmation(result.txId, 1, 5 * 1000);
@@ -390,6 +410,11 @@ export default function MintNFTSimple() {
                       {nftCollection.price > 0 && (
                         <div className="text-black items-center shadow shadow-lila-600 text-xs font-semibold inline-flex px-6 bg-lila-300 border-lila-600 border-2 py-3 rounded-lg h-8 tracking-wide">
                           {nftCollection.price} ALPH
+                        </div>
+                      )}
+                      {nftCollection.tokenPricePaidPoap > 0 && (
+                        <div className="text-black items-center shadow shadow-lila-600 text-xs font-semibold inline-flex px-6 bg-lila-300 border-lila-600 border-2 py-3 rounded-lg h-8 tracking-wide">
+                          {nftCollection.tokenPricePaidPoap} ALPH
                         </div>
                       )}
                     </div>
