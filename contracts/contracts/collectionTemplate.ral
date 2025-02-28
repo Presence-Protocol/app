@@ -184,6 +184,11 @@ Contract PoapCollection(
         return airdropWhenHasParticipated
     }
 
+    pub fn getAmountPoapFees() -> U256{
+      return amountPoapFees
+    }
+
+
     @using(assetsInContract = true, updateFields = true)
     pub fn claimFunds(amountToClaim: U256) -> () {
         checkCaller!(callerAddress!() == organizer, ErrorCodes.InvalidCaller)

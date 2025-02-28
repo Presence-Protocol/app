@@ -146,7 +146,6 @@ export default function MintNFTSimple() {
               tokenName = collectionMetadata.fields.tokenIdPoap.slice(0, 6) + '...';
             }
           }
-          console.log('dsdas',collectionMetadata.fields.amountForStorageFees)
           
           setNftCollection({
             title: hexToString(collectionMetadata.fields.eventName),
@@ -185,7 +184,7 @@ export default function MintNFTSimple() {
 
   const calculateFinalAmount = (chainFees: bigint, storageFees: bigint): bigint => {
 
-    let amount = 0n;
+    let amount = MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT;
     // Case 1: Chain fees set and storage fees >= minimum deposit
     if (chainFees > 0n && storageFees >= MINIMAL_CONTRACT_DEPOSIT) {
       amount = 0n;
@@ -202,7 +201,6 @@ export default function MintNFTSimple() {
     }
 
     // Default case: Use minimum deposit + dust
-    amount = MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT;
 
     if (nftCollection.tokenIdPaidPoap === ALPH_TOKEN_ID) {
       amount += nftCollection.tokenPricePaidPoap;
