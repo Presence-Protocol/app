@@ -577,7 +577,7 @@ export default function NewEvent() {
 <div className="flex items-center text-left justify-between p-4 bg-white">
             <div>
               <h3 className="text-sm font-medium text-black">{paidPresence ? 'Paid Presence' : 'Free Presence'}</h3>
-              <p className="text-xs text-gray-500">{paidPresence ?  'Users pay for minting' : 'Pay mint fees on behalf of the users'}</p>
+              <p className="text-xs text-gray-500">{paidPresence ?  'Users pay for minting' : 'Free minting'}</p>
             </div>
             <div className="items-center inline-flex">
               <button
