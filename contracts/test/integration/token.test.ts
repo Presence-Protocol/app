@@ -1147,6 +1147,90 @@ describe('integration tests', () => {
    
   }, 20000)
 
+  it('Mint poap, set price ALPH', async () => {
+    const signer = await testNodeWallet()
+    const deployments = await deployToDevnet()
+    const factory = deployments.getInstance(PoapFactory)
+
+    expect(factory).toBeDefined()
+
+    if (!factory) {
+      throw new Error('Factory is undefined')
+    }
+
+    await factory.transact.mintNewCollection({
+      args: {
+        eventImage: stringToHex('https://arweave.net/Z1HAdT_PGnxPLct4-u7l1Zl_h4DNdxzKev7tCDAEflc'),
+        maxSupply: 10n,
+        mintStartAt: 1735823531000n,
+        mintEndAt: 1893595576000n,
+        eventName: stringToHex('Test 1'),
+        description: stringToHex('First poap test'),
+        location: stringToHex('Online'),
+        eventStartAt: 1735823531000n,
+        eventEndAt: 1735823531000n,
+        totalSupply: 0n,
+        isPublic: false,
+        oneMintPerAddress: false,
+        isBurnable: false,
+        amountForStorageFees: 0n,
+        poapPrice: 0n,
+        tokenIdPoap: ALPH_TOKEN_ID,
+        amountPoapFees: 0n,
+        tokenIdAirdrop: ALPH_TOKEN_ID,
+        amountAirdropPerUser: 0n,
+        amountAirdrop: 0n,
+        airdropWhenHasParticipated: false,
+        amountForChainFees: 0n,
+        isOpenPrice: true
+      },
+      signer: signer,
+      attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT
+    })
+
+    // Check that event is emitted
+    const { events } = await web3
+      .getCurrentNodeProvider()
+      .events.getEventsContractContractaddress(factory.address, { start: 0 })
+    expect(events.length).toEqual(1)
+
+    const creationEvent = events[0]
+    const poapCollectionMinted = creationEvent.fields[0].value as string
+
+    const collection = PoapCollection.at(addressFromContractId(poapCollectionMinted))
+
+    await factory.transact.mintPoap({
+      signer: minter,
+      attoAlphAmount: ONE_ALPH + MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT,
+      args: {
+        collection: collection.contractId,
+        amount: ONE_ALPH
+      }
+    })
+
+    expect((await collection.view.totalSupply()).returns).toBe(1n)
+    expect((await alphBalanceOf(collection.address))).toBe(ONE_ALPH + MINIMAL_CONTRACT_DEPOSIT)
+
+    await collection.transact.claimFunds({
+      args: {
+        amountToClaim: ONE_ALPH
+      },
+      attoAlphAmount: DUST_AMOUNT,
+      signer: signer
+    })
+
+    expect((await alphBalanceOf(collection.address))).toBe(MINIMAL_CONTRACT_DEPOSIT)
+
+    await expectAssertionError( collection.transact.claimFunds({
+      args: {
+        amountToClaim: 100n
+      },
+      signer: minter
+    }), addressFromContractId(collection.contractId), 7)
+
+   
+  }, 20000)
+
 
   it('Mint poap, set price custom token', async () => {
     const signer = await testNodeWallet()
