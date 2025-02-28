@@ -17,6 +17,7 @@ Contract PoapFactory(
         oneMintPerAddress: Bool,
         poapPrice: U256,
         tokenIdPoap: ByteVec,
+        isOpenPrice: Bool,
         tokenIdAirdrop: ByteVec,
         amountAirdropPerUser: U256,
         airdropWhenHasParticipated: Bool,
@@ -46,6 +47,7 @@ Contract PoapFactory(
                 oneMintPerAddress,
                 poapPrice,
                 tokenIdPoap,
+                isOpenPrice,
                 tokenIdAirdrop,
                 amountAirdropPerUser,
                 airdropWhenHasParticipated,
@@ -89,7 +91,7 @@ Contract PoapFactory(
         }
     
     @using(preapprovedAssets = true, checkExternalCaller = false)
-    pub fn mintPoap(collection: PoapCollection) -> (){
+    pub fn mintPoap(collection: PoapCollection, amount: U256) -> (){
         let caller = callerAddress!()
 
         let collectionAmountAlphInContract = collection.getAmountForStorageFees()
@@ -99,9 +101,14 @@ Contract PoapFactory(
             feesStorageAmount = 0
         }
 
-        let (poapPrice, poapTokenId) = collection.getPoapPrice()
+        
+        let (poapPrice, poapTokenId, isOpenPrice) = collection.getPoapPrice()
+        let mut poapPriceAmount = poapPrice // when isOpenPrice true just set the amount the user wants to pay
+        if(isOpenPrice){
+            poapPriceAmount = amount
+        }
 
-        let poapContractId = collection.mint{caller -> ALPH: feesStorageAmount, poapTokenId: poapPrice}(caller)
+        let poapContractId = collection.mint{caller -> ALPH: feesStorageAmount, poapTokenId: poapPriceAmount}(caller, poapPriceAmount)
         let collectionTotalSupply = collection.totalSupply()
 
         emit PoapMinted(poapContractId, collection, collectionTotalSupply, caller, collection.getIsPublic(), blockTimeStamp!())

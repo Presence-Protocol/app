@@ -48,6 +48,7 @@ export namespace PoapCollectionTypes {
     oneMintPerAddress: boolean;
     poapPrice: bigint;
     tokenIdPoap: HexString;
+    isOpenPrice: boolean;
     tokenIdAirdrop: HexString;
     amountAirdropPerUser: bigint;
     airdropWhenHasParticipated: boolean;
@@ -103,7 +104,7 @@ export namespace PoapCollectionTypes {
       result: CallContractResult<HexString>;
     };
     mint: {
-      params: CallContractParams<{ callerAddr: Address }>;
+      params: CallContractParams<{ callerAddr: Address; amount: bigint }>;
       result: CallContractResult<HexString>;
     };
     setParticipatedPresence: {
@@ -160,7 +161,7 @@ export namespace PoapCollectionTypes {
     };
     getPoapPrice: {
       params: Omit<CallContractParams<{}>, "args">;
-      result: CallContractResult<[bigint, HexString]>;
+      result: CallContractResult<[bigint, HexString, boolean]>;
     };
     getOrganizer: {
       params: Omit<CallContractParams<{}>, "args">;
@@ -208,7 +209,10 @@ export namespace PoapCollectionTypes {
       result: SignExecuteScriptTxResult;
     };
     mint: {
-      params: SignExecuteContractMethodParams<{ callerAddr: Address }>;
+      params: SignExecuteContractMethodParams<{
+        callerAddr: Address;
+        amount: bigint;
+      }>;
       result: SignExecuteScriptTxResult;
     };
     setParticipatedPresence: {
@@ -345,7 +349,7 @@ class Factory extends ContractFactory<
     mint: async (
       params: TestContractParamsWithoutMaps<
         PoapCollectionTypes.Fields,
-        { callerAddr: Address }
+        { callerAddr: Address; amount: bigint }
       >
     ): Promise<TestContractResultWithoutMaps<HexString>> => {
       return testMethod(this, "mint", params, getContractByCodeHash);
@@ -495,7 +499,7 @@ class Factory extends ContractFactory<
         TestContractParamsWithoutMaps<PoapCollectionTypes.Fields, never>,
         "testArgs"
       >
-    ): Promise<TestContractResultWithoutMaps<[bigint, HexString]>> => {
+    ): Promise<TestContractResultWithoutMaps<[bigint, HexString, boolean]>> => {
       return testMethod(this, "getPoapPrice", params, getContractByCodeHash);
     },
     getOrganizer: async (
@@ -522,7 +526,7 @@ export const PoapCollection = new Factory(
   Contract.fromJson(
     PoapCollectionContractJson,
     "",
-    "98b0d446a9f695f6ec0d740c0144fc13d6ac0715d5633374def9fc217db72403",
+    "87340c9c3a7671a14db9686b00aa2d0f174be266b70da92f0e83b33477d8c1d3",
     AllStructs
   )
 );
