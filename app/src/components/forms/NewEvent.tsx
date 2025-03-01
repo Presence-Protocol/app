@@ -333,7 +333,7 @@ export default function NewEvent() {
           oneMintPerAddress: mintLimit,
           isBurnable: isBurnable,
           amountForStorageFees: coverMintFees ? storageFees : 0n,
-          poapPrice: poapPrice,
+          poapPrice: isOpenPrice ? 0n : poapPrice,
           tokenIdPoap: paidPoapTokenId,
           amountPoapFees: 0n,
           tokenIdAirdrop: ALPH_TOKEN_ID,

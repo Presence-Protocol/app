@@ -41,6 +41,7 @@ interface EventResponse {
   eventDateEnd?: string;
   amountPaidPoap?: bigint;
   pricePoap?: bigint;
+  isOpenPrice?: boolean;
 }
 
 
@@ -144,6 +145,7 @@ export default function NFTList({ account: connectedAccount }: { account: string
               description: hexToString(collectionMetadata.fields.description),
               eventDateStart: new Date(Number(collectionMetadata.fields.eventStartAt)).toLocaleDateString(),
               eventDateEnd: new Date(Number(collectionMetadata.fields.eventEndAt)).toLocaleDateString(),
+              isOpenPrice: collectionMetadata.fields.isOpenPrice,
             };
           } catch (error) {
             console.error('Error fetching collection metadata:', error);
@@ -487,13 +489,12 @@ export default function NFTList({ account: connectedAccount }: { account: string
                             <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
                             <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
                           </svg>
-
                           Preview
                         </Link>
                       </div>
-                      {event.pricePoap && event.pricePoap > 0n && (
+                      {(event.pricePoap && event.pricePoap > 0n || event.isOpenPrice) && (
                         <button
-                          disabled={(event.amountPaidPoap !== undefined && event.amountPaidPoap <= 0n)}
+                          disabled={(event.amountPaidPoap !== undefined && event.amountPaidPoap <= 0n )}
                           onClick={(e) => handleClaim(e, event.contractId)}
                           className={`mt-4 w-full text-black items-center shadow shadow-black text-xs font-semibold inline-flex px-4 justify-center ${(event.amountPaidPoap !== undefined && event.amountPaidPoap <= 0n) ? 'bg-gray-200 opacity-60 cursor-not-allowed' : 'bg-lila-300 hover:text-lila-800'} border-black ease-in-out transform transition-all focus:ring-lila-700 focus:shadow-none border-2 duration-100 py-2 rounded-lg h-10 focus:translate-y-1 tracking-wide`}
                         >
