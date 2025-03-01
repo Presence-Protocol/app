@@ -114,7 +114,7 @@ export default function NewEvent() {
   const [isGasFeesInfoOpen, setIsGasFeesInfoOpen] = useState(false);
   const [isPaidPoapTokenIdInfoOpen, setIsPaidPoapTokenIdInfoOpen] = useState(false);
   const [isPaidPoapInfoOpen, setIsPaidPoapInfoOpen] = useState(false);
-
+  const [isOpenPrice, setIsOpenPrice] = useState(false);
 
   const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
   const [selectedTemplate, setSelectedTemplate] = useState<'custom' | null>(null);
@@ -341,7 +341,7 @@ export default function NewEvent() {
           amountAirdrop: 0n,
           airdropWhenHasParticipated: false,
           amountForChainFees: coverMintFees ? chainFees : 0n,
-          isOpenPrice: false
+          isOpenPrice: isOpenPrice
         },
         signer: signer,
         attoAlphAmount: calculateFinalAmount(coverMintFees ? chainFees : 0n, coverMintFees ? storageFees : 0n),
@@ -389,6 +389,7 @@ export default function NewEvent() {
     setCoverMintFees(false);
     setPaidPresence(false);
     setMinterFee(0n);
+    setIsOpenPrice(false);
   }, []);
 
   useEffect(() => {
@@ -643,7 +644,38 @@ export default function NewEvent() {
               isLoading={isTokenListLoading}
             />
           </div>
-
+          <div className="flex items-center text-left justify-between p-4 bg-white">
+            <div>
+              <h3 className="text-sm font-medium text-black">{isOpenPrice ? 'Open Price' : 'Fixed Price'}</h3>
+              <p className="text-xs text-gray-500">{isOpenPrice ? 'Users can set their own price' : 'Fixed price for all users'}</p>
+            </div>
+            <div className="items-center inline-flex">
+              <button
+                type="button"
+                role="switch"
+                disabled={!paidPresence}
+                aria-checked={isOpenPrice}
+                onClick={() => {
+                  setIsOpenPrice(!isOpenPrice);
+                  if (isOpenPrice) {
+                    // Reset to fixed price mode
+                    setPoapPrice(parseTokenAmount(poapPriceInput, selectedToken?.decimals ?? 18));
+                  }
+                }}
+                className={`relative inline-flex w-10 rounded-full py-1 transition border-2 shadow-small border-black ${
+                  !paidPresence ? 'opacity-50' : isOpenPrice ? 'bg-lila-400' : 'bg-white'
+                }`}
+              >
+                <span
+                  className={`h-2 w-2 rounded-full transition shadow-md ${
+                    isOpenPrice ? 'translate-x-6 bg-lila-800' : 'translate-x-1 bg-gray-500'
+                  }`}
+                  aria-hidden="true"
+                />
+              </button>
+            </div>
+          </div>
+          { !isOpenPrice && (
           <div className="p-4 bg-white">
             <div className="flex items-center justify-between">
               <label className="text-sm font-medium text-black">Price</label>
@@ -669,13 +701,17 @@ export default function NewEvent() {
                 </svg>
               </button>
             </div>
-            <p className="text-xs text-gray-500 mb-2">Price of the Presence people will pay for</p>
-            <div className="relative">
-              <input
-                type="text"
+              <p className="text-xs text-gray-500 mb-2">
+                {isOpenPrice ? 'Minimum price users can set' : 'Price of the Presence people will pay for'}
+              </p>
+            
+            
+              <div className="relative">
+                <input
+                  type="text"
                 inputMode="decimal"
                 placeholder="0.00"
-                disabled={!paidPresence}
+                disabled={!paidPresence || isOpenPrice}
                 value={poapPriceInput}
                 onChange={(e) => {
                   const inputValue = e.target.value;
@@ -700,14 +736,21 @@ export default function NewEvent() {
                     }
                   }
                 }}
-                className={`block w-full px-3 py-3 text-xl text-black border-2 border-black appearance-none placeholder-black focus:border-black focus:bg-lila-500 focus:outline-none focus:ring-black sm:text-sm rounded-2xl ${!paidPresence ? 'opacity-50 cursor-not-allowed' : ''}`}
+                className={`block w-full px-3 py-3 text-xl text-black border-2 border-black appearance-none placeholder-black focus:border-black focus:bg-lila-500 focus:outline-none focus:ring-black sm:text-sm rounded-2xl ${(!paidPresence || isOpenPrice) ? 'opacity-50 cursor-not-allowed' : ''}`}
               />
               <div className="absolute right-3 top-1/2 -translate-y-1/2 text-sm font-medium text-gray-500">
                 {selectedToken?.symbol || 'ALPH'}
+                </div>
               </div>
-            </div>
-          </div>
-
+            
+            {isOpenPrice && paidPresence && (
+              <div className="mt-4">
+                <p className="text-xs text-gray-600">
+                  When Open Price is enabled, users will be able to set their own price when minting.
+                </p>
+              </div>
+            )}
+          </div>)}
 
           <div className="flex items-center text-left justify-between p-4 bg-white">
             <div>
@@ -740,7 +783,7 @@ export default function NewEvent() {
                 />
               </button>
             </div>
-          </div>
+          </div> 
 
           <div className="p-4 bg-white">
             <div className="flex items-center justify-between">
