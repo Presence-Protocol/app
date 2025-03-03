@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { AlephiumConnectButton, useWallet } from '@alephium/web3-react'
 import { useWalletLoading } from '@/context/WalletLoadingContext';
 import Image from 'next/image';
-import { addressFromContractId, hexToString, web3 } from '@alephium/web3';
+import { addressFromContractId, DUST_AMOUNT, hexToString, waitForTxConfirmation, web3 } from '@alephium/web3';
 import { PoapCollection, PoapNFT } from 'my-contracts';
 import Snackbar from '../ui/Snackbar';
 
@@ -39,6 +39,9 @@ interface EventResponse {
   description?: string;
   eventDateStart?: string;
   eventDateEnd?: string;
+  amountPaidPoap?: bigint;
+  pricePoap?: bigint;
+  isOpenPrice?: boolean;
 }
 
 
@@ -46,16 +49,64 @@ interface EventResponse {
 
 
 
-export default function NFTList({ account }: { account: string }) {
-  const truncatedAccount = account.slice(0, 4) + '...' + account.slice(-4);
+export default function NFTList({ account: connectedAccount }: { account: string }) {
+  const truncatedAccount = connectedAccount.slice(0, 4) + '...' + connectedAccount.slice(-4);
   const [showAllNFTs, setShowAllNFTs] = useState(false);
   const [nfts, setNfts] = useState<NFTMetadata[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [events, setEvents] = useState<EventResponse[]>([]);
   const [showAllEvents, setShowAllEvents] = useState(false);
   const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
+  const [claimMessage, setClaimMessage] = useState("Link copied to clipboard!");
+  const { account, signer } = useWallet();
 
+  const handleClaim = async (e: React.FormEvent, collectionContractId: string) => {
+    e.preventDefault();
 
+    try {
+      if (!signer) {
+        throw new Error('Signer not available')
+      }
+      if (!collectionContractId) {
+        throw new Error('Collection contract not initialized')
+      }
+
+      const collection = PoapCollection.at(addressFromContractId(collectionContractId));
+      const feesAmount = (await collection.view.getAmountPoapFees()).returns
+
+      const result = await collection.transact.claimFunds({
+        args: {
+          amountToClaim: feesAmount
+        },
+        signer: signer,
+        attoAlphAmount: DUST_AMOUNT
+      });
+
+      await waitForTxConfirmation(result.txId, 1, 5 * 1000);
+      
+      // Update the events data after successful claim
+      setClaimMessage("Funds claimed successfully!");
+      setIsSnackbarOpen(true);
+      
+      // Update the specific event in the state
+      setEvents(prevEvents => 
+        prevEvents.map(event => {
+          if (addressFromContractId(event.contractId) === addressFromContractId(collectionContractId)) {
+            return {
+              ...event,
+              amountPaidPoap: 0n
+            };
+          }
+          return event;
+        })
+      );
+      
+    } catch (error: any) {
+      console.error('Error claiming funds:', error);
+      setClaimMessage("Failed to claim funds. Please try again.");
+      setIsSnackbarOpen(true);
+    }
+  }
 
   useEffect(() => {
     console.log('Setting up node provider...');
@@ -71,7 +122,7 @@ export default function NFTList({ account }: { account: string }) {
       try {
         const minLoadingTime = new Promise(resolve => setTimeout(resolve, 1000));
 
-        const response = await fetch(`https://presenceprotocol.notrustverify.ch/api/events/${account}?limit=10`);
+        const response = await fetch(`https://presenceprotocol.notrustverify.ch/api/events/${connectedAccount}?limit=10`);
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -87,10 +138,14 @@ export default function NFTList({ account }: { account: string }) {
             console.log('collectionMetadata', collectionMetadata);
             return {
               ...event,
+              contractId: event.contractId,
+              amountPaidPoap: collectionMetadata.fields.amountPoapFees,
+              pricePoap: collectionMetadata.fields.poapPrice,
               image: hexToString(collectionMetadata.fields.eventImage),
               description: hexToString(collectionMetadata.fields.description),
               eventDateStart: new Date(Number(collectionMetadata.fields.eventStartAt)).toLocaleDateString(),
               eventDateEnd: new Date(Number(collectionMetadata.fields.eventEndAt)).toLocaleDateString(),
+              isOpenPrice: collectionMetadata.fields.isOpenPrice,
             };
           } catch (error) {
             console.error('Error fetching collection metadata:', error);
@@ -107,14 +162,13 @@ export default function NFTList({ account }: { account: string }) {
       }
     };
 
-
     const fetchNFTs = async () => {
       try {
         // Create a minimum loading time promise
         const minLoadingTime = new Promise(resolve => setTimeout(resolve, 1000));
 
         // Fetch POAP data
-        const response = await fetch(`https://presenceprotocol.notrustverify.ch/api/poap/${account}`);
+        const response = await fetch(`https://presenceprotocol.notrustverify.ch/api/poap/${connectedAccount}`);
         const poapData: POAPResponse[] = await response.json();
         console.log('poapData', poapData);
         // Fetch metadata for each POAP
@@ -148,7 +202,7 @@ export default function NFTList({ account }: { account: string }) {
 
     fetchNFTs();
     fetchEvents();
-  }, [account]);
+  }, [connectedAccount]);
 
 
 
@@ -435,10 +489,21 @@ export default function NFTList({ account }: { account: string }) {
                             <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
                             <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
                           </svg>
-
                           Preview
                         </Link>
                       </div>
+                      {(event.pricePoap && event.pricePoap > 0n || event.isOpenPrice) && (
+                        <button
+                          disabled={(event.amountPaidPoap !== undefined && event.amountPaidPoap <= 0n )}
+                          onClick={(e) => handleClaim(e, event.contractId)}
+                          className={`mt-4 w-full text-black items-center shadow shadow-black text-xs font-semibold inline-flex px-4 justify-center ${(event.amountPaidPoap !== undefined && event.amountPaidPoap <= 0n) ? 'bg-gray-200 opacity-60 cursor-not-allowed' : 'bg-lila-300 hover:text-lila-800'} border-black ease-in-out transform transition-all focus:ring-lila-700 focus:shadow-none border-2 duration-100 py-2 rounded-lg h-10 focus:translate-y-1 tracking-wide`}
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-3 h-3 mr-1">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 3.75V16.5L12 14.25 7.5 16.5V3.75m9 0H18A2.25 2.25 0 0 1 20.25 6v12A2.25 2.25 0 0 1 18 20.25H6A2.25 2.25 0 0 1 3.75 18V6A2.25 2.25 0 0 1 6 3.75h1.5m9 0h-9" />
+                          </svg>
+                          Claim
+                        </button>
+                      )}
                     </div>
                   </div>
                 ))}
@@ -464,7 +529,7 @@ export default function NFTList({ account }: { account: string }) {
 
       </div>
       <Snackbar 
-        message="Link copied to clipboard!" 
+        message={claimMessage} 
         isOpen={isSnackbarOpen} 
         onClose={() => setIsSnackbarOpen(false)} 
       />

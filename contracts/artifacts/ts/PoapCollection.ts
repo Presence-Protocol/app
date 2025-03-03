@@ -48,6 +48,7 @@ export namespace PoapCollectionTypes {
     oneMintPerAddress: boolean;
     poapPrice: bigint;
     tokenIdPoap: HexString;
+    isOpenPrice: boolean;
     tokenIdAirdrop: HexString;
     amountAirdropPerUser: bigint;
     airdropWhenHasParticipated: boolean;
@@ -103,7 +104,7 @@ export namespace PoapCollectionTypes {
       result: CallContractResult<HexString>;
     };
     mint: {
-      params: CallContractParams<{ callerAddr: Address }>;
+      params: CallContractParams<{ callerAddr: Address; amount: bigint }>;
       result: CallContractResult<HexString>;
     };
     setParticipatedPresence: {
@@ -134,6 +135,10 @@ export namespace PoapCollectionTypes {
       params: Omit<CallContractParams<{}>, "args">;
       result: CallContractResult<boolean>;
     };
+    getAmountPoapFees: {
+      params: Omit<CallContractParams<{}>, "args">;
+      result: CallContractResult<bigint>;
+    };
     claimFunds: {
       params: CallContractParams<{ amountToClaim: bigint }>;
       result: CallContractResult<null>;
@@ -156,7 +161,7 @@ export namespace PoapCollectionTypes {
     };
     getPoapPrice: {
       params: Omit<CallContractParams<{}>, "args">;
-      result: CallContractResult<[bigint, HexString]>;
+      result: CallContractResult<[bigint, HexString, boolean]>;
     };
     getOrganizer: {
       params: Omit<CallContractParams<{}>, "args">;
@@ -204,7 +209,10 @@ export namespace PoapCollectionTypes {
       result: SignExecuteScriptTxResult;
     };
     mint: {
-      params: SignExecuteContractMethodParams<{ callerAddr: Address }>;
+      params: SignExecuteContractMethodParams<{
+        callerAddr: Address;
+        amount: bigint;
+      }>;
       result: SignExecuteScriptTxResult;
     };
     setParticipatedPresence: {
@@ -232,6 +240,10 @@ export namespace PoapCollectionTypes {
       result: SignExecuteScriptTxResult;
     };
     getAirdropWhenHasParticipated: {
+      params: Omit<SignExecuteContractMethodParams<{}>, "args">;
+      result: SignExecuteScriptTxResult;
+    };
+    getAmountPoapFees: {
       params: Omit<SignExecuteContractMethodParams<{}>, "args">;
       result: SignExecuteScriptTxResult;
     };
@@ -337,7 +349,7 @@ class Factory extends ContractFactory<
     mint: async (
       params: TestContractParamsWithoutMaps<
         PoapCollectionTypes.Fields,
-        { callerAddr: Address }
+        { callerAddr: Address; amount: bigint }
       >
     ): Promise<TestContractResultWithoutMaps<HexString>> => {
       return testMethod(this, "mint", params, getContractByCodeHash);
@@ -409,6 +421,19 @@ class Factory extends ContractFactory<
         getContractByCodeHash
       );
     },
+    getAmountPoapFees: async (
+      params: Omit<
+        TestContractParamsWithoutMaps<PoapCollectionTypes.Fields, never>,
+        "testArgs"
+      >
+    ): Promise<TestContractResultWithoutMaps<bigint>> => {
+      return testMethod(
+        this,
+        "getAmountPoapFees",
+        params,
+        getContractByCodeHash
+      );
+    },
     claimFunds: async (
       params: TestContractParamsWithoutMaps<
         PoapCollectionTypes.Fields,
@@ -474,7 +499,7 @@ class Factory extends ContractFactory<
         TestContractParamsWithoutMaps<PoapCollectionTypes.Fields, never>,
         "testArgs"
       >
-    ): Promise<TestContractResultWithoutMaps<[bigint, HexString]>> => {
+    ): Promise<TestContractResultWithoutMaps<[bigint, HexString, boolean]>> => {
       return testMethod(this, "getPoapPrice", params, getContractByCodeHash);
     },
     getOrganizer: async (
@@ -501,7 +526,7 @@ export const PoapCollection = new Factory(
   Contract.fromJson(
     PoapCollectionContractJson,
     "",
-    "40546ba794e4f4883ec91d30f614ce12f1c2f707bba4ff451a440a07969d3008",
+    "87340c9c3a7671a14db9686b00aa2d0f174be266b70da92f0e83b33477d8c1d3",
     AllStructs
   )
 );
@@ -701,6 +726,17 @@ export class PoapCollectionInstance extends ContractInstance {
         getContractByCodeHash
       );
     },
+    getAmountPoapFees: async (
+      params?: PoapCollectionTypes.CallMethodParams<"getAmountPoapFees">
+    ): Promise<PoapCollectionTypes.CallMethodResult<"getAmountPoapFees">> => {
+      return callMethod(
+        PoapCollection,
+        this,
+        "getAmountPoapFees",
+        params === undefined ? {} : params,
+        getContractByCodeHash
+      );
+    },
     claimFunds: async (
       params: PoapCollectionTypes.CallMethodParams<"claimFunds">
     ): Promise<PoapCollectionTypes.CallMethodResult<"claimFunds">> => {
@@ -866,6 +902,18 @@ export class PoapCollectionInstance extends ContractInstance {
         PoapCollection,
         this,
         "getAirdropWhenHasParticipated",
+        params
+      );
+    },
+    getAmountPoapFees: async (
+      params: PoapCollectionTypes.SignExecuteMethodParams<"getAmountPoapFees">
+    ): Promise<
+      PoapCollectionTypes.SignExecuteMethodResult<"getAmountPoapFees">
+    > => {
+      return signExecuteMethod(
+        PoapCollection,
+        this,
+        "getAmountPoapFees",
         params
       );
     },

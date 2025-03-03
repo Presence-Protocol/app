@@ -1,6 +1,6 @@
 "use client"
 
-import { addressFromContractId, contractIdFromAddress, DUST_AMOUNT, hexToString, MINIMAL_CONTRACT_DEPOSIT, NetworkId, stringToHex, waitForTxConfirmation, web3 } from '@alephium/web3';
+import { addressFromContractId, ALPH_TOKEN_ID, contractIdFromAddress, DUST_AMOUNT, hexToString, MINIMAL_CONTRACT_DEPOSIT, NetworkId, number256ToNumber, stringToHex, waitForTxConfirmation, web3 } from '@alephium/web3';
 import { useWallet } from '@alephium/web3-react';
 import { PoapFactory, PoapCollection, PoapFactoryTypes, PoapFactoryInstance, PoapCollectionInstance } from 'my-contracts';
 import { loadDeployments } from 'my-contracts/deployments';
@@ -10,6 +10,7 @@ import MintSuccessModal from '../Modals/MintSuccessModal';
 import Confetti from 'react-confetti'
 import useWindowSize from '@/hooks/useWindowSize'
 import AlreadyMintedWarning from '../Modals/AlreadyMintedWarning';
+import { getTokenList, findTokenFromId } from '@/services/utils';
 
 interface NFTCollection {
   title: string;
@@ -27,7 +28,33 @@ interface NFTCollection {
   amountForStorageFees: bigint;
   amountForChainFees: bigint;
   oneMintPerAddress: boolean;
+  tokenIdPaidPoap: string;
+  tokenPricePaidPoap: bigint;
+  tokenNamePaidPoap?: string;
+  tokenDecimalsPaidPoap?: number;
+  isOpenPrice: boolean;
 }
+
+
+const parseTokenAmount = (input: string, decimals: number): bigint => {
+  if (!input || input === '0') return 0n;
+  
+  const parts = input.split('.');
+  const integerPart = parts[0] || '0';
+  let fractionalPart = parts.length > 1 ? parts[1] : '';
+  
+  // Pad or truncate fractional part based on token decimals
+  if (fractionalPart.length > decimals) {
+    fractionalPart = fractionalPart.substring(0, decimals);
+  } else {
+    fractionalPart = fractionalPart.padEnd(decimals, '0');
+  }
+  
+  // Combine integer and fractional parts
+  const fullValue = BigInt(integerPart) * (10n ** BigInt(decimals)) + BigInt(fractionalPart);
+  console.log(fullValue);
+  return fullValue;
+};
 
 export default function MintNFTSimple() {
   const { connectionStatus } = useWallet();
@@ -50,7 +77,6 @@ export default function MintNFTSimple() {
     timestamp: number;
   }>>([]);
   const [countdown, setCountdown] = useState<string | null>(null);
-
   const [nftCollection, setNftCollection] = useState<NFTCollection>({
     title: '00',
     description: '00',
@@ -66,8 +92,15 @@ export default function MintNFTSimple() {
     isPublic: false,
     amountForStorageFees: 0n,
     amountForChainFees: 0n,
-    oneMintPerAddress: false
+    oneMintPerAddress: false,
+    tokenIdPaidPoap: ALPH_TOKEN_ID,
+    tokenPricePaidPoap: 0n,
+    tokenNamePaidPoap: 'ALPH',  
+    isOpenPrice: false,
   });
+  const [tokenList, setTokenList] = useState<any[]>([]);
+  const [customPrice, setCustomPrice] = useState<string>('');
+  const [customPriceError, setCustomPriceError] = useState<string | null>(null);
 
   const mintEventsRef = useRef<HTMLDivElement | null>(null);
 
@@ -91,6 +124,19 @@ export default function MintNFTSimple() {
   }, []);
 
   useEffect(() => {
+    const fetchTokenList = async () => {
+      try {
+        const tokens = await getTokenList();
+        setTokenList(tokens);
+      } catch (error) {
+        console.error('Error fetching token list:', error);
+      }
+    };
+    
+    fetchTokenList();
+  }, []);
+
+  useEffect(() => {
     console.log('UseEffect running')
     web3.setCurrentNodeProvider(
       process.env.NEXT_PUBLIC_NODE_URL ?? "https://node.testnet.alephium.org",
@@ -110,13 +156,27 @@ export default function MintNFTSimple() {
       setPoapCollection(collection);
 
       collection.fetchState()
-        .then((collectionMetadata) => {
+        .then(async (collectionMetadata) => {
           console.log(collectionMetadata)
+          
+          // Get token name from token list
+          let tokenName = 'ALPH';
+          let token
+          if (collectionMetadata.fields.tokenIdPoap !== ALPH_TOKEN_ID) {
+            token = findTokenFromId(tokenList, collectionMetadata.fields.tokenIdPoap);
+            if (token) {
+              tokenName = token.symbol || token.name;
+            } else {
+              // Fallback to shortened ID if token not found in list
+              tokenName = collectionMetadata.fields.tokenIdPoap.slice(0, 6) + '...';
+            }
+          }
+          
           setNftCollection({
             title: hexToString(collectionMetadata.fields.eventName),
             description: hexToString(collectionMetadata.fields.description),
             image: hexToString(collectionMetadata.fields.eventImage),
-            price: 0.1,
+            price:  collectionMetadata.fields.amountForStorageFees >= 10n**17n ? 0 : 0.1,
             maxSupply: collectionMetadata.fields.maxSupply,
             currentSupply: collectionMetadata.fields.totalSupply,
             isPublic: collectionMetadata.fields.isPublic,
@@ -127,7 +187,12 @@ export default function MintNFTSimple() {
             eventEndDate: collectionMetadata.fields.eventEndAt,
             amountForStorageFees: collectionMetadata.fields.amountForStorageFees,
             amountForChainFees: collectionMetadata.fields.amountForChainFees,
-            oneMintPerAddress: collectionMetadata.fields.oneMintPerAddress
+            oneMintPerAddress: collectionMetadata.fields.oneMintPerAddress,
+            tokenIdPaidPoap: collectionMetadata.fields.tokenIdPoap,
+            tokenPricePaidPoap: collectionMetadata.fields.poapPrice,
+            tokenNamePaidPoap: tokenName,
+            tokenDecimalsPaidPoap: token?.decimals,
+            isOpenPrice: collectionMetadata.fields.isOpenPrice,
           });
           setIsLoading(false);
         })
@@ -141,37 +206,72 @@ export default function MintNFTSimple() {
       setError('No event ID provided');
       setIsLoading(false);
     }
-  }, [contractId]);
+  }, [contractId, tokenList]);
 
   const calculateFinalAmount = (chainFees: bigint, storageFees: bigint): bigint => {
+    let amount = MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT;
     // Case 1: Chain fees set and storage fees >= minimum deposit
     if (chainFees > 0n && storageFees >= MINIMAL_CONTRACT_DEPOSIT) {
-      return 0n;
+      amount = 0n;
     }
 
     // Case 2: Storage fees >= minimum deposit but no chain fees
     if (storageFees >= MINIMAL_CONTRACT_DEPOSIT && chainFees <= 0n) {
-      return DUST_AMOUNT;
+      amount = DUST_AMOUNT;
     }
 
     // Case 3: Storage fees present but below minimum
     if (chainFees > 0n && storageFees < MINIMAL_CONTRACT_DEPOSIT) {
-      return MINIMAL_CONTRACT_DEPOSIT;
+      amount = MINIMAL_CONTRACT_DEPOSIT;
     }
 
-    // Default case: Use minimum deposit + dust
-    return MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT;
+    // For ALPH token, add the price to the ALPH amount
+    if (nftCollection.tokenIdPaidPoap === ALPH_TOKEN_ID && nftCollection.isOpenPrice && customPrice) {
+      try {
+        const decimals = nftCollection.tokenDecimalsPaidPoap || 18;
+        const customPriceBigInt = parseTokenAmount(customPrice, decimals);
+        amount += customPriceBigInt;
+      } catch (error) {
+        console.error('Error converting custom price:', error);
+        amount += nftCollection.tokenPricePaidPoap;
+      }
+    } else if (nftCollection.tokenIdPaidPoap === ALPH_TOKEN_ID) {
+      amount += nftCollection.tokenPricePaidPoap;
+    }
+
+    return amount;
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validate custom price if open price is enabled
+    if (nftCollection.isOpenPrice && nftCollection.tokenPricePaidPoap > 0n) {
+      if (!customPrice || customPrice === '0') {
+        setCustomPriceError('Please enter a valid amount');
+        return;
+      }
+      
+      try {
+        const customPriceValue = parseFloat(customPrice);
+        if (isNaN(customPriceValue) || customPriceValue <= 0) {
+          setCustomPriceError('Please enter a valid amount');
+          return;
+        }
+        setCustomPriceError(null);
+      } catch (error) {
+        setCustomPriceError('Please enter a valid amount');
+        return;
+      }
+    }
+    
     setIsMinting(true);
 
     const finalAttoAmount = calculateFinalAmount(
       nftCollection.amountForChainFees,
       nftCollection.amountForStorageFees
     );
-    console.log('Final amount:', finalAttoAmount);
+
     try {
       if (!signer) {
         throw new Error('Signer not available')
@@ -183,12 +283,43 @@ export default function MintNFTSimple() {
         throw new Error('POAP collection not initialized')
       }
 
+      console.log('nftCollection.tokenIdPaidPoap', nftCollection.tokenIdPaidPoap)
+
+      // Convert custom price to BigInt with proper decimals using parseTokenAmount
+      let customPriceAmount = 0n;
+      if (nftCollection.isOpenPrice && customPrice) {
+        const decimals = nftCollection.tokenDecimalsPaidPoap || 18;
+        customPriceAmount = parseTokenAmount(customPrice, decimals);
+      }
+
+      // Prepare tokens array for the transaction
+      const tokens = [];
+      
+      // For non-ALPH tokens
+      if (nftCollection.tokenIdPaidPoap !== ALPH_TOKEN_ID) {
+        // If open price is enabled, use the custom price
+        if (nftCollection.isOpenPrice && customPrice) {
+          tokens.push({
+            id: nftCollection.tokenIdPaidPoap,
+            amount: customPriceAmount
+          });
+        } else {
+          // Otherwise use the default price
+          tokens.push({
+            id: nftCollection.tokenIdPaidPoap,
+            amount: nftCollection.tokenPricePaidPoap
+          });
+        }
+      }
+
       const result = await factoryContract.transact.mintPoap({
         args: {
           collection: poapCollection.contractId,
+          amount: nftCollection.isOpenPrice ? customPriceAmount : 0n
         },
         signer: signer,
-        attoAlphAmount: finalAttoAmount
+        attoAlphAmount: finalAttoAmount,
+        tokens: tokens
       });
 
       await waitForTxConfirmation(result.txId, 1, 5 * 1000);
@@ -395,13 +526,24 @@ export default function MintNFTSimple() {
                           <span>1 Per Wallet</span>
                         </div>
                       )}
+                      
                       {nftCollection.price > 0 && (
                         <div className="text-black items-center shadow shadow-lila-600 text-xs font-semibold inline-flex px-6 bg-lila-300 border-lila-600 border-2 py-3 rounded-lg h-8 tracking-wide">
                           {nftCollection.price} ALPH
                         </div>
                       )}
+                      {nftCollection.tokenPricePaidPoap > 0 && !nftCollection.isOpenPrice && (
+                        <div className="text-black items-center shadow shadow-lila-600 text-xs font-semibold inline-flex px-6 bg-lila-300 border-lila-600 border-2 py-3 rounded-lg h-8 tracking-wide">
+                          {number256ToNumber(nftCollection.tokenPricePaidPoap, nftCollection.tokenDecimalsPaidPoap || 18)} {nftCollection.tokenNamePaidPoap || 'Token'}
+                        </div>
+                      )}
+                      {nftCollection.isOpenPrice && (
+                        <div className="text-black items-center shadow shadow-lila-600 text-xs font-semibold inline-flex px-6 bg-lila-300 border-lila-600 border-2 py-3 rounded-lg h-8 tracking-wide">
+                         Open Price in {nftCollection.tokenNamePaidPoap || 'Token'}
+                        </div>
+                      )}
                     </div>
-
+                        
                     <div className="flex flex-col gap-2 min-w-72 mt-2">
                       <div className="flex flex-col sm:flex-row items-center justify-center gap-2 text-xs">
                         <div className="flex items-center gap-2">
@@ -427,6 +569,10 @@ export default function MintNFTSimple() {
                         <span className="text-gray-600">
                             {nftCollection.isPublic ? 'Public Event' : 'Private Event'}
                           </span>
+                          <span className="text-gray-400 hidden sm:inline">•</span>
+                          <span className="text-gray-600">
+                            {nftCollection.tokenPricePaidPoap > 0 || nftCollection.isOpenPrice ? 'Paid Presence' : ''}
+                          </span>
 
                         {/* {countdown && (
                           <div className="flex items-center gap-2">
@@ -443,6 +589,40 @@ export default function MintNFTSimple() {
                   </div>
 
                   <div className="mt-8">
+                    {/* Add custom price input when isOpenPrice is true */}
+                    {nftCollection.isOpenPrice && (
+                      <div className="mb-4">
+                        <div className="relative">
+                          <label htmlFor="customPrice" className="block text-sm font-medium text-gray-700 mb-1 text-left">
+                            Set your own price:
+                          </label>
+                          <input
+                            type="text"
+                            id="customPrice"
+                            inputMode="decimal"
+                            placeholder="Enter amount"
+                            value={customPrice}
+                            onChange={(e) => {
+                              const value = e.target.value;
+                              // Only allow valid decimal number patterns
+                              if (!/^[0-9]*\.?[0-9]*$/.test(value) && value !== '') {
+                                return;
+                              }
+                              setCustomPrice(value);
+                              setCustomPriceError(null);
+                            }}
+                            className="block w-full px-3 py-3 text-xl text-black border-2 border-black appearance-none placeholder-black focus:border-black focus:bg-lila-500 focus:outline-none focus:ring-black sm:text-sm rounded-2xl"
+                          />
+                          <div className="absolute right-3 top-1/2 -translate-y-1/2 text-sm font-medium text-gray-500">
+                            {nftCollection.tokenNamePaidPoap || 'ALPH'}
+                          </div>
+                        </div>
+                        {customPriceError && (
+                          <p className="mt-1 text-sm text-red-600 text-left">{customPriceError}</p>
+                        )}
+                      </div>
+                    )}
+
                     <button
                       onClick={handleSubmit}
                       type="button"
@@ -451,7 +631,8 @@ export default function MintNFTSimple() {
                         connectionStatus !== 'connected' ||
                         Date.now() < Number(nftCollection.mintStartDate) ||
                         Date.now() > Number(nftCollection.mintEndDate) ||
-                        nftCollection.currentSupply >= nftCollection.maxSupply}
+                        nftCollection.currentSupply >= nftCollection.maxSupply ||
+                        (nftCollection.isOpenPrice && nftCollection.tokenPricePaidPoap > 0n && !customPrice)}
                       className="text-black items-center shadow shadow-black max-w-md text-lg font-semibold inline-flex px-6 focus:outline-none justify-center text-center bg-white 
                       border-black ease-in-out transform transition-all focus:ring-lila-700 focus:shadow-none border-2 duration-100   py-3 rounded-lg h-16 tracking-wide focus:translate-y-1 w-full hover:text-lila-800 disabled:opacity-50 disabled:cursor-not-allowed"
                     >

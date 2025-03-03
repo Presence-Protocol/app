@@ -118,6 +118,7 @@ export default function MintNFTSimple() {
       await factoryContract.transact.mintPoap({
         args: {
           collection: poapCollection.contractId,
+          amount: 0n
         },
         signer: signer,
         attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT
