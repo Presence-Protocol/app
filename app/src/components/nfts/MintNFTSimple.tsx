@@ -373,6 +373,14 @@ export default function MintNFTSimple() {
                   </div>
                   <h3 className="mt-6 text-2xl font-medium text-black">{nftCollection.title}</h3>
                   <p className="mt-2 text-sm text-black">{nftCollection.description}</p>
+                  
+                  {/* Add event date display */}
+                  <p className="mt-2 text-sm font-medium text-gray-600">
+                    {formatDate(nftCollection.eventStartDate)}
+                    {nftCollection.eventEndDate > nftCollection.eventStartDate && 
+                      ` - ${formatDate(nftCollection.eventEndDate)}`
+                    }
+                  </p>
 
                   <div className="mt-4 flex flex-col gap-4">
                     <div className="flex justify-center gap-4">
@@ -543,10 +551,10 @@ export default function MintNFTSimple() {
                   <table className="min-w-full divide-y-2 divide-black w-full">
                     <thead className="bg-lila-500">
                       <tr>
-                        <th scope="col" className="p-5 text-left uppercase text-base font-semibold text-black">
+                        <th scope="col" className="p-5 text-left text-base font-semibold text-black">
                           Minter Address
                         </th>
-                        <th scope="col" className="p-5 text-right text-base uppercase font-semibold text-black">
+                        <th scope="col" className="p-5 text-right text-base font-semibold text-black">
                           Mint Time
                         </th>
                       </tr>

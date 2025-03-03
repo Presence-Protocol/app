@@ -67,7 +67,7 @@ const TemplateSelect: React.FC<TemplateSelectProps> = ({ selectedTemplate, onSel
                     onClick={() => handleSelect('custom')}
                   >
                     <div className="flex h-10 w-10 flex-none items-center justify-center bg-white text-black group-hover:text-lila-600">
-                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" className="h-6 w-6">
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.7" stroke="currentColor" className="h-6 w-6">
                         <path strokeLinecap="round" strokeLinejoin="round" d="m21 7.5-2.25-1.313M21 7.5v2.25m0-2.25-2.25 1.313M3 7.5l2.25-1.313M3 7.5l2.25 1.313M3 7.5v2.25m9 3 2.25-1.313M12 12.75l-2.25-1.313M12 12.75V15m0 6.75 2.25-1.313M12 21.75V19.5m0 2.25-2.25-1.313m0-16.875L12 2.25l2.25 1.313M21 14.25v2.25l-2.25 1.313m-13.5 0L3 16.5v-2.25" />
                       </svg>
                     </div>
@@ -82,12 +82,83 @@ const TemplateSelect: React.FC<TemplateSelectProps> = ({ selectedTemplate, onSel
                     </div>
                   </div>
 
+
+                  {/* add to templates: Proof of Attendance */}
+                  {/* Add date below description */}
+                  {/* when no imahe on presence page, show image from template */}
+                  {/* add images to events and make like presence */}
+
+
                   <div
                     className="group relative flex gap-x-6 p-4 duration-300 bg-white"
                     onClick={() => handleSelect('custom')}
                   >
                     <div className="flex h-10 w-10 flex-none items-center justify-center bg-white text-black group-hover:text-lila-600">
-                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" className="h-6 w-6">
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" className="size-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 11.25v8.25a1.5 1.5 0 0 1-1.5 1.5H5.25a1.5 1.5 0 0 1-1.5-1.5v-8.25M12 4.875A2.625 2.625 0 1 0 9.375 7.5H12m0-2.625V7.5m0-2.625A2.625 2.625 0 1 1 14.625 7.5H12m0 0V21m-8.625-9.75h18c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125h-18c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z" />
+                      </svg>
+
+
+                    </div>
+                    <div>
+                      <a href="#_" className="font-semibold text-black group-hover:text-gray-700 duration-300">
+                        Free Event
+                        <span className="absolute inset-0"></span>
+                      </a>
+                      <p className="mt-1 text-black group-hover:text-gray-500">
+                        Create a free event
+                      </p>
+                    </div>
+                  </div>
+
+                  <div
+                    className="group relative flex gap-x-6 p-4 duration-300 bg-white"
+                    onClick={() => handleSelect('custom')}
+                  >
+                    <div className="flex h-10 w-10 flex-none items-center justify-center bg-white text-black group-hover:text-lila-600">
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" className="size-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                      </svg>
+
+                    </div>
+                    <div>
+                      <a href="#_" className="font-semibold text-black group-hover:text-gray-700 duration-300">
+                        Paid Event
+                        <span className="absolute inset-0"></span>
+                      </a>
+                      <p className="mt-1 text-black group-hover:text-gray-500">
+                        Create a paid event
+                      </p>
+                    </div>
+                  </div>
+
+                  <div
+                    className="group relative flex gap-x-6 p-4 duration-300 bg-white"
+                    onClick={() => handleSelect('custom')}
+                  >
+                    <div className="flex h-10 w-10 flex-none items-center justify-center bg-white text-black group-hover:text-lila-600">
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="size-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                      </svg>
+
+                    </div>
+                    <div>
+                      <a href="#_" className="font-semibold text-black group-hover:text-gray-700 duration-300">
+                        Creator
+                        <span className="absolute inset-0"></span>
+                      </a>
+                      <p className="mt-1 text-black group-hover:text-gray-500">
+                        Create a subscription event
+                      </p>
+                    </div>
+                  </div>
+
+                  <div
+                    className="group relative flex gap-x-6 p-4 duration-300 bg-white"
+                    onClick={() => handleSelect('custom')}
+                  >
+                    <div className="flex h-10 w-10 flex-none items-center justify-center bg-white text-black group-hover:text-lila-600">
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.7" stroke="currentColor" className="h-6 w-6">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M12 8.25v-1.5m0 1.5c-1.355 0-2.697.056-4.024.166C6.845 8.51 6 9.473 6 10.608v2.513m6-4.871c1.355 0 2.697.056 4.024.166C17.155 8.51 18 9.473 18 10.608v2.513M15 8.25v-1.5m-6 1.5v-1.5m12 9.75-1.5.75a3.354 3.354 0 0 1-3 0 3.354 3.354 0 0 0-3 0 3.354 3.354 0 0 1-3 0 3.354 3.354 0 0 0-3 0 3.354 3.354 0 0 1-3 0L3 16.5m15-3.379a48.474 48.474 0 0 0-6-.371c-2.032 0-4.034.126-6 .371m12 0c.39.049.777.102 1.163.16 1.07.16 1.837 1.094 1.837 2.175v5.169c0 .621-.504 1.125-1.125 1.125H4.125A1.125 1.125 0 0 1 3 20.625v-5.17c0-1.08.768-2.014 1.837-2.174A47.78 47.78 0 0 1 6 13.12M12.265 3.11a.375.375 0 1 1-.53 0L12 2.845l.265.265Zm-3 0a.375.375 0 1 1-.53 0L9 2.845l.265.265Zm6 0a.375.375 0 1 1-.53 0L15 2.845l.265.265Z" />
                       </svg>
                     </div>
@@ -98,6 +169,49 @@ const TemplateSelect: React.FC<TemplateSelectProps> = ({ selectedTemplate, onSel
                       </a>
                       <p className="mt-1 text-black group-hover:text-gray-500">
                         Create a birthday event
+                      </p>
+                    </div>
+                  </div>
+
+
+                  {/* <div
+                    className="group relative flex gap-x-6 p-4 duration-300 bg-white"
+                    onClick={() => handleSelect('custom')}
+                  >
+                    <div className="flex h-10 w-10 flex-none items-center justify-center bg-white text-black group-hover:text-lila-600">
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" className="size-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z" />
+                      </svg>
+
+                    </div>
+                    <div>
+                      <a href="#_" className="font-semibold text-black group-hover:text-gray-700 duration-300">
+                        Proof of Attendance
+                        <span className="absolute inset-0"></span>
+                      </a>
+                      <p className="mt-1 text-black group-hover:text-gray-500">
+                        Create a birthday event
+                      </p>
+                    </div>
+                  </div> */}
+
+                  <div
+                    className="group relative flex gap-x-6 p-4 duration-300 bg-white"
+                    onClick={() => handleSelect('custom')}
+                  >
+                    <div className="flex h-10 w-10 flex-none items-center justify-center bg-white text-black group-hover:text-lila-600">
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" className="size-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" />
+                      </svg>
+
+                    </div>
+                    <div>
+                      <a href="#_" className="font-semibold text-black group-hover:text-gray-700 duration-300">
+                        Fundraiser
+                        <span className="absolute inset-0"></span>
+                      </a>
+                      <p className="mt-1 text-black group-hover:text-gray-500">
+                        Raise funds for a cause
                       </p>
                     </div>
                   </div>

@@ -70,7 +70,7 @@ export default function NewEvent() {
   const [isBurnableInfoOpen, setIsBurnableInfoOpen] = useState(false);
   const [isGasFeesInfoOpen, setIsGasFeesInfoOpen] = useState(false);
   const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
-  const [selectedTemplate, setSelectedTemplate] = useState<'custom' | null>(null);
+  const [selectedTemplate, setSelectedTemplate] = useState<'custom'>('custom');
   const [isTemplateMenuOpen, setIsTemplateMenuOpen] = useState(false);
   const [coverMintFees, setCoverMintFees] = useState(false);
   const [minterFee, setMinterFee] = useState(0n);
