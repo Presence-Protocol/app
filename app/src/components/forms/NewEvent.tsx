@@ -27,7 +27,7 @@ const MAX_TITLE_LENGTH = 50;
 const MAX_DESCRIPTION_LENGTH = 180;
 
 // Add this type near the top of the file
-type TemplateType = 'custom' | 'free' | 'paid' | 'creator' | 'birthday' | 'fundraiser' | 'meetup';
+type TemplateType = 'all event options' | 'free' | 'paid' | 'creator' | 'birthday' | 'fundraiser' | 'meetup';
 
 // Add these utility functions at the top of the file, after the imports
 const formatTokenAmount = (amount: bigint, decimals: number): string => {
@@ -120,7 +120,7 @@ export default function NewEvent() {
   const [isOpenPrice, setIsOpenPrice] = useState(false);
 
   const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
-  const [selectedTemplate, setSelectedTemplate] = useState<TemplateType>('custom');
+  const [selectedTemplate, setSelectedTemplate] = useState<TemplateType>('all event options');
   const [isTemplateMenuOpen, setIsTemplateMenuOpen] = useState(false);
   const [coverMintFees, setCoverMintFees] = useState(false);
   const [paidPresence, setPaidPresence] = useState(false);

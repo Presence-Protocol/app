@@ -1,15 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react';
 
 interface TemplateSelectProps {
-  selectedTemplate: 'custom' | 'free' | 'paid' | 'creator' | 'birthday' | 'fundraiser' | 'meetup';
-  onSelect: (template: 'custom' | 'free' | 'paid' | 'creator' | 'birthday' | 'fundraiser' | 'meetup') => void;
+  selectedTemplate: 'all event options' | 'free' | 'paid' | 'creator' | 'birthday' | 'fundraiser' | 'meetup';
+  onSelect: (template: 'all event options' | 'free' | 'paid' | 'creator' | 'birthday' | 'fundraiser' | 'meetup') => void;
 }
 
 const TemplateSelect: React.FC<TemplateSelectProps> = ({ selectedTemplate, onSelect }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement | null>(null);
 
-  const handleSelect = (template: 'custom' | 'free' | 'paid' | 'creator' | 'birthday' | 'fundraiser' | 'meetup') => {
+  const handleSelect = (template: 'all event options' | 'free' | 'paid' | 'creator' | 'birthday' | 'fundraiser' | 'meetup') => {
     onSelect(template);
     setIsMenuOpen(false);
   };
@@ -37,7 +37,7 @@ const TemplateSelect: React.FC<TemplateSelectProps> = ({ selectedTemplate, onSel
             onClick={() => setIsMenuOpen(!isMenuOpen)}
             className="text-black items-center min-w-[180px] shadow shadow-black text-md font-semibold inline-flex px-6 focus:outline-none justify-center text-center bg-white border-black ease-in-out transform transition-all focus:ring-lila-700 border-2 duration-100 sm:w-auto py-3 rounded-lg h-16 tracking-wide w-full hover:text-lila-800 gap-3"
           >
-            <span style={{ textTransform: 'capitalize' }}>{selectedTemplate ? selectedTemplate + ' Event' : 'Select Template'}</span>
+            <span style={{ textTransform: 'capitalize' }}>{selectedTemplate ? (selectedTemplate === 'all event options' ? 'All Event Options' : selectedTemplate + ' Event') : 'Select Template'}</span>
             <svg
               className={`inline h-4 transition-transform duration-200 transform ${isMenuOpen ? 'rotate-180' : 'rotate-0'}`}
               xmlns="http://www.w3.org/2000/svg"
@@ -64,7 +64,7 @@ const TemplateSelect: React.FC<TemplateSelectProps> = ({ selectedTemplate, onSel
                 <div className="divide-y-2 divide-black">
                   <div
                     className="group relative flex gap-x-6 p-4 duration-300 bg-white"
-                    onClick={() => handleSelect('custom')}
+                    onClick={() => handleSelect('all event options')}
                   >
                     <div className="flex h-10 w-10 flex-none items-center justify-center bg-white text-black group-hover:text-lila-600">
                       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.7" stroke="currentColor" className="h-6 w-6">
@@ -95,7 +95,7 @@ const TemplateSelect: React.FC<TemplateSelectProps> = ({ selectedTemplate, onSel
                   >
                     <div className="flex h-10 w-10 flex-none items-center justify-center bg-white text-black group-hover:text-lila-600">
                       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" className="size-6">
-                        <path strokeLinecap="round" stroke-linejoin="round" d="M21 11.25v8.25a1.5 1.5 0 0 1-1.5 1.5H5.25a1.5 1.5 0 0 1-1.5-1.5v-8.25M12 4.875A2.625 2.625 0 1 0 9.375 7.5H12m0-2.625V7.5m0-2.625A2.625 2.625 0 1 1 14.625 7.5H12m0 0V21m-8.625-9.75h18c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125h-18c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M21 11.25v8.25a1.5 1.5 0 0 1-1.5 1.5H5.25a1.5 1.5 0 0 1-1.5-1.5v-8.25M12 4.875A2.625 2.625 0 1 0 9.375 7.5H12m0-2.625V7.5m0-2.625A2.625 2.625 0 1 1 14.625 7.5H12m0 0V21m-8.625-9.75h18c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125h-18c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z" />
                       </svg>
 
 
@@ -117,7 +117,7 @@ const TemplateSelect: React.FC<TemplateSelectProps> = ({ selectedTemplate, onSel
                   >
                     <div className="flex h-10 w-10 flex-none items-center justify-center bg-white text-black group-hover:text-lila-600">
                       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" className="size-6">
-                        <path strokeLinecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v12m-3-2.818.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
                       </svg>
 
                     </div>
@@ -155,11 +155,11 @@ const TemplateSelect: React.FC<TemplateSelectProps> = ({ selectedTemplate, onSel
 
                   {/* <div
                     className="group relative flex gap-x-6 p-4 duration-300 bg-white"
-                    onClick={() => handleSelect('custom')}
+                    onClick={() => handleSelect('all event options')}
                   >
                     <div className="flex h-10 w-10 flex-none items-center justify-center bg-white text-black group-hover:text-lila-600">
                       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" className="size-6">
-                        <path strokeLinecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z" />
                       </svg>
 
                     </div>
@@ -197,11 +197,11 @@ const TemplateSelect: React.FC<TemplateSelectProps> = ({ selectedTemplate, onSel
 
                   {/* <div
                     className="group relative flex gap-x-6 p-4 duration-300 bg-white"
-                    onClick={() => handleSelect('custom')}
+                    onClick={() => handleSelect('all event options')}
                   >
                     <div className="flex h-10 w-10 flex-none items-center justify-center bg-white text-black group-hover:text-lila-600">
                       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" className="size-6">
-                        <path strokeLinecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z" />
                       </svg>
 
                     </div>
@@ -222,7 +222,7 @@ const TemplateSelect: React.FC<TemplateSelectProps> = ({ selectedTemplate, onSel
                   >
                     <div className="flex h-10 w-10 flex-none items-center justify-center bg-white text-black group-hover:text-lila-600">
                       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.9" stroke="currentColor" className="size-6">
-                        <path strokeLinecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" />
                       </svg>
 
                     </div>
