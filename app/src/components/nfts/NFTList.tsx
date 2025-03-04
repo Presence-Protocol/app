@@ -174,7 +174,6 @@ export default function NFTList({ account: connectedAccount }: { account: string
         // Fetch metadata for each POAP
         const nftPromises = poapData.map(async (poap) => {
           const collection = PoapNFT.at(addressFromContractId(poap.contractId));
-          // console.log('collection', collection);
           const collectionMetadata = await collection.fetchState();
 
           return {
@@ -468,7 +467,7 @@ export default function NFTList({ account: connectedAccount }: { account: string
                           )}
                         </div>
                       </div>
-                      <div className="flex justify-between items-center gap-4 pt-3">
+                      <div className="flex justify-between items-center gap-4 ">
                         <button
                           onClick={() => handleShare(addressFromContractId(event.contractId))}
                           className="mt-4 w-full text-black items-center shadow shadow-black text-xs font-semibold inline-flex px-4 justify-center bg-white border-black ease-in-out transform transition-all focus:ring-lila-700 focus:shadow-none border-2 duration-100   py-2 rounded-lg h-10 focus:translate-y-1 hover:text-lila-800 tracking-wide"
