@@ -174,7 +174,7 @@ export default function NFTList({ account: connectedAccount }: { account: string
         // Fetch metadata for each POAP
         const nftPromises = poapData.map(async (poap) => {
           const collection = PoapNFT.at(addressFromContractId(poap.contractId));
-          console.log('collection', collection);
+          // console.log('collection', collection);
           const collectionMetadata = await collection.fetchState();
 
           return {

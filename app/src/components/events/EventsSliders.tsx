@@ -4,8 +4,9 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import ExplorerHeader from './EventsHeader';
 import { useRouter } from 'next/navigation';
-import { addressFromContractId } from '@alephium/web3';
+import { addressFromContractId, hexToString, web3 } from '@alephium/web3';
 import EventSlider from '../nfts/EventSlider';
+import { PoapCollection } from 'my-contracts';
 
 interface Event {
   contractId: string;
@@ -13,12 +14,13 @@ interface Event {
   caller: string;
   createdAt: string;
   updatedAt: string;
-  // Add any additional fields needed for event type classification
   eventType?: 'free' | 'premium' | 'live';
   image?: string;
   description?: string;
   eventDateStart?: string;
   eventDateEnd?: string;
+  pricePoap?: bigint;
+  isOpenPrice?: boolean;
 }
 
 interface EventMetadata {
@@ -41,6 +43,10 @@ export default function EventsSliders() {
       setIsLoading(true);
       setError(null);
       try {
+        web3.setCurrentNodeProvider(
+          process.env.NEXT_PUBLIC_NODE_URL ?? "https://node.testnet.alephium.org"
+        );
+
         const response = await fetch('https://presenceprotocol.notrustverify.ch/api/events?limit=50', {
           method: 'GET',
           headers: {
@@ -53,13 +59,33 @@ export default function EventsSliders() {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         
-        
         const data = await response.json();
         const filteredEvents = data.filter((event: Event) => 
           !['test', 'asdsad', 'ffd', 'asdas', 'sdd'].includes(event.eventName.toLowerCase())
         );
-        setEvents(filteredEvents);
-        console.log('filteredEvents', filteredEvents);
+
+        const eventsWithMetadata = await Promise.all(filteredEvents.map(async (event: Event) => {
+          try {
+            const collection = PoapCollection.at(addressFromContractId(event.contractId));
+            const collectionMetadata = await collection.fetchState();
+            
+            return {
+              ...event,
+              image: hexToString(collectionMetadata.fields.eventImage),
+              description: hexToString(collectionMetadata.fields.description),
+              eventDateStart: new Date(Number(collectionMetadata.fields.eventStartAt)).toLocaleDateString(),
+              eventDateEnd: new Date(Number(collectionMetadata.fields.eventEndAt)).toLocaleDateString(),
+              pricePoap: collectionMetadata.fields.poapPrice,
+              isOpenPrice: collectionMetadata.fields.isOpenPrice,
+            };
+          } catch (error) {
+            console.error('Error fetching collection metadata:', error);
+            return event;
+          }
+        }));
+
+        setEvents(eventsWithMetadata);
+        console.log('eventsWithMetadata', eventsWithMetadata);
       } catch (error) {
         console.error('Error fetching events:', error);
         setError('Failed to load events. Please try again later.');

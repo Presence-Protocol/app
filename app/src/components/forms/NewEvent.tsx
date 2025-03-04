@@ -26,6 +26,9 @@ import TokenSelector from '../ui/TokenSelector';
 const MAX_TITLE_LENGTH = 50;
 const MAX_DESCRIPTION_LENGTH = 180;
 
+// Add this type near the top of the file
+type TemplateType = 'custom' | 'free' | 'paid' | 'creator' | 'birthday' | 'fundraiser' | 'meetup';
+
 // Add these utility functions at the top of the file, after the imports
 const formatTokenAmount = (amount: bigint, decimals: number): string => {
   if (amount === 0n) return '0';
@@ -117,7 +120,7 @@ export default function NewEvent() {
   const [isOpenPrice, setIsOpenPrice] = useState(false);
 
   const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
-  const [selectedTemplate, setSelectedTemplate] = useState<'custom'>('custom');
+  const [selectedTemplate, setSelectedTemplate] = useState<TemplateType>('custom');
   const [isTemplateMenuOpen, setIsTemplateMenuOpen] = useState(false);
   const [coverMintFees, setCoverMintFees] = useState(false);
   const [paidPresence, setPaidPresence] = useState(false);
@@ -138,9 +141,52 @@ export default function NewEvent() {
     logoURI: ""
   });
 
-  const handleTemplateSelect = (template: 'custom') => {
+  // Add this function to handle template selection
+  const handleTemplateSelect = (template: TemplateType) => {
     setSelectedTemplate(template);
     setIsTemplateMenuOpen(false);
+
+    // Reset form first
+    setTitle('');
+    setDescription('');
+    setPaidPresence(false);
+    
+    // Apply template-specific settings
+    switch (template) {
+      case 'fundraiser':
+        setTitle('My New Fundraiser');
+        setDescription('Help us raise funds for a good cause');
+        setPaidPresence(true);
+        break;
+      case 'free':
+        setTitle('My Free Event');
+        setDescription('Join us for this free event');
+        setPaidPresence(false);
+        break;
+      case 'paid':
+        setTitle('My Paid Event');
+        setDescription('Join us for this exclusive event');
+        setPaidPresence(true);
+        break;
+      case 'creator':
+        setTitle('My Creator Subscription');
+        setDescription('Subscribe to get exclusive access');
+        setPaidPresence(true);
+        break;
+      case 'birthday':
+        setTitle('My Birthday Celebration');
+        setDescription('Join me to celebrate my birthday!');
+        setPaidPresence(false);
+        break;
+      case 'meetup':
+        setTitle('Community Meetup');
+        setDescription('Join our community gathering');
+        setPaidPresence(false);
+        break;
+      default:
+        // Custom template - no prefills
+        break;
+    }
   };
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -1096,7 +1142,7 @@ export default function NewEvent() {
                               value={title}
                               maxLength={MAX_TITLE_LENGTH}
                               onChange={(e) => setTitle(e.target.value)}
-                              className="block w-full px-3 py-3 text-xl text-black border-2 border-transparent appearance-none placeholder-black border-black focus:border-black focus:bg-lila-500 focus:outline-none focus:ring-black sm:text-sm rounded-2xl"
+                              className="block w-full px-3 py-3 text-xl text-black border-2 border-transparent appearance-none placeholder-black focus:border-black focus:bg-lila-500 focus:outline-none focus:ring-black sm:text-sm rounded-2xl"
                             />
                             <div className="px-3 py-1 text-sm text-gray-500">
                               {title.length}/{MAX_TITLE_LENGTH} characters
@@ -1114,7 +1160,7 @@ export default function NewEvent() {
                               maxLength={MAX_DESCRIPTION_LENGTH}
                               onChange={(e) => setDescription(e.target.value)}
                               rows={3}
-                              className="block w-full px-3 py-3 text-xl text-black border-2 border-transparent appearance-none placeholder-black border-black focus:border-black focus:bg-lila-500 focus:outline-none focus:ring-black sm:text-sm rounded-2xl"
+                              className="block w-full px-3 py-3 text-xl text-black border-2 border-transparent appearance-none placeholder-black focus:border-black focus:bg-lila-500 focus:outline-none focus:ring-black sm:text-sm rounded-2xl"
                             />
                             <div className="px-3 py-1 text-sm text-gray-500">
                               {description.length}/{MAX_DESCRIPTION_LENGTH} characters
@@ -1132,7 +1178,7 @@ export default function NewEvent() {
                                 placeholder="Event Location"
                                 value={location}
                                 onChange={(e) => setLocation(e.target.value)}
-                                className="block w-full px-3 py-3 text-xl text-black border-2 border-transparent appearance-none rounded-2xl placeholder-black border-black focus:border-black focus:bg-lila-500 focus:outline-none focus:ring-black sm:text-sm"
+                                className="block w-full px-3 py-3 text-xl text-black border-2 border-transparent appearance-none rounded-2xl placeholder-black focus:border-black focus:bg-lila-500 focus:outline-none focus:ring-black sm:text-sm"
                               />
                             </div>
                           </div>
@@ -1152,7 +1198,7 @@ export default function NewEvent() {
                                   // Set storage fees to 0.1 ALPH * amount when amount changes
                                   setStorageFees(BigInt(Math.floor(0.1 * newAmount * 10**18)));
                                 }}
-                                className="block w-full px-3 py-3 text-xl text-black border-2 border-transparent appearance-none placeholder-black border-black focus:border-black focus:bg-lila-500 focus:outline-none focus:ring-black sm:text-sm rounded-2xl pr-10"
+                                className="block w-full px-3 py-3 text-xl text-black border-2 border-transparent appearance-none placeholder-black  focus:border-black focus:bg-lila-500 focus:outline-none focus:ring-black sm:text-sm rounded-2xl pr-10"
                               />
                               <button
                                 type="button"
@@ -1190,7 +1236,7 @@ export default function NewEvent() {
                                   placeholder="Event Start Date"
                                   value={eventStartDate}
                                   onChange={(e) => setEventStartDate(e.target.value)}
-                                  className="block w-full px-3 py-2 text-xl text-black border-2 border-transparent appearance-none placeholder-black border-black focus:border-black focus:bg-lila-500 focus:outline-none focus:ring-black sm:text-sm rounded-2xl"
+                                  className="block w-full px-3 py-2 text-xl text-black border-2 border-transparent appearance-none placeholder-black focus:border-black focus:bg-lila-500 focus:outline-none focus:ring-black sm:text-sm rounded-2xl"
                                 />
                               </div>
                             </div>
@@ -1204,7 +1250,7 @@ export default function NewEvent() {
                                   placeholder="Event End Date"
                                   value={eventEndDate}
                                   onChange={(e) => setEventEndDate(e.target.value)}
-                                  className="block w-full px-3 py-2 text-xl text-black border-2 border-transparent appearance-none placeholder-black border-black focus:border-black focus:bg-lila-500 focus:outline-none focus:ring-black sm:text-sm rounded-2xl"
+                                  className="block w-full px-3 py-2 text-xl text-black border-2 border-transparent appearance-none placeholder-black focus:border-black focus:bg-lila-500 focus:outline-none focus:ring-black sm:text-sm rounded-2xl"
                                 />
                               </div>
                             </div>
@@ -1220,7 +1266,7 @@ export default function NewEvent() {
                                   placeholder="Start Minting Date"
                                   value={startDate}
                                   onChange={(e) => setStartDate(e.target.value)}
-                                  className="block w-full px-3 py-2 text-xl text-black border-2 border-transparent appearance-none placeholder-black border-black focus:border-black focus:bg-lila-500 focus:outline-none focus:ring-black sm:text-sm rounded-2xl"
+                                  className="block w-full px-3 py-2 text-xl text-black border-2 border-transparent appearance-none placeholder-black focus:border-black focus:bg-lila-500 focus:outline-none focus:ring-black sm:text-sm rounded-2xl"
                                 />
                               </div>
                             </div>
@@ -1234,7 +1280,7 @@ export default function NewEvent() {
                                   placeholder="End Minting Date"
                                   value={endDate}
                                   onChange={(e) => setEndDate(e.target.value)}
-                                  className="block w-full px-3 py-2 text-xl text-black border-2 border-transparent appearance-none placeholder-black border-black focus:border-black focus:bg-lila-500 focus:outline-none focus:ring-black sm:text-sm rounded-2xl"
+                                  className="block w-full px-3 py-2 text-xl text-black border-2 border-transparent appearance-none placeholder-black focus:border-black focus:bg-lila-500 focus:outline-none focus:ring-black sm:text-sm rounded-2xl"
                                 />
                               </div>
                             </div>
