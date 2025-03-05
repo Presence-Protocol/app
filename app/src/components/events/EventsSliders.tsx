@@ -231,8 +231,12 @@ function EventCard({ event }: { event: Event }) {
             Event
           </div>
           <div className="text-xs text-black font-medium">
-            {event.eventDateStart || new Date(event.createdAt).toLocaleDateString()}
-          </div>
+                          {event.eventDateStart && event.eventDateEnd ? (
+                            `${event.eventDateStart} - ${event.eventDateEnd}`
+                          ) : (
+                            new Date(event.createdAt).toLocaleDateString()
+                          )}
+                        </div>
         </div>
         <button
           onClick={handleClick}
