@@ -22,6 +22,8 @@ import Snackbar from '../ui/Snackbar';
 import TemplateSelect from './TemplateSelect';
 import { getTokenList, TokenList, Token } from '../../services/utils';
 import TokenSelector from '../ui/TokenSelector';
+import PaidPoapTokenInfo from '../Modals/PaidPoapTokenInfo';
+import PaidPoapPriceInfo from '../Modals/PaidPoapPriceInfo';
 
 const MAX_TITLE_LENGTH = 50;
 const MAX_DESCRIPTION_LENGTH = 180;
@@ -140,6 +142,10 @@ export default function NewEvent() {
     description: "Native token of Alephium blockchain",
     logoURI: ""
   });
+
+  // Add these new states
+  const [isPaidPoapTokenInfoOpen, setIsPaidPoapTokenInfoOpen] = useState(false);
+  const [isPaidPoapPriceInfoOpen, setIsPaidPoapPriceInfoOpen] = useState(false);
 
   // Add this function to handle template selection
   const handleTemplateSelect = (template: TemplateType) => {
@@ -660,7 +666,7 @@ export default function NewEvent() {
               <label className="text-sm font-medium text-black">Token</label>
               <button
                 type="button"
-                onClick={() => setIsPaidPoapInfoOpen(true)}
+                onClick={() => setIsPaidPoapTokenInfoOpen(true)}
                 className="ml-2"
               >
                 <svg
@@ -727,7 +733,7 @@ export default function NewEvent() {
               <label className="text-sm font-medium text-black">Price</label>
               <button
                 type="button"
-                onClick={() => setIsPaidPoapInfoOpen(true)}
+                onClick={() => setIsPaidPoapPriceInfoOpen(true)}
                 className="ml-2"
               >
                 <svg
@@ -1502,6 +1508,14 @@ export default function NewEvent() {
           message="Link copied to clipboard!" 
           isOpen={isSnackbarOpen} 
           onClose={() => setIsSnackbarOpen(false)} 
+        />
+        <PaidPoapTokenInfo 
+          isOpen={isPaidPoapTokenInfoOpen}
+          onClose={() => setIsPaidPoapTokenInfoOpen(false)}
+        />
+        <PaidPoapPriceInfo 
+          isOpen={isPaidPoapPriceInfoOpen}
+          onClose={() => setIsPaidPoapPriceInfoOpen(false)}
         />
       </section>
     </>

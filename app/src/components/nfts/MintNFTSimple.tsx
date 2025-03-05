@@ -11,6 +11,7 @@ import Confetti from 'react-confetti'
 import useWindowSize from '@/hooks/useWindowSize'
 import AlreadyMintedWarning from '../Modals/AlreadyMintedWarning';
 import { getTokenList, findTokenFromId } from '@/services/utils';
+import PaidPoapPriceInfo from '../Modals/PaidPoapPriceInfo';
 
 interface NFTCollection {
   title: string;
@@ -101,6 +102,7 @@ export default function MintNFTSimple() {
   const [tokenList, setTokenList] = useState<any[]>([]);
   const [customPrice, setCustomPrice] = useState<string>('');
   const [customPriceError, setCustomPriceError] = useState<string | null>(null);
+  const [isPaidPoapPriceInfoOpen, setIsPaidPoapPriceInfoOpen] = useState(false);
 
   const mintEventsRef = useRef<HTMLDivElement | null>(null);
 
@@ -588,34 +590,52 @@ export default function MintNFTSimple() {
                     </div>
                   </div>
 
-                  <div className="mt-8">
+                  <div className="mt-10 max-w-md mx-auto">
                     {/* Add custom price input when isOpenPrice is true */}
                     {nftCollection.isOpenPrice && (
-                      <div className="mb-4">
-                        <div className="relative">
-                          <label htmlFor="customPrice" className="block text-sm font-medium text-gray-700 mb-1 text-left">
-                            Set your own price:
-                          </label>
+                      <div className="mb-6">
+                        <div className="relative flex items-center">
                           <input
                             type="text"
-                            id="customPrice"
                             inputMode="decimal"
-                            placeholder="Enter amount"
+                            placeholder="Set your own price"
                             value={customPrice}
                             onChange={(e) => {
-                              const value = e.target.value;
-                              // Only allow valid decimal number patterns
-                              if (!/^[0-9]*\.?[0-9]*$/.test(value) && value !== '') {
+                              const inputValue = e.target.value;
+                              
+                              if (!/^[0-9]*\.?[0-9]*$/.test(inputValue) && inputValue !== '') {
                                 return;
                               }
-                              setCustomPrice(value);
+                              
+                              setCustomPrice(inputValue);
                               setCustomPriceError(null);
                             }}
-                            className="block w-full px-3 py-3 text-xl text-black border-2 border-black appearance-none placeholder-black focus:border-black focus:bg-lila-500 focus:outline-none focus:ring-black sm:text-sm rounded-2xl"
+                            className="block w-full px-3 py-3 text-xl text-black border-2 border-black shadow appearance-none placeholder-black focus:border-black focus:bg-lila-500 focus:outline-none focus:ring-black sm:text-sm rounded-2xl"
                           />
-                          <div className="absolute right-3 top-1/2 -translate-y-1/2 text-sm font-medium text-gray-500">
+                          <div className="absolute right-12 top-1/2 -translate-y-1/2 text-sm font-medium text-gray-500">
                             {nftCollection.tokenNamePaidPoap || 'ALPH'}
                           </div>
+                          <button
+                            type="button"
+                            onClick={() => setIsPaidPoapPriceInfoOpen(true)}
+                            className="absolute right-3 top-1/2 -translate-y-1/2"
+                          >
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              className="h-5 w-5 text-gray-800 hover:text-black"
+                              viewBox="0 0 24 24"
+                              strokeWidth="2"
+                              stroke="currentColor"
+                              fill="none"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            >
+                              <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                              <path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" />
+                              <path d="M12 8l.01 0" />
+                              <path d="M11 12l1 0l0 4l1 0" />
+                            </svg>
+                          </button>
                         </div>
                         {customPriceError && (
                           <p className="mt-1 text-sm text-red-600 text-left">{customPriceError}</p>
@@ -632,9 +652,9 @@ export default function MintNFTSimple() {
                         Date.now() < Number(nftCollection.mintStartDate) ||
                         Date.now() > Number(nftCollection.mintEndDate) ||
                         nftCollection.currentSupply >= nftCollection.maxSupply ||
-                        (nftCollection.isOpenPrice && nftCollection.tokenPricePaidPoap > 0n && !customPrice)}
-                      className="text-black items-center shadow shadow-black max-w-md text-lg font-semibold inline-flex px-6 focus:outline-none justify-center text-center bg-white 
-                      border-black ease-in-out transform transition-all focus:ring-lila-700 focus:shadow-none border-2 duration-100   py-3 rounded-lg h-16 tracking-wide focus:translate-y-1 w-full hover:text-lila-800 disabled:opacity-50 disabled:cursor-not-allowed"
+                        (nftCollection.isOpenPrice && !customPrice)}
+                      className="text-black items-center shadow shadow-black max-w-md text-lg font-semibold inline-flex px-6 focus:outline-none justify-center text-center bg-[#fff] 
+                      border-black ease-in-out transform transition-all focus:ring-lila-700 focus:shadow-none border-2 duration-100 py-3 rounded-lg h-16 tracking-wide focus:translate-y-1 w-full hover:text-lila-800 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       {isMinting ? (
                         <div className="flex items-center justify-center gap-3">
@@ -658,6 +678,8 @@ export default function MintNFTSimple() {
                         `Minting starts ${formatDate(nftCollection.mintStartDate)}`
                       ) : Date.now() > Number(nftCollection.mintEndDate) ? (
                         'Minting Ended'
+                      ) : nftCollection.isOpenPrice && !customPrice ? (
+                        'Enter Price to Mint'
                       ) : (
                         <div className="flex items-center justify-center gap-2">
                           <div className="relative flex h-2 w-2">
@@ -780,6 +802,11 @@ export default function MintNFTSimple() {
       <AlreadyMintedWarning
         isOpen={isAlreadyMintedOpen}
         onClose={() => setIsAlreadyMintedOpen(false)}
+      />
+      <PaidPoapPriceInfo 
+        isOpen={isPaidPoapPriceInfoOpen}
+        onClose={() => setIsPaidPoapPriceInfoOpen(false)}
+        tokenName={nftCollection.tokenNamePaidPoap || 'ALPH'}
       />
     </section>
   );

@@ -213,7 +213,7 @@ function EventCard({ event }: { event: Event }) {
         )}
         <button
           onClick={handleShare}
-          className="absolute top-2 right-2 text-black items-center shadow shadow-black text-[10px] font-semibold inline-flex px-2 bg-white border-black ease-in-out transform transition-all focus:ring-lila-700 focus:shadow-none border-2 duration-100 py-1 rounded-lg h-6 focus:translate-y-1 hover:text-lila-800 tracking-wide"
+          className="absolute top-2 right-2 text-black items-center shadow-small shadow-black text-[10px] font-semibold inline-flex px-2 bg-white border-black ease-in-out transform transition-all focus:ring-lila-700 focus:shadow-none border-2 duration-100 py-1 rounded-lg h-6 focus:translate-y-1 hover:text-lila-800 tracking-wide"
         >
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-2.5 h-2.5 mr-1">
             <path fillRule="evenodd" d="M15.75 4.5a3 3 0 1 1 .825 2.066l-8.421 4.679a3.002 3.002 0 0 1 0 1.51l8.421 4.679a3 3 0 1 1-.729 1.31l-8.421-4.678a3 3 0 1 1 0-4.132l8.421-4.679a3 3 0 0 1-.096-.755Z" clipRule="evenodd" />
@@ -230,7 +230,7 @@ function EventCard({ event }: { event: Event }) {
           <div className="text-black items-center shadow shadow-lila-600 text-[10px] font-semibold inline-flex px-2 bg-lila-300 border-lila-600 border-2 py-1 rounded-lg tracking-wide">
             Event
           </div>
-          <div className="text-xs text-black font-medium">
+        <div className="text-xs text-black font-medium">
                           {event.eventDateStart && event.eventDateEnd ? (
                             `${event.eventDateStart} - ${event.eventDateEnd}`
                           ) : (
