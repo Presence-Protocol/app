@@ -604,6 +604,158 @@ export default function NewEvent() {
     );
   };
 
+  const paidPresenceSection = (
+    <div className="border-2 border-black divide-black shadow rounded-2xl overflow-hidden text-left">
+      <div 
+        className="flex items-center justify-between p-4 cursor-pointer bg-white"
+        onClick={() => setPaidPresence(!paidPresence)}
+      >
+        <div>
+          <h3 className="text-sm font-medium text-black">Paid Presence Settings</h3>
+          <p className="text-xs text-gray-500">Set a price on your presence</p>
+        </div>
+        <svg
+          className={`w-5 h-5 transition-transform duration-200 ${paidPresence ? 'transform rotate-180' : ''}`}
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+        </svg>
+      </div>
+
+      {paidPresence && (
+        <div className="divide-y-2 divide-black">
+          <div className="p-4 bg-white">
+            <div className="flex items-center justify-between">
+              <label className="text-sm font-medium text-black">Token</label>
+              <button
+                type="button"
+                onClick={() => setIsPaidPoapTokenInfoOpen(true)}
+                className="ml-2"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5 text-gray-800 hover:text-black"
+                  viewBox="0 0 24 24"
+                  strokeWidth="2"
+                  stroke="currentColor"
+                  fill="none"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                  <path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" />
+                  <path d="M12 8l.01 0" />
+                  <path d="M11 12l1 0l0 4l1 0" />
+                </svg>
+              </button>
+            </div>
+            <p className="text-xs text-gray-500 mb-2">Token used to pay for presence</p>
+            <TokenSelector 
+              value={paidPoapTokenId} 
+              onChange={setPaidPoapTokenId}
+              onTokenChange={setSelectedToken}
+              tokens={globalTokenList}
+              isLoading={isTokenListLoading}
+            />
+          </div>
+
+          <div className="flex items-center text-left justify-between p-4 bg-white">
+            <div>
+              <h3 className="text-sm font-medium text-black">{isOpenPrice ? 'Open Price' : 'Fixed Price'}</h3>
+              <p className="text-xs text-gray-500">{isOpenPrice ? 'Users can set their own price' : 'Fixed price for all users'}</p>
+            </div>
+            <div className="items-center inline-flex">
+              <button
+                type="button"
+                role="switch"
+                aria-checked={isOpenPrice}
+                onClick={() => {
+                  setIsOpenPrice(!isOpenPrice);
+                  if (isOpenPrice) {
+                    setPoapPrice(parseTokenAmount(poapPriceInput, selectedToken?.decimals ?? 18));
+                  }
+                }}
+                className={`relative inline-flex w-10 rounded-full py-1 transition border-2 shadow-small border-black ${
+                  isOpenPrice ? 'bg-lila-400' : 'bg-white'
+                }`}
+              >
+                <span
+                  className={`h-2 w-2 rounded-full transition shadow-md ${
+                    isOpenPrice ? 'translate-x-6 bg-lila-800' : 'translate-x-1 bg-gray-500'
+                  }`}
+                  aria-hidden="true"
+                />
+              </button>
+            </div>
+          </div>
+
+          {!isOpenPrice && (
+            <div className="p-4 bg-white">
+              <div className="flex items-center justify-between">
+                <label className="text-sm font-medium text-black">Price</label>
+                <button
+                  type="button"
+                  onClick={() => setIsPaidPoapPriceInfoOpen(true)}
+                  className="ml-2"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5 text-gray-800 hover:text-black"
+                    viewBox="0 0 24 24"
+                    strokeWidth="2"
+                    stroke="currentColor"
+                    fill="none"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                    <path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" />
+                    <path d="M12 8l.01 0" />
+                    <path d="M11 12l1 0l0 4l1 0" />
+                  </svg>
+                </button>
+              </div>
+              <p className="text-xs text-gray-500 mb-2">
+                {isOpenPrice ? 'Minimum price users can set' : 'Price of the Presence people will pay for'}
+              </p>
+              <div className="relative">
+                <input
+                  type="text"
+                  inputMode="decimal"
+                  placeholder="0.00"
+                  value={poapPriceInput}
+                  onChange={(e) => {
+                    const inputValue = e.target.value;
+                    if (!/^[0-9]*\.?[0-9]*$/.test(inputValue) && inputValue !== '') {
+                      return;
+                    }
+                    setPoapPriceInput(inputValue);
+                    if (inputValue === '' || inputValue === '.') {
+                      setPoapPrice(0n);
+                    } else {
+                      try {
+                        const decimals = selectedToken?.decimals ?? 18;
+                        setPoapPrice(parseTokenAmount(inputValue, decimals));
+                      } catch (error) {
+                        console.error('Error converting price:', error);
+                      }
+                    }
+                  }}
+                  className="block w-full px-3 py-3 text-xl text-black border-2 border-black appearance-none placeholder-black focus:border-black focus:bg-lila-500 focus:outline-none focus:ring-black sm:text-sm rounded-2xl"
+                />
+                <div className="absolute right-3 top-1/2 -translate-y-1/2 text-sm font-medium text-gray-500">
+                  {selectedToken?.symbol || 'ALPH'}
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+
   const advancedSettingsSection = (
     <div className="border-2 border-black divide-black shadow rounded-2xl overflow-hidden text-left">
       <div 
@@ -626,184 +778,6 @@ export default function NewEvent() {
 
       {showAdvancedSettings && (
         <div className="divide-y-2 divide-black">
-
-<div className="flex items-center text-left justify-between p-4 bg-white">
-            <div>
-              <h3 className="text-sm font-medium text-black">{paidPresence ? 'Paid Presence' : 'Free Presence'}</h3>
-              <p className="text-xs text-gray-500">{paidPresence ?  'Users pay for minting' : 'Free minting'}</p>
-            </div>
-            <div className="items-center inline-flex">
-              <button
-                type="button"
-                role="switch"
-                aria-checked={paidPresence}
-                onClick={() => {
-                  setPaidPresence(!paidPresence);
-                  if (!paidPresence) {
-                    //setPoapPrice(0n);
-                    //setPaidPoapTokenId(ALPH_TOKEN_ID);
-                  } else {
-                    setPoapPrice(0n);
-                    setPaidPoapTokenId(ALPH_TOKEN_ID);
-                  }
-                }}
-                className={`relative inline-flex w-10 rounded-full py-1 transition border-2 shadow-small border-black ${
-                  paidPresence ? 'bg-lila-400' : 'bg-white'
-                }`}
-              >
-                <span
-                  className={`h-2 w-2 rounded-full transition shadow-md ${
-                    paidPresence ? 'translate-x-6 bg-lila-800' : 'translate-x-1 bg-gray-500'
-                  }`}
-                  aria-hidden="true"
-                />
-              </button>
-            </div>
-          </div>
-
-          <div className="p-4 bg-white">
-            <div className="flex items-center justify-between">
-              <label className="text-sm font-medium text-black">Token</label>
-              <button
-                type="button"
-                onClick={() => setIsPaidPoapTokenInfoOpen(true)}
-                className="ml-2"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className={`h-5 w-5 ${paidPresence ? 'text-gray-800 hover:text-black' : 'text-gray-400'}`}
-                  viewBox="0 0 24 24"
-                  strokeWidth="2"
-                  stroke="currentColor"
-                  fill="none"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                  <path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" />
-                  <path d="M12 8l.01 0" />
-                  <path d="M11 12l1 0l0 4l1 0" />
-                </svg>
-              </button>
-            </div>
-            <p className="text-xs text-gray-500 mb-2">Token used to pay for presence</p>
-            <TokenSelector 
-              disabled={!paidPresence} 
-              value={paidPoapTokenId} 
-              onChange={setPaidPoapTokenId}
-              onTokenChange={setSelectedToken}
-              tokens={globalTokenList}
-              isLoading={isTokenListLoading}
-            />
-          </div>
-          <div className="flex items-center text-left justify-between p-4 bg-white">
-            <div>
-              <h3 className="text-sm font-medium text-black">{isOpenPrice ? 'Open Price' : 'Fixed Price'}</h3>
-              <p className="text-xs text-gray-500">{isOpenPrice ? 'Users can set their own price' : 'Fixed price for all users'}</p>
-            </div>
-            <div className="items-center inline-flex">
-              <button
-                type="button"
-                role="switch"
-                disabled={!paidPresence}
-                aria-checked={isOpenPrice}
-                onClick={() => {
-                  setIsOpenPrice(!isOpenPrice);
-                  if (isOpenPrice) {
-                    // Reset to fixed price mode
-                    setPoapPrice(parseTokenAmount(poapPriceInput, selectedToken?.decimals ?? 18));
-                  }
-                }}
-                className={`relative inline-flex w-10 rounded-full py-1 transition border-2 shadow-small border-black ${
-                  !paidPresence ? 'opacity-50' : isOpenPrice ? 'bg-lila-400' : 'bg-white'
-                }`}
-              >
-                <span
-                  className={`h-2 w-2 rounded-full transition shadow-md ${
-                    isOpenPrice ? 'translate-x-6 bg-lila-800' : 'translate-x-1 bg-gray-500'
-                  }`}
-                  aria-hidden="true"
-                />
-              </button>
-            </div>
-          </div>
-          { !isOpenPrice && (
-          <div className="p-4 bg-white">
-            <div className="flex items-center justify-between">
-              <label className="text-sm font-medium text-black">Price</label>
-              <button
-                type="button"
-                onClick={() => setIsPaidPoapPriceInfoOpen(true)}
-                className="ml-2"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className={`h-5 w-5 ${paidPresence ? 'text-gray-800 hover:text-black' : 'text-gray-400'}`}
-                  viewBox="0 0 24 24"
-                  strokeWidth="2"
-                  stroke="currentColor"
-                  fill="none"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                  <path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" />
-                  <path d="M12 8l.01 0" />
-                  <path d="M11 12l1 0l0 4l1 0" />
-                </svg>
-              </button>
-            </div>
-              <p className="text-xs text-gray-500 mb-2">
-                {isOpenPrice ? 'Minimum price users can set' : 'Price of the Presence people will pay for'}
-              </p>
-            
-            
-              <div className="relative">
-                <input
-                  type="text"
-                inputMode="decimal"
-                placeholder="0.00"
-                disabled={!paidPresence || isOpenPrice}
-                value={poapPriceInput}
-                onChange={(e) => {
-                  const inputValue = e.target.value;
-                  
-                  // Only allow valid decimal number patterns
-                  if (!/^[0-9]*\.?[0-9]*$/.test(inputValue) && inputValue !== '') {
-                    return;
-                  }
-                  
-                  // Update the input state
-                  setPoapPriceInput(inputValue);
-                  
-                  // Convert to BigInt if not empty
-                  if (inputValue === '' || inputValue === '.') {
-                    setPoapPrice(0n);
-                  } else {
-                    try {
-                      const decimals = selectedToken?.decimals ?? 18;
-                      setPoapPrice(parseTokenAmount(inputValue, decimals));
-                    } catch (error) {
-                      console.error('Error converting price:', error);
-                    }
-                  }
-                }}
-                className={`block w-full px-3 py-3 text-xl text-black border-2 border-black appearance-none placeholder-black focus:border-black focus:bg-lila-500 focus:outline-none focus:ring-black sm:text-sm rounded-2xl ${(!paidPresence || isOpenPrice) ? 'opacity-50 cursor-not-allowed' : ''}`}
-              />
-              <div className="absolute right-3 top-1/2 -translate-y-1/2 text-sm font-medium text-gray-500">
-                {selectedToken?.symbol || 'ALPH'}
-                </div>
-              </div>
-            
-            {isOpenPrice && paidPresence && (
-              <div className="mt-4">
-                <p className="text-xs text-gray-600">
-                  When Open Price is enabled, users will be able to set their own price when minting.
-                </p>
-              </div>
-            )}
-          </div>)}
-
           <div className="flex items-center text-left justify-between p-4 bg-white">
             <div>
               <h3 className="text-sm font-medium text-black">{coverMintFees ? 'Cover % of Fees' : 'Users Cover Fees'}</h3>
@@ -835,7 +809,7 @@ export default function NewEvent() {
                 />
               </button>
             </div>
-          </div> 
+          </div>
 
           <div className="p-4 bg-white">
             <div className="flex items-center justify-between">
@@ -1381,8 +1355,6 @@ export default function NewEvent() {
                           </div>
                         </div>
 
-
-                      
                         <div className="space-y-2">
                           <div className="flex items-center text-left justify-between p-4">
                             <div>
@@ -1435,6 +1407,7 @@ export default function NewEvent() {
                           </div>
                         </div>
 
+                        {paidPresenceSection}
                         {advancedSettingsSection}
 
                         {renderProgress()}
@@ -1454,7 +1427,7 @@ export default function NewEvent() {
                           </div>
                         )}
 
-                        <div className="mt-8">
+                        <div className="mt-8" style={{ marginTop: '36px' }}>
                           <button
                             type="submit"
                             disabled={isSubmitting || !isFormValid()}
