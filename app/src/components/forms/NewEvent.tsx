@@ -658,6 +658,7 @@ export default function NewEvent() {
               onTokenChange={setSelectedToken}
               tokens={globalTokenList}
               isLoading={isTokenListLoading}
+              disabled={false}
             />
           </div>
 
