@@ -1282,7 +1282,7 @@ export default function NewEvent() {
                             >
                               Event Image from URL
                             </button>
-                            <button
+                            {/*<button
                               type="button"
                               onClick={() => setActiveTab('upload')}
                               disabled={previewImage !== null && activeTab !== 'upload'}
@@ -1293,7 +1293,7 @@ export default function NewEvent() {
                               } ${previewImage !== null && activeTab !== 'upload' ? 'opacity-50 cursor-not-allowed' : ''}`}
                             >
                               Event Image from Upload
-                            </button>
+                            </button>*/}
                           </div>
 
                           <div className="p-4">
