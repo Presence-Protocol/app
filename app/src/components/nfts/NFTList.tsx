@@ -5,9 +5,11 @@ import Link from 'next/link';
 import { AlephiumConnectButton, useWallet } from '@alephium/web3-react'
 import { useWalletLoading } from '@/context/WalletLoadingContext';
 import Image from 'next/image';
-import { addressFromContractId, DUST_AMOUNT, hexToString, waitForTxConfirmation, web3 } from '@alephium/web3';
+import { addressFromContractId, DUST_AMOUNT, hexToString, number256ToNumber, ONE_ALPH, waitForTxConfirmation, web3 } from '@alephium/web3';
 import { PoapCollection, PoapNFT } from 'my-contracts';
 import Snackbar from '../ui/Snackbar';
+import { findTokenFromId, getTokenList, Token } from '@/services/utils';
+import { truncateAddress } from '@/utils/stringUtils';
 
 interface NFTMetadata {
   title: string;
@@ -42,12 +44,40 @@ interface EventResponse {
   amountPaidPoap?: bigint;
   pricePoap?: bigint;
   isOpenPrice?: boolean;
+  tokenSymbol?: string;
+  tokenMetadata?: Token;
 }
 
 
-
-
-
+// Helper function to humanize amounts with K, M, B suffixes for large numbers
+const humanizeAmount = (amount: bigint, decimals: number = 18): string => {
+  // Convert bigint to a decimal number with proper decimal places
+  const numericAmount = number256ToNumber(amount, decimals);
+  
+  // Define thresholds and corresponding suffixes
+  const thresholds = [
+    { value: 1e12, suffix: 'T' },  // Trillion
+    { value: 1e9, suffix: 'B' },   // Billion
+    { value: 1e6, suffix: 'M' },   // Million
+    { value: 1e3, suffix: 'K' }    // Thousand
+  ];
+  
+  // Find the appropriate threshold
+  for (const { value, suffix } of thresholds) {
+    if (numericAmount >= value) {
+      // Format with 1 decimal place and add suffix
+      const formatted = (numericAmount / value).toFixed(1);
+      // Remove trailing .0 if present
+      return formatted.endsWith('.0') 
+        ? formatted.slice(0, -2) + suffix 
+        : formatted + suffix;
+    }
+  }
+  // For small numbers, format with up to 2 decimal places
+  const formatted = numericAmount.toFixed(2);
+  // Remove trailing zeros and decimal point if not needed
+  return formatted.replace(/\.?0+$/, '');
+};
 
 export default function NFTList({ account: connectedAccount }: { account: string }) {
   const truncatedAccount = connectedAccount.slice(0, 4) + '...' + connectedAccount.slice(-4);
@@ -128,14 +158,13 @@ export default function NFTList({ account: connectedAccount }: { account: string
         }
         const eventsData: EventResponse[] = await response.json();
 
-        console.log('eventsData', eventsData);
+        const tokenList = await getTokenList();
 
         // Fetch collection metadata for each event
         const eventsWithMetadata = await Promise.all(eventsData.map(async (event) => {
           try {
             const collection = PoapCollection.at(addressFromContractId(event.contractId));
             const collectionMetadata = await collection.fetchState();
-            console.log('collectionMetadata', collectionMetadata);
             return {
               ...event,
               contractId: event.contractId,
@@ -146,6 +175,8 @@ export default function NFTList({ account: connectedAccount }: { account: string
               eventDateStart: new Date(Number(collectionMetadata.fields.eventStartAt)).toLocaleDateString(),
               eventDateEnd: new Date(Number(collectionMetadata.fields.eventEndAt)).toLocaleDateString(),
               isOpenPrice: collectionMetadata.fields.isOpenPrice,
+              tokenSymbol: collectionMetadata.fields.tokenIdPoap,
+              tokenMetadata: findTokenFromId(tokenList, collectionMetadata.fields.tokenIdPoap),
             };
           } catch (error) {
             console.error('Error fetching collection metadata:', error);
@@ -170,7 +201,6 @@ export default function NFTList({ account: connectedAccount }: { account: string
         // Fetch POAP data
         const response = await fetch(`https://presenceprotocol.notrustverify.ch/api/poap/${connectedAccount}`);
         const poapData: POAPResponse[] = await response.json();
-        console.log('poapData', poapData);
         // Fetch metadata for each POAP
         const nftPromises = poapData.map(async (poap) => {
           const collection = PoapNFT.at(addressFromContractId(poap.contractId));
@@ -203,8 +233,16 @@ export default function NFTList({ account: connectedAccount }: { account: string
     fetchEvents();
   }, [connectedAccount]);
 
-
-
+  // Helper function to truncate token address when no token metadata is available
+  const getDisplayToken = (event: EventResponse) => {
+    if (event.tokenMetadata) {
+      return event.tokenMetadata.symbol;
+    } else if (event.tokenSymbol) {
+      return truncateAddress(event.tokenSymbol)
+    } else {
+      return '';
+    }
+  };
 
   const displayedNFTs = showAllNFTs ? nfts : nfts.slice(0, 6);
   const displayedEvents = showAllEvents ? events : events.slice(0, 6);
@@ -495,7 +533,7 @@ export default function NFTList({ account: connectedAccount }: { account: string
                       )}
                       <div className="flex justify-between items-center pt-3 border-t-2 border-black">
                         <div className="text-black items-center shadow shadow-lila-600 text-[10px] font-semibold inline-flex px-2 bg-lila-300 border-lila-600 border-2 py-1 rounded-lg tracking-wide">
-                          Event
+                          {getDisplayToken(event)}
                         </div>
                         <div className="text-xs text-black font-medium">
                           {event.eventDateStart && event.eventDateEnd ? (
@@ -538,7 +576,7 @@ export default function NFTList({ account: connectedAccount }: { account: string
                           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-3 h-3 mr-1">
                             <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 3.75V16.5L12 14.25 7.5 16.5V3.75m9 0H18A2.25 2.25 0 0 1 20.25 6v12A2.25 2.25 0 0 1 18 20.25H6A2.25 2.25 0 0 1 3.75 18V6A2.25 2.25 0 0 1 6 3.75h1.5m9 0h-9" />
                           </svg>
-                          Claim
+                          Claim {event.amountPaidPoap !== undefined && `${humanizeAmount(event.amountPaidPoap, event.tokenMetadata?.decimals ?? 18)} ${getDisplayToken(event)}`}
                         </button>
                       )} */}
                     </div>

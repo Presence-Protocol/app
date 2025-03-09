@@ -204,10 +204,10 @@ function EventCard({ event }: { event: Event }) {
         ) : (
           <div className="w-full h-full bg-lila-500 flex flex-col items-center justify-center p-2">
             <span className="text-sm font-medium text-black">
-              {new Date(event.createdAt).toLocaleDateString()}
+              {event.eventName}
             </span>
             <span className="text-xs text-black mt-1">
-              {new Date(event.createdAt).toLocaleTimeString()}
+            {event.eventDateStart} - {event.eventDateEnd}
             </span>
           </div>
         )}
