@@ -346,11 +346,24 @@ export default function NFTList({ account: connectedAccount }: { account: string
                     className="border-2 border-black rounded-xl overflow-hidden bg-white shadow"
                   >
                     <div className="relative aspect-square overflow-hidden border-b-2 border-black">
-                      <img
-                        src={nft.image}
-                        alt={nft.title}
-                        className="w-full h-full object-cover"
-                      />
+                      {nft.image ? (
+                        <img
+                          src={nft.image}
+                          alt={nft.title}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex flex-col items-center justify-center p-4 bg-gradient-to-br from-lila-100 to-lila-300">
+                          <h4 className="text-xl font-semibold text-black text-center mb-2">{nft.title}</h4>
+                          <p className="text-sm text-gray-600 text-center">
+                            {nft.eventDateStart && nft.eventDateEnd ? (
+                              `${nft.eventDateStart} - ${nft.eventDateEnd}`
+                            ) : (
+                              nft.eventDateStart
+                            )}
+                          </p>
+                        </div>
+                      )}
                       <button
                         onClick={() => handleShare(nft.collectionId)}
                         className="absolute top-2 right-2 text-black items-center shadow shadow-black text-[10px] font-semibold inline-flex px-2 bg-white border-black ease-in-out transform transition-all focus:ring-lila-700 focus:shadow-none border-2 duration-100   py-1 rounded-lg h-6 focus:translate-y-1 hover:text-lila-800 tracking-wide"
@@ -369,7 +382,11 @@ export default function NFTList({ account: connectedAccount }: { account: string
                           {nft.tokenId}
                         </div>
                         <div className="text-xs text-black font-medium">
-                          {nft.eventDateStart}
+                          {nft.eventDateStart && nft.eventDateEnd ? (
+                            `${nft.eventDateStart} - ${nft.eventDateEnd}`
+                          ) : (
+                            nft.eventDateStart
+                          )}
                         </div>
                       </div>
                     </div>
@@ -441,15 +458,36 @@ export default function NFTList({ account: connectedAccount }: { account: string
                     key={index}
                     className="border-2 border-black rounded-xl overflow-hidden bg-white shadow"
                   >
-                    {event.image && (
-                      <div className="relative aspect-square overflow-hidden border-b-2 border-black">
+                    <div className="relative aspect-square overflow-hidden border-b-2 border-black">
+                      {event.image ? (
                         <img
                           src={event.image}
                           alt={event.eventName}
                           className="w-full h-full object-cover"
                         />
-                      </div>
-                    )}
+                      ) : (
+                        <div className="w-full h-full flex flex-col items-center justify-center p-4 bg-gradient-to-br from-lila-100 to-lila-300">
+                          <h4 className="text-xl font-semibold text-black text-center mb-2">{event.eventName}</h4>
+                          {event.eventDateStart && event.eventDateEnd && (
+                            <p className="text-sm text-gray-600 text-center">
+                              {`${event.eventDateStart} - ${event.eventDateEnd}`}
+                            </p>
+                          )}
+                        </div>
+                      )}
+                      {(event.pricePoap && event.pricePoap > 0n || event.isOpenPrice) && (
+                        <button
+                          disabled={(event.amountPaidPoap !== undefined && event.amountPaidPoap <= 0n)}
+                          onClick={(e) => handleClaim(e, event.contractId)}
+                          className={`absolute top-2 right-2 text-black items-center shadow shadow-black text-[10px] font-semibold inline-flex px-2 ${(event.amountPaidPoap !== undefined && event.amountPaidPoap <= 0n) ? 'bg-gray-200 opacity-60 cursor-not-allowed' : 'bg-lila-300 hover:text-lila-800'} border-black ease-in-out transform transition-all focus:ring-lila-700 focus:shadow-none border-2 duration-100 py-1 rounded-lg h-6 focus:translate-y-1 tracking-wide`}
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-3 h-3 mr-1">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 3.75V16.5L12 14.25 7.5 16.5V3.75m9 0H18A2.25 2.25 0 0 1 20.25 6v12A2.25 2.25 0 0 1 18 20.25H6A2.25 2.25 0 0 1 3.75 18V6A2.25 2.25 0 0 1 6 3.75h1.5m9 0h-9" />
+                          </svg>
+                          Claim
+                        </button>
+                      )}
+                    </div>
                     <div className="p-4 pb-5 bg-white">
                       <h3 className="text-base font-semibold text-black mb-1">{event.eventName}</h3>
                       {event.description && (
@@ -491,7 +529,7 @@ export default function NFTList({ account: connectedAccount }: { account: string
                           Preview
                         </Link>
                       </div>
-                      {(event.pricePoap && event.pricePoap > 0n || event.isOpenPrice) && (
+                      {/* {(event.pricePoap && event.pricePoap > 0n || event.isOpenPrice) && (
                         <button
                           disabled={(event.amountPaidPoap !== undefined && event.amountPaidPoap <= 0n )}
                           onClick={(e) => handleClaim(e, event.contractId)}
@@ -502,7 +540,7 @@ export default function NFTList({ account: connectedAccount }: { account: string
                           </svg>
                           Claim
                         </button>
-                      )}
+                      )} */}
                     </div>
                   </div>
                 ))}
