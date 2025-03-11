@@ -123,6 +123,10 @@ export namespace PoapCollectionTypes {
       params: CallContractParams<{ caller: Address }>;
       result: CallContractResult<HexString>;
     };
+    validateNFTAddress: {
+      params: CallContractParams<{ nftId: HexString; address: Address }>;
+      result: CallContractResult<null>;
+    };
     getIsPublic: {
       params: Omit<CallContractParams<{}>, "args">;
       result: CallContractResult<boolean>;
@@ -229,6 +233,13 @@ export namespace PoapCollectionTypes {
     };
     nftByAddress: {
       params: SignExecuteContractMethodParams<{ caller: Address }>;
+      result: SignExecuteScriptTxResult;
+    };
+    validateNFTAddress: {
+      params: SignExecuteContractMethodParams<{
+        nftId: HexString;
+        address: Address;
+      }>;
       result: SignExecuteScriptTxResult;
     };
     getIsPublic: {
@@ -387,6 +398,19 @@ class Factory extends ContractFactory<
     ): Promise<TestContractResultWithoutMaps<HexString>> => {
       return testMethod(this, "nftByAddress", params, getContractByCodeHash);
     },
+    validateNFTAddress: async (
+      params: TestContractParamsWithoutMaps<
+        PoapCollectionTypes.Fields,
+        { nftId: HexString; address: Address }
+      >
+    ): Promise<TestContractResultWithoutMaps<null>> => {
+      return testMethod(
+        this,
+        "validateNFTAddress",
+        params,
+        getContractByCodeHash
+      );
+    },
     getIsPublic: async (
       params: Omit<
         TestContractParamsWithoutMaps<PoapCollectionTypes.Fields, never>,
@@ -526,7 +550,7 @@ export const PoapCollection = new Factory(
   Contract.fromJson(
     PoapCollectionContractJson,
     "",
-    "87340c9c3a7671a14db9686b00aa2d0f174be266b70da92f0e83b33477d8c1d3",
+    "05b84e750ed15115d5794b5d7e26b712936fa4da8ed9fb1c383919a4c4c8a0ce",
     AllStructs
   )
 );
@@ -685,6 +709,17 @@ export class PoapCollectionInstance extends ContractInstance {
         PoapCollection,
         this,
         "nftByAddress",
+        params,
+        getContractByCodeHash
+      );
+    },
+    validateNFTAddress: async (
+      params: PoapCollectionTypes.CallMethodParams<"validateNFTAddress">
+    ): Promise<PoapCollectionTypes.CallMethodResult<"validateNFTAddress">> => {
+      return callMethod(
+        PoapCollection,
+        this,
+        "validateNFTAddress",
         params,
         getContractByCodeHash
       );
@@ -875,6 +910,18 @@ export class PoapCollectionInstance extends ContractInstance {
       params: PoapCollectionTypes.SignExecuteMethodParams<"nftByAddress">
     ): Promise<PoapCollectionTypes.SignExecuteMethodResult<"nftByAddress">> => {
       return signExecuteMethod(PoapCollection, this, "nftByAddress", params);
+    },
+    validateNFTAddress: async (
+      params: PoapCollectionTypes.SignExecuteMethodParams<"validateNFTAddress">
+    ): Promise<
+      PoapCollectionTypes.SignExecuteMethodResult<"validateNFTAddress">
+    > => {
+      return signExecuteMethod(
+        PoapCollection,
+        this,
+        "validateNFTAddress",
+        params
+      );
     },
     getIsPublic: async (
       params: PoapCollectionTypes.SignExecuteMethodParams<"getIsPublic">

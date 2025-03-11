@@ -180,6 +180,13 @@ Contract PoapCollection(
         assert!(nftId == contractId!(expectedTokenContract), ErrorCodes.NFTNotPartOfCollection)
     }
 
+    pub fn validateNFTAddress(nftId: ByteVec, address: Address) -> () {
+      assert!(oneMintPerAddress, ErrorCodes.LimitedMintPerAddress)
+      let expectedTokenContract =  nftByAddress(address)
+
+      assert!(nftId == contractId!(expectedTokenContract), ErrorCodes.NFTNotPartOfCollection)
+    }
+
     pub fn getIsPublic() -> (Bool) {
         return isPublic
     }
