@@ -14,4 +14,5 @@ export const ErrorCodes = {
   NotBurnable: BigInt("8"),
   NotEnoughAlph: BigInt("9"),
   AlreadySet: BigInt("10"),
+  InvalidPassword: BigInt("11"),
 };

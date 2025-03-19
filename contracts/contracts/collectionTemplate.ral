@@ -13,6 +13,7 @@ Contract PoapCollection(
     tokenIdAirdrop: ByteVec,
     amountAirdropPerUser: U256,
     airdropWhenHasParticipated: Bool,
+    hashedPassword: ByteVec,
 
     //event properties
     eventImage: ByteVec,
@@ -36,7 +37,7 @@ Contract PoapCollection(
    event PoapParticipated(organizerAddress: Address, nftIndex: U256, presenceAddressValidate: Address)
 
    @using(preapprovedAssets = true, updateFields = true, checkExternalCaller = false, assetsInContract = true)
-   pub fn mint(callerAddr: Address, amount: U256) -> (ByteVec) {
+   pub fn mint(callerAddr: Address, amount: U256, password: ByteVec) -> (ByteVec) {
      assert!(totalSupply < maxSupply, ErrorCodes.MaxSupplyReached)
      assert!(blockTimeStamp!() >= mintStartAt, ErrorCodes.MintNotStarted)
      assert!(blockTimeStamp!() <= mintEndAt, ErrorCodes.MintEnded)
@@ -77,6 +78,9 @@ Contract PoapCollection(
         sendAirdrop{organizer -> ALPH: 0}(caller)
      }
 
+     if(hashedPassword != #00){
+      assert!(hashedPassword == sha256!(password), ErrorCodes.InvalidPassword)
+     }
      let contractId = copyCreateSubContractWithToken!{payer -> ALPH: minimalContractDeposit!()}(
          contractPath,
          nftTemplateId,

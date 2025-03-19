@@ -21,6 +21,7 @@ Contract PoapFactory(
         tokenIdAirdrop: ByteVec,
         amountAirdropPerUser: U256,
         airdropWhenHasParticipated: Bool,
+        hashedPassword: ByteVec,
 
         //event properties
         eventImage: ByteVec,
@@ -51,6 +52,7 @@ Contract PoapFactory(
                 tokenIdAirdrop,
                 amountAirdropPerUser,
                 airdropWhenHasParticipated,
+                hashedPassword,
                 eventImage,
                 eventName,
                 description,
@@ -91,7 +93,7 @@ Contract PoapFactory(
         }
     
     @using(preapprovedAssets = true, checkExternalCaller = false)
-    pub fn mintPoap(collection: PoapCollection, amount: U256) -> (){
+    pub fn mintPoap(collection: PoapCollection, amount: U256, password: ByteVec) -> (){
         let caller = callerAddress!()
 
         let collectionAmountAlphInContract = collection.getAmountForStorageFees()
@@ -108,7 +110,7 @@ Contract PoapFactory(
             poapPriceAmount = amount
         }
 
-        let poapContractId = collection.mint{caller -> ALPH: feesStorageAmount, poapTokenId: poapPriceAmount}(caller, poapPriceAmount)
+        let poapContractId = collection.mint{caller -> ALPH: feesStorageAmount, poapTokenId: poapPriceAmount}(caller, poapPriceAmount, password)
         let collectionTotalSupply = collection.totalSupply()
 
         emit PoapMinted(poapContractId, collection, collectionTotalSupply, caller, collection.getIsPublic(), blockTimeStamp!())

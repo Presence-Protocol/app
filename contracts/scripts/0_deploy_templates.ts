@@ -56,7 +56,8 @@ const deployTemplates: DeployFunction<Settings> = async (
       factoryContractId: '00',
       airdropWhenHasParticipated: false,
       amountForChainFees: 0n,
-      isOpenPrice: false
+      isOpenPrice: false,
+      hashedPassword: '00'
     }
   })
 

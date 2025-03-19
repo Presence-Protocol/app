@@ -52,6 +52,7 @@ export namespace PoapCollectionTypes {
     tokenIdAirdrop: HexString;
     amountAirdropPerUser: bigint;
     airdropWhenHasParticipated: boolean;
+    hashedPassword: HexString;
     eventImage: HexString;
     eventName: HexString;
     description: HexString;
@@ -104,7 +105,11 @@ export namespace PoapCollectionTypes {
       result: CallContractResult<HexString>;
     };
     mint: {
-      params: CallContractParams<{ callerAddr: Address; amount: bigint }>;
+      params: CallContractParams<{
+        callerAddr: Address;
+        amount: bigint;
+        password: HexString;
+      }>;
       result: CallContractResult<HexString>;
     };
     setParticipatedPresence: {
@@ -216,6 +221,7 @@ export namespace PoapCollectionTypes {
       params: SignExecuteContractMethodParams<{
         callerAddr: Address;
         amount: bigint;
+        password: HexString;
       }>;
       result: SignExecuteScriptTxResult;
     };
@@ -360,7 +366,7 @@ class Factory extends ContractFactory<
     mint: async (
       params: TestContractParamsWithoutMaps<
         PoapCollectionTypes.Fields,
-        { callerAddr: Address; amount: bigint }
+        { callerAddr: Address; amount: bigint; password: HexString }
       >
     ): Promise<TestContractResultWithoutMaps<HexString>> => {
       return testMethod(this, "mint", params, getContractByCodeHash);
@@ -550,7 +556,7 @@ export const PoapCollection = new Factory(
   Contract.fromJson(
     PoapCollectionContractJson,
     "",
-    "05b84e750ed15115d5794b5d7e26b712936fa4da8ed9fb1c383919a4c4c8a0ce",
+    "025ac230635be206706cfbd1f274765aeeeeb03a2a7aedada4bbaf5fc5c38af4",
     AllStructs
   )
 );

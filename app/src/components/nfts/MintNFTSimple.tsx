@@ -1,6 +1,6 @@
 "use client"
 
-import { addressFromContractId, ALPH_TOKEN_ID, contractIdFromAddress, DUST_AMOUNT, hexToString, MINIMAL_CONTRACT_DEPOSIT, NetworkId, number256ToNumber, stringToHex, waitForTxConfirmation, web3 } from '@alephium/web3';
+import { addressFromContractId, ALPH_TOKEN_ID, contractIdFromAddress, DUST_AMOUNT, hexToString, MINIMAL_CONTRACT_DEPOSIT, NetworkId, number256ToNumber, stringToHex, waitForTxConfirmation, web3, hashMessage } from '@alephium/web3';
 import { useWallet } from '@alephium/web3-react';
 import { PoapFactory, PoapCollection, PoapFactoryTypes, PoapFactoryInstance, PoapCollectionInstance } from 'my-contracts';
 import { loadDeployments } from 'my-contracts/deployments';
@@ -34,6 +34,7 @@ interface NFTCollection {
   tokenNamePaidPoap?: string;
   tokenDecimalsPaidPoap?: number;
   isOpenPrice: boolean;
+  hashedPassword: string;
 }
 
 
@@ -98,11 +99,16 @@ export default function MintNFTSimple() {
     tokenPricePaidPoap: 0n,
     tokenNamePaidPoap: 'ALPH',  
     isOpenPrice: false,
+    hashedPassword: stringToHex(''),
   });
   const [tokenList, setTokenList] = useState<any[]>([]);
   const [customPrice, setCustomPrice] = useState<string>('');
   const [customPriceError, setCustomPriceError] = useState<string | null>(null);
   const [isPaidPoapPriceInfoOpen, setIsPaidPoapPriceInfoOpen] = useState(false);
+  const [password, setPassword] = useState('');
+  const [passwordRequired, setPasswordRequired] = useState(false);
+  const [passwordError, setPasswordError] = useState<string | null>(null);
+  const [isPasswordValid, setIsPasswordValid] = useState(false);
 
   const mintEventsRef = useRef<HTMLDivElement | null>(null);
 
@@ -174,6 +180,11 @@ export default function MintNFTSimple() {
             }
           }
           
+          // Check if password is required
+          const hasPassword = collectionMetadata.fields.hashedPassword !== '00';
+          setPasswordRequired(hasPassword);
+
+
           setNftCollection({
             title: hexToString(collectionMetadata.fields.eventName),
             description: hexToString(collectionMetadata.fields.description),
@@ -194,7 +205,8 @@ export default function MintNFTSimple() {
             tokenPricePaidPoap: collectionMetadata.fields.poapPrice,
             tokenNamePaidPoap: tokenName,
             tokenDecimalsPaidPoap: token?.decimals,
-            isOpenPrice: collectionMetadata.fields.isOpenPrice,
+            isOpenPrice: collectionMetadata.fields.isOpenPrice, 
+            hashedPassword: collectionMetadata.fields.hashedPassword,
           });
           setIsLoading(false);
         })
@@ -244,8 +256,49 @@ export default function MintNFTSimple() {
     return amount;
   }
 
+  // Add a function to validate password
+  const validatePassword = (input: string, hashedPassword: string) => {
+    if (!input) {
+      setPasswordError('Password is required');
+      setIsPasswordValid(false);
+      return false;
+    }
+    
+    // Hash the input password with SHA-256
+    const hashedInput = hashMessage(input,'sha256');
+    
+    // Compare with the stored hashed password
+    if (hashedInput !== hashedPassword) {
+      setPasswordError('Incorrect password');
+      setIsPasswordValid(false);
+      return false;
+    }
+    
+    setPasswordError(null);
+    setIsPasswordValid(true);
+    return true;
+  };
+
+  // Update the password onChange handler
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newPassword = e.target.value;
+    setPassword(newPassword);
+    
+    // Validate password on change
+    if (passwordRequired && nftCollection.hashedPassword) {
+      validatePassword(newPassword, nftCollection.hashedPassword);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validate password if required
+    if (passwordRequired) {
+      if (!validatePassword(password, nftCollection.hashedPassword)) {
+        return;
+      }
+    }
     
     // Validate custom price if open price is enabled
     if (nftCollection.isOpenPrice && nftCollection.tokenPricePaidPoap > 0n) {
@@ -317,7 +370,8 @@ export default function MintNFTSimple() {
       const result = await factoryContract.transact.mintPoap({
         args: {
           collection: poapCollection.contractId,
-          amount: nftCollection.isOpenPrice ? customPriceAmount : 0n
+          amount: nftCollection.isOpenPrice ? customPriceAmount : 0n,
+          password: passwordRequired ? stringToHex(password) : '00',
         },
         signer: signer,
         attoAlphAmount: finalAttoAmount,
@@ -335,6 +389,9 @@ export default function MintNFTSimple() {
       // Check for already minted error
       if (error.message?.includes('Assertion Failed in Contract') && error.message?.includes('Error Code: 6')) {
         setIsAlreadyMintedOpen(true);
+      } else if (error.message?.includes('Assertion Failed in Contract') && error.message?.includes('Error Code: 7')) {
+        // Add error handling for incorrect password (assuming error code 7 is used for password mismatch)
+        setPasswordError('Incorrect password');
       } else {
         setError('Failed to mint Presence. Please try again later.');
       }
@@ -591,6 +648,26 @@ export default function MintNFTSimple() {
                   </div>
 
                   <div className="mt-10 max-w-md mx-auto">
+                    {/* Add password input when password is required */}
+                    {passwordRequired && (
+                      <div className="mb-6">
+                        <div className="relative">
+                          <input
+                            type="password"
+                            placeholder="Event Password"
+                            value={password}
+                            onChange={handlePasswordChange}
+                            className={`block w-full px-3 py-3 text-xl text-black border-2 ${
+                              passwordError ? 'border-red-500' : isPasswordValid ? 'border-green-500' : 'border-black'
+                            } shadow appearance-none placeholder-black focus:border-black focus:bg-lila-500 focus:outline-none focus:ring-black sm:text-sm rounded-2xl`}
+                          />
+                        </div>
+                        {passwordError && (
+                          <p className="mt-1 text-sm text-red-600 text-left">{passwordError}</p>
+                        )}
+                      </div>
+                    )}
+
                     {/* Add custom price input when isOpenPrice is true */}
                     {nftCollection.isOpenPrice && (
                       <div className="mb-6">
@@ -652,7 +729,8 @@ export default function MintNFTSimple() {
                         Date.now() < Number(nftCollection.mintStartDate) ||
                         Date.now() > Number(nftCollection.mintEndDate) ||
                         nftCollection.currentSupply >= nftCollection.maxSupply ||
-                        (nftCollection.isOpenPrice && !customPrice)}
+                        (nftCollection.isOpenPrice && !customPrice) ||
+                        (passwordRequired && !isPasswordValid)}
                       className="text-black items-center shadow shadow-black max-w-md text-lg font-semibold inline-flex px-6 focus:outline-none justify-center text-center bg-[#fff] 
                       border-black ease-in-out transform transition-all focus:ring-lila-700 focus:shadow-none border-2 duration-100 py-3 rounded-lg h-16 tracking-wide focus:translate-y-1 w-full hover:text-lila-800 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
@@ -678,6 +756,8 @@ export default function MintNFTSimple() {
                         `Minting starts ${formatDate(nftCollection.mintStartDate)}`
                       ) : Date.now() > Number(nftCollection.mintEndDate) ? (
                         'Minting Ended'
+                      ) : passwordRequired && !isPasswordValid ? (
+                        passwordError || 'Enter Valid Password to Mint'
                       ) : nftCollection.isOpenPrice && !customPrice ? (
                         'Enter Price to Mint'
                       ) : (

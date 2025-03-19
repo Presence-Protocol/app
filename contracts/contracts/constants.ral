@@ -10,4 +10,5 @@ enum ErrorCodes {
     NotBurnable = 8
     NotEnoughAlph = 9
     AlreadySet = 10
+    InvalidPassword = 11
 }

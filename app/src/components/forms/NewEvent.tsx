@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useEffect, useState } from 'react';
-import { web3, Contract, MINIMAL_CONTRACT_DEPOSIT, DUST_AMOUNT, Subscription, contractIdFromAddress, addressFromContractId, NetworkId, ALPH_TOKEN_ID, ONE_ALPH, NodeProvider, number256ToNumber } from '@alephium/web3'
+import { web3, Contract, MINIMAL_CONTRACT_DEPOSIT, DUST_AMOUNT, Subscription, contractIdFromAddress, addressFromContractId, NetworkId, ALPH_TOKEN_ID, ONE_ALPH, NodeProvider, number256ToNumber, hashMessage } from '@alephium/web3'
 import { PoapFactory, PoapFactoryTypes } from '../../../../contracts/artifacts/ts/PoapFactory'
 import { toast } from 'react-hot-toast'
 import { useWallet } from '@alephium/web3-react'
@@ -128,6 +128,8 @@ export default function NewEvent() {
   const [paidPresence, setPaidPresence] = useState(false);
   const [minterFee, setMinterFee] = useState(0n);
   const [paidPoapTokenId, setPaidPoapTokenId] = useState(ALPH_TOKEN_ID);
+  const [password, setPassword] = useState('');
+  const [usePassword, setUsePassword] = useState(false);
 
   // Add this state to the main component
   const [globalTokenList, setGlobalTokenList] = useState<Token[]>([]);
@@ -367,8 +369,8 @@ export default function NewEvent() {
       const locationHex = stringToHex(location);
       // Call contract method using transact
 
-      console.log('poapPrice', poapPrice)
-      console.log('paidPoapTokenId', paidPoapTokenId)
+      console.log(usePassword)
+      
       const result = await factoryContract.transact.mintNewCollection({
         args: {
           eventImage: imageUri,
@@ -393,7 +395,8 @@ export default function NewEvent() {
           amountAirdrop: 0n,
           airdropWhenHasParticipated: false,
           amountForChainFees: coverMintFees ? chainFees : 0n,
-          isOpenPrice: isOpenPrice
+          isOpenPrice: isOpenPrice,
+          hashedPassword: usePassword ? hashMessage(password,'sha256') : '00',
         },
         signer: signer,
         attoAlphAmount: calculateFinalAmount(coverMintFees ? chainFees : 0n, coverMintFees ? storageFees : 0n),
@@ -442,6 +445,8 @@ export default function NewEvent() {
     setPaidPresence(false);
     setMinterFee(0n);
     setIsOpenPrice(false);
+    setPassword('');
+    setUsePassword(false);
   }, []);
 
   useEffect(() => {
@@ -603,6 +608,42 @@ export default function NewEvent() {
       </div>
     );
   };
+
+  const passwordSection = (
+    <div className="border-2 border-black divide-black shadow rounded-2xl overflow-hidden text-left">
+      <div 
+        className="flex items-center justify-between p-4 cursor-pointer bg-white"
+        onClick={() => setUsePassword(!usePassword)}
+      >
+        <div>
+          <h3 className="text-sm font-medium text-black">Password Protection</h3>
+          <p className="text-xs text-gray-500">Require a password to mint this Presence</p>
+        </div>
+        <svg
+          className={`w-5 h-5 transition-transform duration-200 ${usePassword ? 'transform rotate-180' : ''}`}
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+        </svg>
+      </div>
+
+      {usePassword && (
+        <div className="p-4 bg-white">
+          <label className="text-sm font-medium text-black">Event Password</label>
+          <p className="text-xs text-gray-500 mb-2">Users will need this password to mint this Presence</p>
+          <input
+            type="text"
+            placeholder="Enter a password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="block w-full px-3 py-3 text-xl text-black border-2 border-black appearance-none placeholder-black focus:border-black focus:bg-lila-500 focus:outline-none focus:ring-black sm:text-sm rounded-2xl"
+          />
+        </div>
+      )}
+    </div>
+  );
 
   const paidPresenceSection = (
     <div className="border-2 border-black divide-black shadow rounded-2xl overflow-hidden text-left">
@@ -1408,6 +1449,7 @@ export default function NewEvent() {
                           </div>
                         </div>
 
+                        {passwordSection}
                         {paidPresenceSection}
                         {advancedSettingsSection}
 

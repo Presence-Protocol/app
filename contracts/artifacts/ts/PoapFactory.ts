@@ -82,6 +82,7 @@ export namespace PoapFactoryTypes {
         tokenIdAirdrop: HexString;
         amountAirdropPerUser: bigint;
         airdropWhenHasParticipated: boolean;
+        hashedPassword: HexString;
         eventImage: HexString;
         eventName: HexString;
         description: HexString;
@@ -99,7 +100,11 @@ export namespace PoapFactoryTypes {
       result: CallContractResult<HexString>;
     };
     mintPoap: {
-      params: CallContractParams<{ collection: HexString; amount: bigint }>;
+      params: CallContractParams<{
+        collection: HexString;
+        amount: bigint;
+        password: HexString;
+      }>;
       result: CallContractResult<null>;
     };
     setParticipatedPresence: {
@@ -144,6 +149,7 @@ export namespace PoapFactoryTypes {
         tokenIdAirdrop: HexString;
         amountAirdropPerUser: bigint;
         airdropWhenHasParticipated: boolean;
+        hashedPassword: HexString;
         eventImage: HexString;
         eventName: HexString;
         description: HexString;
@@ -164,6 +170,7 @@ export namespace PoapFactoryTypes {
       params: SignExecuteContractMethodParams<{
         collection: HexString;
         amount: bigint;
+        password: HexString;
       }>;
       result: SignExecuteScriptTxResult;
     };
@@ -219,6 +226,7 @@ class Factory extends ContractFactory<
           tokenIdAirdrop: HexString;
           amountAirdropPerUser: bigint;
           airdropWhenHasParticipated: boolean;
+          hashedPassword: HexString;
           eventImage: HexString;
           eventName: HexString;
           description: HexString;
@@ -245,7 +253,7 @@ class Factory extends ContractFactory<
     mintPoap: async (
       params: TestContractParamsWithoutMaps<
         PoapFactoryTypes.Fields,
-        { collection: HexString; amount: bigint }
+        { collection: HexString; amount: bigint; password: HexString }
       >
     ): Promise<TestContractResultWithoutMaps<null>> => {
       return testMethod(this, "mintPoap", params, getContractByCodeHash);
@@ -296,7 +304,7 @@ export const PoapFactory = new Factory(
   Contract.fromJson(
     PoapFactoryContractJson,
     "",
-    "9ad712b20a468afe963eed51890b0a25acd53d8072341dd884178eeed33d73c5",
+    "664df56e2556a8170850ce7fabdd4d8e7e2b28d551161db15b6a1225a1e881fa",
     AllStructs
   )
 );

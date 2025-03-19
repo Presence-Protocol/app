@@ -1,4 +1,4 @@
-import { web3, DUST_AMOUNT, stringToHex, MINIMAL_CONTRACT_DEPOSIT, addressFromContractId, hexToString, ONE_ALPH, ALPH_TOKEN_ID, number256ToBigint, NULL_CONTRACT_ADDRESS } from '@alephium/web3'
+import { web3, DUST_AMOUNT, stringToHex, MINIMAL_CONTRACT_DEPOSIT, addressFromContractId, hexToString, ONE_ALPH, ALPH_TOKEN_ID, number256ToBigint, NULL_CONTRACT_ADDRESS, hashMessage } from '@alephium/web3'
 import { expectAssertionError, mintToken, testNodeWallet, transfer } from '@alephium/web3-test'
 import { deployToDevnet } from '@alephium/cli'
 import { PoapFactory, PoapCollection, PoapCollectionInstance, PoapNFT } from '../../artifacts/ts'
@@ -66,7 +66,8 @@ describe('integration tests', () => {
         amountAirdrop: 0n,
         airdropWhenHasParticipated: false,
         amountForChainFees: 0n,
-        isOpenPrice: false
+        isOpenPrice: false,
+        hashedPassword: '00'
       },
       signer: signer,
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT
@@ -125,7 +126,8 @@ describe('integration tests', () => {
         amountAirdrop: 0n,
         airdropWhenHasParticipated: false,
         amountForChainFees: 0n,
-        isOpenPrice: false
+        isOpenPrice: false,
+        hashedPassword: '00'
       },
       signer: signer,
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT
@@ -147,7 +149,8 @@ describe('integration tests', () => {
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT,
       args: {
         callerAddr: minter.address,
-        amount: 0n
+        amount: 0n,
+        password: ''
       }
     })
 
@@ -157,7 +160,8 @@ describe('integration tests', () => {
     await factory.transact.mintPoap({
       args: {
         collection: collection.contractId,
-        amount: 0n
+        amount: 0n,
+        password: ''
       },
       signer: minter,
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT
@@ -178,6 +182,105 @@ describe('integration tests', () => {
   }, 20000)
 
 
+  it('Mint poap trough Factory wuith password', async () => {
+    const signer = await testNodeWallet()
+    const deployments = await deployToDevnet()
+    const factory = deployments.getInstance(PoapFactory)
+
+    expect(factory).toBeDefined()
+
+    if (!factory) {
+      throw new Error('Factory is undefined')
+    }
+
+    await factory.transact.mintNewCollection({
+      args: {
+        eventImage: stringToHex('https://arweave.net/Z1HAdT_PGnxPLct4-u7l1Zl_h4DNdxzKev7tCDAEflc'),
+        maxSupply: 10n,
+        mintStartAt: 1735823531000n,
+        mintEndAt: 1893595576000n,
+        eventName: stringToHex('Test 1'),
+        description: stringToHex('First poap test'),
+        location: stringToHex('Online'),
+        eventStartAt: 1735823531000n,
+        eventEndAt: 1735823531000n,
+        totalSupply: 0n,
+        isPublic: false,
+        oneMintPerAddress: false,
+        isBurnable: false,
+        amountForStorageFees: 0n,
+        poapPrice: 0n,
+        tokenIdPoap: ALPH_TOKEN_ID,
+        amountPoapFees: 0n,
+        tokenIdAirdrop: ALPH_TOKEN_ID,
+        amountAirdropPerUser: 0n,
+        amountAirdrop: 0n,
+        airdropWhenHasParticipated: false,
+        amountForChainFees: 0n,
+        isOpenPrice: false,
+        hashedPassword: hashMessage('password', 'sha256')
+      },
+      signer: signer,
+      attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT
+    })
+
+    // Check that event is emitted
+    const { events } = await web3
+      .getCurrentNodeProvider()
+      .events.getEventsContractContractaddress(factory.address, { start: 0 })
+    expect(events.length).toEqual(1)
+
+    const creationEvent = events[0]
+    const poapCollectionMinted = creationEvent.fields[0].value as string
+
+    const collection = PoapCollection.at(addressFromContractId(poapCollectionMinted))
+
+    await collection.transact.mint({
+      signer: minter,
+      attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT,
+      args: {
+        callerAddr: minter.address,
+        amount: 0n,
+        password: stringToHex('password')
+      }
+    })
+
+    await factory.transact.mintPoap({
+      args: {
+        collection: collection.contractId,
+        amount: 0n,
+        password: stringToHex('password')
+      },
+      signer: minter,
+      attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT
+    })
+
+    expect((await collection.view.totalSupply()).returns).toBe(2n)
+
+    await expectAssertionError(factory.transact.mintPoap({
+      args: {
+        collection: collection.contractId,
+        amount: 0n,
+        password: stringToHex('wrongpassword')
+      },
+      signer: minter,
+      attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT
+    }),collection.address, 11)
+     
+
+
+    expect((await collection.view.totalSupply()).returns).toBe(2n)
+
+    // get Poap    
+    const poap = PoapNFT.at(addressFromContractId((await collection.view.nftByIndex({ args: { index: 0n } })).returns))
+    const poapState = await poap.fetchState()
+    expect(hexToString(poapState.fields.eventName)).toBe('Test 1')
+
+    expect((await poap.view.getTraits()).returns.length).toBe(8)
+
+    expect(hexToString((await poap.view.getTokenUri()).returns)).toBe("data:application/json,{\"name\": \"Test 1\",\"image\": \"https://arweave.net/Z1HAdT_PGnxPLct4-u7l1Zl_h4DNdxzKev7tCDAEflc\", \"attributes\": [{\"trait_type\": \"Event Name\", \"value\": \"Test 1\"}, {\"trait_type\": \"Description\", \"value\": \"First poap test\"}, {\"trait_type\": \"Organizer\", \"value\": \"00bee85f379545a2ed9f6cceb331288842f378cf0f04012ad4ac8824aae7d6f80a\"}, {\"trait_type\": \"Location\", \"value\": \"Online\"}, {\"trait_type\": \"Event Start At\", \"value\": 1735823531000}, {\"trait_type\": \"Event End At\", \"value\": 1735823531000},{\"trait_type\": \"Has Particpated\", \"value\": false}]}")
+
+  }, 20000)
   it('Mint poap trough Factory with SVG', async () => {
     const signer = await testNodeWallet()
     const deployments = await deployToDevnet()
@@ -217,7 +320,8 @@ describe('integration tests', () => {
         amountAirdrop: 0n,
         airdropWhenHasParticipated: false,
         amountForChainFees: 0n,
-        isOpenPrice: false
+        isOpenPrice: false,
+        hashedPassword: '00'
       },
       signer: signer,
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT
@@ -239,7 +343,8 @@ describe('integration tests', () => {
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT,
       args: {
         callerAddr: minter.address,
-        amount: 0n
+        amount: 0n,
+        password: ''
       }
     })
 
@@ -249,7 +354,8 @@ describe('integration tests', () => {
     await factory.transact.mintPoap({
       args: {
         collection: collection.contractId,
-        amount: 0n
+        amount: 0n,
+        password: ''
       },
       signer: minter,
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT
@@ -305,7 +411,8 @@ describe('integration tests', () => {
         amountAirdrop: 0n,
         airdropWhenHasParticipated: false,
         amountForChainFees: 0n,
-        isOpenPrice: false
+        isOpenPrice: false,
+        hashedPassword: '00'
       },
       signer: signer,
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT
@@ -327,7 +434,8 @@ describe('integration tests', () => {
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT,
       args: {
         callerAddr: minter.address,
-        amount: 0n
+        amount: 0n,
+        password: ''
       }
     })
 
@@ -378,7 +486,8 @@ describe('integration tests', () => {
         amountAirdrop: 0n,
         airdropWhenHasParticipated: false,
         amountForChainFees: 0n,
-        isOpenPrice: false
+        isOpenPrice: false,
+        hashedPassword: '00'
       },
       signer: signer,
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + 2n*10n ** 17n + DUST_AMOUNT
@@ -405,7 +514,8 @@ describe('integration tests', () => {
       attoAlphAmount: DUST_AMOUNT,
       args: {
         callerAddr: minter.address,
-        amount: 0n
+        amount: 0n,
+        password: ''
       }
     })
 
@@ -420,7 +530,8 @@ describe('integration tests', () => {
       attoAlphAmount: DUST_AMOUNT,
       args: {
         callerAddr: minter.address,
-        amount: 0n
+        amount: 0n,
+        password: ''
       }
     })
 
@@ -434,7 +545,8 @@ describe('integration tests', () => {
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT,
       args: {
         callerAddr: minter.address,
-        amount: 0n
+        amount: 0n,
+        password: ''
       }
     })
 
@@ -444,7 +556,8 @@ describe('integration tests', () => {
       attoAlphAmount: DUST_AMOUNT,
       args: {
         callerAddr: minter.address,
-        amount: 0n
+        amount: 0n,
+        password: ''
       }
     })).rejects.toThrowError()
 
@@ -493,7 +606,8 @@ describe('integration tests', () => {
         amountAirdrop: 0n,
         airdropWhenHasParticipated: false,
         amountForChainFees: 0n,
-        isOpenPrice: false
+        isOpenPrice: false,
+        hashedPassword: '00'
       },
       signer: signer,
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT
@@ -515,7 +629,8 @@ describe('integration tests', () => {
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT,
       args: {
         callerAddr: minter.address,
-        amount: 0n
+        amount: 0n,
+        password: ''
       }
     })
 
@@ -526,7 +641,8 @@ describe('integration tests', () => {
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT,
       args: {
         callerAddr: minter.address,
-        amount: 0n
+        amount: 0n,
+        password: ''
       }
     }), addressFromContractId(poapCollectionMinted), 3)
 
@@ -568,7 +684,8 @@ describe('integration tests', () => {
         amountAirdrop: 0n,
         airdropWhenHasParticipated: false,
         amountForChainFees: 0n,
-        isOpenPrice: false
+        isOpenPrice: false,
+        hashedPassword: '00'
       },
       signer: signer,
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT
@@ -589,7 +706,8 @@ describe('integration tests', () => {
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT,
       args: {
         callerAddr: minter.address,
-        amount: 0n
+        amount: 0n,
+        password: ''
       }
     }), addressFromContractId(poapCollectionMinted), 5)
 
@@ -630,7 +748,8 @@ describe('integration tests', () => {
         amountAirdrop: 0n,
         airdropWhenHasParticipated: false,
         amountForChainFees: 0n,
-        isOpenPrice: false
+        isOpenPrice: false,
+        hashedPassword: '00'
       },
       signer: signer,
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT
@@ -652,7 +771,8 @@ describe('integration tests', () => {
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT,
       args: {
         callerAddr: minter.address,
-        amount: 0n
+        amount: 0n,
+        password: ''
       }
     }), addressFromContractId(poapCollectionMinted), 4)
 
@@ -694,7 +814,8 @@ describe('integration tests', () => {
         amountAirdrop: 0n,
         airdropWhenHasParticipated: false,
         amountForChainFees: 0n,
-        isOpenPrice: false
+        isOpenPrice: false,
+        hashedPassword: '00'
       },
       signer: signer,
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT
@@ -716,7 +837,8 @@ describe('integration tests', () => {
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT,
       args: {
         callerAddr: minter.address,
-        amount: 0n
+        amount: 0n,
+        password: ''
       }
     })
 
@@ -726,7 +848,8 @@ describe('integration tests', () => {
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT,
       args: {
         callerAddr: minter.address,
-        amount: 0n
+        amount: 0n,
+        password: ''
       }
     }), addressFromContractId(poapCollectionMinted), 6)
 
@@ -736,7 +859,8 @@ describe('integration tests', () => {
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT,
       args: {
         callerAddr: minter2.address,
-        amount: 0n
+        amount: 0n,
+        password: ''
       }
     })
 
@@ -777,7 +901,8 @@ describe('integration tests', () => {
         amountAirdrop: 0n,
         airdropWhenHasParticipated: false,
         amountForChainFees: 0n,
-        isOpenPrice: false
+        isOpenPrice: false,
+        hashedPassword: '00'
       },
       signer: signer,
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT
@@ -799,7 +924,8 @@ describe('integration tests', () => {
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT,
       args: {
         collection: collection.contractId,
-        amount: 0n
+        amount: 0n,
+        password: ''
       }
     })
 
@@ -809,7 +935,8 @@ describe('integration tests', () => {
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT,
       args: {
         collection: collection.contractId,
-        amount: 0n
+        amount: 0n,
+        password: ''
       }
     }), addressFromContractId(poapCollectionMinted), 6)
 
@@ -819,7 +946,8 @@ describe('integration tests', () => {
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT,
       args: {
         collection: collection.contractId,
-        amount: 0n
+        amount: 0n,
+        password: ''
       }
     })
 
@@ -860,7 +988,8 @@ describe('integration tests', () => {
         amountAirdrop: 0n,
         airdropWhenHasParticipated: false,
         amountForChainFees: 0n,
-        isOpenPrice: false
+        isOpenPrice: false,
+        hashedPassword: '00'
       },
       signer: signer,
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT
@@ -882,7 +1011,8 @@ describe('integration tests', () => {
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT,
       args: {
         callerAddr: minter.address,
-        amount: 0n
+        amount: 0n,
+        password: ''
       }
     })
 
@@ -896,7 +1026,8 @@ describe('integration tests', () => {
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT,
       args: {
         collection: collection.contractId,
-        amount: 0n
+        amount: 0n,
+        password: ''
       }
     }), addressFromContractId(poapCollectionMinted), 6)
 
@@ -906,7 +1037,8 @@ describe('integration tests', () => {
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT,
       args: {
         collection: collection.contractId,
-        amount: 0n
+        amount: 0n,
+        password: ''
       }
     })
 
@@ -947,7 +1079,8 @@ describe('integration tests', () => {
         amountAirdrop: 0n,
         airdropWhenHasParticipated: false,
         amountForChainFees: 0n,
-        isOpenPrice: false
+        isOpenPrice: false,
+        hashedPassword: '00'
       },
       signer: signer,
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT
@@ -969,7 +1102,8 @@ describe('integration tests', () => {
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT,
       args: {
         collection: collection.contractId,
-        amount: 0n
+        amount: 0n,
+        password: ''
       }
     })
 
@@ -1025,7 +1159,8 @@ describe('integration tests', () => {
         amountAirdrop: 0n,
         airdropWhenHasParticipated: false,
         amountForChainFees: 0n,
-        isOpenPrice: false
+        isOpenPrice: false,
+        hashedPassword: '00'
       },
       signer: signer,
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT
@@ -1047,7 +1182,8 @@ describe('integration tests', () => {
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT,
       args: {
         collection: collection.contractId,
-        amount: 0n
+        amount: 0n,
+        password: ''
       }
     })
 
@@ -1098,7 +1234,8 @@ describe('integration tests', () => {
         amountAirdrop: 0n,
         airdropWhenHasParticipated: false,
         amountForChainFees: 0n,
-        isOpenPrice: false
+        isOpenPrice: false,
+        hashedPassword: '00'
       },
       signer: signer,
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT
@@ -1120,7 +1257,8 @@ describe('integration tests', () => {
       attoAlphAmount: ONE_ALPH + MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT,
       args: {
         collection: collection.contractId,
-        amount: 0n
+        amount: 0n,
+        password: ''
       }
     })
 
@@ -1182,7 +1320,8 @@ describe('integration tests', () => {
         amountAirdrop: 0n,
         airdropWhenHasParticipated: false,
         amountForChainFees: 0n,
-        isOpenPrice: true
+        isOpenPrice: true,
+        hashedPassword: '00'
       },
       signer: signer,
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT
@@ -1204,7 +1343,8 @@ describe('integration tests', () => {
       attoAlphAmount: ONE_ALPH + MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT,
       args: {
         collection: collection.contractId,
-        amount: ONE_ALPH
+        amount: ONE_ALPH,
+        password: ''
       }
     })
 
@@ -1270,7 +1410,8 @@ describe('integration tests', () => {
         amountAirdrop: 0n,
         airdropWhenHasParticipated: false,
         amountForChainFees: 0n,
-        isOpenPrice: false
+        isOpenPrice: false,
+        hashedPassword: '00'
       },
       signer: signer,
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT
@@ -1298,7 +1439,8 @@ describe('integration tests', () => {
       }],
       args: {
         collection: collection.contractId,
-        amount: 0n
+        amount: 0n,
+        password: ''
       }
     })
 
@@ -1311,7 +1453,8 @@ describe('integration tests', () => {
       }],
       args: {
         collection: collection.contractId,
-        amount: 0n
+        amount: 0n,
+        password: ''
       }
     })
 
@@ -1329,7 +1472,8 @@ describe('integration tests', () => {
       }],
       args: {
         collection: collection.contractId,
-        amount: 0n
+        amount: 0n,
+        password: ''
       }
     })).rejects.toThrowError()
 
@@ -1405,7 +1549,8 @@ describe('integration tests', () => {
         amountAirdrop: 0n,
         airdropWhenHasParticipated: false,
         amountForChainFees: 0n,
-        isOpenPrice: true
+        isOpenPrice: true,
+        hashedPassword: '00'
       },
       signer: signer,
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT
@@ -1433,7 +1578,8 @@ describe('integration tests', () => {
       }],
       args: {
         collection: collection.contractId,
-        amount: 1n
+        amount: 1n,
+        password: ''
       }
     })
 
@@ -1446,7 +1592,8 @@ describe('integration tests', () => {
       }],
       args: {
         collection: collection.contractId,
-        amount: 1n
+        amount: 1n,
+        password: ''
       }
     })
 
@@ -1464,7 +1611,8 @@ describe('integration tests', () => {
       }],
       args: {
         collection: collection.contractId,
-        amount: 1n
+        amount: 1n,
+        password: ''
       }
     })).rejects.toThrowError()
 
@@ -1540,7 +1688,8 @@ describe('integration tests', () => {
         amountAirdrop: 20n,
         airdropWhenHasParticipated: false,
         amountForChainFees: 0n,
-        isOpenPrice: false
+        isOpenPrice: false,
+        hashedPassword: '00'
       },
       signer: signer,
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT,
@@ -1568,7 +1717,8 @@ describe('integration tests', () => {
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + 2n*DUST_AMOUNT,
       args: {
         collection: collection.contractId,
-        amount: 0n
+        amount: 0n,
+        password: ''
       }
     })
     expect(number256ToBigint((await balanceOf(minter.account.address, customTokenA.tokenId)).amount)).toBe(10n)
@@ -1581,7 +1731,8 @@ describe('integration tests', () => {
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + 2n*DUST_AMOUNT,
       args: {
         collection: collection.contractId,
-        amount: 0n
+        amount: 0n,
+        password: ''
       }
     })
     expect(number256ToBigint((await balanceOf(minter2.account.address, customTokenA.tokenId)).amount)).toBe(10n)
@@ -1596,7 +1747,8 @@ describe('integration tests', () => {
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT,
       args: {
         collection: collection.contractId,
-        amount: 0n
+        amount: 0n,
+        password: ''
       }
     })
     expect(number256ToBigint((await balanceOf(minter3.account.address, customTokenA.tokenId)).amount)).toBe(0n)
@@ -1642,7 +1794,8 @@ describe('integration tests', () => {
         amountAirdrop: 20n * ONE_ALPH,
         airdropWhenHasParticipated: false,
         amountForChainFees: 0n,
-        isOpenPrice: false
+        isOpenPrice: false,
+        hashedPassword: '00'
       },
       signer: signer,
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT + 20n * ONE_ALPH,
@@ -1667,7 +1820,8 @@ describe('integration tests', () => {
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + 2n*DUST_AMOUNT,
       args: {
         collection: collection.contractId,
-        amount: 0n
+        amount: 0n,
+        password: ''
       }
     })
     expect(await alphBalanceOf(minter.address)).toBeGreaterThan(109n * ONE_ALPH)
@@ -1681,7 +1835,8 @@ describe('integration tests', () => {
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + 2n*DUST_AMOUNT,
       args: {
         collection: collection.contractId,
-        amount: 0n
+        amount: 0n,
+        password: ''
       }
     })
     expect(await alphBalanceOf(minter2.address)).toBeGreaterThan(109n * ONE_ALPH)
@@ -1696,7 +1851,8 @@ describe('integration tests', () => {
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT,
       args: {
         collection: collection.contractId,
-        amount: 0n
+        amount: 0n,
+        password: ''
       }
     })
     expect(await alphBalanceOf(minter3.address)).toBeGreaterThan(109n * ONE_ALPH)
@@ -1743,7 +1899,8 @@ describe('integration tests', () => {
         amountAirdrop: 20n,
         airdropWhenHasParticipated: false,
         amountForChainFees: 0n,
-        isOpenPrice: false
+        isOpenPrice: false,
+        hashedPassword: '00'
       },
       signer: signer,
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT + 2n*10n**17n,
@@ -1772,7 +1929,8 @@ describe('integration tests', () => {
       attoAlphAmount:  2n*DUST_AMOUNT,
       args: {
         collection: collection.contractId,
-        amount: 0n
+        amount: 0n,
+        password: ''
       }
     })
     expect(number256ToBigint((await balanceOf(minter.account.address, customTokenA.tokenId)).amount)).toBe(10n)
@@ -1788,7 +1946,8 @@ describe('integration tests', () => {
       attoAlphAmount: 2n*DUST_AMOUNT,
       args: {
         collection: collection.contractId,
-        amount: 0n
+        amount: 0n,
+        password: ''
       }
     })
     expect(number256ToBigint((await balanceOf(minter2.account.address, customTokenA.tokenId)).amount)).toBe(10n)
@@ -1802,7 +1961,8 @@ describe('integration tests', () => {
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT,
       args: {
         collection: collection.contractId,
-        amount: 0n
+        amount: 0n,
+        password: ''
       }
     })
     expect(number256ToBigint((await balanceOf(minter3.account.address, customTokenA.tokenId)).amount)).toBe(0n)
@@ -1847,7 +2007,8 @@ describe('integration tests', () => {
         amountAirdrop: 0n,
         airdropWhenHasParticipated: false,
         amountForChainFees: 0n,
-        isOpenPrice: false
+        isOpenPrice: false,
+        hashedPassword: '00'
       },
       signer: signer,
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT
@@ -1869,7 +2030,8 @@ describe('integration tests', () => {
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT,
       args: {
         callerAddr: minter.address,
-        amount: 0n
+        amount: 0n,
+        password: ''
       }
     })
 
@@ -1910,7 +2072,8 @@ describe('integration tests', () => {
     await factory.transact.mintPoap({
       args: {
         collection: collection.contractId,
-        amount: 0n
+        amount: 0n,
+        password: ''
       },
       signer: minter,
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT
@@ -1950,7 +2113,8 @@ describe('integration tests', () => {
     await factory.transact.mintPoap({
       args: {
         collection: collection.contractId,
-        amount: 0n
+        amount: 0n,
+        password: ''
       },
       signer: minter,
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT
@@ -2018,7 +2182,8 @@ describe('integration tests', () => {
         amountAirdrop: 20n,
         airdropWhenHasParticipated: true,
         amountForChainFees: 0n,
-        isOpenPrice: false
+        isOpenPrice: false,
+        hashedPassword: '00'
       },
       signer: signer,
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT,
@@ -2044,7 +2209,8 @@ describe('integration tests', () => {
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT,
       args: {
         callerAddr: minter.address,
-        amount: 0n
+        amount: 0n,
+        password: ''
       }
     })
 
@@ -2089,7 +2255,8 @@ describe('integration tests', () => {
     await factory.transact.mintPoap({
       args: {
         collection: collection.contractId,
-        amount: 0n
+        amount: 0n,
+        password: ''
       },
       signer: minter,
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT
@@ -2130,7 +2297,8 @@ describe('integration tests', () => {
     await factory.transact.mintPoap({
       args: {
         collection: collection.contractId,
-        amount: 0n
+        amount: 0n,
+        password: ''
       },
       signer: minter,
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT
@@ -2196,7 +2364,8 @@ describe('integration tests', () => {
         amountAirdrop: 0n,
         airdropWhenHasParticipated: false,
         amountForChainFees: 0n,
-        isOpenPrice: false
+        isOpenPrice: false,
+        hashedPassword: '00'
       },
       signer: signer,
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT
@@ -2218,7 +2387,8 @@ describe('integration tests', () => {
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT,
       args: {
         callerAddr: minter.address,
-        amount: 0n
+        amount: 0n,
+        password: ''
       }
     })
 
@@ -2263,7 +2433,8 @@ describe('integration tests', () => {
     await factory.transact.mintPoap({
       args: {
         collection: collection.contractId,
-        amount: 0n
+        amount: 0n,
+        password: ''
       },
       signer: minter2,
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT
@@ -2317,7 +2488,8 @@ describe('integration tests', () => {
     await factory.transact.mintPoap({
       args: {
         collection: collection.contractId,
-        amount: 0n
+        amount: 0n,
+        password: ''
       },
       signer: minter3,
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT
@@ -2373,7 +2545,8 @@ describe('integration tests', () => {
         amountAirdrop: 0n,
         airdropWhenHasParticipated: false,
         amountForChainFees: 0n,
-        isOpenPrice: false
+        isOpenPrice: false,
+        hashedPassword: '00'
       },
       signer: signer,
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT
@@ -2395,7 +2568,8 @@ describe('integration tests', () => {
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT,
       args: {
         callerAddr: minter.address,
-        amount: 0n
+        amount: 0n,
+        password: ''
       }
     })
 
@@ -2440,7 +2614,8 @@ describe('integration tests', () => {
     await factory.transact.mintPoap({
       args: {
         collection: collection.contractId,
-        amount: 0n
+        amount: 0n,
+        password: ''
       },
       signer: minter2,
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT
@@ -2494,7 +2669,8 @@ describe('integration tests', () => {
     await factory.transact.mintPoap({
       args: {
         collection: collection.contractId,
-        amount: 0n
+        amount: 0n,
+        password: ''
       },
       signer: minter3,
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT
@@ -2551,7 +2727,8 @@ describe('integration tests', () => {
         amountForChainFees: 10n * ONE_ALPH,
         airdropWhenHasParticipated: false,
         amountForStorageFees: 2n * 10n ** 17n,
-        isOpenPrice: false
+        isOpenPrice: false,
+        hashedPassword: '00'
       },
       signer: signer,
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + 2n*10n ** 17n + DUST_AMOUNT  + 10n * ONE_ALPH
@@ -2578,7 +2755,8 @@ describe('integration tests', () => {
       attoAlphAmount: 0n,
       args: {
         callerAddr: minter.address,
-        amount: 0n
+        amount: 0n,
+        password: ''
       }
     })
 
@@ -2593,7 +2771,8 @@ describe('integration tests', () => {
       attoAlphAmount: 0n,
       args: {
         callerAddr: minter.address,
-        amount: 0n
+        amount: 0n,
+        password: ''
       }
     })
 
@@ -2607,7 +2786,8 @@ describe('integration tests', () => {
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT,
       args: {
         callerAddr: minter.address,
-        amount: 0n
+        amount: 0n,
+        password: ''
       }
     })
 
@@ -2617,7 +2797,8 @@ describe('integration tests', () => {
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT,
       args: {
         callerAddr: minter.address,
-        amount: 0n
+        amount: 0n,
+        password: ''
       }
     })
 
@@ -2665,7 +2846,8 @@ describe('integration tests', () => {
         amountAirdrop: 0n,
         airdropWhenHasParticipated: false,
         amountForChainFees: 0n,
-        isOpenPrice: false
+        isOpenPrice: false,
+        hashedPassword: '00'
       },
       signer: signer,
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT + 10n * ONE_ALPH
@@ -2689,7 +2871,8 @@ describe('integration tests', () => {
       attoAlphAmount: DUST_AMOUNT,
       args: {
         callerAddr: minter.address,
-        amount: 0n
+        amount: 0n,
+        password: ''
       }
     })
 
@@ -2698,7 +2881,8 @@ describe('integration tests', () => {
     await factory.transact.mintPoap({
       args: {
         collection: collection.contractId,
-        amount: 0n
+        amount: 0n,
+        password: ''
       },
       signer: minter,
       attoAlphAmount: DUST_AMOUNT
@@ -2752,14 +2936,16 @@ describe('integration tests', () => {
       attoAlphAmount: 0n,
       args: {
         callerAddr: minter.address,
-        amount: 0n
+        amount: 0n,
+        password: ''
       }
     })
 
     await factory.transact.mintPoap({
       args: {
         collection: collection.contractId,
-        amount: 0n
+        amount: 0n,
+        password: ''
       },
       signer: minter,
       attoAlphAmount: 0n
@@ -2831,14 +3017,16 @@ describe('integration tests', () => {
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT,
       args: {
         callerAddr: minter.address,
-        amount: 0n
+        amount: 0n,
+        password: ''
       }
     })
 
     await factory.transact.mintPoap({
       args: {
         collection: collection.contractId,
-        amount: 0n
+        amount: 0n,
+        password: ''
       },
       signer: minter,
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT
