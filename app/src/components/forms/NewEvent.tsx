@@ -396,7 +396,7 @@ export default function NewEvent() {
           airdropWhenHasParticipated: false,
           amountForChainFees: coverMintFees ? chainFees : 0n,
           isOpenPrice: isOpenPrice,
-          hashedPassword: usePassword ? hashMessage(password,'sha256') : '00',
+          hashedPassword: usePassword && password ? hashMessage(password,'sha256') : '00',
         },
         signer: signer,
         attoAlphAmount: calculateFinalAmount(coverMintFees ? chainFees : 0n, coverMintFees ? storageFees : 0n),
