@@ -9,9 +9,17 @@ const TemplateSelect: React.FC<TemplateSelectProps> = ({ selectedTemplate, onSel
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement | null>(null);
 
+  // Add a function to check if a template is coming soon
+  const isComingSoon = (template: string) => {
+    return !['all event options', 'free', 'paid'].includes(template);
+  };
+
+  // Modify the handleSelect function to prevent selecting coming soon templates
   const handleSelect = (template: 'all event options' | 'free' | 'paid' | 'creator' | 'birthday' | 'fundraiser' | 'meetup') => {
-    onSelect(template);
-    setIsMenuOpen(false);
+    if (!isComingSoon(template)) {
+      onSelect(template);
+      setIsMenuOpen(false);
+    }
   };
 
   // Close the menu when clicking outside
@@ -90,8 +98,12 @@ const TemplateSelect: React.FC<TemplateSelectProps> = ({ selectedTemplate, onSel
 
 
                   <div
-                    className="group relative flex gap-x-6 p-4 duration-300 bg-white"
-                    onClick={() => handleSelect('free')}
+                    className={`group relative flex gap-x-6 p-4 duration-300 ${
+                      isComingSoon('free') 
+                        ? 'bg-gray-100 opacity-50 cursor-not-allowed' 
+                        : 'bg-white'
+                    }`}
+                    onClick={() => !isComingSoon('free') && handleSelect('free')}
                   >
                     <div className="flex h-10 w-10 flex-none items-center justify-center bg-white text-black group-hover:text-lila-600">
                       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.8" stroke="currentColor" className="size-6">
@@ -103,6 +115,9 @@ const TemplateSelect: React.FC<TemplateSelectProps> = ({ selectedTemplate, onSel
                     <div>
                       <a href="#_" className="font-semibold text-black group-hover:text-gray-700 duration-300">
                         Free Event
+                        {isComingSoon('free') && (
+                          <span className="ml-2 text-xs font-normal text-lila-600">Coming Soon</span>
+                        )}
                         <span className="absolute inset-0"></span>
                       </a>
                       <p className="mt-1 text-black group-hover:text-gray-500">
@@ -112,8 +127,12 @@ const TemplateSelect: React.FC<TemplateSelectProps> = ({ selectedTemplate, onSel
                   </div>
 
                   <div
-                    className="group relative flex gap-x-6 p-4 duration-300 bg-white"
-                    onClick={() => handleSelect('paid')}
+                    className={`group relative flex gap-x-6 p-4 duration-300 ${
+                      isComingSoon('paid') 
+                        ? 'bg-gray-100 opacity-50 cursor-not-allowed' 
+                        : 'bg-white'
+                    }`}
+                    onClick={() => !isComingSoon('paid') && handleSelect('paid')}
                   >
                     <div className="flex h-10 w-10 flex-none items-center justify-center bg-white text-black group-hover:text-lila-600">
                       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.8" stroke="currentColor" className="size-6">
@@ -124,6 +143,9 @@ const TemplateSelect: React.FC<TemplateSelectProps> = ({ selectedTemplate, onSel
                     <div>
                       <a href="#_" className="font-semibold text-black group-hover:text-gray-700 duration-300">
                         Paid Event
+                        {isComingSoon('paid') && (
+                          <span className="ml-2 text-xs font-normal text-lila-600">Coming Soon</span>
+                        )}
                         <span className="absolute inset-0"></span>
                       </a>
                       <p className="mt-1 text-black group-hover:text-gray-500">
@@ -133,8 +155,12 @@ const TemplateSelect: React.FC<TemplateSelectProps> = ({ selectedTemplate, onSel
                   </div>
 
                   <div
-                    className="group relative flex gap-x-6 p-4 duration-300 bg-white"
-                    onClick={() => handleSelect('creator')}
+                    className={`group relative flex gap-x-6 p-4 duration-300 ${
+                      isComingSoon('creator') 
+                        ? 'bg-gray-100 opacity-50 cursor-not-allowed' 
+                        : 'bg-white'
+                    }`}
+                    onClick={() => !isComingSoon('creator') && handleSelect('creator')}
                   >
                     <div className="flex h-10 w-10 flex-none items-center justify-center bg-white text-black group-hover:text-lila-600">
                       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.7" stroke="currentColor" className="h-6 w-6">
@@ -144,6 +170,9 @@ const TemplateSelect: React.FC<TemplateSelectProps> = ({ selectedTemplate, onSel
                     <div>
                       <a href="#_" className="font-semibold text-black group-hover:text-gray-700 duration-300">
                         Creator Event
+                        {isComingSoon('creator') && (
+                          <span className="ml-2 text-xs font-normal text-lila-600">Coming Soon</span>
+                        )}
                         <span className="absolute inset-0"></span>
                       </a>
                       <p className="mt-1 text-black group-hover:text-gray-500">
@@ -175,8 +204,12 @@ const TemplateSelect: React.FC<TemplateSelectProps> = ({ selectedTemplate, onSel
                   </div> */}
 
                   <div
-                    className="group relative flex gap-x-6 p-4 duration-300 bg-white"
-                    onClick={() => handleSelect('birthday')}
+                    className={`group relative flex gap-x-6 p-4 duration-300 ${
+                      isComingSoon('birthday') 
+                        ? 'bg-gray-100 opacity-50 cursor-not-allowed' 
+                        : 'bg-white'
+                    }`}
+                    onClick={() => !isComingSoon('birthday') && handleSelect('birthday')}
                   >
                     <div className="flex h-10 w-10 flex-none items-center justify-center bg-white text-black group-hover:text-lila-600">
                       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.7" stroke="currentColor" className="h-6 w-6">
@@ -186,6 +219,9 @@ const TemplateSelect: React.FC<TemplateSelectProps> = ({ selectedTemplate, onSel
                     <div>
                       <a href="#_" className="font-semibold text-black group-hover:text-gray-700 duration-300">
                         Birthday Event
+                        {isComingSoon('birthday') && (
+                          <span className="ml-2 text-xs font-normal text-lila-600">Coming Soon</span>
+                        )}
                         <span className="absolute inset-0"></span>
                       </a>
                       <p className="mt-1 text-black group-hover:text-gray-500">
@@ -217,8 +253,12 @@ const TemplateSelect: React.FC<TemplateSelectProps> = ({ selectedTemplate, onSel
                   </div> */}
 
                   <div
-                    className="group relative flex gap-x-6 p-4 duration-300 bg-white"
-                    onClick={() => handleSelect('fundraiser')}
+                    className={`group relative flex gap-x-6 p-4 duration-300 ${
+                      isComingSoon('fundraiser') 
+                        ? 'bg-gray-100 opacity-50 cursor-not-allowed' 
+                        : 'bg-white'
+                    }`}
+                    onClick={() => !isComingSoon('fundraiser') && handleSelect('fundraiser')}
                   >
                     <div className="flex h-10 w-10 flex-none items-center justify-center bg-white text-black group-hover:text-lila-600">
                       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.9" stroke="currentColor" className="size-6">
@@ -229,6 +269,9 @@ const TemplateSelect: React.FC<TemplateSelectProps> = ({ selectedTemplate, onSel
                     <div>
                       <a href="#_" className="font-semibold text-black group-hover:text-gray-700 duration-300">
                         Fundraiser Event
+                        {isComingSoon('fundraiser') && (
+                          <span className="ml-2 text-xs font-normal text-lila-600">Coming Soon</span>
+                        )}
                         <span className="absolute inset-0"></span>
                       </a>
                       <p className="mt-1 text-black group-hover:text-gray-500">
@@ -238,8 +281,12 @@ const TemplateSelect: React.FC<TemplateSelectProps> = ({ selectedTemplate, onSel
                   </div>
 
                   <div
-                    className="group relative flex gap-x-6 p-4 duration-300 bg-white"
-                    onClick={() => handleSelect('meetup')}
+                    className={`group relative flex gap-x-6 p-4 duration-300 ${
+                      isComingSoon('meetup') 
+                        ? 'bg-gray-100 opacity-50 cursor-not-allowed' 
+                        : 'bg-white'
+                    }`}
+                    onClick={() => !isComingSoon('meetup') && handleSelect('meetup')}
                   >
                     <div className="flex h-10 w-10 flex-none items-center justify-center bg-white text-black group-hover:text-lila-600">
                       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.8" stroke="currentColor" className="h-6 w-6">
@@ -249,6 +296,9 @@ const TemplateSelect: React.FC<TemplateSelectProps> = ({ selectedTemplate, onSel
                     <div>
                       <a href="#_" className="font-semibold text-black group-hover:text-gray-700 duration-300">
                         Meetup Event
+                        {isComingSoon('meetup') && (
+                          <span className="ml-2 text-xs font-normal text-lila-600">Coming Soon</span>
+                        )}
                         <span className="absolute inset-0"></span>
                       </a>
                       <p className="mt-1 text-black group-hover:text-gray-500">
