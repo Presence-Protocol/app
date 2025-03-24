@@ -257,6 +257,16 @@ Contract PoapCollection(
         amountForChainFees = amountForChainFees + amount
     }
 
+    @using(assetsInContract = true, updateFields = true)
+    pub fn withdrawAirdrop(amount: U256) -> () {
+        checkCaller!(callerAddress!() == organizer, ErrorCodes.InvalidCaller)
+        assert!(amount <= amountAirdrop, ErrorCodes.NotEnoughAlph)
+
+        transferTokenFromSelf!(organizer, tokenIdAirdrop, amount)
+
+        amountAirdrop = amountAirdrop - amount
+    }
+
     pub fn getPoapPrice() -> (U256,ByteVec, Bool) {
         return poapPrice, tokenIdPoap, isOpenPrice
     }

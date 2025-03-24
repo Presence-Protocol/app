@@ -1,5 +1,5 @@
 {
-  "fullNodeVersion": "v3.10.0",
+  "fullNodeVersion": "v3.12.4",
   "compilerOptionsUsed": {
     "ignoreUnusedConstantsWarnings": false,
     "ignoreUnusedVariablesWarnings": false,
@@ -31,15 +31,15 @@
     },
     "PoapCollection": {
       "sourceFile": "collectionTemplate.ral",
-      "sourceCodeHash": "6f014015b41fa7dba3d1f9fb4f3780a059ec46aae65a0c7e039f8c8c4664ee07",
+      "sourceCodeHash": "3cf6ef349bd07dc085a765833d0038b714a5d87f29e498607e0447b7d5dc8fb8",
       "bytecodeDebugPatch": "",
-      "codeHashDebug": "b95291b2f93055fdc4ff58b220bdde0305a859eb79e4d8ea0306ab6fe8d1a94b"
+      "codeHashDebug": "6de379cff422273f8c45e92b67175854e08b6eb610f55b350c0a1a07d8881e54"
     },
     "PoapFactory": {
       "sourceFile": "factoryPoap.ral",
       "sourceCodeHash": "bac9601400ed707941611af44af624ca42cd776a5f5d758232b95e5d3d40060b",
       "bytecodeDebugPatch": "",
-      "codeHashDebug": "664df56e2556a8170850ce7fabdd4d8e7e2b28d551161db15b6a1225a1e881fa"
+      "codeHashDebug": "d8a33daa9e49797cf7649f4c78d877fb453aff6bdddccce32ef80245e77d58bb"
     },
     "PoapNFT": {
       "sourceFile": "nftTemplate.ral",

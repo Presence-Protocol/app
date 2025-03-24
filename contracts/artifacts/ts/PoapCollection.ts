@@ -168,6 +168,10 @@ export namespace PoapCollectionTypes {
       params: CallContractParams<{ amount: bigint }>;
       result: CallContractResult<null>;
     };
+    withdrawAirdrop: {
+      params: CallContractParams<{ amount: bigint }>;
+      result: CallContractResult<null>;
+    };
     getPoapPrice: {
       params: Omit<CallContractParams<{}>, "args">;
       result: CallContractResult<[bigint, HexString, boolean]>;
@@ -281,6 +285,10 @@ export namespace PoapCollectionTypes {
       result: SignExecuteScriptTxResult;
     };
     depositChainFees: {
+      params: SignExecuteContractMethodParams<{ amount: bigint }>;
+      result: SignExecuteScriptTxResult;
+    };
+    withdrawAirdrop: {
       params: SignExecuteContractMethodParams<{ amount: bigint }>;
       result: SignExecuteScriptTxResult;
     };
@@ -524,6 +532,14 @@ class Factory extends ContractFactory<
         getContractByCodeHash
       );
     },
+    withdrawAirdrop: async (
+      params: TestContractParamsWithoutMaps<
+        PoapCollectionTypes.Fields,
+        { amount: bigint }
+      >
+    ): Promise<TestContractResultWithoutMaps<null>> => {
+      return testMethod(this, "withdrawAirdrop", params, getContractByCodeHash);
+    },
     getPoapPrice: async (
       params: Omit<
         TestContractParamsWithoutMaps<PoapCollectionTypes.Fields, never>,
@@ -556,7 +572,7 @@ export const PoapCollection = new Factory(
   Contract.fromJson(
     PoapCollectionContractJson,
     "",
-    "b95291b2f93055fdc4ff58b220bdde0305a859eb79e4d8ea0306ab6fe8d1a94b",
+    "6de379cff422273f8c45e92b67175854e08b6eb610f55b350c0a1a07d8881e54",
     AllStructs
   )
 );
@@ -833,6 +849,17 @@ export class PoapCollectionInstance extends ContractInstance {
         getContractByCodeHash
       );
     },
+    withdrawAirdrop: async (
+      params: PoapCollectionTypes.CallMethodParams<"withdrawAirdrop">
+    ): Promise<PoapCollectionTypes.CallMethodResult<"withdrawAirdrop">> => {
+      return callMethod(
+        PoapCollection,
+        this,
+        "withdrawAirdrop",
+        params,
+        getContractByCodeHash
+      );
+    },
     getPoapPrice: async (
       params?: PoapCollectionTypes.CallMethodParams<"getPoapPrice">
     ): Promise<PoapCollectionTypes.CallMethodResult<"getPoapPrice">> => {
@@ -1022,6 +1049,13 @@ export class PoapCollectionInstance extends ContractInstance {
         "depositChainFees",
         params
       );
+    },
+    withdrawAirdrop: async (
+      params: PoapCollectionTypes.SignExecuteMethodParams<"withdrawAirdrop">
+    ): Promise<
+      PoapCollectionTypes.SignExecuteMethodResult<"withdrawAirdrop">
+    > => {
+      return signExecuteMethod(PoapCollection, this, "withdrawAirdrop", params);
     },
     getPoapPrice: async (
       params: PoapCollectionTypes.SignExecuteMethodParams<"getPoapPrice">
