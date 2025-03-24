@@ -79,7 +79,7 @@ Contract PoapCollection(
      }
 
      if(hashedPassword != #00){
-      assert!(hashedPassword == sha256!(password), ErrorCodes.InvalidPassword)
+      assert!(hashedPassword == keccak256!(password), ErrorCodes.InvalidPassword)
      }
      let contractId = copyCreateSubContractWithToken!{payer -> ALPH: minimalContractDeposit!()}(
          contractPath,

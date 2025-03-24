@@ -1,11 +1,10 @@
-import { web3, DUST_AMOUNT, stringToHex, MINIMAL_CONTRACT_DEPOSIT, addressFromContractId, hexToString, ONE_ALPH, ALPH_TOKEN_ID, number256ToBigint, NULL_CONTRACT_ADDRESS, hashMessage } from '@alephium/web3'
+import { web3, DUST_AMOUNT, stringToHex, MINIMAL_CONTRACT_DEPOSIT, addressFromContractId, hexToString, ONE_ALPH, ALPH_TOKEN_ID, number256ToBigint, NULL_CONTRACT_ADDRESS } from '@alephium/web3'
 import { expectAssertionError, mintToken, testNodeWallet, transfer } from '@alephium/web3-test'
 import { deployToDevnet } from '@alephium/cli'
 import { PoapFactory, PoapCollection, PoapCollectionInstance, PoapNFT } from '../../artifacts/ts'
 import { PrivateKeyWallet } from '@alephium/web3-wallet'
 import { alphBalanceOf, balanceOf, getCollectionPath, getRandomSigner, loadSvg, transferAlphTo, transferTokenTo } from '../utils'
-import exp from 'constants'
-import { sign } from 'crypto'
+import keccak256 from 'keccak256';
 
 describe('integration tests', () => {
   const defaultGroup = 0
@@ -218,7 +217,7 @@ describe('integration tests', () => {
         airdropWhenHasParticipated: false,
         amountForChainFees: 0n,
         isOpenPrice: false,
-        hashedPassword: hashMessage('password', 'sha256')
+        hashedPassword: keccak256('password').toString('hex')
       },
       signer: signer,
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT

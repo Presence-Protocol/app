@@ -12,6 +12,7 @@ import useWindowSize from '@/hooks/useWindowSize'
 import AlreadyMintedWarning from '../Modals/AlreadyMintedWarning';
 import { getTokenList, findTokenFromId } from '@/services/utils';
 import PaidPoapPriceInfo from '../Modals/PaidPoapPriceInfo';
+import keccak256 from 'keccak256';
 
 interface NFTCollection {
   title: string;
@@ -265,7 +266,7 @@ export default function MintNFTSimple() {
     }
     
     // Hash the input password with SHA-256
-    const hashedInput = hashMessage(input,'sha256');
+    const hashedInput = keccak256(input).toString('hex');
     
     // Compare with the stored hashed password
     if (hashedInput !== hashedPassword) {
