@@ -46,10 +46,7 @@ export default function MintNFTSimple() {
   });
 
   useEffect(() => {
-    console.log('UseEffect running');
-    // Setup web3
-    
-
+  
     if (typeof window !== 'undefined') {
       const hash = window.location.hash;
       const idMatch = hash.match(/id=([^&]*)/);
