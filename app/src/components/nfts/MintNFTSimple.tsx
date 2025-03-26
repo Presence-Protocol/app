@@ -61,6 +61,20 @@ const parseTokenAmount = (input: string, decimals: number): bigint => {
   return fullValue;
 };
 
+// Move this outside the component render function to prevent re-creation on each render
+const ConnectButton = () => (
+  <AlephiumConnectButton.Custom>
+    {({ show }) => (
+      <button
+        onClick={show}
+        className="text-black items-center shadow shadow-black text-lg font-semibold inline-flex px-6 focus:outline-none justify-center text-center bg-white border-black ease-in-out transform transition-all focus:ring-lila-700 focus:shadow-none border-2 duration-100 py-3 rounded-2xl h-16 tracking-wide focus:translate-y-1 w-full hover:text-lila-800"
+      >
+        Connect Wallet
+      </button>
+    )}
+  </AlephiumConnectButton.Custom>
+);
+
 export default function MintNFTSimple() {
   const { connectionStatus } = useWallet();
   const [quantity, setQuantity] = useState(1);
@@ -121,9 +135,18 @@ export default function MintNFTSimple() {
     }
   };
 
+  // Add a stable connection state that doesn't change frequently
+  const [isConnected, setIsConnected] = useState(false);
+  
+  // Update the connection state only when it actually changes
+  useEffect(() => {
+    setIsConnected(connectionStatus === 'connected');
+  }, [connectionStatus]);
+
   useEffect(() => {
 
     // Setup web3
+    console.log('reloading poapCollection', poapCollection)
 
 
     if (typeof window !== 'undefined') {
@@ -135,6 +158,8 @@ export default function MintNFTSimple() {
   }, []);
 
   useEffect(() => {
+    console.log('reloading poapCollection', poapCollection)
+
     const fetchTokenList = async () => {
       try {
         const tokens = await getTokenList();
@@ -401,7 +426,7 @@ export default function MintNFTSimple() {
 
   // Add event subscription
   useEffect(() => {
-    if (!poapCollection) return;
+  if (!poapCollection || connectionStatus !== 'connected') return;
 
     let isSubscribed = true;
     const subscription = poapCollection.subscribePoapMintedEvent({
@@ -450,6 +475,11 @@ export default function MintNFTSimple() {
     });
   };
 
+
+  useEffect(() => {
+    console.log('connectionStatus', connectionStatus)
+  }, [connectionStatus])
+
   // Add useEffect to control confetti duration
   useEffect(() => {
     if (showConfetti) {
@@ -462,6 +492,8 @@ export default function MintNFTSimple() {
   }, [showConfetti]);
 
   useEffect(() => {
+    console.log('reloading poapCollection', poapCollection)
+
     const updateCountdown = () => {
       const now = Date.now();
       let targetDate: number;
@@ -490,83 +522,71 @@ export default function MintNFTSimple() {
     return () => clearInterval(intervalId);
   }, [nftCollection.mintStartDate, nftCollection.mintEndDate]);
 
-  const MintButton = () => {
-    const { connectionStatus } = useWallet()
-    const isConnected = connectionStatus === 'connected'
-
+  // Replace the MintButton component with this approach
+  const renderButton = () => {
     if (!isConnected) {
-      return (
-        <AlephiumConnectButton.Custom>
-          {({ show }) => (
-            <button
-              onClick={show}
-              className="text-black items-center shadow shadow-black text-lg font-semibold inline-flex px-6 focus:outline-none justify-center text-center bg-white border-black ease-in-out transform transition-all focus:ring-lila-700 focus:shadow-none border-2 duration-100 py-3 rounded-2xl h-16 tracking-wide focus:translate-y-1 w-full hover:text-lila-800"
-            >
-              Connect Wallet
-            </button>
-          )}
-        </AlephiumConnectButton.Custom>
-      )
+      return <ConnectButton />;
+    }
+
+    const isDisabled = 
+      isMinting ||
+      Date.now() < Number(nftCollection.mintStartDate) ||
+      Date.now() > Number(nftCollection.mintEndDate) ||
+      nftCollection.currentSupply >= nftCollection.maxSupply ||
+      (nftCollection.isOpenPrice && !customPrice) ||
+      (passwordRequired && !isPasswordValid);
+      
+    const buttonClasses = `text-black items-center shadow shadow-black text-lg font-semibold inline-flex px-6 focus:outline-none justify-center text-center bg-white border-black ease-in-out transform transition-all focus:ring-lila-700 focus:shadow-none border-2 duration-100 py-3 rounded-2xl h-16 tracking-wide focus:translate-y-1 w-full hover:text-lila-800 ${isDisabled ? 'opacity-50 cursor-not-allowed' : ''}`;
+
+    let buttonContent;
+    if (isMinting) {
+      buttonContent = (
+        <div className="flex items-center justify-center gap-3">
+          <div className="animate-spin">
+            <Image
+              src="/images/blob5.svg"
+              alt="Minting..."
+              width={30}
+              height={30}
+              className="opacity-70"
+              priority
+            />
+          </div>
+          <span>Minting...</span>
+        </div>
+      );
+    } else if (nftCollection.currentSupply >= nftCollection.maxSupply) {
+      buttonContent = 'Max Supply Reached';
+    } else if (Date.now() < Number(nftCollection.mintStartDate)) {
+      buttonContent = `Minting starts ${formatDate(nftCollection.mintStartDate)}`;
+    } else if (Date.now() > Number(nftCollection.mintEndDate)) {
+      buttonContent = 'Minting Ended';
+    } else if (passwordRequired && !isPasswordValid) {
+      buttonContent = passwordError || 'Enter Valid Password to Mint';
+    } else if (nftCollection.isOpenPrice && !customPrice) {
+      buttonContent = 'Enter Price to Mint';
+    } else {
+      buttonContent = (
+        <div className="flex items-center justify-center gap-2">
+          <div className="relative flex h-2 w-2">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-lila-600 opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-lila-800"></span>
+          </div>
+          <span>Mint Presence</span>
+        </div>
+      );
     }
 
     return (
       <button
         onClick={handleSubmit}
-        disabled={isMinting ||
-          connectionStatus !== 'connected' ||
-          Date.now() < Number(nftCollection.mintStartDate) ||
-          Date.now() > Number(nftCollection.mintEndDate) ||
-          nftCollection.currentSupply >= nftCollection.maxSupply ||
-          (nftCollection.isOpenPrice && !customPrice) ||
-          (passwordRequired && !isPasswordValid)}
-        className={`text-black items-center shadow shadow-black text-lg font-semibold inline-flex px-6 focus:outline-none justify-center text-center bg-white border-black ease-in-out transform transition-all focus:ring-lila-700 focus:shadow-none border-2 duration-100 py-3 rounded-2xl h-16 tracking-wide focus:translate-y-1 w-full hover:text-lila-800 ${
-          isMinting ||
-          connectionStatus !== 'connected' ||
-          Date.now() < Number(nftCollection.mintStartDate) ||
-          Date.now() > Number(nftCollection.mintEndDate) ||
-          nftCollection.currentSupply >= nftCollection.maxSupply ||
-          (nftCollection.isOpenPrice && !customPrice) ||
-          (passwordRequired && !isPasswordValid) ? 'opacity-50 cursor-not-allowed' : ''
-        }`}
+        disabled={isDisabled}
+        className={buttonClasses}
       >
-        {isMinting ? (
-          <div className="flex items-center justify-center gap-3">
-            <div className="animate-spin">
-              <Image
-                src="/images/blob5.svg"
-                alt="Minting..."
-                width={30}
-                height={30}
-                className="opacity-70"
-                priority
-              />
-            </div>
-            <span>Minting...</span>
-          </div>
-        ) : connectionStatus !== 'connected' ? (
-          'Connect Wallet'
-        ) : nftCollection.currentSupply >= nftCollection.maxSupply ? (
-          'Max Supply Reached'
-        ) : Date.now() < Number(nftCollection.mintStartDate) ? (
-          `Minting starts ${formatDate(nftCollection.mintStartDate)}`
-        ) : Date.now() > Number(nftCollection.mintEndDate) ? (
-          'Minting Ended'
-        ) : passwordRequired && !isPasswordValid ? (
-          passwordError || 'Enter Valid Password to Mint'
-        ) : nftCollection.isOpenPrice && !customPrice ? (
-          'Enter Price to Mint'
-        ) : (
-          <div className="flex items-center justify-center gap-2">
-            <div className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-lila-600 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-lila-800"></span>
-            </div>
-            <span>Mint Presence</span>
-          </div>
-        )}
+        {buttonContent}
       </button>
-    )
-  }
+    );
+  };
 
   return (
     <section className="bg-lila-200 pt-16 pb-16 sm:pt-0 sm:pb-0">
@@ -838,7 +858,7 @@ export default function MintNFTSimple() {
                     )}
 
                     <div className="mt-8">
-                      <MintButton />
+                      {renderButton()}
                     </div>
 
                     <div className="text-sm text-center">
