@@ -12,7 +12,11 @@ import useWindowSize from '@/hooks/useWindowSize'
 import AlreadyMintedWarning from '../Modals/AlreadyMintedWarning';
 import { getTokenList, findTokenFromId } from '@/services/utils';
 import PaidPoapPriceInfo from '../Modals/PaidPoapPriceInfo';
+<<<<<<< HEAD
 import { AlephiumConnectButton } from '@alephium/web3-react'
+=======
+import keccak256 from 'keccak256';
+>>>>>>> 006c327a072912634678e7ed074c8f361d1bb582
 
 interface NFTCollection {
   title: string;
@@ -266,7 +270,7 @@ export default function MintNFTSimple() {
     }
     
     // Hash the input password with SHA-256
-    const hashedInput = hashMessage(input,'sha256');
+    const hashedInput = keccak256(input).toString('hex');
     
     // Compare with the stored hashed password
     if (hashedInput !== hashedPassword) {

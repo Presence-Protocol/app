@@ -79,7 +79,7 @@ Contract PoapCollection(
      }
 
      if(hashedPassword != #00){
-      assert!(hashedPassword == sha256!(password), ErrorCodes.InvalidPassword)
+      assert!(hashedPassword == keccak256!(password), ErrorCodes.InvalidPassword)
      }
      let contractId = copyCreateSubContractWithToken!{payer -> ALPH: minimalContractDeposit!()}(
          contractPath,
@@ -255,6 +255,16 @@ Contract PoapCollection(
         transferTokenToSelf!(organizer, ALPH, amount)
 
         amountForChainFees = amountForChainFees + amount
+    }
+
+    @using(assetsInContract = true, updateFields = true)
+    pub fn withdrawAirdrop(amount: U256) -> () {
+        checkCaller!(callerAddress!() == organizer, ErrorCodes.InvalidCaller)
+        assert!(amount <= amountAirdrop, ErrorCodes.NotEnoughAlph)
+
+        transferTokenFromSelf!(organizer, tokenIdAirdrop, amount)
+
+        amountAirdrop = amountAirdrop - amount
     }
 
     pub fn getPoapPrice() -> (U256,ByteVec, Bool) {

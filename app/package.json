@@ -10,8 +10,8 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@alephium/web3": "^1.11.1",
-    "@alephium/web3-react": "^1.11.1",
+    "@alephium/web3": "^1.11.6",
+    "@alephium/web3-react": "^1.11.6",
     "my-contracts": "0.1.0",
     "next": "15.1.4",
     "react": "18.3.1",
@@ -27,7 +27,9 @@
     "autoprefixer": "^10.4.12",
     "clsx": "^2.1.0",
     "tailwind-scrollbar-hide": "^2.0.0",
-    "typescript": "^5.3.3"
+    "typescript": "^5.3.3",
+    "keccak256": "^1.0.6"
+
   },
   "devDependencies": {
     "@types/node": "^20.16.13",

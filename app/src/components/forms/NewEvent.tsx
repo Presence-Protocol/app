@@ -24,6 +24,7 @@ import { getTokenList, TokenList, Token } from '../../services/utils';
 import TokenSelector from '../ui/TokenSelector';
 import PaidPoapTokenInfo from '../Modals/PaidPoapTokenInfo';
 import PaidPoapPriceInfo from '../Modals/PaidPoapPriceInfo';
+import keccak256 from 'keccak256';
 
 const MAX_TITLE_LENGTH = 50;
 const MAX_DESCRIPTION_LENGTH = 180;
@@ -396,7 +397,7 @@ export default function NewEvent() {
           airdropWhenHasParticipated: false,
           amountForChainFees: coverMintFees ? chainFees : 0n,
           isOpenPrice: isOpenPrice,
-          hashedPassword: usePassword && password ? hashMessage(password,'sha256') : '00',
+          hashedPassword: usePassword && password ? keccak256(password).toString('hex') : '00',
         },
         signer: signer,
         attoAlphAmount: calculateFinalAmount(coverMintFees ? chainFees : 0n, coverMintFees ? storageFees : 0n),
