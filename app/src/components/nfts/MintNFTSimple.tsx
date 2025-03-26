@@ -426,7 +426,7 @@ export default function MintNFTSimple() {
 
   // Add event subscription
   useEffect(() => {
-  if (!poapCollection || connectionStatus !== 'connected') return;
+  if (!poapCollection) return;
 
     let isSubscribed = true;
     const subscription = poapCollection.subscribePoapMintedEvent({
