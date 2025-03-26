@@ -152,7 +152,7 @@ export default function NFTList({ account: connectedAccount }: { account: string
       try {
         const minLoadingTime = new Promise(resolve => setTimeout(resolve, 1000));
 
-        const response = await fetch(`https://presenceprotocol.notrustverify.ch/api/events/${connectedAccount}?limit=10`);
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL ?? 'https://presenceprotocol.notrustverify.ch'}/api/events/${connectedAccount}?limit=10`);
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }

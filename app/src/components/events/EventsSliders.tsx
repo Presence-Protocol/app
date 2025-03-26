@@ -47,7 +47,7 @@ export default function EventsSliders() {
           process.env.NEXT_PUBLIC_NODE_URL ?? "https://node.testnet.alephium.org"
         );
 
-        const response = await fetch('https://presenceprotocol.notrustverify.ch/api/events?limit=50', {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL ?? 'https://presenceprotocol.notrustverify.ch'}/api/events?limit=50`, {
           method: 'GET',
           headers: {
             'Accept': 'application/json',
