@@ -139,13 +139,13 @@ export default function NFTList({ account: connectedAccount }: { account: string
   }
 
   useEffect(() => {
-    console.log('Setting up node provider...');
+    // console.log('Setting up node provider...');
     web3.setCurrentNodeProvider(
       process.env.NEXT_PUBLIC_NODE_URL ?? "https://node.testnet.alephium.org",
       undefined,
       undefined
     );
-    console.log('Node provider setup complete');
+    // console.log('Node provider setup complete');
 
     // Fetching all events for the account
     const fetchEvents = async () => {
@@ -278,8 +278,8 @@ export default function NFTList({ account: connectedAccount }: { account: string
     );
   }
 
-  console.log('nfts', nfts);
-  console.log('events', events);
+  // console.log('nfts', nfts);
+  // console.log('events', events);
 
   if (nfts.length === 0 && events.length === 0) {
     return (
