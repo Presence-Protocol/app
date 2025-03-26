@@ -50,7 +50,7 @@ function CustomGetStartedButton() {
 
         return (
           <button
-            className="hover:text-lila-500 text-leftC"
+            className="hover:text-lila-500 text-left"
             onClick={show}
             disabled={showLoading}
           >
@@ -241,11 +241,11 @@ export default function Footer() {
               </div>
             </div>
             <nav
-              className="grid grid-cols-1 gap-x-12 gap-y-4 l justify-between text-base tracking-wide items-center text-white"
+              className="grid grid-cols-1 gap-x-12 gap-y-4 text-left  justify-between text-base tracking-wide items-center text-white"
               role="navigation">
               {isConnected ? (
                 <Link
-                  className="hover:text-lila-500"
+                  className="hover:text-lila-500 text-left"
                   href="/new-event"
                   aria-label="Get Started"
                 >

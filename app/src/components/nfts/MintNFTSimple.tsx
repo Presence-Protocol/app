@@ -12,11 +12,9 @@ import useWindowSize from '@/hooks/useWindowSize'
 import AlreadyMintedWarning from '../Modals/AlreadyMintedWarning';
 import { getTokenList, findTokenFromId } from '@/services/utils';
 import PaidPoapPriceInfo from '../Modals/PaidPoapPriceInfo';
-<<<<<<< HEAD
 import { AlephiumConnectButton } from '@alephium/web3-react'
-=======
 import keccak256 from 'keccak256';
->>>>>>> 006c327a072912634678e7ed074c8f361d1bb582
+
 
 interface NFTCollection {
   title: string;
@@ -59,7 +57,7 @@ const parseTokenAmount = (input: string, decimals: number): bigint => {
   
   // Combine integer and fractional parts
   const fullValue = BigInt(integerPart) * (10n ** BigInt(decimals)) + BigInt(fractionalPart);
-  console.log(fullValue);
+  // console.log(fullValue);
   return fullValue;
 };
 
@@ -124,7 +122,7 @@ export default function MintNFTSimple() {
   };
 
   useEffect(() => {
-    // console.log('UseEffect running');
+
     // Setup web3
 
 
@@ -150,7 +148,6 @@ export default function MintNFTSimple() {
   }, []);
 
   useEffect(() => {
-    console.log('UseEffect running')
     web3.setCurrentNodeProvider(
       process.env.NEXT_PUBLIC_NODE_URL ?? "https://node.testnet.alephium.org",
       undefined,
@@ -170,7 +167,7 @@ export default function MintNFTSimple() {
 
       collection.fetchState()
         .then(async (collectionMetadata) => {
-          console.log(collectionMetadata)
+          // console.log(collectionMetadata)
           
           // Get token name from token list
           let tokenName = 'ALPH';
@@ -221,7 +218,7 @@ export default function MintNFTSimple() {
           setIsLoading(false);
         });
     } else {
-      console.log('No contract ID provided');
+      // console.log('No contract ID provided');
       setError('No event ID provided');
       setIsLoading(false);
     }
@@ -343,7 +340,6 @@ export default function MintNFTSimple() {
         throw new Error('POAP collection not initialized')
       }
 
-      console.log('nftCollection.tokenIdPaidPoap', nftCollection.tokenIdPaidPoap)
 
       // Convert custom price to BigInt with proper decimals using parseTokenAmount
       let customPriceAmount = 0n;
@@ -411,7 +407,6 @@ export default function MintNFTSimple() {
     const subscription = poapCollection.subscribePoapMintedEvent({
       pollingInterval: 5000,
       messageCallback: async (event) => {
-        console.log('Minted event:', event);
         if (isSubscribed) {
           setMintEvents(prev => {
             const exists = prev.some(e =>
@@ -689,7 +684,46 @@ export default function MintNFTSimple() {
                     <div className="flex flex-col gap-2 min-w-72 mt-2">
                       <div className="flex flex-col sm:flex-row items-center justify-center gap-2 text-xs">
                         <div className="flex items-center gap-2">
-                          <span className="text-gray-600">{nftCollection.location}</span>
+                          <span className="text-gray-600">
+                            {(() => {
+                              // Check if location is a URL
+                              const isUrl = (str: string): boolean => {
+                                // Check for common URL patterns
+                                return (
+                                  str.startsWith('http://') || 
+                                  str.startsWith('https://') || 
+                                  str.startsWith('www.') ||
+                                  /^[a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9]\.[a-zA-Z]{2,}/.test(str) // domain pattern
+                                );
+                              };
+                              
+                              // Format URL properly
+                              const formatUrl = (url: string): string => {
+                                if (url.startsWith('http://') || url.startsWith('https://')) {
+                                  return url;
+                                } else if (url.startsWith('www.')) {
+                                  return `https://${url}`;
+                                } else {
+                                  return `https://${url}`;
+                                }
+                              };
+                              
+                              if (isUrl(nftCollection.location)) {
+                                return (
+                                  <a 
+                                    href={formatUrl(nftCollection.location)} 
+                                    target="_blank" 
+                                    rel="noopener noreferrer"
+                                    className="underline hover:text-lila-800"
+                                  >
+                                    {nftCollection.location}
+                                  </a>
+                                );
+                              } else {
+                                return nftCollection.location;
+                              }
+                            })()}
+                          </span>
                           {nftCollection.location && <span className="text-gray-400 hidden sm:inline">•</span>}
                           <div className="flex items-center gap-2">
                             <span className="text-gray-600">

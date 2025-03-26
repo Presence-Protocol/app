@@ -72,7 +72,7 @@ export default function MintNFTSimple() {
       
       collection.fetchState()
         .then((collectionMetadata) => {
-          console.log(collectionMetadata);
+          // console.log(collectionMetadata);
           setNftCollection({ 
             title: hexToString(collectionMetadata.fields.eventName),
             description: hexToString(collectionMetadata.fields.description),
@@ -91,9 +91,9 @@ export default function MintNFTSimple() {
         .catch((error) => {
           console.error('Error fetching collection state:', error);
         });
-        console.log(collection);
+        // console.log(collection);
     } else {
-      console.log('No contract ID provided');
+      // console.log('No contract ID provided');
     }
   }, [contractId]);
 
