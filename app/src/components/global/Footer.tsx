@@ -79,7 +79,7 @@ export default function Footer() {
 
     try {
       // Add your form submission logic here
-      console.log('Form submitted with email:', email);
+      // console.log('Form submitted with email:', email);
       setEmail('');
     } catch (err) {
       setError('An error occurred. Please try again.');

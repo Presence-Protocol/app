@@ -69,7 +69,6 @@ const parseTokenAmount = (input: string, decimals: number): bigint => {
   
   // Combine integer and fractional parts
   const fullValue = BigInt(integerPart) * (10n ** BigInt(decimals)) + BigInt(fractionalPart);
-  console.log(fullValue);
   return fullValue;
 };
 
@@ -370,7 +369,7 @@ export default function NewEvent() {
       const locationHex = stringToHex(location);
       // Call contract method using transact
 
-      console.log(usePassword)
+      // console.log(usePassword)
       
       const result = await factoryContract.transact.mintNewCollection({
         args: {
@@ -451,13 +450,13 @@ export default function NewEvent() {
   }, []);
 
   useEffect(() => {
-    console.log('Setting up node provider...');
+    // console.log('Setting up node provider...');
    web3.setCurrentNodeProvider(
       process.env.NEXT_PUBLIC_NODE_URL ?? "https://node.testnet.alephium.org",
       undefined,
       undefined
     );
-    console.log('Node provider setup complete');
+    // console.log('Node provider setup complete');
   }, []);
 
   // Add this useEffect to load the token list once when the component mounts
