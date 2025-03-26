@@ -45,8 +45,8 @@ const sections: Section[] = [
   {
     id: 1,
     imageSrc: "/images/thumbnail5.svg",
-    imageAlt: "Proof of Attendance",
-    title: "Verifiable Attendance",
+    imageAlt: "Proof You Were There",
+    title: "Proof You Were There",
     description:
       "Create unique events where participants can mint verifiable proof of their attendance on Alephium.",
     imagePosition: "left",
@@ -62,10 +62,10 @@ const sections: Section[] = [
   {
     id: 2,
     imageSrc: "/images/thumbnail2.svg",
-    imageAlt: "Event Features",
-    title: "Powerful Features",
+    imageAlt: "Proof of Ownership",
+    title: "Proof of Ownership",
     description:
-      "Beyond attendance tracking with claim windows, unique participation enforcement, and NFT integration.",
+      "Take ownership of your experiences with verifiable digital assets, exclusive access rights, and permanent blockchain records.",
     imagePosition: "right",
     blobImg: "/images/blob4.svg",
     listItems: [
@@ -81,10 +81,10 @@ const sections: Section[] = [
   {
     id: 3,
     imageSrc: "/images/thumbnail3.svg",
-    imageAlt: "Community",
-    title: "Community-Driven",
+    imageAlt: "Proof of Support",
+    title: "Proof of Support",
     description:
-      "Join a growing ecosystem where organizers and participants create meaningful experiences together.",
+      "Show your support for events and creators with blockchain-verified contributions.",
     imagePosition: "left",
     blobImg: "/images/blob3.svg",
     listItems: [

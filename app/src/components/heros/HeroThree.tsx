@@ -95,10 +95,11 @@ export default function HeroThree() {
               <div className="mx-auto max-w-2xl gap-x-8 lg:mx-0 lg:flex lg:max-w-none lg:items-center justify-evenly">
                 <div className="relative w-full lg:max-w-xl lg:shrink-0 xl:max-w-2xl">
                   <h2 className="text-pretty text-4xl sm:text-5xl lg:text-6xl font-semibold tracking-tight text-foreground">
-                    Proof You Were There.<br/> Powered by Alephium
+                    Proof You Were There.<br/> 
+                    {/* Powered by Alephium */}
                   </h2>
                   <p className="mt-8 text-pretty text-md lg:text-md font-medium text-foreground/80 sm:max-w-md sm:text-lg/7 lg:max-w-none">
-                    Presence Protocol is built on the foundation of POAP, designed to leverage the power of the Alephium blockchain to provide verifiable proof of event attendance, known as a Presence.
+                    Presence is a proof protocol made for everyday use. With Presence, anyone can leverage blockchain proofs for a wide variety of use-cases.
                   </p>
                   <div className="mt-10">
                     {isConnected ? (

@@ -12,6 +12,7 @@ import useWindowSize from '@/hooks/useWindowSize'
 import AlreadyMintedWarning from '../Modals/AlreadyMintedWarning';
 import { getTokenList, findTokenFromId } from '@/services/utils';
 import PaidPoapPriceInfo from '../Modals/PaidPoapPriceInfo';
+import { AlephiumConnectButton } from '@alephium/web3-react'
 
 interface NFTCollection {
   title: string;
@@ -490,6 +491,84 @@ export default function MintNFTSimple() {
     return () => clearInterval(intervalId);
   }, [nftCollection.mintStartDate, nftCollection.mintEndDate]);
 
+  const MintButton = () => {
+    const { connectionStatus } = useWallet()
+    const isConnected = connectionStatus === 'connected'
+
+    if (!isConnected) {
+      return (
+        <AlephiumConnectButton.Custom>
+          {({ show }) => (
+            <button
+              onClick={show}
+              className="text-black items-center shadow shadow-black text-lg font-semibold inline-flex px-6 focus:outline-none justify-center text-center bg-white border-black ease-in-out transform transition-all focus:ring-lila-700 focus:shadow-none border-2 duration-100 py-3 rounded-2xl h-16 tracking-wide focus:translate-y-1 w-full hover:text-lila-800"
+            >
+              Connect Wallet
+            </button>
+          )}
+        </AlephiumConnectButton.Custom>
+      )
+    }
+
+    return (
+      <button
+        onClick={handleSubmit}
+        disabled={isMinting ||
+          connectionStatus !== 'connected' ||
+          Date.now() < Number(nftCollection.mintStartDate) ||
+          Date.now() > Number(nftCollection.mintEndDate) ||
+          nftCollection.currentSupply >= nftCollection.maxSupply ||
+          (nftCollection.isOpenPrice && !customPrice) ||
+          (passwordRequired && !isPasswordValid)}
+        className={`text-black items-center shadow shadow-black text-lg font-semibold inline-flex px-6 focus:outline-none justify-center text-center bg-white border-black ease-in-out transform transition-all focus:ring-lila-700 focus:shadow-none border-2 duration-100 py-3 rounded-2xl h-16 tracking-wide focus:translate-y-1 w-full hover:text-lila-800 ${
+          isMinting ||
+          connectionStatus !== 'connected' ||
+          Date.now() < Number(nftCollection.mintStartDate) ||
+          Date.now() > Number(nftCollection.mintEndDate) ||
+          nftCollection.currentSupply >= nftCollection.maxSupply ||
+          (nftCollection.isOpenPrice && !customPrice) ||
+          (passwordRequired && !isPasswordValid) ? 'opacity-50 cursor-not-allowed' : ''
+        }`}
+      >
+        {isMinting ? (
+          <div className="flex items-center justify-center gap-3">
+            <div className="animate-spin">
+              <Image
+                src="/images/blob5.svg"
+                alt="Minting..."
+                width={30}
+                height={30}
+                className="opacity-70"
+                priority
+              />
+            </div>
+            <span>Minting...</span>
+          </div>
+        ) : connectionStatus !== 'connected' ? (
+          'Connect Wallet'
+        ) : nftCollection.currentSupply >= nftCollection.maxSupply ? (
+          'Max Supply Reached'
+        ) : Date.now() < Number(nftCollection.mintStartDate) ? (
+          `Minting starts ${formatDate(nftCollection.mintStartDate)}`
+        ) : Date.now() > Number(nftCollection.mintEndDate) ? (
+          'Minting Ended'
+        ) : passwordRequired && !isPasswordValid ? (
+          passwordError || 'Enter Valid Password to Mint'
+        ) : nftCollection.isOpenPrice && !customPrice ? (
+          'Enter Price to Mint'
+        ) : (
+          <div className="flex items-center justify-center gap-2">
+            <div className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-lila-600 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-lila-800"></span>
+            </div>
+            <span>Mint Presence</span>
+          </div>
+        )}
+      </button>
+    )
+  }
+
   return (
     <section className="bg-lila-200 pt-16 pb-16 sm:pt-0 sm:pb-0">
       {showConfetti && (
@@ -720,56 +799,9 @@ export default function MintNFTSimple() {
                       </div>
                     )}
 
-                    <button
-                      onClick={handleSubmit}
-                      type="button"
-                      aria-label="mint"
-                      disabled={isMinting ||
-                        connectionStatus !== 'connected' ||
-                        Date.now() < Number(nftCollection.mintStartDate) ||
-                        Date.now() > Number(nftCollection.mintEndDate) ||
-                        nftCollection.currentSupply >= nftCollection.maxSupply ||
-                        (nftCollection.isOpenPrice && !customPrice) ||
-                        (passwordRequired && !isPasswordValid)}
-                      className="text-black items-center shadow shadow-black max-w-md text-lg font-semibold inline-flex px-6 focus:outline-none justify-center text-center bg-[#fff] 
-                      border-black ease-in-out transform transition-all focus:ring-lila-700 focus:shadow-none border-2 duration-100 py-3 rounded-lg h-16 tracking-wide focus:translate-y-1 w-full hover:text-lila-800 disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      {isMinting ? (
-                        <div className="flex items-center justify-center gap-3">
-                          <div className="animate-spin">
-                            <Image
-                              src="/images/blob5.svg"
-                              alt="Minting..."
-                              width={30}
-                              height={30}
-                              className="opacity-70"
-                              priority
-                            />
-                          </div>
-                          <span>Minting...</span>
-                        </div>
-                      ) : connectionStatus !== 'connected' ? (
-                        'Connect Wallet'
-                      ) : nftCollection.currentSupply >= nftCollection.maxSupply ? (
-                        'Max Supply Reached'
-                      ) : Date.now() < Number(nftCollection.mintStartDate) ? (
-                        `Minting starts ${formatDate(nftCollection.mintStartDate)}`
-                      ) : Date.now() > Number(nftCollection.mintEndDate) ? (
-                        'Minting Ended'
-                      ) : passwordRequired && !isPasswordValid ? (
-                        passwordError || 'Enter Valid Password to Mint'
-                      ) : nftCollection.isOpenPrice && !customPrice ? (
-                        'Enter Price to Mint'
-                      ) : (
-                        <div className="flex items-center justify-center gap-2">
-                          <div className="relative flex h-2 w-2">
-                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-lila-600 opacity-75"></span>
-                            <span className="relative inline-flex rounded-full h-2 w-2 bg-lila-800"></span>
-                          </div>
-                          <span>Mint Presence</span>
-                        </div>
-                      )}
-                    </button>
+                    <div className="mt-8">
+                      <MintButton />
+                    </div>
 
                     <div className="text-sm text-center">
                       <div className="text-gray-600">
