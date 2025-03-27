@@ -426,7 +426,7 @@ export default function MintNFTSimple() {
 
   // Add event subscription
   useEffect(() => {
-  if (!poapCollection || connectionStatus !== 'connected') return;
+  if (!poapCollection) return;
 
     let isSubscribed = true;
     const subscription = poapCollection.subscribePoapMintedEvent({
@@ -586,6 +586,71 @@ export default function MintNFTSimple() {
         {buttonContent}
       </button>
     );
+  };
+
+  const [raffleWinnerCount, setRaffleWinnerCount] = useState(1);
+  const [isRaffling, setIsRaffling] = useState(false);
+  const [raffleWinners, setRaffleWinners] = useState<Array<{
+    caller: string;
+    nftIndex: bigint;
+    timestamp: number;
+  }>>([]);
+  const [showWinners, setShowWinners] = useState(false);
+  const [copiedAddress, setCopiedAddress] = useState<string | null>(null);
+  
+  // Add ref for winners section
+  const raffleWinnersRef = useRef<HTMLDivElement | null>(null);
+
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text).then(() => {
+      setCopiedAddress(text);
+      setTimeout(() => setCopiedAddress(null), 2000);
+    });
+  };
+
+  const handleRaffleDraw = () => {
+    setIsRaffling(true);
+    
+    try {
+      if (!mintEvents.length) {
+        throw new Error('No mint events available');
+      }
+
+      // Create a copy of events to randomly select from
+      const eventsCopy = [...mintEvents];
+      const winnerCount = Math.min(raffleWinnerCount, eventsCopy.length);
+      const selectedWinners: Array<{
+        caller: string;
+        nftIndex: bigint;
+        timestamp: number;
+      }> = [];
+
+      // Select random winners
+      for (let i = 0; i < winnerCount; i++) {
+        const randomIndex = Math.floor(Math.random() * eventsCopy.length);
+        selectedWinners.push(eventsCopy[randomIndex]);
+        // Remove selected winner to avoid duplicates
+        eventsCopy.splice(randomIndex, 1);
+      }
+
+      // Add a delay for animation effect
+      setTimeout(() => {
+        setRaffleWinners(selectedWinners);
+        setShowWinners(true);
+        setIsRaffling(false);
+        
+        // Scroll to winners section after a brief delay to ensure it's rendered
+        setTimeout(() => {
+          if (raffleWinnersRef.current) {
+            raffleWinnersRef.current.scrollIntoView({ behavior: 'smooth' });
+          }
+        }, 100);
+      }, 1500);
+      
+    } catch (error) {
+      console.error('Error handling raffle:', error);
+      setIsRaffling(false);
+    }
   };
 
   return (
@@ -910,14 +975,35 @@ export default function MintNFTSimple() {
 
         {/* Mint Events Table */}
         {mintEvents.length > 0 && (
-          <div ref={mintEventsRef} className="p-8 lg:p-20 max-w-3xl mx-auto">
-            <h3 className="text-xl font-medium leading-6 text-black text-left flex items-center justify-left gap-2">
-              <div className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-lila-600 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-lila-800"></span>
+          <div ref={mintEventsRef} className="p-8 pt-12 pb-4 max-w-3xl mx-auto">
+            <div className="flex justify-between items-center">
+              <h3 className="text-xl font-medium leading-6 text-black text-left flex items-center justify-left gap-2">
+                <div className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-lila-600 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-lila-800"></span>
+                </div>
+                Recent Mints
+              </h3>
+              
+              {/* Raffle Controls */}
+              <div className="flex items-center gap-2">
+                number of winners: <input
+                  type="number"
+                  min="1"
+                  max={mintEvents.length}
+                  value={raffleWinnerCount}
+                  onChange={(e) => setRaffleWinnerCount(Math.min(Math.max(1, parseInt(e.target.value) || 1), mintEvents.length))}
+                  className="w-12 h-8 px-2 text-sm bg-white border-2 border-black rounded-lg text-center"
+                />
+                <button
+                  onClick={handleRaffleDraw}
+                  disabled={isRaffling}
+                  className="h-8 bg-lila-500 text-black text-sm font-medium px-3 py-1 rounded-lg border-2 border-black flex items-center gap-1"
+                >
+                  {isRaffling ? "Drawing..." : "Raffle Draw"}
+                </button>
               </div>
-              Recent Mints
-            </h3>
+            </div>
             <div className="mt-4 flow-root mx-auto">
               <div className="overflow-x-auto border-2 border-black rounded-2xl shadow">
                 <div className="inline-block w-full align-middle rounded-xl overflow-hidden">
@@ -957,6 +1043,67 @@ export default function MintNFTSimple() {
                   </table>
                 </div>
               </div>
+            </div>
+          </div>
+        )}
+
+        {/* Winners Display */}
+        {showWinners && raffleWinners.length > 0 && (
+          <div ref={raffleWinnersRef} className="p-8 pt-4 pb-8 max-w-3xl mx-auto">
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-2">
+                <div className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-lila-600 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-lila-800"></span>
+                </div>
+                <h3 className="text-xl font-medium text-black">Raffle Winners</h3>
+              </div>
+              <button 
+                onClick={() => setShowWinners(false)}
+                className="text-sm text-black hover:underline"
+              >
+                Hide
+              </button>
+            </div>
+            
+            <div className="mt-4 border-2 border-black rounded-2xl overflow-hidden">
+              {raffleWinners.map((winner, index) => (
+                <div key={index} className="flex items-center justify-between p-5 bg-lila-300 border-b border-black last:border-b-0">
+                  <div className="flex items-center gap-3">
+                    <div className="flex items-center justify-center w-7 h-7 rounded-full bg-lila-400 text-black font-bold text-sm">
+                      {index + 1}
+                    </div>
+                    <div>
+                      <span 
+                        className="block text-black font-mono font-medium text-sm flex items-center gap-2 cursor-pointer group"
+                        onClick={() => copyToClipboard(winner.caller)}
+                      >
+                        {`${winner.caller.slice(0, 6)}...${winner.caller.slice(-4)}`}
+                        <span className="text-xs text-gray-500 opacity-0 group-hover:opacity-100 transition-opacity">
+                          {copiedAddress === winner.caller ? (
+                            <span className="text-green-600">Copied!</span>
+                          ) : (
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                            </svg>
+                          )}
+                        </span>
+                      </span>
+                      <span className="text-xs text-gray-600">
+                        Mint #{number256ToNumber(winner.nftIndex, 0)}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="text-black text-sm">
+                    {new Date(winner.timestamp).toLocaleString('en-US', {
+                      month: 'short',
+                      day: 'numeric',
+                      hour: '2-digit',
+                      minute: '2-digit'
+                    })}
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         )}
