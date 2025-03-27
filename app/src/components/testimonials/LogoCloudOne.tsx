@@ -15,8 +15,9 @@
 
 import Image from 'next/image';
 import AlphLogo from "@/images/partner-logos/ALPH.svg"
+import NTV from "@/images/partner-logos/NTV_Logo_Logo_NTV_White.svg"
 import PushValueLogo from "@/images/partner-logos/PV.png"
-import NTV from "@/images/partner-logos/NTV.png"
+// import NTV from "@/images/partner-logos/NTV.png"
 import PineappleDAO from "@/images/partner-logos/pineapple-dao.png"
 
 const partnerLogos = [
@@ -38,9 +39,9 @@ export default function LogoCloudOne() {
                 key={index}
                 src={logo.src}
                 alt={logo.alt}
-                className="max-h-10 w-auto object-contain mx-10" 
-                width={48}
-                height={24}
+                className={`w-auto object-contain mx-10 ${logo.src === NTV ? 'max-h-4 mt-2.5' : 'max-h-10'}`} 
+                width={logo.src === NTV ? 24 : 48}
+                height={logo.src === NTV ? 12 : 24}
               />
             ))}
           </div>
