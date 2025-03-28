@@ -1282,7 +1282,7 @@ export default function NewEvent() {
                                 <label htmlFor="eventStartDate" className="block px-3 pt-2 pb-2 text-sm text-gray-600">Event Start Date</label>
                                 <input
                                   id="eventStartDate"
-                                  type="date"
+                                  type="datetime-local"
                                   placeholder="Event Start Date"
                                   value={eventStartDate}
                                   onChange={(e) => setEventStartDate(e.target.value)}
@@ -1296,7 +1296,7 @@ export default function NewEvent() {
                                 <label htmlFor="eventEndDate" className="block px-3 pt-2 pb-2 text-sm text-gray-600">Event End Date</label>
                                 <input
                                   id="eventEndDate"
-                                  type="date"
+                                  type="datetime-local"
                                   placeholder="Event End Date"
                                   value={eventEndDate}
                                   onChange={(e) => setEventEndDate(e.target.value)}
