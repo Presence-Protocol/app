@@ -20,6 +20,20 @@ export const metadata: Metadata = {
   },
   description:
     'Create unique events where participants can mint verifiable proof of their attendance on Alephium.',
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Presence Protocol',
+    description: 'Create unique events where participants can mint verifiable proof of their attendance on Alephium.',
+    images: ['/images/og-image.png'], // You'll need to add this image to your public folder
+    creator: '@presenceproto', // Replace with your Twitter handle
+  },
+  openGraph: {
+    title: 'Presence Protocol',
+    description: 'Create unique events where participants can mint verifiable proof of their attendance on Alephium.',
+    images: ['/images/og-image.png'], // You'll need to add this image to your public folder
+    type: 'website',
+    siteName: 'Presence Protocol',
+  },
 }
 
 export default function RootLayout({
