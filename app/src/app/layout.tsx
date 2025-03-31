@@ -20,17 +20,18 @@ export const metadata: Metadata = {
   },
   description:
     'Create unique events where participants can mint verifiable proof of their attendance on Alephium.',
+  metadataBase: new URL(process.env.NEXT_PUBLIC_URL ?? 'https://presenceprotocol.com'),
   twitter: {
     card: 'summary_large_image',
     title: 'Presence Protocol',
     description: 'Create unique events where participants can mint verifiable proof of their attendance on Alephium.',
-    images: ['/images/og-image.png'], // You'll need to add this image to your public folder
-    creator: '@presenceproto', // Replace with your Twitter handle
+    images: ['/images/og-image.png'],
+    creator: '@presenceproto',
   },
   openGraph: {
     title: 'Presence Protocol',
     description: 'Create unique events where participants can mint verifiable proof of their attendance on Alephium.',
-    images: ['/images/og-image.png'], // You'll need to add this image to your public folder
+    images: ['/images/og-image.png'],
     type: 'website',
     siteName: 'Presence Protocol',
   },
