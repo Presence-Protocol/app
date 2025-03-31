@@ -28,7 +28,7 @@ export const metadata: Metadata = {
     images: [{
       url: '/images/og-image.png',
       width: 1200,
-      height: 628,
+      height: 530,
       alt: 'Presence Protocol - Proof You Were There.'
     }],
     creator: '@presenceproto',
@@ -39,7 +39,7 @@ export const metadata: Metadata = {
     images: [{
       url: '/images/og-image.png',
       width: 1200,
-      height: 628,
+      height: 530,
       alt: 'Presence Protocol - Proof You Were There.'
     }],
     type: 'website',
