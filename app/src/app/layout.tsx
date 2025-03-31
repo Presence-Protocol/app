@@ -25,13 +25,23 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Presence Protocol',
     description: 'Create unique events where participants can mint verifiable proof of their attendance on Alephium.',
-    images: ['/images/og-image.png'],
+    images: [{
+      url: '/images/og-image.png',
+      width: 1200,
+      height: 628,
+      alt: 'Presence Protocol - Proof You Were There.'
+    }],
     creator: '@presenceproto',
   },
   openGraph: {
     title: 'Presence Protocol',
     description: 'Create unique events where participants can mint verifiable proof of their attendance on Alephium.',
-    images: ['/images/og-image.png'],
+    images: [{
+      url: '/images/og-image.png',
+      width: 1200,
+      height: 628,
+      alt: 'Presence Protocol - Proof You Were There.'
+    }],
     type: 'website',
     siteName: 'Presence Protocol',
   },
