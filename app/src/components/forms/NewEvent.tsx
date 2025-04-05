@@ -112,7 +112,7 @@ export default function NewEvent() {
   const [isMintAmountInfoOpen, setIsMintAmountInfoOpen] = useState(false);
   const [eventStartDate, setEventStartDate] = useState('');
   const [eventEndDate, setEventEndDate] = useState('');
-  const [isPublicEvent, setIsPublicEvent] = useState(false);
+  const [isPublicEvent, setIsPublicEvent] = useState(true);
   const [mintLimit, setMintLimit] = useState(false);
   const [imageUrl, setImageUrl] = useState('');
   const [activeTab, setActiveTab] = useState<'upload' | 'url'>('url');
@@ -143,6 +143,7 @@ export default function NewEvent() {
   const [paidPoapTokenId, setPaidPoapTokenId] = useState(ALPH_TOKEN_ID);
   const [password, setPassword] = useState('');
   const [usePassword, setUsePassword] = useState(false);
+  console.log(isPublicEvent)
 
   // Add this state to the main component
   const [globalTokenList, setGlobalTokenList] = useState<Token[]>([]);
@@ -444,7 +445,7 @@ export default function NewEvent() {
     setEndDate('');
     setLocation('');
     setPreviewImage(null);
-    setIsPublicEvent(false);
+    setIsPublicEvent(true);
     setMintLimit(false);
     setEventStartDate('');
     setEventEndDate('');
@@ -1428,22 +1429,22 @@ export default function NewEvent() {
                         <div className="space-y-2">
                           <div className="flex items-center text-left justify-between p-4">
                             <div>
-                              <h3 className="text-sm font-medium text-black">{'Public Event'}</h3>
+                              <h3 className="text-sm font-medium text-black">Public Event</h3>
                               <p className="text-xs text-gray-500">Anyone will be able to see your Presence in <Link href="/events" target="_blank" rel="noopener noreferrer" className="text-lila-800">Explorer</Link></p>
                             </div>
                             <div className="items-center inline-flex">
                               <button
                                 type="button"
                                 role="switch"
-                                aria-checked={!isPublicEvent}
+                                aria-checked={isPublicEvent}
                                 onClick={() => setIsPublicEvent(!isPublicEvent)}
                                 className={`relative inline-flex w-10 rounded-full py-1 transition border-2 shadow-small border-black ${
-                                  !isPublicEvent ? 'bg-lila-400' : 'bg-white'
+                                  isPublicEvent ? 'bg-lila-400' : 'bg-white'
                                 }`}
                               >
                                 <span
                                   className={`h-2 w-2 rounded-full transition shadow-md ${
-                                    !isPublicEvent ? 'translate-x-6 bg-lila-800' : 'translate-x-1 bg-gray-500'
+                                    isPublicEvent ? 'translate-x-6 bg-lila-800' : 'translate-x-1 bg-gray-500'
                                   }`}
                                   aria-hidden="true"
                                 />
