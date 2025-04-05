@@ -143,7 +143,6 @@ export default function NewEvent() {
   const [paidPoapTokenId, setPaidPoapTokenId] = useState(ALPH_TOKEN_ID);
   const [password, setPassword] = useState('');
   const [usePassword, setUsePassword] = useState(false);
-  console.log(isPublicEvent)
 
   // Add this state to the main component
   const [globalTokenList, setGlobalTokenList] = useState<Token[]>([]);
