@@ -26,13 +26,9 @@ export const metadata: Metadata = {
     title: 'Presence Protocol',
     description: 'Create unique events where participants can mint verifiable proof of their attendance on Alephium.',
     images: [{
-<<<<<<< Updated upstream
-      url: '/images/x-og-image.png',
-=======
       url: '/images/og-image.png',
       width: 1200,
       height: 530,
->>>>>>> Stashed changes
       alt: 'Presence Protocol - Proof You Were There.'
     }],
     creator: '@presenceproto',
