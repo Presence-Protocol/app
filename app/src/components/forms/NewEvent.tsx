@@ -839,8 +839,8 @@ export default function NewEvent() {
         <div className="divide-y-2 divide-black">
           <div className="flex items-center text-left justify-between p-4 bg-white">
             <div>
-              <h3 className="text-sm font-medium text-black">{coverMintFees ? 'Cover % of Fees' : 'Users Cover Fees'}</h3>
-              <p className="text-xs text-gray-500">{coverMintFees ? 'Pay mint fees on behalf of the users' : 'Users pay for minting'}</p>
+              <h3 className="text-sm font-medium text-black">Cover % of Fees</h3>
+              <p className="text-xs text-gray-500">Pay mint fees on behalf of the users</p>
             </div>
             <div className="items-center inline-flex">
               <button
@@ -1428,22 +1428,22 @@ export default function NewEvent() {
                         <div className="space-y-2">
                           <div className="flex items-center text-left justify-between p-4">
                             <div>
-                              <h3 className="text-sm font-medium text-black">{isPublicEvent ? 'Public Event' : 'Private Event'}</h3>
-                              <p className="text-xs text-gray-500">{isPublicEvent ? 'Anyone will be able to see your Presence' : 'Presence will not appear on Event Explorer'}</p>
+                              <h3 className="text-sm font-medium text-black">{'Public Event'}</h3>
+                              <p className="text-xs text-gray-500">Anyone will be able to see your Presence in <Link href="/events" target="_blank" rel="noopener noreferrer" className="text-lila-800">Explorer</Link></p>
                             </div>
                             <div className="items-center inline-flex">
                               <button
                                 type="button"
                                 role="switch"
-                                aria-checked={isPublicEvent}
+                                aria-checked={!isPublicEvent}
                                 onClick={() => setIsPublicEvent(!isPublicEvent)}
                                 className={`relative inline-flex w-10 rounded-full py-1 transition border-2 shadow-small border-black ${
-                                  isPublicEvent ? 'bg-lila-400' : 'bg-white'
+                                  !isPublicEvent ? 'bg-lila-400' : 'bg-white'
                                 }`}
                               >
                                 <span
                                   className={`h-2 w-2 rounded-full transition shadow-md ${
-                                    isPublicEvent ? 'translate-x-6 bg-lila-800' : 'translate-x-1 bg-gray-500'
+                                    !isPublicEvent ? 'translate-x-6 bg-lila-800' : 'translate-x-1 bg-gray-500'
                                   }`}
                                   aria-hidden="true"
                                 />
@@ -1453,8 +1453,8 @@ export default function NewEvent() {
 
                           <div className="flex items-center text-left justify-between p-4">
                             <div>
-                              <h3 className="text-sm font-medium text-black">{mintLimit ? 'Limit Address Presence' : 'No Limit'}</h3>
-                              <p className="text-xs text-gray-500">{mintLimit ? 'This will limit the number of Presence per address to 1' : 'There is no limit to the number of Presence per address'}</p>
+                              <h3 className="text-sm font-medium text-black">Limit Address Presence</h3>
+                              <p className="text-xs text-gray-500">This will limit the number of Presence per address to 1</p>
                             </div>
                             <div className="items-center inline-flex">
                               <button
