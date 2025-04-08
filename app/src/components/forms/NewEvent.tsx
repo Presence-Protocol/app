@@ -32,6 +32,19 @@ const MAX_DESCRIPTION_LENGTH = 180;
 // Add this type near the top of the file
 type TemplateType = 'all event options' | 'free' | 'paid' | 'creator' | 'birthday' | 'fundraiser' | 'meetup';
 
+// Add these utility functions for text sanitization
+const sanitizeInput = (input: string): string => {
+  // Allow common alphanumeric, accented characters and basic punctuation
+  // but remove special symbols, emojis and other unusual characters
+  return input.replace(/[^\w\s\u00C0-\u00FF.,!?@#$%&*()\-_+=[\]{}|:;"'<>\/\\]+/g, '')
+};
+
+// Function to sanitize input and limit length
+const sanitizeAndLimit = (input: string, maxLength: number): string => {
+  const sanitized = sanitizeInput(input);
+  return sanitized.substring(0, maxLength);
+};
+
 // Add these utility functions at the top of the file, after the imports
 const formatTokenAmount = (amount: bigint, decimals: number): string => {
   if (amount === 0n) return '0';
@@ -99,7 +112,7 @@ export default function NewEvent() {
   const [isMintAmountInfoOpen, setIsMintAmountInfoOpen] = useState(false);
   const [eventStartDate, setEventStartDate] = useState('');
   const [eventEndDate, setEventEndDate] = useState('');
-  const [isPublicEvent, setIsPublicEvent] = useState(false);
+  const [isPublicEvent, setIsPublicEvent] = useState(true);
   const [mintLimit, setMintLimit] = useState(false);
   const [imageUrl, setImageUrl] = useState('');
   const [activeTab, setActiveTab] = useState<'upload' | 'url'>('url');
@@ -318,12 +331,16 @@ export default function NewEvent() {
         throw new Error('Signer not available')
       }
 
+      // Final sanitization before submission
+      const sanitizedTitle = sanitizeInput(title);
+      const sanitizedDescription = sanitizeInput(description);
+
       // Validate input lengths
-      if (title.length > MAX_TITLE_LENGTH) {
+      if (sanitizedTitle.length > MAX_TITLE_LENGTH) {
         throw new Error(`Event name must be ${MAX_TITLE_LENGTH} characters or less`)
       }
 
-      if (description.length > MAX_DESCRIPTION_LENGTH) {
+      if (sanitizedDescription.length > MAX_DESCRIPTION_LENGTH) {
         throw new Error(`Description must be ${MAX_DESCRIPTION_LENGTH} characters or less`)
       }
 
@@ -364,8 +381,8 @@ export default function NewEvent() {
       // Convert strings to hex format
       const imageUri = stringToHex(imageString || imageUrl);
       const imageSvg = stringToHex(''); // If you have SVG version
-      const eventName = stringToHex(title);
-      const descriptionHex = stringToHex(description);
+      const eventName = stringToHex(sanitizedTitle);
+      const descriptionHex = stringToHex(sanitizedDescription);
       const locationHex = stringToHex(location);
       // Call contract method using transact
 
@@ -427,7 +444,7 @@ export default function NewEvent() {
     setEndDate('');
     setLocation('');
     setPreviewImage(null);
-    setIsPublicEvent(false);
+    setIsPublicEvent(true);
     setMintLimit(false);
     setEventStartDate('');
     setEventEndDate('');
@@ -822,8 +839,8 @@ export default function NewEvent() {
         <div className="divide-y-2 divide-black">
           <div className="flex items-center text-left justify-between p-4 bg-white">
             <div>
-              <h3 className="text-sm font-medium text-black">{coverMintFees ? 'Cover % of Fees' : 'Users Cover Fees'}</h3>
-              <p className="text-xs text-gray-500">{coverMintFees ? 'Pay mint fees on behalf of the users' : 'Users pay for minting'}</p>
+              <h3 className="text-sm font-medium text-black">Cover % of Fees</h3>
+              <p className="text-xs text-gray-500">Pay mint fees on behalf of the users</p>
             </div>
             <div className="items-center inline-flex">
               <button
@@ -1002,6 +1019,17 @@ export default function NewEvent() {
     setIsSnackbarOpen(true);
   };
 
+  // Update functions that handle title and description changes
+  const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const sanitized = sanitizeAndLimit(e.target.value, MAX_TITLE_LENGTH);
+    setTitle(sanitized);
+  };
+
+  const handleDescriptionChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const sanitized = sanitizeAndLimit(e.target.value, MAX_DESCRIPTION_LENGTH);
+    setDescription(sanitized);
+  };
+
   return (
     <>
       <section className="bg-white">
@@ -1163,7 +1191,7 @@ export default function NewEvent() {
                               placeholder="Event Title"
                               value={title}
                               maxLength={MAX_TITLE_LENGTH}
-                              onChange={(e) => setTitle(e.target.value)}
+                              onChange={handleTitleChange}
                               className="block w-full px-3 py-3 text-xl text-black border-2 border-transparent appearance-none placeholder-black focus:border-black focus:bg-lila-500 focus:outline-none focus:ring-black sm:text-sm rounded-2xl"
                             />
                             <div className="px-3 py-1 text-sm text-gray-500">
@@ -1180,7 +1208,7 @@ export default function NewEvent() {
                               placeholder="Event Description"
                               value={description}
                               maxLength={MAX_DESCRIPTION_LENGTH}
-                              onChange={(e) => setDescription(e.target.value)}
+                              onChange={handleDescriptionChange}
                               rows={3}
                               className="block w-full px-3 py-3 text-xl text-black border-2 border-transparent appearance-none placeholder-black focus:border-black focus:bg-lila-500 focus:outline-none focus:ring-black sm:text-sm rounded-2xl"
                             />
@@ -1254,7 +1282,7 @@ export default function NewEvent() {
                                 <label htmlFor="eventStartDate" className="block px-3 pt-2 pb-2 text-sm text-gray-600">Event Start Date</label>
                                 <input
                                   id="eventStartDate"
-                                  type="date"
+                                  type="datetime-local"
                                   placeholder="Event Start Date"
                                   value={eventStartDate}
                                   onChange={(e) => setEventStartDate(e.target.value)}
@@ -1268,7 +1296,7 @@ export default function NewEvent() {
                                 <label htmlFor="eventEndDate" className="block px-3 pt-2 pb-2 text-sm text-gray-600">Event End Date</label>
                                 <input
                                   id="eventEndDate"
-                                  type="date"
+                                  type="datetime-local"
                                   placeholder="Event End Date"
                                   value={eventEndDate}
                                   onChange={(e) => setEventEndDate(e.target.value)}
@@ -1400,8 +1428,8 @@ export default function NewEvent() {
                         <div className="space-y-2">
                           <div className="flex items-center text-left justify-between p-4">
                             <div>
-                              <h3 className="text-sm font-medium text-black">{isPublicEvent ? 'Public Event' : 'Private Event'}</h3>
-                              <p className="text-xs text-gray-500">{isPublicEvent ? 'Anyone will be able to see your Presence' : 'Presence will not appear on Event Explorer'}</p>
+                              <h3 className="text-sm font-medium text-black">Public Event</h3>
+                              <p className="text-xs text-gray-500">Anyone will be able to see your Presence in <Link href="/events" target="_blank" rel="noopener noreferrer" className="text-lila-800">Explorer</Link></p>
                             </div>
                             <div className="items-center inline-flex">
                               <button
@@ -1425,8 +1453,8 @@ export default function NewEvent() {
 
                           <div className="flex items-center text-left justify-between p-4">
                             <div>
-                              <h3 className="text-sm font-medium text-black">{mintLimit ? 'Limit Address Presence' : 'No Limit'}</h3>
-                              <p className="text-xs text-gray-500">{mintLimit ? 'This will limit the number of Presence per address to 1' : 'There is no limit to the number of Presence per address'}</p>
+                              <h3 className="text-sm font-medium text-black">Limit Address Presence</h3>
+                              <p className="text-xs text-gray-500">This will limit the number of Presence per address to 1</p>
                             </div>
                             <div className="items-center inline-flex">
                               <button

@@ -38,6 +38,7 @@ interface NFTCollection {
   tokenDecimalsPaidPoap?: number;
   isOpenPrice: boolean;
   hashedPassword: string;
+  organizer: string;
 }
 
 
@@ -117,6 +118,7 @@ export default function MintNFTSimple() {
     tokenNamePaidPoap: 'ALPH',  
     isOpenPrice: false,
     hashedPassword: stringToHex(''),
+    organizer: '',
   });
   const [tokenList, setTokenList] = useState<any[]>([]);
   const [customPrice, setCustomPrice] = useState<string>('');
@@ -234,6 +236,7 @@ export default function MintNFTSimple() {
             tokenDecimalsPaidPoap: token?.decimals,
             isOpenPrice: collectionMetadata.fields.isOpenPrice, 
             hashedPassword: collectionMetadata.fields.hashedPassword,
+            organizer: collectionMetadata.fields.organizer,
           });
           setIsLoading(false);
         })
@@ -653,6 +656,12 @@ export default function MintNFTSimple() {
     }
   };
 
+  // Add a function to check if the current user is the organizer
+  const isUserOrganizer = () => {
+    if (!account || !nftCollection.organizer) return false;
+    return account.address === nftCollection.organizer;
+  };
+
   return (
     <section className="bg-lila-200 pt-16 pb-16 sm:pt-0 sm:pb-0">
       {showConfetti && (
@@ -985,24 +994,26 @@ export default function MintNFTSimple() {
                 Recent Mints
               </h3>
               
-              {/* Raffle Controls */}
-              <div className="flex items-center gap-2">
-                number of winners: <input
-                  type="number"
-                  min="1"
-                  max={mintEvents.length}
-                  value={raffleWinnerCount}
-                  onChange={(e) => setRaffleWinnerCount(Math.min(Math.max(1, parseInt(e.target.value) || 1), mintEvents.length))}
-                  className="w-12 h-8 px-2 text-sm bg-white border-2 border-black rounded-lg text-center"
-                />
-                <button
-                  onClick={handleRaffleDraw}
-                  disabled={isRaffling}
-                  className="h-8 bg-lila-500 text-black text-sm font-medium px-3 py-1 rounded-lg border-2 border-black flex items-center gap-1"
-                >
-                  {isRaffling ? "Drawing..." : "Raffle Draw"}
-                </button>
-              </div>
+              {/* Raffle Controls - Only visible to organizer */}
+              {isUserOrganizer() && (
+                <div className="flex items-center gap-2">
+                  number of winners: <input
+                    type="number"
+                    min="1"
+                    max={mintEvents.length}
+                    value={raffleWinnerCount}
+                    onChange={(e) => setRaffleWinnerCount(Math.min(Math.max(1, parseInt(e.target.value) || 1), mintEvents.length))}
+                    className="w-12 h-8 px-2 text-sm bg-white border-2 border-black rounded-lg text-center"
+                  />
+                  <button
+                    onClick={handleRaffleDraw}
+                    disabled={isRaffling}
+                    className="h-8 bg-lila-500 text-black text-sm font-medium px-3 py-1 rounded-lg border-2 border-black flex items-center gap-1"
+                  >
+                    {isRaffling ? "Drawing..." : "Raffle Draw"}
+                  </button>
+                </div>
+              )}
             </div>
             <div className="mt-4 flow-root mx-auto">
               <div className="overflow-x-auto border-2 border-black rounded-2xl shadow">
