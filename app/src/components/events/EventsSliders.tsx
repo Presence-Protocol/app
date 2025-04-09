@@ -120,7 +120,7 @@ export default function EventsSliders() {
   }
 
   // Mock categorization - replace with actual logic based on your event properties
-  const liveEvents = events.slice(0, 4);
+  const liveEvents = events.slice(0, 50);
   const premiumEvents = events.slice(4, 8);
   const freeEvents = events.slice(8, 12);
 
@@ -163,7 +163,7 @@ function EventSection({ title, events, viewAllLink }: {
     <div className="relative">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-2xl font-bold">{title}</h2>
-        {events.length > 4 && (
+        {events.length > 51 && (
           <div className="text-black items-center shadow shadow-black text-xs font-semibold inline-flex px-4 bg-white border-black border-2 py-2 rounded-lg tracking-wide">
             <Link href={viewAllLink}>View All</Link>
           </div>
