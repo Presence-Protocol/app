@@ -131,7 +131,7 @@ export default function EventsSliders() {
       <div className="space-y-24 py-8 px-8 max-w-7xl mx-auto mt-12">
         {/* Live Events Section */}
         <EventSection 
-          title="Live Events" 
+          title="Events" 
           events={liveEvents} 
           viewAllLink="/events/live-events"
         />
