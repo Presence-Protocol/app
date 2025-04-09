@@ -222,7 +222,7 @@ function EventCard({ event }: { event: Event }) {
         </button>
       </div>
       <div className="p-4 pb-5 bg-white">
-        <h3 className="text-base font-semibold text-black mb-1">{event.eventName}</h3>
+        <h3 className="text-base font-semibold text-black mb-1 h-[48px] line-clamp-2">{event.eventName}</h3>
         {event.description && (
           <p className="text-xs text-black mb-3 line-clamp-2">{event.description}</p>
         )}
