@@ -1,0 +1,143 @@
+Contract PoapFactoryV2(
+    collectionTemplateId: ByteVec,
+    poapTemplateId: ByteVec,
+    mut numMintedCollection: U256
+){
+
+    event EventCreated(contractId: ByteVec, eventName: ByteVec, organizer: Address, isPublic: Bool, timestamp: U256)
+    event PoapMinted(contractId: ByteVec, collectionId: PoapCollectionV2, nftIndex: U256 ,caller: Address, isPublic: Bool, timestamp: U256)
+    event PoapParticipatedIn(organizerAddress: Address, collectionId: PoapCollectionV2, nftIndex: U256, presenceAddressValidate: Address)
+
+
+    @using(preapprovedAssets = true, checkExternalCaller = false, updateFields = true)
+    pub fn mintNewCollection(
+        maxSupply: U256,
+        mintStartAt: U256,
+        mintEndAt: U256,
+        oneMintPerAddress: Bool,
+        poapPrice: U256,
+        tokenIdPoap: ByteVec,
+        isOpenPrice: Bool,
+        tokenIdAirdrop: ByteVec,
+        amountAirdropPerUser: U256,
+        airdropWhenHasParticipated: Bool,
+        hashedPassword: ByteVec,
+        lockPresenceUntil: U256,
+
+        //event properties
+        eventImage: ByteVec,
+        eventName: ByteVec,
+        description: ByteVec,
+        location: ByteVec,
+        eventStartAt: U256,
+        eventEndAt: U256,
+        isPublic: Bool,
+        isBurnable: Bool,
+
+        amountForStorageFees: U256,
+        amountForChainFees: U256,
+        amountPoapFees: U256,
+        totalSupply: U256,
+        amountAirdrop: U256) -> (ByteVec){
+            let caller = callerAddress!()
+
+            let (initialImmState, initialMutState) = PoapCollectionV2.encodeFields!(
+                poapTemplateId,
+                maxSupply,
+                mintStartAt,
+                mintEndAt,
+                oneMintPerAddress,
+                poapPrice,
+                tokenIdPoap,
+                isOpenPrice,
+                tokenIdAirdrop,
+                amountAirdropPerUser,
+                airdropWhenHasParticipated,
+                hashedPassword,
+                lockPresenceUntil,
+                eventImage,
+                eventName,
+                description,
+                caller,
+                location,
+                eventStartAt,
+                eventEndAt,
+                isPublic,
+                isBurnable,
+                amountForStorageFees,
+                amountForChainFees,
+                amountPoapFees,
+                totalSupply,
+                amountAirdrop    
+            )
+            
+            let mut amountForStorageFeesInContract = minimalContractDeposit!()
+            if(amountForStorageFees > 0){
+                assert!(amountForStorageFees >= minimalContractDeposit!(), ErrorCodes.NotEnoughAlph)
+                amountForStorageFeesInContract = amountForStorageFeesInContract + amountForStorageFees
+            }
+            
+            if(amountForChainFees > 0){
+                amountForStorageFeesInContract = amountForStorageFeesInContract + amountForChainFees
+            }
+
+            let contractId = copyCreateContract!{caller -> ALPH: amountForStorageFeesInContract, tokenIdAirdrop: amountAirdrop}(    
+                collectionTemplateId,
+                initialImmState,
+                initialMutState
+            )
+
+            numMintedCollection = numMintedCollection + 1
+            emit EventCreated(contractId, eventName, caller, isPublic, blockTimeStamp!())
+
+            return contractId
+        
+        }
+    
+    @using(preapprovedAssets = true, checkExternalCaller = false)
+    pub fn mintPoap(collection: PoapCollectionV2, amount: U256, password: ByteVec) -> (){
+        let caller = callerAddress!()
+
+        let collectionAmountAlphInContract = collection.getAmountForStorageFees()
+
+        let mut feesStorageAmount = minimalContractDeposit!()
+        if(collectionAmountAlphInContract > 0){
+            feesStorageAmount = 0
+        }
+
+        
+        let (poapPrice, poapTokenId, isOpenPrice) = collection.getPoapPrice()
+        let mut poapPriceAmount = poapPrice // when isOpenPrice true just set the amount the user wants to pay
+        if(isOpenPrice){
+            poapPriceAmount = amount
+        }
+
+        let poapContractId = collection.mint{caller -> ALPH: feesStorageAmount, poapTokenId: poapPriceAmount}(poapPriceAmount, password)
+        let collectionTotalSupply = collection.totalSupply()
+
+        emit PoapMinted(poapContractId, collection, collectionTotalSupply, caller, collection.getIsPublic(), blockTimeStamp!())
+
+    }
+
+    @using(preapprovedAssets = true, preserverCaller = true)
+    pub fn setParticipatedPresence(collection: PoapCollection, nftIndex: U256, presenceAddressValidate: Address) -> (){
+        let caller = callerAddress!()
+
+        let organizer = collection.getOrganizer()
+        checkCaller!(callerAddress!() == organizer, ErrorCodes.InvalidCaller)
+
+        let mut amountDust = 0
+        if(collection.getAirdropWhenHasParticipated()){
+            amountDust = dustAmount!()
+        }
+        
+        collection.setParticipatedPresence{organizer -> ALPH: amountDust}(caller, nftIndex, presenceAddressValidate)
+
+        emit PoapParticipatedIn(caller, collection, nftIndex, presenceAddressValidate)
+    }
+
+    pub fn getNumEventsCreated() -> U256{
+        return numMintedCollection
+    }
+
+}

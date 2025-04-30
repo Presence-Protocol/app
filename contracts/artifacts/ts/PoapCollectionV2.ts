@@ -33,14 +33,13 @@ import {
   encodeContractFields,
   Narrow,
 } from "@alephium/web3";
-import { default as PoapCollectionContractJson } from "../PoapCollection.ral.json";
+import { default as PoapCollectionV2ContractJson } from "../V2/PoapCollectionV2.ral.json";
 import { getContractByCodeHash, registerContract } from "./contracts";
 import { Trait, AllStructs } from "./types";
 
 // Custom types for the contract
-export namespace PoapCollectionTypes {
+export namespace PoapCollectionV2Types {
   export type Fields = {
-    factoryContractId: HexString;
     nftTemplateId: HexString;
     maxSupply: bigint;
     mintStartAt: bigint;
@@ -53,6 +52,7 @@ export namespace PoapCollectionTypes {
     amountAirdropPerUser: bigint;
     airdropWhenHasParticipated: boolean;
     hashedPassword: HexString;
+    lockPresenceUntil: bigint;
     eventImage: HexString;
     eventName: HexString;
     description: HexString;
@@ -105,16 +105,11 @@ export namespace PoapCollectionTypes {
       result: CallContractResult<HexString>;
     };
     mint: {
-      params: CallContractParams<{
-        callerAddr: Address;
-        amount: bigint;
-        password: HexString;
-      }>;
+      params: CallContractParams<{ amount: bigint; password: HexString }>;
       result: CallContractResult<HexString>;
     };
     setParticipatedPresence: {
       params: CallContractParams<{
-        callerAddr: Address;
         nftIndex: bigint;
         presenceAddressValidate: Address;
       }>;
@@ -223,7 +218,6 @@ export namespace PoapCollectionTypes {
     };
     mint: {
       params: SignExecuteContractMethodParams<{
-        callerAddr: Address;
         amount: bigint;
         password: HexString;
       }>;
@@ -231,7 +225,6 @@ export namespace PoapCollectionTypes {
     };
     setParticipatedPresence: {
       params: SignExecuteContractMethodParams<{
-        callerAddr: Address;
         nftIndex: bigint;
         presenceAddressValidate: Address;
       }>;
@@ -308,10 +301,10 @@ export namespace PoapCollectionTypes {
 }
 
 class Factory extends ContractFactory<
-  PoapCollectionInstance,
-  PoapCollectionTypes.Fields
+  PoapCollectionV2Instance,
+  PoapCollectionV2Types.Fields
 > {
-  encodeFields(fields: PoapCollectionTypes.Fields) {
+  encodeFields(fields: PoapCollectionV2Types.Fields) {
     return encodeContractFields(
       addStdIdToFields(this.contract, fields),
       this.contract.fieldsSig,
@@ -321,14 +314,14 @@ class Factory extends ContractFactory<
 
   eventIndex = { PoapMinted: 0, PoapParticipated: 1 };
 
-  at(address: string): PoapCollectionInstance {
-    return new PoapCollectionInstance(address);
+  at(address: string): PoapCollectionV2Instance {
+    return new PoapCollectionV2Instance(address);
   }
 
   tests = {
     getCollectionUri: async (
       params: Omit<
-        TestContractParamsWithoutMaps<PoapCollectionTypes.Fields, never>,
+        TestContractParamsWithoutMaps<PoapCollectionV2Types.Fields, never>,
         "testArgs"
       >
     ): Promise<TestContractResultWithoutMaps<HexString>> => {
@@ -341,7 +334,7 @@ class Factory extends ContractFactory<
     },
     totalSupply: async (
       params: Omit<
-        TestContractParamsWithoutMaps<PoapCollectionTypes.Fields, never>,
+        TestContractParamsWithoutMaps<PoapCollectionV2Types.Fields, never>,
         "testArgs"
       >
     ): Promise<TestContractResultWithoutMaps<bigint>> => {
@@ -349,7 +342,7 @@ class Factory extends ContractFactory<
     },
     nftByIndex: async (
       params: TestContractParamsWithoutMaps<
-        PoapCollectionTypes.Fields,
+        PoapCollectionV2Types.Fields,
         { index: bigint }
       >
     ): Promise<TestContractResultWithoutMaps<HexString>> => {
@@ -357,7 +350,7 @@ class Factory extends ContractFactory<
     },
     validateNFT: async (
       params: TestContractParamsWithoutMaps<
-        PoapCollectionTypes.Fields,
+        PoapCollectionV2Types.Fields,
         { nftId: HexString; nftIndex: bigint }
       >
     ): Promise<TestContractResultWithoutMaps<null>> => {
@@ -365,7 +358,7 @@ class Factory extends ContractFactory<
     },
     convert: async (
       params: TestContractParamsWithoutMaps<
-        PoapCollectionTypes.Fields,
+        PoapCollectionV2Types.Fields,
         { array: HexString }
       >
     ): Promise<TestContractResultWithoutMaps<HexString>> => {
@@ -373,20 +366,16 @@ class Factory extends ContractFactory<
     },
     mint: async (
       params: TestContractParamsWithoutMaps<
-        PoapCollectionTypes.Fields,
-        { callerAddr: Address; amount: bigint; password: HexString }
+        PoapCollectionV2Types.Fields,
+        { amount: bigint; password: HexString }
       >
     ): Promise<TestContractResultWithoutMaps<HexString>> => {
       return testMethod(this, "mint", params, getContractByCodeHash);
     },
     setParticipatedPresence: async (
       params: TestContractParamsWithoutMaps<
-        PoapCollectionTypes.Fields,
-        {
-          callerAddr: Address;
-          nftIndex: bigint;
-          presenceAddressValidate: Address;
-        }
+        PoapCollectionV2Types.Fields,
+        { nftIndex: bigint; presenceAddressValidate: Address }
       >
     ): Promise<TestContractResultWithoutMaps<null>> => {
       return testMethod(
@@ -398,7 +387,7 @@ class Factory extends ContractFactory<
     },
     sendAirdrop: async (
       params: TestContractParamsWithoutMaps<
-        PoapCollectionTypes.Fields,
+        PoapCollectionV2Types.Fields,
         { addressToAirdrop: Address }
       >
     ): Promise<TestContractResultWithoutMaps<null>> => {
@@ -406,7 +395,7 @@ class Factory extends ContractFactory<
     },
     nftByAddress: async (
       params: TestContractParamsWithoutMaps<
-        PoapCollectionTypes.Fields,
+        PoapCollectionV2Types.Fields,
         { caller: Address }
       >
     ): Promise<TestContractResultWithoutMaps<HexString>> => {
@@ -414,7 +403,7 @@ class Factory extends ContractFactory<
     },
     validateNFTAddress: async (
       params: TestContractParamsWithoutMaps<
-        PoapCollectionTypes.Fields,
+        PoapCollectionV2Types.Fields,
         { nftId: HexString; address: Address }
       >
     ): Promise<TestContractResultWithoutMaps<null>> => {
@@ -427,7 +416,7 @@ class Factory extends ContractFactory<
     },
     getIsPublic: async (
       params: Omit<
-        TestContractParamsWithoutMaps<PoapCollectionTypes.Fields, never>,
+        TestContractParamsWithoutMaps<PoapCollectionV2Types.Fields, never>,
         "testArgs"
       >
     ): Promise<TestContractResultWithoutMaps<boolean>> => {
@@ -435,7 +424,7 @@ class Factory extends ContractFactory<
     },
     getAmountForStorageFees: async (
       params: Omit<
-        TestContractParamsWithoutMaps<PoapCollectionTypes.Fields, never>,
+        TestContractParamsWithoutMaps<PoapCollectionV2Types.Fields, never>,
         "testArgs"
       >
     ): Promise<TestContractResultWithoutMaps<bigint>> => {
@@ -448,7 +437,7 @@ class Factory extends ContractFactory<
     },
     getAirdropWhenHasParticipated: async (
       params: Omit<
-        TestContractParamsWithoutMaps<PoapCollectionTypes.Fields, never>,
+        TestContractParamsWithoutMaps<PoapCollectionV2Types.Fields, never>,
         "testArgs"
       >
     ): Promise<TestContractResultWithoutMaps<boolean>> => {
@@ -461,7 +450,7 @@ class Factory extends ContractFactory<
     },
     getAmountPoapFees: async (
       params: Omit<
-        TestContractParamsWithoutMaps<PoapCollectionTypes.Fields, never>,
+        TestContractParamsWithoutMaps<PoapCollectionV2Types.Fields, never>,
         "testArgs"
       >
     ): Promise<TestContractResultWithoutMaps<bigint>> => {
@@ -474,7 +463,7 @@ class Factory extends ContractFactory<
     },
     claimFunds: async (
       params: TestContractParamsWithoutMaps<
-        PoapCollectionTypes.Fields,
+        PoapCollectionV2Types.Fields,
         { amountToClaim: bigint }
       >
     ): Promise<TestContractResultWithoutMaps<null>> => {
@@ -482,7 +471,7 @@ class Factory extends ContractFactory<
     },
     withdrawStorageFees: async (
       params: TestContractParamsWithoutMaps<
-        PoapCollectionTypes.Fields,
+        PoapCollectionV2Types.Fields,
         { amount: bigint }
       >
     ): Promise<TestContractResultWithoutMaps<null>> => {
@@ -495,7 +484,7 @@ class Factory extends ContractFactory<
     },
     withdrawChainFees: async (
       params: TestContractParamsWithoutMaps<
-        PoapCollectionTypes.Fields,
+        PoapCollectionV2Types.Fields,
         { amount: bigint }
       >
     ): Promise<TestContractResultWithoutMaps<null>> => {
@@ -508,7 +497,7 @@ class Factory extends ContractFactory<
     },
     depositStorageFees: async (
       params: TestContractParamsWithoutMaps<
-        PoapCollectionTypes.Fields,
+        PoapCollectionV2Types.Fields,
         { amount: bigint }
       >
     ): Promise<TestContractResultWithoutMaps<null>> => {
@@ -521,7 +510,7 @@ class Factory extends ContractFactory<
     },
     depositChainFees: async (
       params: TestContractParamsWithoutMaps<
-        PoapCollectionTypes.Fields,
+        PoapCollectionV2Types.Fields,
         { amount: bigint }
       >
     ): Promise<TestContractResultWithoutMaps<null>> => {
@@ -534,7 +523,7 @@ class Factory extends ContractFactory<
     },
     withdrawAirdrop: async (
       params: TestContractParamsWithoutMaps<
-        PoapCollectionTypes.Fields,
+        PoapCollectionV2Types.Fields,
         { amount: bigint }
       >
     ): Promise<TestContractResultWithoutMaps<null>> => {
@@ -542,7 +531,7 @@ class Factory extends ContractFactory<
     },
     getPoapPrice: async (
       params: Omit<
-        TestContractParamsWithoutMaps<PoapCollectionTypes.Fields, never>,
+        TestContractParamsWithoutMaps<PoapCollectionV2Types.Fields, never>,
         "testArgs"
       >
     ): Promise<TestContractResultWithoutMaps<[bigint, HexString, boolean]>> => {
@@ -550,7 +539,7 @@ class Factory extends ContractFactory<
     },
     getOrganizer: async (
       params: Omit<
-        TestContractParamsWithoutMaps<PoapCollectionTypes.Fields, never>,
+        TestContractParamsWithoutMaps<PoapCollectionV2Types.Fields, never>,
         "testArgs"
       >
     ): Promise<TestContractResultWithoutMaps<Address>> => {
@@ -559,7 +548,7 @@ class Factory extends ContractFactory<
   };
 
   stateForTest(
-    initFields: PoapCollectionTypes.Fields,
+    initFields: PoapCollectionV2Types.Fields,
     asset?: Asset,
     address?: string
   ) {
@@ -568,24 +557,24 @@ class Factory extends ContractFactory<
 }
 
 // Use this object to test and deploy the contract
-export const PoapCollection = new Factory(
+export const PoapCollectionV2 = new Factory(
   Contract.fromJson(
-    PoapCollectionContractJson,
+    PoapCollectionV2ContractJson,
     "",
-    "8f4260b71ca702a8f112dc752756e960cd04ba852a15441417d895754165b1d5",
+    "76488c6530776d425d1f02313fec0a0afba58bfef5c329b0c118f030670e72f9",
     AllStructs
   )
 );
-registerContract(PoapCollection);
+registerContract(PoapCollectionV2);
 
 // Use this class to interact with the blockchain
-export class PoapCollectionInstance extends ContractInstance {
+export class PoapCollectionV2Instance extends ContractInstance {
   constructor(address: Address) {
     super(address);
   }
 
-  async fetchState(): Promise<PoapCollectionTypes.State> {
-    return fetchContractState(PoapCollection, this);
+  async fetchState(): Promise<PoapCollectionV2Types.State> {
+    return fetchContractState(PoapCollectionV2, this);
   }
 
   async getContractEventsCurrentCount(): Promise<number> {
@@ -593,11 +582,11 @@ export class PoapCollectionInstance extends ContractInstance {
   }
 
   subscribePoapMintedEvent(
-    options: EventSubscribeOptions<PoapCollectionTypes.PoapMintedEvent>,
+    options: EventSubscribeOptions<PoapCollectionV2Types.PoapMintedEvent>,
     fromCount?: number
   ): EventSubscription {
     return subscribeContractEvent(
-      PoapCollection.contract,
+      PoapCollectionV2.contract,
       this,
       options,
       "PoapMinted",
@@ -606,11 +595,11 @@ export class PoapCollectionInstance extends ContractInstance {
   }
 
   subscribePoapParticipatedEvent(
-    options: EventSubscribeOptions<PoapCollectionTypes.PoapParticipatedEvent>,
+    options: EventSubscribeOptions<PoapCollectionV2Types.PoapParticipatedEvent>,
     fromCount?: number
   ): EventSubscription {
     return subscribeContractEvent(
-      PoapCollection.contract,
+      PoapCollectionV2.contract,
       this,
       options,
       "PoapParticipated",
@@ -620,13 +609,13 @@ export class PoapCollectionInstance extends ContractInstance {
 
   subscribeAllEvents(
     options: EventSubscribeOptions<
-      | PoapCollectionTypes.PoapMintedEvent
-      | PoapCollectionTypes.PoapParticipatedEvent
+      | PoapCollectionV2Types.PoapMintedEvent
+      | PoapCollectionV2Types.PoapParticipatedEvent
     >,
     fromCount?: number
   ): EventSubscription {
     return subscribeContractEvents(
-      PoapCollection.contract,
+      PoapCollectionV2.contract,
       this,
       options,
       fromCount
@@ -635,10 +624,10 @@ export class PoapCollectionInstance extends ContractInstance {
 
   view = {
     getCollectionUri: async (
-      params?: PoapCollectionTypes.CallMethodParams<"getCollectionUri">
-    ): Promise<PoapCollectionTypes.CallMethodResult<"getCollectionUri">> => {
+      params?: PoapCollectionV2Types.CallMethodParams<"getCollectionUri">
+    ): Promise<PoapCollectionV2Types.CallMethodResult<"getCollectionUri">> => {
       return callMethod(
-        PoapCollection,
+        PoapCollectionV2,
         this,
         "getCollectionUri",
         params === undefined ? {} : params,
@@ -646,10 +635,10 @@ export class PoapCollectionInstance extends ContractInstance {
       );
     },
     totalSupply: async (
-      params?: PoapCollectionTypes.CallMethodParams<"totalSupply">
-    ): Promise<PoapCollectionTypes.CallMethodResult<"totalSupply">> => {
+      params?: PoapCollectionV2Types.CallMethodParams<"totalSupply">
+    ): Promise<PoapCollectionV2Types.CallMethodResult<"totalSupply">> => {
       return callMethod(
-        PoapCollection,
+        PoapCollectionV2,
         this,
         "totalSupply",
         params === undefined ? {} : params,
@@ -657,10 +646,10 @@ export class PoapCollectionInstance extends ContractInstance {
       );
     },
     nftByIndex: async (
-      params: PoapCollectionTypes.CallMethodParams<"nftByIndex">
-    ): Promise<PoapCollectionTypes.CallMethodResult<"nftByIndex">> => {
+      params: PoapCollectionV2Types.CallMethodParams<"nftByIndex">
+    ): Promise<PoapCollectionV2Types.CallMethodResult<"nftByIndex">> => {
       return callMethod(
-        PoapCollection,
+        PoapCollectionV2,
         this,
         "nftByIndex",
         params,
@@ -668,10 +657,10 @@ export class PoapCollectionInstance extends ContractInstance {
       );
     },
     validateNFT: async (
-      params: PoapCollectionTypes.CallMethodParams<"validateNFT">
-    ): Promise<PoapCollectionTypes.CallMethodResult<"validateNFT">> => {
+      params: PoapCollectionV2Types.CallMethodParams<"validateNFT">
+    ): Promise<PoapCollectionV2Types.CallMethodResult<"validateNFT">> => {
       return callMethod(
-        PoapCollection,
+        PoapCollectionV2,
         this,
         "validateNFT",
         params,
@@ -679,10 +668,10 @@ export class PoapCollectionInstance extends ContractInstance {
       );
     },
     convert: async (
-      params: PoapCollectionTypes.CallMethodParams<"convert">
-    ): Promise<PoapCollectionTypes.CallMethodResult<"convert">> => {
+      params: PoapCollectionV2Types.CallMethodParams<"convert">
+    ): Promise<PoapCollectionV2Types.CallMethodResult<"convert">> => {
       return callMethod(
-        PoapCollection,
+        PoapCollectionV2,
         this,
         "convert",
         params,
@@ -690,10 +679,10 @@ export class PoapCollectionInstance extends ContractInstance {
       );
     },
     mint: async (
-      params: PoapCollectionTypes.CallMethodParams<"mint">
-    ): Promise<PoapCollectionTypes.CallMethodResult<"mint">> => {
+      params: PoapCollectionV2Types.CallMethodParams<"mint">
+    ): Promise<PoapCollectionV2Types.CallMethodResult<"mint">> => {
       return callMethod(
-        PoapCollection,
+        PoapCollectionV2,
         this,
         "mint",
         params,
@@ -701,12 +690,12 @@ export class PoapCollectionInstance extends ContractInstance {
       );
     },
     setParticipatedPresence: async (
-      params: PoapCollectionTypes.CallMethodParams<"setParticipatedPresence">
+      params: PoapCollectionV2Types.CallMethodParams<"setParticipatedPresence">
     ): Promise<
-      PoapCollectionTypes.CallMethodResult<"setParticipatedPresence">
+      PoapCollectionV2Types.CallMethodResult<"setParticipatedPresence">
     > => {
       return callMethod(
-        PoapCollection,
+        PoapCollectionV2,
         this,
         "setParticipatedPresence",
         params,
@@ -714,10 +703,10 @@ export class PoapCollectionInstance extends ContractInstance {
       );
     },
     sendAirdrop: async (
-      params: PoapCollectionTypes.CallMethodParams<"sendAirdrop">
-    ): Promise<PoapCollectionTypes.CallMethodResult<"sendAirdrop">> => {
+      params: PoapCollectionV2Types.CallMethodParams<"sendAirdrop">
+    ): Promise<PoapCollectionV2Types.CallMethodResult<"sendAirdrop">> => {
       return callMethod(
-        PoapCollection,
+        PoapCollectionV2,
         this,
         "sendAirdrop",
         params,
@@ -725,10 +714,10 @@ export class PoapCollectionInstance extends ContractInstance {
       );
     },
     nftByAddress: async (
-      params: PoapCollectionTypes.CallMethodParams<"nftByAddress">
-    ): Promise<PoapCollectionTypes.CallMethodResult<"nftByAddress">> => {
+      params: PoapCollectionV2Types.CallMethodParams<"nftByAddress">
+    ): Promise<PoapCollectionV2Types.CallMethodResult<"nftByAddress">> => {
       return callMethod(
-        PoapCollection,
+        PoapCollectionV2,
         this,
         "nftByAddress",
         params,
@@ -736,10 +725,12 @@ export class PoapCollectionInstance extends ContractInstance {
       );
     },
     validateNFTAddress: async (
-      params: PoapCollectionTypes.CallMethodParams<"validateNFTAddress">
-    ): Promise<PoapCollectionTypes.CallMethodResult<"validateNFTAddress">> => {
+      params: PoapCollectionV2Types.CallMethodParams<"validateNFTAddress">
+    ): Promise<
+      PoapCollectionV2Types.CallMethodResult<"validateNFTAddress">
+    > => {
       return callMethod(
-        PoapCollection,
+        PoapCollectionV2,
         this,
         "validateNFTAddress",
         params,
@@ -747,10 +738,10 @@ export class PoapCollectionInstance extends ContractInstance {
       );
     },
     getIsPublic: async (
-      params?: PoapCollectionTypes.CallMethodParams<"getIsPublic">
-    ): Promise<PoapCollectionTypes.CallMethodResult<"getIsPublic">> => {
+      params?: PoapCollectionV2Types.CallMethodParams<"getIsPublic">
+    ): Promise<PoapCollectionV2Types.CallMethodResult<"getIsPublic">> => {
       return callMethod(
-        PoapCollection,
+        PoapCollectionV2,
         this,
         "getIsPublic",
         params === undefined ? {} : params,
@@ -758,12 +749,12 @@ export class PoapCollectionInstance extends ContractInstance {
       );
     },
     getAmountForStorageFees: async (
-      params?: PoapCollectionTypes.CallMethodParams<"getAmountForStorageFees">
+      params?: PoapCollectionV2Types.CallMethodParams<"getAmountForStorageFees">
     ): Promise<
-      PoapCollectionTypes.CallMethodResult<"getAmountForStorageFees">
+      PoapCollectionV2Types.CallMethodResult<"getAmountForStorageFees">
     > => {
       return callMethod(
-        PoapCollection,
+        PoapCollectionV2,
         this,
         "getAmountForStorageFees",
         params === undefined ? {} : params,
@@ -771,12 +762,12 @@ export class PoapCollectionInstance extends ContractInstance {
       );
     },
     getAirdropWhenHasParticipated: async (
-      params?: PoapCollectionTypes.CallMethodParams<"getAirdropWhenHasParticipated">
+      params?: PoapCollectionV2Types.CallMethodParams<"getAirdropWhenHasParticipated">
     ): Promise<
-      PoapCollectionTypes.CallMethodResult<"getAirdropWhenHasParticipated">
+      PoapCollectionV2Types.CallMethodResult<"getAirdropWhenHasParticipated">
     > => {
       return callMethod(
-        PoapCollection,
+        PoapCollectionV2,
         this,
         "getAirdropWhenHasParticipated",
         params === undefined ? {} : params,
@@ -784,10 +775,10 @@ export class PoapCollectionInstance extends ContractInstance {
       );
     },
     getAmountPoapFees: async (
-      params?: PoapCollectionTypes.CallMethodParams<"getAmountPoapFees">
-    ): Promise<PoapCollectionTypes.CallMethodResult<"getAmountPoapFees">> => {
+      params?: PoapCollectionV2Types.CallMethodParams<"getAmountPoapFees">
+    ): Promise<PoapCollectionV2Types.CallMethodResult<"getAmountPoapFees">> => {
       return callMethod(
-        PoapCollection,
+        PoapCollectionV2,
         this,
         "getAmountPoapFees",
         params === undefined ? {} : params,
@@ -795,10 +786,10 @@ export class PoapCollectionInstance extends ContractInstance {
       );
     },
     claimFunds: async (
-      params: PoapCollectionTypes.CallMethodParams<"claimFunds">
-    ): Promise<PoapCollectionTypes.CallMethodResult<"claimFunds">> => {
+      params: PoapCollectionV2Types.CallMethodParams<"claimFunds">
+    ): Promise<PoapCollectionV2Types.CallMethodResult<"claimFunds">> => {
       return callMethod(
-        PoapCollection,
+        PoapCollectionV2,
         this,
         "claimFunds",
         params,
@@ -806,10 +797,12 @@ export class PoapCollectionInstance extends ContractInstance {
       );
     },
     withdrawStorageFees: async (
-      params: PoapCollectionTypes.CallMethodParams<"withdrawStorageFees">
-    ): Promise<PoapCollectionTypes.CallMethodResult<"withdrawStorageFees">> => {
+      params: PoapCollectionV2Types.CallMethodParams<"withdrawStorageFees">
+    ): Promise<
+      PoapCollectionV2Types.CallMethodResult<"withdrawStorageFees">
+    > => {
       return callMethod(
-        PoapCollection,
+        PoapCollectionV2,
         this,
         "withdrawStorageFees",
         params,
@@ -817,10 +810,10 @@ export class PoapCollectionInstance extends ContractInstance {
       );
     },
     withdrawChainFees: async (
-      params: PoapCollectionTypes.CallMethodParams<"withdrawChainFees">
-    ): Promise<PoapCollectionTypes.CallMethodResult<"withdrawChainFees">> => {
+      params: PoapCollectionV2Types.CallMethodParams<"withdrawChainFees">
+    ): Promise<PoapCollectionV2Types.CallMethodResult<"withdrawChainFees">> => {
       return callMethod(
-        PoapCollection,
+        PoapCollectionV2,
         this,
         "withdrawChainFees",
         params,
@@ -828,10 +821,12 @@ export class PoapCollectionInstance extends ContractInstance {
       );
     },
     depositStorageFees: async (
-      params: PoapCollectionTypes.CallMethodParams<"depositStorageFees">
-    ): Promise<PoapCollectionTypes.CallMethodResult<"depositStorageFees">> => {
+      params: PoapCollectionV2Types.CallMethodParams<"depositStorageFees">
+    ): Promise<
+      PoapCollectionV2Types.CallMethodResult<"depositStorageFees">
+    > => {
       return callMethod(
-        PoapCollection,
+        PoapCollectionV2,
         this,
         "depositStorageFees",
         params,
@@ -839,10 +834,10 @@ export class PoapCollectionInstance extends ContractInstance {
       );
     },
     depositChainFees: async (
-      params: PoapCollectionTypes.CallMethodParams<"depositChainFees">
-    ): Promise<PoapCollectionTypes.CallMethodResult<"depositChainFees">> => {
+      params: PoapCollectionV2Types.CallMethodParams<"depositChainFees">
+    ): Promise<PoapCollectionV2Types.CallMethodResult<"depositChainFees">> => {
       return callMethod(
-        PoapCollection,
+        PoapCollectionV2,
         this,
         "depositChainFees",
         params,
@@ -850,10 +845,10 @@ export class PoapCollectionInstance extends ContractInstance {
       );
     },
     withdrawAirdrop: async (
-      params: PoapCollectionTypes.CallMethodParams<"withdrawAirdrop">
-    ): Promise<PoapCollectionTypes.CallMethodResult<"withdrawAirdrop">> => {
+      params: PoapCollectionV2Types.CallMethodParams<"withdrawAirdrop">
+    ): Promise<PoapCollectionV2Types.CallMethodResult<"withdrawAirdrop">> => {
       return callMethod(
-        PoapCollection,
+        PoapCollectionV2,
         this,
         "withdrawAirdrop",
         params,
@@ -861,10 +856,10 @@ export class PoapCollectionInstance extends ContractInstance {
       );
     },
     getPoapPrice: async (
-      params?: PoapCollectionTypes.CallMethodParams<"getPoapPrice">
-    ): Promise<PoapCollectionTypes.CallMethodResult<"getPoapPrice">> => {
+      params?: PoapCollectionV2Types.CallMethodParams<"getPoapPrice">
+    ): Promise<PoapCollectionV2Types.CallMethodResult<"getPoapPrice">> => {
       return callMethod(
-        PoapCollection,
+        PoapCollectionV2,
         this,
         "getPoapPrice",
         params === undefined ? {} : params,
@@ -872,10 +867,10 @@ export class PoapCollectionInstance extends ContractInstance {
       );
     },
     getOrganizer: async (
-      params?: PoapCollectionTypes.CallMethodParams<"getOrganizer">
-    ): Promise<PoapCollectionTypes.CallMethodResult<"getOrganizer">> => {
+      params?: PoapCollectionV2Types.CallMethodParams<"getOrganizer">
+    ): Promise<PoapCollectionV2Types.CallMethodResult<"getOrganizer">> => {
       return callMethod(
-        PoapCollection,
+        PoapCollectionV2,
         this,
         "getOrganizer",
         params === undefined ? {} : params,
@@ -886,202 +881,221 @@ export class PoapCollectionInstance extends ContractInstance {
 
   transact = {
     getCollectionUri: async (
-      params: PoapCollectionTypes.SignExecuteMethodParams<"getCollectionUri">
+      params: PoapCollectionV2Types.SignExecuteMethodParams<"getCollectionUri">
     ): Promise<
-      PoapCollectionTypes.SignExecuteMethodResult<"getCollectionUri">
+      PoapCollectionV2Types.SignExecuteMethodResult<"getCollectionUri">
     > => {
       return signExecuteMethod(
-        PoapCollection,
+        PoapCollectionV2,
         this,
         "getCollectionUri",
         params
       );
     },
     totalSupply: async (
-      params: PoapCollectionTypes.SignExecuteMethodParams<"totalSupply">
-    ): Promise<PoapCollectionTypes.SignExecuteMethodResult<"totalSupply">> => {
-      return signExecuteMethod(PoapCollection, this, "totalSupply", params);
+      params: PoapCollectionV2Types.SignExecuteMethodParams<"totalSupply">
+    ): Promise<
+      PoapCollectionV2Types.SignExecuteMethodResult<"totalSupply">
+    > => {
+      return signExecuteMethod(PoapCollectionV2, this, "totalSupply", params);
     },
     nftByIndex: async (
-      params: PoapCollectionTypes.SignExecuteMethodParams<"nftByIndex">
-    ): Promise<PoapCollectionTypes.SignExecuteMethodResult<"nftByIndex">> => {
-      return signExecuteMethod(PoapCollection, this, "nftByIndex", params);
+      params: PoapCollectionV2Types.SignExecuteMethodParams<"nftByIndex">
+    ): Promise<PoapCollectionV2Types.SignExecuteMethodResult<"nftByIndex">> => {
+      return signExecuteMethod(PoapCollectionV2, this, "nftByIndex", params);
     },
     validateNFT: async (
-      params: PoapCollectionTypes.SignExecuteMethodParams<"validateNFT">
-    ): Promise<PoapCollectionTypes.SignExecuteMethodResult<"validateNFT">> => {
-      return signExecuteMethod(PoapCollection, this, "validateNFT", params);
+      params: PoapCollectionV2Types.SignExecuteMethodParams<"validateNFT">
+    ): Promise<
+      PoapCollectionV2Types.SignExecuteMethodResult<"validateNFT">
+    > => {
+      return signExecuteMethod(PoapCollectionV2, this, "validateNFT", params);
     },
     convert: async (
-      params: PoapCollectionTypes.SignExecuteMethodParams<"convert">
-    ): Promise<PoapCollectionTypes.SignExecuteMethodResult<"convert">> => {
-      return signExecuteMethod(PoapCollection, this, "convert", params);
+      params: PoapCollectionV2Types.SignExecuteMethodParams<"convert">
+    ): Promise<PoapCollectionV2Types.SignExecuteMethodResult<"convert">> => {
+      return signExecuteMethod(PoapCollectionV2, this, "convert", params);
     },
     mint: async (
-      params: PoapCollectionTypes.SignExecuteMethodParams<"mint">
-    ): Promise<PoapCollectionTypes.SignExecuteMethodResult<"mint">> => {
-      return signExecuteMethod(PoapCollection, this, "mint", params);
+      params: PoapCollectionV2Types.SignExecuteMethodParams<"mint">
+    ): Promise<PoapCollectionV2Types.SignExecuteMethodResult<"mint">> => {
+      return signExecuteMethod(PoapCollectionV2, this, "mint", params);
     },
     setParticipatedPresence: async (
-      params: PoapCollectionTypes.SignExecuteMethodParams<"setParticipatedPresence">
+      params: PoapCollectionV2Types.SignExecuteMethodParams<"setParticipatedPresence">
     ): Promise<
-      PoapCollectionTypes.SignExecuteMethodResult<"setParticipatedPresence">
+      PoapCollectionV2Types.SignExecuteMethodResult<"setParticipatedPresence">
     > => {
       return signExecuteMethod(
-        PoapCollection,
+        PoapCollectionV2,
         this,
         "setParticipatedPresence",
         params
       );
     },
     sendAirdrop: async (
-      params: PoapCollectionTypes.SignExecuteMethodParams<"sendAirdrop">
-    ): Promise<PoapCollectionTypes.SignExecuteMethodResult<"sendAirdrop">> => {
-      return signExecuteMethod(PoapCollection, this, "sendAirdrop", params);
+      params: PoapCollectionV2Types.SignExecuteMethodParams<"sendAirdrop">
+    ): Promise<
+      PoapCollectionV2Types.SignExecuteMethodResult<"sendAirdrop">
+    > => {
+      return signExecuteMethod(PoapCollectionV2, this, "sendAirdrop", params);
     },
     nftByAddress: async (
-      params: PoapCollectionTypes.SignExecuteMethodParams<"nftByAddress">
-    ): Promise<PoapCollectionTypes.SignExecuteMethodResult<"nftByAddress">> => {
-      return signExecuteMethod(PoapCollection, this, "nftByAddress", params);
+      params: PoapCollectionV2Types.SignExecuteMethodParams<"nftByAddress">
+    ): Promise<
+      PoapCollectionV2Types.SignExecuteMethodResult<"nftByAddress">
+    > => {
+      return signExecuteMethod(PoapCollectionV2, this, "nftByAddress", params);
     },
     validateNFTAddress: async (
-      params: PoapCollectionTypes.SignExecuteMethodParams<"validateNFTAddress">
+      params: PoapCollectionV2Types.SignExecuteMethodParams<"validateNFTAddress">
     ): Promise<
-      PoapCollectionTypes.SignExecuteMethodResult<"validateNFTAddress">
+      PoapCollectionV2Types.SignExecuteMethodResult<"validateNFTAddress">
     > => {
       return signExecuteMethod(
-        PoapCollection,
+        PoapCollectionV2,
         this,
         "validateNFTAddress",
         params
       );
     },
     getIsPublic: async (
-      params: PoapCollectionTypes.SignExecuteMethodParams<"getIsPublic">
-    ): Promise<PoapCollectionTypes.SignExecuteMethodResult<"getIsPublic">> => {
-      return signExecuteMethod(PoapCollection, this, "getIsPublic", params);
+      params: PoapCollectionV2Types.SignExecuteMethodParams<"getIsPublic">
+    ): Promise<
+      PoapCollectionV2Types.SignExecuteMethodResult<"getIsPublic">
+    > => {
+      return signExecuteMethod(PoapCollectionV2, this, "getIsPublic", params);
     },
     getAmountForStorageFees: async (
-      params: PoapCollectionTypes.SignExecuteMethodParams<"getAmountForStorageFees">
+      params: PoapCollectionV2Types.SignExecuteMethodParams<"getAmountForStorageFees">
     ): Promise<
-      PoapCollectionTypes.SignExecuteMethodResult<"getAmountForStorageFees">
+      PoapCollectionV2Types.SignExecuteMethodResult<"getAmountForStorageFees">
     > => {
       return signExecuteMethod(
-        PoapCollection,
+        PoapCollectionV2,
         this,
         "getAmountForStorageFees",
         params
       );
     },
     getAirdropWhenHasParticipated: async (
-      params: PoapCollectionTypes.SignExecuteMethodParams<"getAirdropWhenHasParticipated">
+      params: PoapCollectionV2Types.SignExecuteMethodParams<"getAirdropWhenHasParticipated">
     ): Promise<
-      PoapCollectionTypes.SignExecuteMethodResult<"getAirdropWhenHasParticipated">
+      PoapCollectionV2Types.SignExecuteMethodResult<"getAirdropWhenHasParticipated">
     > => {
       return signExecuteMethod(
-        PoapCollection,
+        PoapCollectionV2,
         this,
         "getAirdropWhenHasParticipated",
         params
       );
     },
     getAmountPoapFees: async (
-      params: PoapCollectionTypes.SignExecuteMethodParams<"getAmountPoapFees">
+      params: PoapCollectionV2Types.SignExecuteMethodParams<"getAmountPoapFees">
     ): Promise<
-      PoapCollectionTypes.SignExecuteMethodResult<"getAmountPoapFees">
+      PoapCollectionV2Types.SignExecuteMethodResult<"getAmountPoapFees">
     > => {
       return signExecuteMethod(
-        PoapCollection,
+        PoapCollectionV2,
         this,
         "getAmountPoapFees",
         params
       );
     },
     claimFunds: async (
-      params: PoapCollectionTypes.SignExecuteMethodParams<"claimFunds">
-    ): Promise<PoapCollectionTypes.SignExecuteMethodResult<"claimFunds">> => {
-      return signExecuteMethod(PoapCollection, this, "claimFunds", params);
+      params: PoapCollectionV2Types.SignExecuteMethodParams<"claimFunds">
+    ): Promise<PoapCollectionV2Types.SignExecuteMethodResult<"claimFunds">> => {
+      return signExecuteMethod(PoapCollectionV2, this, "claimFunds", params);
     },
     withdrawStorageFees: async (
-      params: PoapCollectionTypes.SignExecuteMethodParams<"withdrawStorageFees">
+      params: PoapCollectionV2Types.SignExecuteMethodParams<"withdrawStorageFees">
     ): Promise<
-      PoapCollectionTypes.SignExecuteMethodResult<"withdrawStorageFees">
+      PoapCollectionV2Types.SignExecuteMethodResult<"withdrawStorageFees">
     > => {
       return signExecuteMethod(
-        PoapCollection,
+        PoapCollectionV2,
         this,
         "withdrawStorageFees",
         params
       );
     },
     withdrawChainFees: async (
-      params: PoapCollectionTypes.SignExecuteMethodParams<"withdrawChainFees">
+      params: PoapCollectionV2Types.SignExecuteMethodParams<"withdrawChainFees">
     ): Promise<
-      PoapCollectionTypes.SignExecuteMethodResult<"withdrawChainFees">
+      PoapCollectionV2Types.SignExecuteMethodResult<"withdrawChainFees">
     > => {
       return signExecuteMethod(
-        PoapCollection,
+        PoapCollectionV2,
         this,
         "withdrawChainFees",
         params
       );
     },
     depositStorageFees: async (
-      params: PoapCollectionTypes.SignExecuteMethodParams<"depositStorageFees">
+      params: PoapCollectionV2Types.SignExecuteMethodParams<"depositStorageFees">
     ): Promise<
-      PoapCollectionTypes.SignExecuteMethodResult<"depositStorageFees">
+      PoapCollectionV2Types.SignExecuteMethodResult<"depositStorageFees">
     > => {
       return signExecuteMethod(
-        PoapCollection,
+        PoapCollectionV2,
         this,
         "depositStorageFees",
         params
       );
     },
     depositChainFees: async (
-      params: PoapCollectionTypes.SignExecuteMethodParams<"depositChainFees">
+      params: PoapCollectionV2Types.SignExecuteMethodParams<"depositChainFees">
     ): Promise<
-      PoapCollectionTypes.SignExecuteMethodResult<"depositChainFees">
+      PoapCollectionV2Types.SignExecuteMethodResult<"depositChainFees">
     > => {
       return signExecuteMethod(
-        PoapCollection,
+        PoapCollectionV2,
         this,
         "depositChainFees",
         params
       );
     },
     withdrawAirdrop: async (
-      params: PoapCollectionTypes.SignExecuteMethodParams<"withdrawAirdrop">
+      params: PoapCollectionV2Types.SignExecuteMethodParams<"withdrawAirdrop">
     ): Promise<
-      PoapCollectionTypes.SignExecuteMethodResult<"withdrawAirdrop">
+      PoapCollectionV2Types.SignExecuteMethodResult<"withdrawAirdrop">
     > => {
-      return signExecuteMethod(PoapCollection, this, "withdrawAirdrop", params);
+      return signExecuteMethod(
+        PoapCollectionV2,
+        this,
+        "withdrawAirdrop",
+        params
+      );
     },
     getPoapPrice: async (
-      params: PoapCollectionTypes.SignExecuteMethodParams<"getPoapPrice">
-    ): Promise<PoapCollectionTypes.SignExecuteMethodResult<"getPoapPrice">> => {
-      return signExecuteMethod(PoapCollection, this, "getPoapPrice", params);
+      params: PoapCollectionV2Types.SignExecuteMethodParams<"getPoapPrice">
+    ): Promise<
+      PoapCollectionV2Types.SignExecuteMethodResult<"getPoapPrice">
+    > => {
+      return signExecuteMethod(PoapCollectionV2, this, "getPoapPrice", params);
     },
     getOrganizer: async (
-      params: PoapCollectionTypes.SignExecuteMethodParams<"getOrganizer">
-    ): Promise<PoapCollectionTypes.SignExecuteMethodResult<"getOrganizer">> => {
-      return signExecuteMethod(PoapCollection, this, "getOrganizer", params);
+      params: PoapCollectionV2Types.SignExecuteMethodParams<"getOrganizer">
+    ): Promise<
+      PoapCollectionV2Types.SignExecuteMethodResult<"getOrganizer">
+    > => {
+      return signExecuteMethod(PoapCollectionV2, this, "getOrganizer", params);
     },
   };
 
-  async multicall<Calls extends PoapCollectionTypes.MultiCallParams>(
+  async multicall<Calls extends PoapCollectionV2Types.MultiCallParams>(
     calls: Calls
-  ): Promise<PoapCollectionTypes.MultiCallResults<Calls>>;
-  async multicall<Callss extends PoapCollectionTypes.MultiCallParams[]>(
+  ): Promise<PoapCollectionV2Types.MultiCallResults<Calls>>;
+  async multicall<Callss extends PoapCollectionV2Types.MultiCallParams[]>(
     callss: Narrow<Callss>
-  ): Promise<PoapCollectionTypes.MulticallReturnType<Callss>>;
+  ): Promise<PoapCollectionV2Types.MulticallReturnType<Callss>>;
   async multicall<
     Callss extends
-      | PoapCollectionTypes.MultiCallParams
-      | PoapCollectionTypes.MultiCallParams[]
+      | PoapCollectionV2Types.MultiCallParams
+      | PoapCollectionV2Types.MultiCallParams[]
   >(callss: Callss): Promise<unknown> {
     return await multicallMethods(
-      PoapCollection,
+      PoapCollectionV2,
       this,
       callss,
       getContractByCodeHash
