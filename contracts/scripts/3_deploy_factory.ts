@@ -9,7 +9,7 @@ const deployFaucet: DeployFunction<Settings> = async (
   network: Network<Settings>
 ): Promise<void> => {
   
-  const poapNftTemplateId = deployer.getDeployContractResult('PoapNFT')
+  const poapNftTemplateId = deployer.getDeployContractResult('PoapNFTV2')
   const poapCollectionTemplateId = deployer.getDeployContractResult('PoapCollectionV2')
 
   await deployer.deployContract(PoapFactoryV2,{

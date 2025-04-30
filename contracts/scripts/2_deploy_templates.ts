@@ -1,7 +1,7 @@
 import { Deployer, DeployFunction, Network } from '@alephium/cli'
 import { Settings } from '../alephium.config'
 import { ALPH_TOKEN_ID, NULL_CONTRACT_ADDRESS, stringToHex, web3, ZERO_ADDRESS } from '@alephium/web3'
-import { PoapCollection, PoapCollectionV2, PoapNFT } from '../artifacts/ts'
+import { PoapCollection, PoapCollectionV2, PoapNFT, PoapNFTV2 } from '../artifacts/ts'
 import { PrivateKeyWallet } from '@alephium/web3-wallet'
 
 
@@ -10,6 +10,24 @@ const deployTemplates: DeployFunction<Settings> = async (
   network: Network<Settings>
 ): Promise<void> => {
   PrivateKeyWallet.Random(0, web3.getCurrentNodeProvider())
+
+  await deployer.deployContract(PoapNFTV2,{
+    initialFields: {
+      collectionId: '00',
+      nftIndex: 0n,
+      eventImage: '00',
+      eventName: '00',
+      description: '00',
+      organizer: NULL_CONTRACT_ADDRESS,
+      location: '00',
+      eventStartAt: 0n,
+      eventEndAt: 0n,
+      isPublic: false,
+      minter: NULL_CONTRACT_ADDRESS,
+      isBurnable: false,
+      hasParticipated: false
+    }
+  })
 
   await deployer.deployContract(PoapCollectionV2,{
     initialFields: {

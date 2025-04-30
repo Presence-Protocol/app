@@ -94,7 +94,7 @@ Contract PoapFactoryV2(
         
         }
     
-    @using(preapprovedAssets = true, checkExternalCaller = false)
+    @using(preapprovedAssets = true, checkExternalCaller = false, preserveCaller = true)
     pub fn mintPoap(collection: PoapCollectionV2, amount: U256, password: ByteVec) -> (){
         let caller = callerAddress!()
 
@@ -119,8 +119,8 @@ Contract PoapFactoryV2(
 
     }
 
-    @using(preapprovedAssets = true, preserverCaller = true)
-    pub fn setParticipatedPresence(collection: PoapCollection, nftIndex: U256, presenceAddressValidate: Address) -> (){
+    @using(preapprovedAssets = true, preserveCaller = true)
+    pub fn setParticipatedPresence(collection: PoapCollectionV2, nftIndex: U256, presenceAddressValidate: Address) -> (){
         let caller = callerAddress!()
 
         let organizer = collection.getOrganizer()
@@ -131,7 +131,7 @@ Contract PoapFactoryV2(
             amountDust = dustAmount!()
         }
         
-        collection.setParticipatedPresence{organizer -> ALPH: amountDust}(caller, nftIndex, presenceAddressValidate)
+        collection.setParticipatedPresence{organizer -> ALPH: amountDust}(nftIndex, presenceAddressValidate)
 
         emit PoapParticipatedIn(caller, collection, nftIndex, presenceAddressValidate)
     }

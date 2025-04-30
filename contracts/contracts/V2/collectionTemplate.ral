@@ -42,7 +42,7 @@ Contract PoapCollectionV2(
      assert!(blockTimeStamp!() >= mintStartAt, ErrorCodes.MintNotStarted)
      assert!(blockTimeStamp!() <= mintEndAt, ErrorCodes.MintEnded)
 
-     let caller = callerAddress!()     
+     let caller = callerAddress!()
      
      let organizerAddressHex = convert(toByteVec!(organizer))
      let (initialImmState, initialMutState) = PoapNFT.encodeFields!(selfContractId!(), totalSupply, eventImage, eventName, description, organizerAddressHex, location, eventStartAt, eventEndAt, isPublic, caller, isBurnable, false)
@@ -72,24 +72,11 @@ Contract PoapCollectionV2(
      }
 
      if(!airdropWhenHasParticipated){
-        sendAirdrop(caller)
+        sendAirdrop{caller -> ALPH: 0}(caller)
      }
 
      if(hashedPassword != #00){
       assert!(hashedPassword == keccak256!(password), ErrorCodes.InvalidPassword)
-     }
-
-     let contractId = copyCreateSubContractWithToken!{payer -> ALPH: minimalContractDeposit!()}(
-         contractPath,
-         nftTemplateId,
-         initialImmState,
-         initialMutState,
-         1,
-         caller
-     )
-
-     if(lockPresenceUntil > 0){
-        lockApprovedAssets!{caller -> contractId: 1}(caller, lockPresenceUntil)
      }
 
 
@@ -99,17 +86,40 @@ Contract PoapCollectionV2(
       amountForChainFees = amountForChainFees - gasFees
     }
 
+    let mut contractId = #00
+    if(lockPresenceUntil > 0){
 
-     emit PoapMinted(contractId, totalSupply, caller, blockTimeStamp!())
+    contractId = copyCreateSubContractWithToken!{payer -> ALPH: minimalContractDeposit!()}(
+      contractPath,
+      nftTemplateId,
+      initialImmState,
+      initialMutState,
+      1)
 
-     totalSupply = totalSupply + 1
+      PoapNFTV2(contractId).lock(caller, lockPresenceUntil)
 
-     return contractId
+    } else {
+
+     contractId = copyCreateSubContractWithToken!{payer -> ALPH: minimalContractDeposit!()}(
+      contractPath,
+      nftTemplateId,
+      initialImmState,
+      initialMutState,
+      1,
+      caller)
+    }
+      
+
+      emit PoapMinted(contractId, totalSupply, caller, blockTimeStamp!())
+
+      totalSupply = totalSupply + 1
+
+      return contractId
    }
 
    @using(checkExternalCaller = true, preapprovedAssets = true)
-   pub fn setParticipatedPresence(callerAddr: Address, nftIndex: U256, presenceAddressValidate: Address) -> (){
-      let mut caller = callerAddress!()
+   pub fn setParticipatedPresence(nftIndex: U256, presenceAddressValidate: Address) -> (){
+      let caller = callerAddress!()
      
       checkCaller!(caller == organizer, ErrorCodes.InvalidCaller)
       let mut poapContractId = #00
@@ -133,11 +143,14 @@ Contract PoapCollectionV2(
 
    }
 
-   @using(assetsInContract = true, updateFields = true)
+   @using(assetsInContract = true, updateFields = true, preapprovedAssets = true)
    fn sendAirdrop(addressToAirdrop: Address) -> (){
     if(amountAirdrop >= amountAirdropPerUser){
 
-  
+      // dustamount is needed for minimal
+      if(airdropWhenHasParticipated){
+      transferToken!(organizer, addressToAirdrop, ALPH, dustAmount!())
+    }
       transferTokenFromSelf!(addressToAirdrop, tokenIdAirdrop, amountAirdropPerUser)
       amountAirdrop = amountAirdrop - amountAirdropPerUser
     }
