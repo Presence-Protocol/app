@@ -9,6 +9,7 @@ const deployTemplates: DeployFunction<Settings> = async (
   deployer: Deployer,
   network: Network<Settings>
 ): Promise<void> => {
+  /*
   PrivateKeyWallet.Random(0, web3.getCurrentNodeProvider())
 
   await deployer.deployContract(PoapNFT,{
@@ -60,7 +61,7 @@ const deployTemplates: DeployFunction<Settings> = async (
       hashedPassword: '00'
     }
   })
-
+*/
 
 }
 
