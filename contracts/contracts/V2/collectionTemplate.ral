@@ -45,7 +45,7 @@ Contract PoapCollectionV2(
      let caller = callerAddress!()
      
      let organizerAddressHex = convert(toByteVec!(organizer))
-     let (initialImmState, initialMutState) = PoapNFT.encodeFields!(selfContractId!(), totalSupply, eventImage, eventName, description, organizerAddressHex, location, eventStartAt, eventEndAt, isPublic, caller, isBurnable, false)
+     let (initialImmState, initialMutState) = PoapNFTV2.encodeFields!(selfContractId!(), totalSupply, eventImage, eventName, description, organizerAddressHex, location, eventStartAt, eventEndAt, isPublic, caller, isBurnable, lockPresenceUntil, false)
      
      let mut contractPath = toByteVec!(totalSupply)
      if(oneMintPerAddress){

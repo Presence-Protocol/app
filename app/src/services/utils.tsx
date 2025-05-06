@@ -24,21 +24,10 @@ export interface Token {
   symbolOnChain?: string
 }
 
-function getNetwork(): NetworkId {
-  const network = (process.env.NEXT_PUBLIC_NETWORK ?? 'devnet') as NetworkId
+export function getNetwork(): NetworkId {
+  const network = (process.env.NEXT_PUBLIC_NETWORK ?? 'testnet') as NetworkId
   return network
 }
-
-function getTokenFaucetConfig(): TokenFaucetConfig {
-  const network = getNetwork()
-  const tokenFaucet = loadDeployments(network).contracts.PoapFactory.contractInstance
-  const groupIndex = tokenFaucet.groupIndex
-  const tokenFaucetAddress = tokenFaucet.address
-  const faucetTokenId = tokenFaucet.contractId
-  return { network, groupIndex, tokenFaucetAddress, faucetTokenId }
-}
-
-export const tokenFaucetConfig = getTokenFaucetConfig()
 
 export async function getTokenList(): Promise<Token[]> {
   const url = `https://raw.githubusercontent.com/alephium/token-list/master/tokens/${getNetwork()}.json`

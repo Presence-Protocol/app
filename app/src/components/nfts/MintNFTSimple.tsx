@@ -2,7 +2,7 @@
 
 import { addressFromContractId, ALPH_TOKEN_ID, contractIdFromAddress, DUST_AMOUNT, hexToString, MINIMAL_CONTRACT_DEPOSIT, NetworkId, number256ToNumber, stringToHex, waitForTxConfirmation, web3, hashMessage } from '@alephium/web3';
 import { useWallet } from '@alephium/web3-react';
-import { PoapFactoryV2, PoapCollectionV2, PoapFactoryV2Types, PoapFactoryV2Instance, PoapCollectionV2Instance } from 'my-contracts';
+import { PoapFactoryV2, PoapCollectionV2, PoapFactoryV2Instance, PoapCollectionV2Instance } from 'my-contracts';
 import { loadDeployments } from 'my-contracts/deployments';
 import React, { useEffect, useState, useRef } from 'react';
 import Image from 'next/image';
@@ -39,6 +39,7 @@ interface NFTCollection {
   isOpenPrice: boolean;
   hashedPassword: string;
   organizer: string;
+  lockPresenceUntil: bigint;
 }
 
 
@@ -119,6 +120,7 @@ export default function MintNFTSimple() {
     isOpenPrice: false,
     hashedPassword: stringToHex(''),
     organizer: '',
+    lockPresenceUntil: 0n
   });
   const [tokenList, setTokenList] = useState<any[]>([]);
   const [customPrice, setCustomPrice] = useState<string>('');
@@ -240,6 +242,7 @@ export default function MintNFTSimple() {
             isOpenPrice: collectionMetadata.fields.isOpenPrice, 
             hashedPassword: collectionMetadata.fields.hashedPassword,
             organizer: collectionMetadata.fields.organizer,
+            lockPresenceUntil: collectionMetadata.fields.lockPresenceUntil
           });
           setIsLoading(false);
         })
@@ -398,7 +401,6 @@ export default function MintNFTSimple() {
           });
         }
       }
-
       const result = await factoryContract.transact.mintPoap({
         args: {
           collection: poapCollection.contractId,

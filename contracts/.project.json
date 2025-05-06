@@ -1,5 +1,5 @@
 {
-  "fullNodeVersion": "v3.14.0",
+  "fullNodeVersion": "v3.12.7",
   "compilerOptionsUsed": {
     "ignoreUnusedConstantsWarnings": false,
     "ignoreUnusedVariablesWarnings": false,
@@ -37,9 +37,9 @@
     },
     "PoapCollectionV2": {
       "sourceFile": "V2/collectionTemplate.ral",
-      "sourceCodeHash": "8aa7bf0fbc7d3cac36cf94aff80201c0df8f7bac2ef5b795eb7fbbaf7820df51",
+      "sourceCodeHash": "ff9600949fa08e66311fa8fad5767d3ab1beb636f90ce4a3aa79a3e94e1dee41",
       "bytecodeDebugPatch": "",
-      "codeHashDebug": "502bbd8342f43fec66e7f2025ca64295edc92225904347b7a1d68549da3190c4"
+      "codeHashDebug": "6ab23409a3fc421004b40f29d06d92f8984a72c0bc08af7c8ce81e3a87ca213b"
     },
     "PoapFactory": {
       "sourceFile": "factoryPoap.ral",
