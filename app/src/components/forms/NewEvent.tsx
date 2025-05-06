@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { web3, Contract, MINIMAL_CONTRACT_DEPOSIT, DUST_AMOUNT, Subscription, contractIdFromAddress, addressFromContractId, NetworkId, ALPH_TOKEN_ID, ONE_ALPH, NodeProvider, number256ToNumber, hashMessage } from '@alephium/web3'
-import { PoapFactory, PoapFactoryTypes } from '../../../../contracts/artifacts/ts/PoapFactory'
+import { PoapFactoryV2, PoapFactoryV2Types } from '../../../../contracts/artifacts/ts/PoapFactoryV2'
 import { toast } from 'react-hot-toast'
 import { useWallet } from '@alephium/web3-react'
 import { stringToHex } from '@alephium/web3'
@@ -375,8 +375,11 @@ export default function NewEvent() {
       const mintEndAt = BigInt(new Date(endDate).getTime());
 
       // Initialize contract
-      const deployment = loadDeployments( process.env.NEXT_PUBLIC_NETWORK as NetworkId ?? 'testnet'); // TODO use getNetwork()
-      const factoryContract = PoapFactory.at(deployment.contracts.PoapFactory.contractInstance.address);
+      const deployment = loadDeployments(process.env.NEXT_PUBLIC_NETWORK as NetworkId ?? 'testnet');
+      if (!deployment.contracts.PoapFactoryV2) {
+        throw new Error('PoapFactoryV2 contract not found in deployments');
+      }
+      const factoryContract = PoapFactoryV2.at(deployment.contracts.PoapFactoryV2.contractInstance.address);
 
       // Convert strings to hex format
       const imageUri = stringToHex(imageString || imageUrl);
@@ -414,6 +417,7 @@ export default function NewEvent() {
           amountForChainFees: coverMintFees ? chainFees : 0n,
           isOpenPrice: isOpenPrice,
           hashedPassword: usePassword && password ? keccak256(password).toString('hex') : '00',
+          lockPresenceUntil: 0n
         },
         signer: signer,
         attoAlphAmount: calculateFinalAmount(coverMintFees ? chainFees : 0n, coverMintFees ? storageFees : 0n),

@@ -2,7 +2,7 @@
 
 import { addressFromContractId, ALPH_TOKEN_ID, contractIdFromAddress, DUST_AMOUNT, hexToString, MINIMAL_CONTRACT_DEPOSIT, NetworkId, number256ToNumber, stringToHex, waitForTxConfirmation, web3, hashMessage } from '@alephium/web3';
 import { useWallet } from '@alephium/web3-react';
-import { PoapFactory, PoapCollection, PoapFactoryTypes, PoapFactoryInstance, PoapCollectionInstance } from 'my-contracts';
+import { PoapFactoryV2, PoapCollectionV2, PoapFactoryV2Types, PoapFactoryV2Instance, PoapCollectionV2Instance } from 'my-contracts';
 import { loadDeployments } from 'my-contracts/deployments';
 import React, { useEffect, useState, useRef } from 'react';
 import Image from 'next/image';
@@ -80,8 +80,8 @@ export default function MintNFTSimple() {
   const { connectionStatus } = useWallet();
   const [quantity, setQuantity] = useState(1);
   const [contractId, setContractId] = useState<string | null>(null);
-  const [factoryContract, setFactoryContract] = useState<PoapFactoryInstance | null>(null);
-  const [poapCollection, setPoapCollection] = useState<PoapCollectionInstance | null>(null);
+  const [factoryContract, setFactoryContract] = useState<PoapFactoryV2Instance | null>(null);
+  const [poapCollection, setPoapCollection] = useState<PoapCollectionV2Instance | null>(null);
   const { account, signer } = useWallet();
   const [isMinting, setIsMinting] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -181,7 +181,10 @@ export default function MintNFTSimple() {
       undefined
     );
     const deployment = loadDeployments(process.env.NEXT_PUBLIC_NETWORK as NetworkId ?? 'testnet');
-    setFactoryContract(PoapFactory.at(deployment.contracts.PoapFactory.contractInstance.address));
+    if (!deployment.contracts.PoapFactoryV2) {
+      throw new Error('PoapFactoryV2 contract not found in deployments');
+    }
+    setFactoryContract(PoapFactoryV2.at(deployment.contracts.PoapFactoryV2.contractInstance.address));
 
 
     if (contractId) {
@@ -189,7 +192,7 @@ export default function MintNFTSimple() {
       setIsLoading(true);
       setError(null);
 
-      const collection = PoapCollection.at(collectionAddress);
+      const collection = PoapCollectionV2.at(collectionAddress);
       setPoapCollection(collection);
 
       collection.fetchState()
