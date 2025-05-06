@@ -2,7 +2,6 @@
 
 import React from 'react'
 import { AlephiumConnectButton, useWallet } from '@alephium/web3-react'
-import { tokenFaucetConfig } from '@/services/utils'
 import Navigation from '@/components/global/Navigation'
 import LandingLayout from "@/layouts/LandingLayout"
 import HeroOne from "@/components/heros/HeroOne"
