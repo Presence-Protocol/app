@@ -133,6 +133,7 @@ export default function NewEvent() {
   const [isPaidPoapTokenIdInfoOpen, setIsPaidPoapTokenIdInfoOpen] = useState(false);
   const [isPaidPoapInfoOpen, setIsPaidPoapInfoOpen] = useState(false);
   const [isOpenPrice, setIsOpenPrice] = useState(false);
+  const [lockPresenceUntil, setLockPresenceUntil] = useState('');
 
   const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
   const [selectedTemplate, setSelectedTemplate] = useState<TemplateType>('all event options');
@@ -417,7 +418,7 @@ export default function NewEvent() {
           amountForChainFees: coverMintFees ? chainFees : 0n,
           isOpenPrice: isOpenPrice,
           hashedPassword: usePassword && password ? keccak256(password).toString('hex') : '00',
-          lockPresenceUntil: 0n
+          lockPresenceUntil: lockPresenceUntil ? BigInt(new Date(lockPresenceUntil).getTime()) : 0n
         },
         signer: signer,
         attoAlphAmount: calculateFinalAmount(coverMintFees ? chainFees : 0n, coverMintFees ? storageFees : 0n),
@@ -468,6 +469,7 @@ export default function NewEvent() {
     setIsOpenPrice(false);
     setPassword('');
     setUsePassword(false);
+    setLockPresenceUntil('');
   }, []);
 
   useEffect(() => {
@@ -1010,6 +1012,23 @@ export default function NewEvent() {
                   aria-hidden="true"
                 />
               </button>
+            </div>
+          </div>
+
+          <div className="flex items-center text-left justify-between p-4 bg-white">
+          <div>
+              <h3 className="text-sm font-medium text-black">Lock Presence Until</h3>
+              <p className="text-xs text-gray-500">When user mint a Presence, it will be locked until this date</p>
+            </div>
+            <div className="items-center inline-flex">     
+              <input
+                id="lockPresenceUntil"
+                type="datetime-local"
+                placeholder="Lock Presence Until"
+                value={lockPresenceUntil}
+                onChange={(e) => setLockPresenceUntil(e.target.value)}
+                className="block w-full px-3 py-2 text-xl text-black border-2 border-black appearance-none placeholder-black focus:border-black focus:bg-lila-500 focus:outline-none focus:ring-black sm:text-sm rounded-2xl"
+              />
             </div>
           </div>
         </div>
