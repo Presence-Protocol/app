@@ -1015,22 +1015,25 @@ export default function NewEvent() {
             </div>
           </div>
 
-          <div className="flex items-center text-left justify-between p-4 bg-white">
-          <div>
-              <h3 className="text-sm font-medium text-black">Lock Presence Until</h3>
-              <p className="text-xs text-gray-500">When user mint a Presence, it will be locked until this date</p>
+          <div className="p-4 bg-white">
+            <div className="flex items-center justify-between">
+              <label className="text-sm font-medium text-black">Lock Presence Until</label>
+              
             </div>
-            <div className="items-center inline-flex">     
+            <p className="text-xs text-gray-500 mb-2">When user mint a Presence, it will be locked until this date</p>
+            <div className="items-center">     
               <input
                 id="lockPresenceUntil"
                 type="datetime-local"
                 placeholder="Lock Presence Until"
                 value={lockPresenceUntil}
                 onChange={(e) => setLockPresenceUntil(e.target.value)}
-                className="block w-full px-3 py-2 text-xl text-black border-2 border-black appearance-none placeholder-black focus:border-black focus:bg-lila-500 focus:outline-none focus:ring-black sm:text-sm rounded-2xl"
+                className={`block w-full px-3 py-3 text-xl text-black border-2 border-black appearance-none placeholder-black focus:border-black focus:bg-lila-500 focus:outline-none focus:ring-black sm:text-sm rounded-2xl`}
               />
             </div>
           </div>
+          
+
         </div>
       )}
     </div>
