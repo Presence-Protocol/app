@@ -252,10 +252,19 @@ export default function MintNFTSimple() {
           })
           .catch((error) => {
             // If V2 fails, try original PoapCollection
+            let factoryAddress = undefined
             if (!deployment.contracts.PoapFactory) {
-              throw new Error('PoapFactory contract not found in deployments');
+              console.error('PoapFactory contract not found in deployments, ');
+              factoryAddress = process.env.NEXT_PUBLIC_FACTORYV1_ADDRESS;
             }
-            setFactoryContract(PoapFactory.at(deployment.contracts.PoapFactory.contractInstance.address));
+            
+            if (!factoryAddress) {
+              throw new Error('PoapFactory not found. Set it with NEXT_PUBLIC_FACTORYV1_ADDRESS');
+            }
+
+            // Use a safe fallback address if PoapFactory is undefined
+            const poapFactoryAddress = deployment.contracts?.PoapFactory?.contractInstance?.address || factoryAddress || '';
+            setFactoryContract(PoapFactory.at(poapFactoryAddress));
 
             const collection = PoapCollection.at(collectionAddress);
             setPoapCollection(collection);
