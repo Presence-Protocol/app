@@ -6,7 +6,7 @@ import ExplorerHeader from './EventsHeader';
 import { useRouter } from 'next/navigation';
 import { addressFromContractId, hexToString, web3 } from '@alephium/web3';
 import EventSlider from '../nfts/EventSlider';
-import { PoapCollection } from 'my-contracts';
+import { PoapCollection, PoapCollectionV2 } from 'my-contracts';
 
 interface Event {
   contractId: string;
@@ -21,6 +21,7 @@ interface Event {
   eventDateEnd?: string;
   pricePoap?: bigint;
   isOpenPrice?: boolean;
+  lockPresenceUntil?: bigint;
 }
 
 interface EventMetadata {
@@ -66,9 +67,13 @@ export default function EventsSliders() {
 
         const eventsWithMetadata = await Promise.all(filteredEvents.map(async (event: Event) => {
           try {
-            const collection = PoapCollection.at(addressFromContractId(event.contractId));
-            const collectionMetadata = await collection.fetchState();
+            // Try PoapCollectionV2 first
+            const collectionV2 = PoapCollectionV2.at(addressFromContractId(event.contractId));
+            const collectionMetadata = await collectionV2.fetchState();
             
+            // Check if lockPresenceUntil exists in the contract state
+            const hasLockPresenceUntil = 'lockPresenceUntil' in collectionMetadata.fields;
+            console.log(collectionMetadata.fields);
             return {
               ...event,
               image: hexToString(collectionMetadata.fields.eventImage),
@@ -77,10 +82,26 @@ export default function EventsSliders() {
               eventDateEnd: new Date(Number(collectionMetadata.fields.eventEndAt)).toLocaleDateString(),
               pricePoap: collectionMetadata.fields.poapPrice,
               isOpenPrice: collectionMetadata.fields.isOpenPrice,
+              ...(hasLockPresenceUntil && { lockPresenceUntil: collectionMetadata.fields.lockPresenceUntil }),
             };
           } catch (error) {
-            console.error('Error fetching collection metadata:', error);
-            return event;
+            // If V2 fails, try original PoapCollection
+            try {
+              const collection = PoapCollection.at(addressFromContractId(event.contractId));
+              const collectionMetadata = await collection.fetchState();
+              return {
+                ...event,
+                image: hexToString(collectionMetadata.fields.eventImage),
+                description: hexToString(collectionMetadata.fields.description),
+                eventDateStart: new Date(Number(collectionMetadata.fields.eventStartAt)).toLocaleDateString(),
+                eventDateEnd: new Date(Number(collectionMetadata.fields.eventEndAt)).toLocaleDateString(),
+                pricePoap: collectionMetadata.fields.poapPrice,
+                isOpenPrice: collectionMetadata.fields.isOpenPrice,
+              };
+            } catch (innerError) {
+              console.error('Error fetching collection metadata:', innerError);
+              return event;
+            }
           }
         }));
 
