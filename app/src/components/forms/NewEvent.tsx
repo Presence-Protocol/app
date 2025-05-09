@@ -375,7 +375,10 @@ export default function NewEvent() {
       const mintEndAt = BigInt(new Date(endDate).getTime());
 
       // Initialize contract
-      const deployment = loadDeployments( process.env.NEXT_PUBLIC_NETWORK as NetworkId ?? 'testnet'); // TODO use getNetwork()
+      const deployment = loadDeployments(process.env.NEXT_PUBLIC_NETWORK as NetworkId ?? 'testnet');
+      if (!deployment.contracts.PoapFactory) {
+        throw new Error('PoapFactory contract not found in deployments');
+      }
       const factoryContract = PoapFactory.at(deployment.contracts.PoapFactory.contractInstance.address);
 
       // Convert strings to hex format

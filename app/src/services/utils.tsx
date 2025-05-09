@@ -31,10 +31,13 @@ function getNetwork(): NetworkId {
 
 function getTokenFaucetConfig(): TokenFaucetConfig {
   const network = getNetwork()
-  const tokenFaucet = loadDeployments(network).contracts.PoapFactory.contractInstance
-  const groupIndex = tokenFaucet.groupIndex
-  const tokenFaucetAddress = tokenFaucet.address
-  const faucetTokenId = tokenFaucet.contractId
+  const tokenFaucet = loadDeployments(network).contracts.PoapFactory?.contractInstance
+  
+  // Add null checks to handle potentially undefined values
+  const groupIndex = tokenFaucet?.groupIndex ?? 0
+  const tokenFaucetAddress = tokenFaucet?.address ?? ''
+  const faucetTokenId = tokenFaucet?.contractId ?? ''
+  
   return { network, groupIndex, tokenFaucetAddress, faucetTokenId }
 }
 
