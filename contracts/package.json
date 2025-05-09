@@ -22,7 +22,8 @@
     "deploy": "npx cli deploy",
     "lint": "eslint . --ext ts",
     "lint:fix": "eslint . --fix --ext ts",
-    "test": "jest -i --config ./jest-config.json"
+    "test": "jest -i --config ./jest-config.json",
+    "withdraw": "tsc actions/withdraw.ts && node actions/withdraw.js"
   },
   "dependencies": {
     "@alephium/cli": "^1.11.6",
