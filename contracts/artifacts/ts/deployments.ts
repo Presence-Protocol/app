@@ -8,7 +8,7 @@ import {
   NetworkId,
 } from "@alephium/web3";
 import {
-  PoapNFT,
+  PoapNFTV2,
   PoapNFTInstance,
   PoapCollection,
   PoapCollectionInstance,
@@ -44,7 +44,7 @@ function toDeployments(json: any): Deployments {
         ? undefined
         : {
             ...json.contracts["PoapNFT"],
-            contractInstance: PoapNFT.at(
+            contractInstance: PoapNFTV2.at(
               json.contracts["PoapNFT"].contractInstance.address
             ),
           },

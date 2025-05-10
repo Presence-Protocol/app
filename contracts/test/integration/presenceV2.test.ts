@@ -1,7 +1,7 @@
 import { web3, DUST_AMOUNT, stringToHex, MINIMAL_CONTRACT_DEPOSIT, addressFromContractId, hexToString, ONE_ALPH, ALPH_TOKEN_ID, number256ToBigint, NULL_CONTRACT_ADDRESS, ZERO_ADDRESS, TransactionBuilder, sleep } from '@alephium/web3'
 import { expectAssertionError, mintToken, testNodeWallet, transfer } from '@alephium/web3-test'
 import { deployToDevnet } from '@alephium/cli'
-import { PoapNFT, PoapFactoryV2, PoapCollectionV2 } from '../../artifacts/ts'
+import { PoapNFTV2, PoapFactoryV2, PoapCollectionV2 } from '../../artifacts/ts'
 import { PrivateKeyWallet } from '@alephium/web3-wallet'
 import { alphBalanceOf, balanceOf, getCollectionPath, getRandomSigner, loadSvg, transferAlphTo, transferTokenTo } from '../utils'
 import keccak256 from 'keccak256';
@@ -173,13 +173,13 @@ describe('integration tests', () => {
     expect((await collection.view.totalSupply()).returns).toBe(2n)
 
     // get Poap    
-    const poap = PoapNFT.at(addressFromContractId((await collection.view.nftByIndex({ args: { index: 0n } })).returns))
+    const poap = PoapNFTV2.at(addressFromContractId((await collection.view.nftByIndex({ args: { index: 0n } })).returns))
     const poapState = await poap.fetchState()
     expect(hexToString(poapState.fields.eventName)).toBe('Test 1')
 
-    expect((await poap.view.getTraits()).returns.length).toBe(8)
+    expect((await poap.view.getTraits()).returns.length).toBe(9)
 
-    expect(hexToString((await poap.view.getTokenUri()).returns)).toBe("data:application/json,{\"name\": \"Test 1\",\"image\": \"https://arweave.net/Z1HAdT_PGnxPLct4-u7l1Zl_h4DNdxzKev7tCDAEflc\", \"attributes\": [{\"trait_type\": \"Event Name\", \"value\": \"Test 1\"}, {\"trait_type\": \"Description\", \"value\": \"First poap test\"}, {\"trait_type\": \"Organizer\", \"value\": \"00bee85f379545a2ed9f6cceb331288842f378cf0f04012ad4ac8824aae7d6f80a\"}, {\"trait_type\": \"Location\", \"value\": \"Online\"}, {\"trait_type\": \"Event Start At\", \"value\": 1735823531000}, {\"trait_type\": \"Event End At\", \"value\": 1735823531000},{\"trait_type\": \"Has Particpated\", \"value\": false}]}")
+    expect(hexToString((await poap.view.getTokenUri()).returns)).toBe("data:application/json,{\"name\": \"Test 1\",\"image\": \"https://arweave.net/Z1HAdT_PGnxPLct4-u7l1Zl_h4DNdxzKev7tCDAEflc\", \"attributes\": [{\"trait_type\": \"Event Name\", \"value\": \"Test 1\"}, {\"trait_type\": \"Description\", \"value\": \"First poap test\"}, {\"trait_type\": \"Organizer\", \"value\": \"00bee85f379545a2ed9f6cceb331288842f378cf0f04012ad4ac8824aae7d6f80a\"}, {\"trait_type\": \"Location\", \"value\": \"Online\"}, {\"trait_type\": \"Event Start At\", \"value\": 1735823531000}, {\"trait_type\": \"Event End At\", \"value\": 1735823531000},{\"trait_type\": \"Has Particpated\", \"value\": false}, {\"trait_type\": \"Locked Until\", \"value\": 0}]}")
 
   }, 20000)
 
@@ -274,13 +274,13 @@ describe('integration tests', () => {
     expect((await collection.view.totalSupply()).returns).toBe(2n)
 
     // get Poap    
-    const poap = PoapNFT.at(addressFromContractId((await collection.view.nftByIndex({ args: { index: 0n } })).returns))
+    const poap = PoapNFTV2.at(addressFromContractId((await collection.view.nftByIndex({ args: { index: 0n } })).returns))
     const poapState = await poap.fetchState()
     expect(hexToString(poapState.fields.eventName)).toBe('Test 1')
 
-    expect((await poap.view.getTraits()).returns.length).toBe(8)
+    expect((await poap.view.getTraits()).returns.length).toBe(9)
 
-    expect(hexToString((await poap.view.getTokenUri()).returns)).toBe("data:application/json,{\"name\": \"Test 1\",\"image\": \"https://arweave.net/Z1HAdT_PGnxPLct4-u7l1Zl_h4DNdxzKev7tCDAEflc\", \"attributes\": [{\"trait_type\": \"Event Name\", \"value\": \"Test 1\"}, {\"trait_type\": \"Description\", \"value\": \"First poap test\"}, {\"trait_type\": \"Organizer\", \"value\": \"00bee85f379545a2ed9f6cceb331288842f378cf0f04012ad4ac8824aae7d6f80a\"}, {\"trait_type\": \"Location\", \"value\": \"Online\"}, {\"trait_type\": \"Event Start At\", \"value\": 1735823531000}, {\"trait_type\": \"Event End At\", \"value\": 1735823531000},{\"trait_type\": \"Has Particpated\", \"value\": false}]}")
+    expect(hexToString((await poap.view.getTokenUri()).returns)).toBe("data:application/json,{\"name\": \"Test 1\",\"image\": \"https://arweave.net/Z1HAdT_PGnxPLct4-u7l1Zl_h4DNdxzKev7tCDAEflc\", \"attributes\": [{\"trait_type\": \"Event Name\", \"value\": \"Test 1\"}, {\"trait_type\": \"Description\", \"value\": \"First poap test\"}, {\"trait_type\": \"Organizer\", \"value\": \"00bee85f379545a2ed9f6cceb331288842f378cf0f04012ad4ac8824aae7d6f80a\"}, {\"trait_type\": \"Location\", \"value\": \"Online\"}, {\"trait_type\": \"Event Start At\", \"value\": 1735823531000}, {\"trait_type\": \"Event End At\", \"value\": 1735823531000},{\"trait_type\": \"Has Particpated\", \"value\": false}, {\"trait_type\": \"Locked Until\", \"value\": 0}]}")
 
   }, 20000)
   it('Mint poap trough Factory with SVG', async () => {
@@ -367,11 +367,11 @@ describe('integration tests', () => {
     expect((await collection.view.totalSupply()).returns).toBe(2n)
 
     // get Poap    
-    const poap = PoapNFT.at(addressFromContractId((await collection.view.nftByIndex({ args: { index: 0n } })).returns))
+    const poap = PoapNFTV2.at(addressFromContractId((await collection.view.nftByIndex({ args: { index: 0n } })).returns))
     const poapState = await poap.fetchState()
     expect(hexToString(poapState.fields.eventName)).toBe('Test 1')
 
-    expect((await poap.view.getTraits()).returns.length).toBe(8)
+    expect((await poap.view.getTraits()).returns.length).toBe(9)
     expect(hexToString(poapState.fields.eventImage)).toBe(svg)
     expect(hexToString((await poap.view.getTokenUri()).returns)).not.toBe('https://fjfjf.com/afjhd')
 
@@ -444,11 +444,11 @@ describe('integration tests', () => {
     expect((await collection.view.totalSupply()).returns).toBe(1n)
 
     // get Poap    
-    const poap = PoapNFT.at(addressFromContractId((await collection.view.nftByIndex({ args: { index: 0n } })).returns))
+    const poap = PoapNFTV2.at(addressFromContractId((await collection.view.nftByIndex({ args: { index: 0n } })).returns))
     const poapState = await poap.fetchState()
     expect(hexToString(poapState.fields.eventName)).toBe('Test 1')
 
-    expect((await poap.view.getTraits()).returns.length).toBe(8)
+    expect((await poap.view.getTraits()).returns.length).toBe(9)
 
   }, 20000)
 
@@ -561,11 +561,11 @@ describe('integration tests', () => {
     })).rejects.toThrowError()
 
     // get Poap    
-    const poap = PoapNFT.at(addressFromContractId((await collection.view.nftByIndex({ args: { index: 0n } })).returns))
+    const poap = PoapNFTV2.at(addressFromContractId((await collection.view.nftByIndex({ args: { index: 0n } })).returns))
     const poapState = await poap.fetchState()
     expect(hexToString(poapState.fields.eventName)).toBe('Test 1')
 
-    expect((await poap.view.getTraits()).returns.length).toBe(8)
+    expect((await poap.view.getTraits()).returns.length).toBe(9)
 
   }, 20000)
 
@@ -1117,7 +1117,7 @@ describe('integration tests', () => {
     }), addressFromContractId(poapCollectionMinted), 6)
 
     // get Poap    
-    const poap = PoapNFT.at(addressFromContractId((await collection.view.nftByIndex({ args: { index: 0n } })).returns))
+    const poap = PoapNFTV2.at(addressFromContractId((await collection.view.nftByIndex({ args: { index: 0n } })).returns))
     await poap.transact.burn({
       signer: minter,
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT
@@ -1193,7 +1193,7 @@ describe('integration tests', () => {
     expect((await collection.view.totalSupply()).returns).toBe(1n)
 
     // get Poap    
-    const poap = PoapNFT.at(addressFromContractId((await collection.view.nftByIndex({ args: { index: 0n } })).returns))
+    const poap = PoapNFTV2.at(addressFromContractId((await collection.view.nftByIndex({ args: { index: 0n } })).returns))
 
     await expectAssertionError(poap.transact.burn({
       signer: minter,
@@ -2212,10 +2212,10 @@ describe('integration tests', () => {
     })
 
     // get Poap    
-    const poap = PoapNFT.at(addressFromContractId((await collection.view.nftByIndex({ args: { index: 0n } })).returns))
+    const poap = PoapNFTV2.at(addressFromContractId((await collection.view.nftByIndex({ args: { index: 0n } })).returns))
     let poapState = await poap.fetchState()
     expect(hexToString(poapState.fields.eventName)).toBe('Test 1')
-    expect((await poap.view.getTraits()).returns.length).toBe(8)
+    expect((await poap.view.getTraits()).returns.length).toBe(9)
     expect(hexToString((await poap.view.getTraitAtIndex({
       args: {
         index: 7n
@@ -2254,10 +2254,10 @@ describe('integration tests', () => {
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT
     })
 
-    const poap2 = PoapNFT.at(addressFromContractId((await collection.view.nftByIndex({ args: { index: 1n } })).returns))
+    const poap2 = PoapNFTV2.at(addressFromContractId((await collection.view.nftByIndex({ args: { index: 1n } })).returns))
     let poapState2 = await poap2.fetchState()
     expect(hexToString(poapState2.fields.eventName)).toBe('Test 1')
-    expect((await poap2.view.getTraits()).returns.length).toBe(8)
+    expect((await poap2.view.getTraits()).returns.length).toBe(9)
     expect(hexToString((await poap2.view.getTraitAtIndex({
       args: {
         index: 7n
@@ -2305,7 +2305,7 @@ describe('integration tests', () => {
       })
       , collection.address, 7)
 
-    const poap3 = PoapNFT.at(addressFromContractId((await collection.view.nftByIndex({ args: { index: 1n } })).returns))
+    const poap3 = PoapNFTV2.at(addressFromContractId((await collection.view.nftByIndex({ args: { index: 1n } })).returns))
     expect(
       poap3.transact.setParticipated({
         signer: minter,
@@ -2392,10 +2392,10 @@ describe('integration tests', () => {
 
 
     // get Poap    
-    const poap = PoapNFT.at(addressFromContractId((await collection.view.nftByIndex({ args: { index: 0n } })).returns))
+    const poap = PoapNFTV2.at(addressFromContractId((await collection.view.nftByIndex({ args: { index: 0n } })).returns))
     let poapState = await poap.fetchState()
     expect(hexToString(poapState.fields.eventName)).toBe('Test 1')
-    expect((await poap.view.getTraits()).returns.length).toBe(8)
+    expect((await poap.view.getTraits()).returns.length).toBe(9)
     expect(hexToString((await poap.view.getTraitAtIndex({
       args: {
         index: 7n
@@ -2434,10 +2434,10 @@ describe('integration tests', () => {
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT
     })
 
-    const poap2 = PoapNFT.at(addressFromContractId((await collection.view.nftByIndex({ args: { index: 1n } })).returns))
+    const poap2 = PoapNFTV2.at(addressFromContractId((await collection.view.nftByIndex({ args: { index: 1n } })).returns))
     let poapState2 = await poap2.fetchState()
     expect(hexToString(poapState2.fields.eventName)).toBe('Test 1')
-    expect((await poap2.view.getTraits()).returns.length).toBe(8)
+    expect((await poap2.view.getTraits()).returns.length).toBe(9)
     expect(hexToString((await poap2.view.getTraitAtIndex({
       args: {
         index: 7n
@@ -2488,7 +2488,7 @@ describe('integration tests', () => {
       })
       , collection.address, 7)
 
-    const poap3 = PoapNFT.at(addressFromContractId((await collection.view.nftByIndex({ args: { index: 1n } })).returns))
+    const poap3 = PoapNFTV2.at(addressFromContractId((await collection.view.nftByIndex({ args: { index: 1n } })).returns))
     expect(
       poap3.transact.setParticipated({
         signer: minter,
@@ -2563,14 +2563,14 @@ describe('integration tests', () => {
     })
 
     // get Poap for minter  
-    const poap = PoapNFT.at(addressFromContractId((await collection.view.nftByAddress({
+    const poap = PoapNFTV2.at(addressFromContractId((await collection.view.nftByAddress({
       args: {
         caller: minter.address
       }
     })).returns))
     let poapState = await poap.fetchState()
     expect(hexToString(poapState.fields.eventName)).toBe('Test 1')
-    expect((await poap.view.getTraits()).returns.length).toBe(8)
+    expect((await poap.view.getTraits()).returns.length).toBe(9)
     expect(hexToString((await poap.view.getTraitAtIndex({
       args: {
         index: 7n
@@ -2609,14 +2609,14 @@ describe('integration tests', () => {
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT
     })
 
-    const poap2 = PoapNFT.at(addressFromContractId((await collection.view.nftByAddress({
+    const poap2 = PoapNFTV2.at(addressFromContractId((await collection.view.nftByAddress({
       args: {
         caller: minter2.address
       }
     })).returns))
     let poapState2 = await poap2.fetchState()
     expect(hexToString(poapState2.fields.eventName)).toBe('Test 1')
-    expect((await poap2.view.getTraits()).returns.length).toBe(8)
+    expect((await poap2.view.getTraits()).returns.length).toBe(9)
     expect(hexToString((await poap2.view.getTraitAtIndex({
       args: {
         index: 7n
@@ -2740,14 +2740,14 @@ describe('integration tests', () => {
     })
 
     // get Poap for minter  
-    const poap = PoapNFT.at(addressFromContractId((await collection.view.nftByAddress({
+    const poap = PoapNFTV2.at(addressFromContractId((await collection.view.nftByAddress({
       args: {
         caller: minter.address
       }
     })).returns))
     let poapState = await poap.fetchState()
     expect(hexToString(poapState.fields.eventName)).toBe('Test 1')
-    expect((await poap.view.getTraits()).returns.length).toBe(8)
+    expect((await poap.view.getTraits()).returns.length).toBe(9)
     expect(hexToString((await poap.view.getTraitAtIndex({
       args: {
         index: 7n
@@ -2787,14 +2787,14 @@ describe('integration tests', () => {
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT
     })
 
-    const poap2 = PoapNFT.at(addressFromContractId((await collection.view.nftByAddress({
+    const poap2 = PoapNFTV2.at(addressFromContractId((await collection.view.nftByAddress({
       args: {
         caller: minter2.address
       }
     })).returns))
     let poapState2 = await poap2.fetchState()
     expect(hexToString(poapState2.fields.eventName)).toBe('Test 1')
-    expect((await poap2.view.getTraits()).returns.length).toBe(8)
+    expect((await poap2.view.getTraits()).returns.length).toBe(9)
     expect(hexToString((await poap2.view.getTraitAtIndex({
       args: {
         index: 7n
@@ -2966,11 +2966,11 @@ describe('integration tests', () => {
     })
 
     // get Poap    
-    const poap = PoapNFT.at(addressFromContractId((await collection.view.nftByIndex({ args: { index: 0n } })).returns))
+    const poap = PoapNFTV2.at(addressFromContractId((await collection.view.nftByIndex({ args: { index: 0n } })).returns))
     const poapState = await poap.fetchState()
     expect(hexToString(poapState.fields.eventName)).toBe('Test 1')
 
-    expect((await poap.view.getTraits()).returns.length).toBe(8)
+    expect((await poap.view.getTraits()).returns.length).toBe(9)
 
   }, 20000)
 
@@ -3143,11 +3143,11 @@ describe('integration tests', () => {
       }), collection.address, 9)
 
     // get Poap    
-    const poap = PoapNFT.at(addressFromContractId((await collection.view.nftByIndex({ args: { index: 0n } })).returns))
+    const poap = PoapNFTV2.at(addressFromContractId((await collection.view.nftByIndex({ args: { index: 0n } })).returns))
     const poapState = await poap.fetchState()
     expect(hexToString(poapState.fields.eventName)).toBe('Test 1')
 
-    expect((await poap.view.getTraits()).returns.length).toBe(8)
+    expect((await poap.view.getTraits()).returns.length).toBe(9)
 
     await collection.transact.withdrawChainFees({
       args: {
@@ -3298,13 +3298,13 @@ describe('integration tests', () => {
 
 
     // get Poap    
-    const poap = PoapNFT.at(addressFromContractId((await collection.view.nftByIndex({ args: { index: 0n } })).returns))
+    const poap = PoapNFTV2.at(addressFromContractId((await collection.view.nftByIndex({ args: { index: 0n } })).returns))
     const poapState = await poap.fetchState()
     expect(hexToString(poapState.fields.eventName)).toBe('Test 1')
 
-    expect((await poap.view.getTraits()).returns.length).toBe(8)
+    expect((await poap.view.getTraits()).returns.length).toBe(9)
 
-    expect(hexToString((await poap.view.getTokenUri()).returns)).toBe("data:application/json,{\"name\": \"Test 1\",\"image\": \"https://arweave.net/Z1HAdT_PGnxPLct4-u7l1Zl_h4DNdxzKev7tCDAEflc\", \"attributes\": [{\"trait_type\": \"Event Name\", \"value\": \"Test 1\"}, {\"trait_type\": \"Description\", \"value\": \"First poap test\"}, {\"trait_type\": \"Organizer\", \"value\": \"00bee85f379545a2ed9f6cceb331288842f378cf0f04012ad4ac8824aae7d6f80a\"}, {\"trait_type\": \"Location\", \"value\": \"Online\"}, {\"trait_type\": \"Event Start At\", \"value\": 1735823531000}, {\"trait_type\": \"Event End At\", \"value\": 1735823531000},{\"trait_type\": \"Has Particpated\", \"value\": false}]}")
+    expect(hexToString((await poap.view.getTokenUri()).returns)).toBe(`data:application/json,{\"name\": \"Test 1\",\"image\": \"https://arweave.net/Z1HAdT_PGnxPLct4-u7l1Zl_h4DNdxzKev7tCDAEflc\", \"attributes\": [{\"trait_type\": \"Event Name\", \"value\": \"Test 1\"}, {\"trait_type\": \"Description\", \"value\": \"First poap test\"}, {\"trait_type\": \"Organizer\", \"value\": \"00bee85f379545a2ed9f6cceb331288842f378cf0f04012ad4ac8824aae7d6f80a\"}, {\"trait_type\": \"Location\", \"value\": \"Online\"}, {\"trait_type\": \"Event Start At\", \"value\": 1735823531000}, {\"trait_type\": \"Event End At\", \"value\": 1735823531000},{\"trait_type\": \"Has Particpated\", \"value\": false}, {\"trait_type\": \"Locked Until\", \"value\": ${now + 86400n * 1000n } }]}`)
 
   }, 20000)
 
@@ -3402,7 +3402,7 @@ describe('integration tests', () => {
       minter.publicKey
     )).rejects.toThrowError('Not enough balance')
 
-    await sleep(8 * 1000)
+    await sleep(10 * 1000)
 
     let poapBalance = await balanceOf(minter.address, nftId)
     expect(poapBalance.amount).toBe("1")
@@ -3433,13 +3433,13 @@ describe('integration tests', () => {
     expect(poapBalance.amount).toBe(0n)
 
     // get Poap    
-    const poap = PoapNFT.at(addressFromContractId((await collection.view.nftByIndex({ args: { index: 0n } })).returns))
+    const poap = PoapNFTV2.at(addressFromContractId((await collection.view.nftByIndex({ args: { index: 0n } })).returns))
     const poapState = await poap.fetchState()
     expect(hexToString(poapState.fields.eventName)).toBe('Test 1')
 
-    expect((await poap.view.getTraits()).returns.length).toBe(8)
+    expect((await poap.view.getTraits()).returns.length).toBe(9)
 
-    expect(hexToString((await poap.view.getTokenUri()).returns)).toBe("data:application/json,{\"name\": \"Test 1\",\"image\": \"https://arweave.net/Z1HAdT_PGnxPLct4-u7l1Zl_h4DNdxzKev7tCDAEflc\", \"attributes\": [{\"trait_type\": \"Event Name\", \"value\": \"Test 1\"}, {\"trait_type\": \"Description\", \"value\": \"First poap test\"}, {\"trait_type\": \"Organizer\", \"value\": \"00bee85f379545a2ed9f6cceb331288842f378cf0f04012ad4ac8824aae7d6f80a\"}, {\"trait_type\": \"Location\", \"value\": \"Online\"}, {\"trait_type\": \"Event Start At\", \"value\": 1735823531000}, {\"trait_type\": \"Event End At\", \"value\": 1735823531000},{\"trait_type\": \"Has Particpated\", \"value\": false}]}")
+    expect(hexToString((await poap.view.getTokenUri()).returns)).toBe(`data:application/json,{\"name\": \"Test 1\",\"image\": \"https://arweave.net/Z1HAdT_PGnxPLct4-u7l1Zl_h4DNdxzKev7tCDAEflc\", \"attributes\": [{\"trait_type\": \"Event Name\", \"value\": \"Test 1\"}, {\"trait_type\": \"Description\", \"value\": \"First poap test\"}, {\"trait_type\": \"Organizer\", \"value\": \"00bee85f379545a2ed9f6cceb331288842f378cf0f04012ad4ac8824aae7d6f80a\"}, {\"trait_type\": \"Location\", \"value\": \"Online\"}, {\"trait_type\": \"Event Start At\", \"value\": 1735823531000}, {\"trait_type\": \"Event End At\", \"value\": 1735823531000},{\"trait_type\": \"Has Particpated\", \"value\": false}, {\"trait_type\": \"Lock Presence Until\", \"value\": ${now + 8n * 1000n} }]}`)
 
   }, 30000)
 
