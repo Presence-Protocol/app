@@ -44,10 +44,10 @@ export namespace PoapSerieCollectionV2Types {
     nftTemplateId: HexString;
     poapDataTemplateId: HexString;
     organizer: Address;
+    isPublicCollection: boolean;
     collectionImage: HexString;
     collectionName: HexString;
     collectionDescription: HexString;
-    collectionOrganizer: Address;
     totalSupply: bigint;
     totalSupplySeries: bigint;
   };
@@ -158,6 +158,10 @@ export namespace PoapSerieCollectionV2Types {
     getOrganizer: {
       params: Omit<CallContractParams<{}>, "args">;
       result: CallContractResult<Address>;
+    };
+    isCollectionPublic: {
+      params: Omit<CallContractParams<{}>, "args">;
+      result: CallContractResult<boolean>;
     };
   }
   export type CallMethodParams<T extends keyof CallMethodTable> =
@@ -283,6 +287,10 @@ export namespace PoapSerieCollectionV2Types {
       result: SignExecuteScriptTxResult;
     };
     getOrganizer: {
+      params: Omit<SignExecuteContractMethodParams<{}>, "args">;
+      result: SignExecuteScriptTxResult;
+    };
+    isCollectionPublic: {
       params: Omit<SignExecuteContractMethodParams<{}>, "args">;
       result: SignExecuteScriptTxResult;
     };
@@ -518,6 +526,25 @@ class Factory extends ContractFactory<
     > => {
       return testMethod(this, "getOrganizer", params, getContractByCodeHash);
     },
+    isCollectionPublic: async (
+      params: Omit<
+        TestContractParams<
+          PoapSerieCollectionV2Types.Fields,
+          never,
+          PoapSerieCollectionV2Types.Maps
+        >,
+        "testArgs"
+      >
+    ): Promise<
+      TestContractResult<boolean, PoapSerieCollectionV2Types.Maps>
+    > => {
+      return testMethod(
+        this,
+        "isCollectionPublic",
+        params,
+        getContractByCodeHash
+      );
+    },
   };
 
   stateForTest(
@@ -534,8 +561,8 @@ class Factory extends ContractFactory<
 export const PoapSerieCollectionV2 = new Factory(
   Contract.fromJson(
     PoapSerieCollectionV2ContractJson,
-    "=30-2+69=2-2+ee=2+3=1-1=2-2+7=2-2=1+b7=1+4f=1+4=3-2=2-2+88=2-2+96=1458-2+41=202+7a7e0214696e73657274206174206d617020706174683a2000=1148",
-    "fe29664407235ec6ea40fda2dac15eac35b6097b40be45c706162a68b1b25ab8",
+    "=30-2+69=2-2+ee=2+3=1-1=2-1+7444=1+7=2-1+f=2+5=1-1=3-2+88=2+9=1-1=2-2+a=1-3=1458-2+41=202+7a7e0214696e73657274206174206d617020706174683a2000=1176",
+    "07b512e4056c5fc28efa5c232cc13d594ab2c38021dcad3a86cf37d5e86e5139",
     AllStructs
   )
 );
@@ -798,6 +825,19 @@ export class PoapSerieCollectionV2Instance extends ContractInstance {
         getContractByCodeHash
       );
     },
+    isCollectionPublic: async (
+      params?: PoapSerieCollectionV2Types.CallMethodParams<"isCollectionPublic">
+    ): Promise<
+      PoapSerieCollectionV2Types.CallMethodResult<"isCollectionPublic">
+    > => {
+      return callMethod(
+        PoapSerieCollectionV2,
+        this,
+        "isCollectionPublic",
+        params === undefined ? {} : params,
+        getContractByCodeHash
+      );
+    },
   };
 
   transact = {
@@ -966,6 +1006,18 @@ export class PoapSerieCollectionV2Instance extends ContractInstance {
         PoapSerieCollectionV2,
         this,
         "getOrganizer",
+        params
+      );
+    },
+    isCollectionPublic: async (
+      params: PoapSerieCollectionV2Types.SignExecuteMethodParams<"isCollectionPublic">
+    ): Promise<
+      PoapSerieCollectionV2Types.SignExecuteMethodResult<"isCollectionPublic">
+    > => {
+      return signExecuteMethod(
+        PoapSerieCollectionV2,
+        this,
+        "isCollectionPublic",
         params
       );
     },

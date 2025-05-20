@@ -5,6 +5,7 @@ Contract PoapSerieCollectionV2(
     organizer: Address,
 
     //event properties
+    isPublicCollection: Bool,
     collectionImage: ByteVec,
     collectionName: ByteVec,
     collectionDescription: ByteVec,
@@ -134,7 +135,7 @@ Contract PoapSerieCollectionV2(
     hashedPassword: ByteVec
     ) -> (){
       let caller = callerAddress!()
-      checkCaller!(caller == collectionOrganizer, ErrorCodes.InvalidCaller)
+      checkCaller!(caller == organizer, ErrorCodes.InvalidCaller)
 
       let (initialImmState, initialMutState) = PoapData.encodeFields!(
         selfContractId!(),
@@ -150,7 +151,7 @@ Contract PoapSerieCollectionV2(
         eventImage,
         eventName,
         description,
-        collectionOrganizer,
+        organizer,
         location,
         eventStartAt,
         eventEndAt,
@@ -181,7 +182,7 @@ Contract PoapSerieCollectionV2(
 
       let caller = callerAddress!()
      
-      checkCaller!(caller == collectionOrganizer, ErrorCodes.InvalidCaller)
+      checkCaller!(caller == organizer, ErrorCodes.InvalidCaller)
       let poapContractId = subContractId!(toByteVec!(nftIndex))
   
 
@@ -192,7 +193,7 @@ Contract PoapSerieCollectionV2(
 
       if(airdropWhenHasParticipated){
         let minter = PoapNFTSerieV2(poapContractId).getMinter()
-        eventData.sendAirdrop{collectionOrganizer -> ALPH: dustAmount!()}(minter)
+        eventData.sendAirdrop{organizer -> ALPH: dustAmount!()}(minter)
       }
 
       emit PoapParticipated(caller, nftIndex, presenceAddressValidate)
@@ -248,7 +249,7 @@ Contract PoapSerieCollectionV2(
 
     @using(preserveCaller = true)
     pub fn claimFunds(eventId: U256, amountToClaim: U256) -> () {
-        checkCaller!(callerAddress!() == collectionOrganizer, ErrorCodes.InvalidCaller)
+        checkCaller!(callerAddress!() == organizer, ErrorCodes.InvalidCaller)
 
         assert!(nftMetadata.contains!(eventId), ErrorCodes.IncorrectEventIndex)
         nftMetadata[eventId].claimFunds(amountToClaim)
@@ -257,7 +258,7 @@ Contract PoapSerieCollectionV2(
 
     @using(preserveCaller = true)
     pub fn withdrawStorageFees(eventId: U256, amount: U256) -> () {
-        checkCaller!(callerAddress!() == collectionOrganizer, ErrorCodes.InvalidCaller)
+        checkCaller!(callerAddress!() == organizer, ErrorCodes.InvalidCaller)
         
         assert!(nftMetadata.contains!(eventId), ErrorCodes.IncorrectEventIndex)
         nftMetadata[eventId].withdrawStorageFees(amount)
@@ -265,7 +266,7 @@ Contract PoapSerieCollectionV2(
 
     @using(preserveCaller = true)
     pub fn withdrawChainFees(eventId: U256, amount: U256) -> () {
-        checkCaller!(callerAddress!() == collectionOrganizer, ErrorCodes.InvalidCaller)
+        checkCaller!(callerAddress!() == organizer, ErrorCodes.InvalidCaller)
         
         assert!(nftMetadata.contains!(eventId), ErrorCodes.IncorrectEventIndex)
         nftMetadata[eventId].withdrawChainFees(amount)
@@ -274,7 +275,7 @@ Contract PoapSerieCollectionV2(
 
     @using(preserveCaller = true, preapprovedAssets = true)
     pub fn depositStorageFees(eventId: U256, amount: U256) -> () {
-        checkCaller!(callerAddress!() == collectionOrganizer, ErrorCodes.InvalidCaller)
+        checkCaller!(callerAddress!() == organizer, ErrorCodes.InvalidCaller)
         
         assert!(nftMetadata.contains!(eventId), ErrorCodes.IncorrectEventIndex)
         nftMetadata[eventId].depositStorageFees{callerAddress!() -> ALPH: amount}(amount)
@@ -282,7 +283,7 @@ Contract PoapSerieCollectionV2(
 
     @using(preserveCaller = true, preapprovedAssets = true)
     pub fn depositChainFees(eventId: U256, amount: U256) -> () {
-        checkCaller!(callerAddress!() == collectionOrganizer, ErrorCodes.InvalidCaller)
+        checkCaller!(callerAddress!() == organizer, ErrorCodes.InvalidCaller)
         
         assert!(nftMetadata.contains!(eventId), ErrorCodes.IncorrectEventIndex)
         nftMetadata[eventId].depositChainFees{callerAddress!() -> ALPH: amount}(amount)
@@ -290,7 +291,7 @@ Contract PoapSerieCollectionV2(
 
     @using(preserveCaller = true)
     pub fn withdrawAirdrop(eventId: U256, amount: U256) -> () {
-        checkCaller!(callerAddress!() == collectionOrganizer, ErrorCodes.InvalidCaller)
+        checkCaller!(callerAddress!() == organizer, ErrorCodes.InvalidCaller)
 
         assert!(nftMetadata.contains!(eventId), ErrorCodes.IncorrectEventIndex)
         nftMetadata[eventId].withdrawAirdrop(amount)
@@ -299,6 +300,9 @@ Contract PoapSerieCollectionV2(
 
     pub fn getOrganizer() -> (Address){
       return organizer
+    }
+    pub fn isCollectionPublic() -> (Bool){
+      return isPublicCollection
     }
 
 }

@@ -7,7 +7,7 @@ Contract PoapFactoryV2(
     mut numMintedCollection: U256
 ){
 
-    event EventCreated(contractId: ByteVec, eventName: ByteVec, organizer: Address, isPublic: Bool, timestamp: U256)
+    event EventCreated(contractId: ByteVec, eventName: ByteVec, organizer: Address, isPublic: Bool, timestamp: U256, isSeries: Bool)
     event PoapMinted(contractId: ByteVec, collectionId: PoapCollectionV2, nftIndex: U256 ,caller: Address, isPublic: Bool, timestamp: U256)
     event PoapParticipatedIn(organizerAddress: Address, collectionId: PoapCollectionV2, nftIndex: U256, presenceAddressValidate: Address)
 
@@ -92,7 +92,7 @@ Contract PoapFactoryV2(
             )
 
             numMintedCollection = numMintedCollection + 1
-            emit EventCreated(contractId, eventName, caller, isPublic, blockTimeStamp!())
+            emit EventCreated(contractId, eventName, caller, isPublic, blockTimeStamp!(), false)
 
             return contractId
         
@@ -102,8 +102,9 @@ Contract PoapFactoryV2(
         pub fn mintNewCollectionWithSerie(
             eventImage: ByteVec,
             eventName: ByteVec,
-            description: ByteVec
-        ) -> (){
+            description: ByteVec,
+            isPublic: Bool
+        ) -> (ByteVec){
              let caller = callerAddress!()
 
              let (initialImmState, initialMutState) = PoapSerieCollectionV2.encodeFields!(
@@ -112,12 +113,25 @@ Contract PoapFactoryV2(
                 caller,
 
                 //event properties
+                isPublic,
                 eventImage,
                 eventName,
                 description,
                 0,
                 0
              )
+
+
+             let contractId = copyCreateContract!(    
+                collectionTemplateSeriesId,
+                initialImmState,
+                initialMutState
+            )
+
+            numMintedCollection = numMintedCollection + 1
+            emit EventCreated(contractId, eventName, caller, isPublic, blockTimeStamp!(), true)
+
+            return contractId
 
         }
 

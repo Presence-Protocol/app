@@ -41,7 +41,10 @@ import { Trait, AllStructs } from "./types";
 export namespace PoapFactoryV2Types {
   export type Fields = {
     collectionTemplateId: HexString;
+    collectionTemplateSeriesId: HexString;
     poapTemplateId: HexString;
+    poapTemplateSeriesId: HexString;
+    poapTemplateDataId: HexString;
     numMintedCollection: bigint;
   };
 
@@ -53,6 +56,7 @@ export namespace PoapFactoryV2Types {
     organizer: Address;
     isPublic: boolean;
     timestamp: bigint;
+    isSeries: boolean;
   }>;
   export type PoapMintedEvent = ContractEvent<{
     contractId: HexString;
@@ -97,6 +101,15 @@ export namespace PoapFactoryV2Types {
         amountPoapFees: bigint;
         totalSupply: bigint;
         amountAirdrop: bigint;
+      }>;
+      result: CallContractResult<HexString>;
+    };
+    mintNewCollectionWithSerie: {
+      params: CallContractParams<{
+        eventImage: HexString;
+        eventName: HexString;
+        description: HexString;
+        isPublic: boolean;
       }>;
       result: CallContractResult<HexString>;
     };
@@ -165,6 +178,15 @@ export namespace PoapFactoryV2Types {
         amountPoapFees: bigint;
         totalSupply: bigint;
         amountAirdrop: bigint;
+      }>;
+      result: SignExecuteScriptTxResult;
+    };
+    mintNewCollectionWithSerie: {
+      params: SignExecuteContractMethodParams<{
+        eventImage: HexString;
+        eventName: HexString;
+        description: HexString;
+        isPublic: boolean;
       }>;
       result: SignExecuteScriptTxResult;
     };
@@ -253,6 +275,24 @@ class Factory extends ContractFactory<
         getContractByCodeHash
       );
     },
+    mintNewCollectionWithSerie: async (
+      params: TestContractParamsWithoutMaps<
+        PoapFactoryV2Types.Fields,
+        {
+          eventImage: HexString;
+          eventName: HexString;
+          description: HexString;
+          isPublic: boolean;
+        }
+      >
+    ): Promise<TestContractResultWithoutMaps<HexString>> => {
+      return testMethod(
+        this,
+        "mintNewCollectionWithSerie",
+        params,
+        getContractByCodeHash
+      );
+    },
     mintPoap: async (
       params: TestContractParamsWithoutMaps<
         PoapFactoryV2Types.Fields,
@@ -307,7 +347,7 @@ export const PoapFactoryV2 = new Factory(
   Contract.fromJson(
     PoapFactoryV2ContractJson,
     "",
-    "95938fb7a773234e100a7a9aae9348de099c3f87148afa7a1037186db53750bb",
+    "e82bc66ace54074171083be99fcb086dc38c6a58a363dd765e9a09d578afa87c",
     AllStructs
   )
 );
@@ -394,6 +434,19 @@ export class PoapFactoryV2Instance extends ContractInstance {
         getContractByCodeHash
       );
     },
+    mintNewCollectionWithSerie: async (
+      params: PoapFactoryV2Types.CallMethodParams<"mintNewCollectionWithSerie">
+    ): Promise<
+      PoapFactoryV2Types.CallMethodResult<"mintNewCollectionWithSerie">
+    > => {
+      return callMethod(
+        PoapFactoryV2,
+        this,
+        "mintNewCollectionWithSerie",
+        params,
+        getContractByCodeHash
+      );
+    },
     mintPoap: async (
       params: PoapFactoryV2Types.CallMethodParams<"mintPoap">
     ): Promise<PoapFactoryV2Types.CallMethodResult<"mintPoap">> => {
@@ -441,6 +494,18 @@ export class PoapFactoryV2Instance extends ContractInstance {
         PoapFactoryV2,
         this,
         "mintNewCollection",
+        params
+      );
+    },
+    mintNewCollectionWithSerie: async (
+      params: PoapFactoryV2Types.SignExecuteMethodParams<"mintNewCollectionWithSerie">
+    ): Promise<
+      PoapFactoryV2Types.SignExecuteMethodResult<"mintNewCollectionWithSerie">
+    > => {
+      return signExecuteMethod(
+        PoapFactoryV2,
+        this,
+        "mintNewCollectionWithSerie",
         params
       );
     },
