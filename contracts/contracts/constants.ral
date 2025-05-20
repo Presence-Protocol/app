@@ -11,4 +11,5 @@ enum ErrorCodes {
     NotEnoughAlph = 9
     AlreadySet = 10
     InvalidPassword = 11
+    IncorrectEventIndex = 12
 }

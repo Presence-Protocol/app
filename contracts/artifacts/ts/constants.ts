@@ -15,4 +15,5 @@ export const ErrorCodes = {
   NotEnoughAlph: BigInt("9"),
   AlreadySet: BigInt("10"),
   InvalidPassword: BigInt("11"),
+  IncorrectEventIndex: BigInt("12"),
 };

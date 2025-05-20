@@ -86,6 +86,13 @@
             "type": "U256",
             "value": "11"
           }
+        },
+        {
+          "name": "IncorrectEventIndex",
+          "value": {
+            "type": "U256",
+            "value": "12"
+          }
         }
       ]
     }

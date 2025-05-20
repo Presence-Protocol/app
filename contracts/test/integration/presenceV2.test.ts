@@ -3304,7 +3304,7 @@ describe('integration tests', () => {
 
     expect((await poap.view.getTraits()).returns.length).toBe(9)
 
-    expect(hexToString((await poap.view.getTokenUri()).returns)).toBe(`data:application/json,{\"name\": \"Test 1\",\"image\": \"https://arweave.net/Z1HAdT_PGnxPLct4-u7l1Zl_h4DNdxzKev7tCDAEflc\", \"attributes\": [{\"trait_type\": \"Event Name\", \"value\": \"Test 1\"}, {\"trait_type\": \"Description\", \"value\": \"First poap test\"}, {\"trait_type\": \"Organizer\", \"value\": \"00bee85f379545a2ed9f6cceb331288842f378cf0f04012ad4ac8824aae7d6f80a\"}, {\"trait_type\": \"Location\", \"value\": \"Online\"}, {\"trait_type\": \"Event Start At\", \"value\": 1735823531000}, {\"trait_type\": \"Event End At\", \"value\": 1735823531000},{\"trait_type\": \"Has Particpated\", \"value\": false}, {\"trait_type\": \"Locked Until\", \"value\": ${now + 86400n * 1000n } }]}`)
+    expect(hexToString((await poap.view.getTokenUri()).returns)).toBe(`data:application/json,{\"name\": \"Test 1\",\"image\": \"https://arweave.net/Z1HAdT_PGnxPLct4-u7l1Zl_h4DNdxzKev7tCDAEflc\", \"attributes\": [{\"trait_type\": \"Event Name\", \"value\": \"Test 1\"}, {\"trait_type\": \"Description\", \"value\": \"First poap test\"}, {\"trait_type\": \"Organizer\", \"value\": \"00bee85f379545a2ed9f6cceb331288842f378cf0f04012ad4ac8824aae7d6f80a\"}, {\"trait_type\": \"Location\", \"value\": \"Online\"}, {\"trait_type\": \"Event Start At\", \"value\": 1735823531000}, {\"trait_type\": \"Event End At\", \"value\": 1735823531000},{\"trait_type\": \"Has Particpated\", \"value\": false}, {\"trait_type\": \"Locked Until\", \"value\": ${now + 86400n * 1000n }}]}`)
 
   }, 20000)
 
@@ -3439,7 +3439,7 @@ describe('integration tests', () => {
 
     expect((await poap.view.getTraits()).returns.length).toBe(9)
 
-    expect(hexToString((await poap.view.getTokenUri()).returns)).toBe(`data:application/json,{\"name\": \"Test 1\",\"image\": \"https://arweave.net/Z1HAdT_PGnxPLct4-u7l1Zl_h4DNdxzKev7tCDAEflc\", \"attributes\": [{\"trait_type\": \"Event Name\", \"value\": \"Test 1\"}, {\"trait_type\": \"Description\", \"value\": \"First poap test\"}, {\"trait_type\": \"Organizer\", \"value\": \"00bee85f379545a2ed9f6cceb331288842f378cf0f04012ad4ac8824aae7d6f80a\"}, {\"trait_type\": \"Location\", \"value\": \"Online\"}, {\"trait_type\": \"Event Start At\", \"value\": 1735823531000}, {\"trait_type\": \"Event End At\", \"value\": 1735823531000},{\"trait_type\": \"Has Particpated\", \"value\": false}, {\"trait_type\": \"Lock Presence Until\", \"value\": ${now + 8n * 1000n} }]}`)
+    expect(hexToString((await poap.view.getTokenUri()).returns)).toBe(`data:application/json,{\"name\": \"Test 1\",\"image\": \"https://arweave.net/Z1HAdT_PGnxPLct4-u7l1Zl_h4DNdxzKev7tCDAEflc\", \"attributes\": [{\"trait_type\": \"Event Name\", \"value\": \"Test 1\"}, {\"trait_type\": \"Description\", \"value\": \"First poap test\"}, {\"trait_type\": \"Organizer\", \"value\": \"00bee85f379545a2ed9f6cceb331288842f378cf0f04012ad4ac8824aae7d6f80a\"}, {\"trait_type\": \"Location\", \"value\": \"Online\"}, {\"trait_type\": \"Event Start At\", \"value\": 1735823531000}, {\"trait_type\": \"Event End At\", \"value\": 1735823531000},{\"trait_type\": \"Has Particpated\", \"value\": false}, {\"trait_type\": \"Locked Until\", \"value\": ${now + 8n * 1000n}}]}`)
 
   }, 30000)
 

@@ -37,9 +37,15 @@
     },
     "PoapCollectionV2": {
       "sourceFile": "V2/collectionTemplate.ral",
-      "sourceCodeHash": "ff9600949fa08e66311fa8fad5767d3ab1beb636f90ce4a3aa79a3e94e1dee41",
+      "sourceCodeHash": "a465dad3d45f243e8e1df179cbe4c4718be2cc1a54ad6323898e4520bd32cd84",
       "bytecodeDebugPatch": "",
       "codeHashDebug": "6ab23409a3fc421004b40f29d06d92f8984a72c0bc08af7c8ce81e3a87ca213b"
+    },
+    "PoapData": {
+      "sourceFile": "V2/series/nftData.ral",
+      "sourceCodeHash": "b28bd33f822adb9490d7f13207093f456cf75457d50d946a5a0e5dd659b399c0",
+      "bytecodeDebugPatch": "",
+      "codeHashDebug": "ac9606d742ee15a11f5d2b1fbcb8665063add4c69df1509d7ed9f1201c92c31d"
     },
     "PoapFactory": {
       "sourceFile": "factoryPoap.ral",
@@ -59,11 +65,23 @@
       "bytecodeDebugPatch": "",
       "codeHashDebug": "c741e48f100b220e90d7e6e79c1f9b435351316a70a257d369d98ed713637049"
     },
+    "PoapNFTSerieV2": {
+      "sourceFile": "V2/series/nftSeriesTemplateV2.ral",
+      "sourceCodeHash": "9c1e2239fd21627070e653cc21b947108a7095716791afab25e1c20f63e49e8a",
+      "bytecodeDebugPatch": "",
+      "codeHashDebug": "bddc792c85c5617d0a8903b0a919cfd9d0c63eb2c79a24197663848c1486af08"
+    },
     "PoapNFTV2": {
       "sourceFile": "V2/nftTemplateV2.ral",
       "sourceCodeHash": "e672e743ecfc5aea95a8e23d92dd7f44682699cbd09b3e00d34441fb3ad6ded6",
       "bytecodeDebugPatch": "",
       "codeHashDebug": "5eafdf51e14a05eb56f826a111b5cbd4e4cf3ffec834b8c5d3ce813dd7b9b9f0"
+    },
+    "PoapSerieCollectionV2": {
+      "sourceFile": "V2/series/collectionSerieTemplate.ral",
+      "sourceCodeHash": "a52cac37175260cb20b788492fe5a8c992a1b688bea178adcf44823bcc329282",
+      "bytecodeDebugPatch": "=30-2+69=2-2+ee=2+3=1-1=2-2+7=2-2=1+b7=1+4f=1+4=3-2=2-2+88=2-2+96=1458-2+41=202+7a7e0214696e73657274206174206d617020706174683a2000=1148",
+      "codeHashDebug": "fe29664407235ec6ea40fda2dac15eac35b6097b40be45c706162a68b1b25ab8"
     },
     "Trait": {
       "sourceFile": "dynamic_nft_standard.ral",
@@ -79,7 +97,7 @@
     },
     "constants": {
       "sourceFile": "constants.ral",
-      "sourceCodeHash": "92f7fe7bded1fd052540b1bd2b5c527aa39a19a60b6b9db60c809b4e86cea630",
+      "sourceCodeHash": "dc9f189eed69eebc0c001e37f4fd794fe35c9a49b7e424f4599a6de2f1c1f469",
       "bytecodeDebugPatch": "",
       "codeHashDebug": ""
     }

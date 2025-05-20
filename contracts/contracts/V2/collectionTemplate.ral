@@ -131,10 +131,10 @@ Contract PoapCollectionV2(
       }
 
       assert!(contractExists!(poapContractId), ErrorCodes.IncorrectTokenIndex)
-      PoapNFT(poapContractId).setParticipated()
+      PoapNFTV2(poapContractId).setParticipated()
       
       if(airdropWhenHasParticipated){
-        let minter = PoapNFT(poapContractId).getMinter()
+        let minter = PoapNFTV2(poapContractId).getMinter()
         sendAirdrop{organizer -> ALPH: dustAmount!()}(minter)
       }
 
