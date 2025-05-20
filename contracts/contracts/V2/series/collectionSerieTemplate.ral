@@ -8,7 +8,6 @@ Contract PoapSerieCollectionV2(
     collectionImage: ByteVec,
     collectionName: ByteVec,
     collectionDescription: ByteVec,
-    collectionOrganizer: Address,
 
     mut totalSupply: U256,
     mut totalSupplySeries: U256

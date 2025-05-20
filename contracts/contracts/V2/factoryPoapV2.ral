@@ -1,6 +1,9 @@
 Contract PoapFactoryV2(
     collectionTemplateId: ByteVec,
+    collectionTemplateSeriesId: ByteVec,
     poapTemplateId: ByteVec,
+    poapTemplateSeriesId: ByteVec,
+    poapTemplateDataId: ByteVec,
     mut numMintedCollection: U256
 ){
 
@@ -38,7 +41,8 @@ Contract PoapFactoryV2(
         amountForChainFees: U256,
         amountPoapFees: U256,
         totalSupply: U256,
-        amountAirdrop: U256) -> (ByteVec){
+        amountAirdrop: U256
+        ) -> (ByteVec){
             let caller = callerAddress!()
 
             let (initialImmState, initialMutState) = PoapCollectionV2.encodeFields!(
@@ -94,6 +98,30 @@ Contract PoapFactoryV2(
         
         }
     
+        @using(preapprovedAssets = true, checkExternalCaller = false, updateFields = true)
+        pub fn mintNewCollectionWithSerie(
+            eventImage: ByteVec,
+            eventName: ByteVec,
+            description: ByteVec
+        ) -> (){
+             let caller = callerAddress!()
+
+             let (initialImmState, initialMutState) = PoapSerieCollectionV2.encodeFields!(
+                poapTemplateSeriesId,
+                poapTemplateDataId,
+                caller,
+
+                //event properties
+                eventImage,
+                eventName,
+                description,
+                0,
+                0
+             )
+
+        }
+
+
     @using(preapprovedAssets = true, checkExternalCaller = false, preserveCaller = true)
     pub fn mintPoap(collection: PoapCollectionV2, amount: U256, password: ByteVec) -> (){
         let caller = callerAddress!()
