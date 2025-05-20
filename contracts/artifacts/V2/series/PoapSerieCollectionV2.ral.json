@@ -1,0 +1,374 @@
+{
+  "version": "v3.12.7",
+  "name": "PoapSerieCollectionV2",
+  "bytecode": "0a0f405e406740824095414742d3435043d54418445b449e44e5452c456f457d01000000010e144020646174613a6170706c69636174696f6e2f6a736f6e2c7b226e616d65223a2022ce04441413222c20226465736372697074696f6e223a202244ce0544140d222c2022696d616765223a202244ce03441402227d4402010000000102a0010201000102010f16000001310c7b160040cb17011601c50d7b16010201000203000816010002170216001602410e7b01000116014059d390cf01171401301401311401321401331401341401351401361401371401381401391401611401621401631401641401651401661710170f170e170d170c170b170a170917081707170617051704170317021701140017110c17121612160043314c402d1600161216120d2a626c1340ff3817131613103c130f3817141613130f381715161116147a1310314d0d2a784416157a1310314d0d2a7844171116120d2a17124a7fce161102010303120140e8d35642fa2a140a5f5f6d61705f5f305f5f16004044cbc5130c7b0c0d0d140a5f5f6d61705f5f305f5f16004044cb010117030c0d160301100c0d16030110310f7b560c0d1603011134117b560c0d1603011232107bb417040c0d1603011347000417050c0d1603011b17060c0d1603011a17070c0d1603011c17080c0d1603011f17090c0d16030120170a0c0d16030119170bb1a0000c0d1603010e0c0d1603010c0c0d1603010d16050c0d160301140c0d160301150c0d160301160c0d1603011716040c0d160301180c0d160301191406414c50480003130e6404130164170d170ca00040170e1604170f16060c3316071b4c111606171016074c0716010d3413097b16011710160416037716081610aa1609194c0816040ca216040d0c16030101160a140100424c06160a16024f41130b7b1401001711160b0c334c11160fd1a2160ece00160c160d0dc217111604160b0e0c1611010d4a0b160fd1a2160ece00160c160d0d1604c91711061611a000160456610c0c16030100a0000d2aa1001611020103131700403fd38e54bb9db417131613ce064513077bb11600160116021603160416051606160716081609160a160bce06160c160d160e160f1610161116121315640c0c0c0c0c13056417151714ce0116141615ad17161613d1a2140a5f5f6d61705f5f305f5fa0014044b11616d2010105b1a0015fa0010d2aa1010103030800403fd37843c1cf140a5f5f6d61705f5f305f5f16004044cbc5130c7b0c0d0d140a5f5f6d61705f5f305f5f16004044cb01011703b417041604ce064513077b160140cb17051605c50c7b0c0c1605010d0c0d1603011f170616064c0d0c0d1605010b1707ce0613c3038d7ea4c68000a216070d0c16030101071604160116026001080202001bd3b98dce28b4ce064513077b140a5f5f6d61705f5f305f5f16004044cbc5130c7b16010d0c0c0d0d140a5f5f6d61705f5f305f5f16004044cb0101010201080202001bd36bdbf604b4ce064513077b140a5f5f6d61705f5f305f5f16004044cbc5130c7b16010d0c0c0d0d140a5f5f6d61705f5f305f5f16004044cb0101010301080202001bd3ac758252b4ce064513077b140a5f5f6d61705f5f305f5f16004044cbc5130c7b16010d0c0c0d0d140a5f5f6d61705f5f305f5f16004044cb01010105010b0202001ed3e6149a92b4ce064513077b140a5f5f6d61705f5f305f5f16004044cbc5130c7bb41601a216010d0c0c0d0d140a5f5f6d61705f5f305f5f16004044cb01010104010b0202001ed33b7fab60b4ce064513077b140a5f5f6d61705f5f305f5f16004044cbc5130c7bb41601a216010d0c0c0d0d140a5f5f6d61705f5f305f5f16004044cb0101010601080202001bd3456f9e5db4ce064513077b140a5f5f6d61705f5f305f5f16004044cbc5130c7b16010d0c0c0d0d140a5f5f6d61705f5f305f5f16004044cb01010107010000000103d30326d449ce0202",
+  "codeHash": "4340660c5789eb82025a64851d815c8b6a7c2abf2b8192a08bb3a77d6786ec38",
+  "fieldsSig": {
+    "names": [
+      "nftTemplateId",
+      "poapDataTemplateId",
+      "organizer",
+      "collectionImage",
+      "collectionName",
+      "collectionDescription",
+      "collectionOrganizer",
+      "totalSupply",
+      "totalSupplySeries",
+      "__stdInterfaceId"
+    ],
+    "types": [
+      "ByteVec",
+      "ByteVec",
+      "Address",
+      "ByteVec",
+      "ByteVec",
+      "ByteVec",
+      "Address",
+      "U256",
+      "U256",
+      "ByteVec"
+    ],
+    "isMutable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      true,
+      false
+    ]
+  },
+  "eventsSig": [
+    {
+      "name": "SerieAdded",
+      "fieldNames": [
+        "collectionId",
+        "eventId"
+      ],
+      "fieldTypes": [
+        "ByteVec",
+        "U256"
+      ]
+    },
+    {
+      "name": "PoapMinted",
+      "fieldNames": [
+        "contractId",
+        "nftIndex",
+        "caller",
+        "timestamp"
+      ],
+      "fieldTypes": [
+        "ByteVec",
+        "U256",
+        "Address",
+        "U256"
+      ]
+    },
+    {
+      "name": "PoapParticipated",
+      "fieldNames": [
+        "organizerAddress",
+        "nftIndex",
+        "presenceAddressValidate"
+      ],
+      "fieldTypes": [
+        "Address",
+        "U256",
+        "Address"
+      ]
+    }
+  ],
+  "functions": [
+    {
+      "name": "getCollectionUri",
+      "paramNames": [],
+      "paramTypes": [],
+      "paramIsMutable": [],
+      "returnTypes": [
+        "ByteVec"
+      ]
+    },
+    {
+      "name": "totalSupply",
+      "paramNames": [],
+      "paramTypes": [],
+      "paramIsMutable": [],
+      "returnTypes": [
+        "U256"
+      ]
+    },
+    {
+      "name": "nftByIndex",
+      "paramNames": [
+        "index"
+      ],
+      "paramTypes": [
+        "U256"
+      ],
+      "paramIsMutable": [
+        false
+      ],
+      "returnTypes": [
+        "INFT"
+      ]
+    },
+    {
+      "name": "validateNFT",
+      "paramNames": [
+        "nftId",
+        "nftIndex"
+      ],
+      "paramTypes": [
+        "ByteVec",
+        "U256"
+      ],
+      "paramIsMutable": [
+        false,
+        false
+      ],
+      "returnTypes": []
+    },
+    {
+      "name": "convert",
+      "paramNames": [
+        "array"
+      ],
+      "paramTypes": [
+        "ByteVec"
+      ],
+      "paramIsMutable": [
+        false
+      ],
+      "returnTypes": [
+        "ByteVec"
+      ]
+    },
+    {
+      "name": "mint",
+      "paramNames": [
+        "eventId",
+        "amount",
+        "password"
+      ],
+      "paramTypes": [
+        "U256",
+        "U256",
+        "ByteVec"
+      ],
+      "paramIsMutable": [
+        false,
+        false,
+        false
+      ],
+      "returnTypes": [
+        "ByteVec"
+      ]
+    },
+    {
+      "name": "addNewEvent",
+      "paramNames": [
+        "maxSupply",
+        "mintStartAt",
+        "mintEndAt",
+        "poapPrice",
+        "tokenIdPoap",
+        "isOpenPrice",
+        "tokenIdAirdrop",
+        "amountAirdropPerUser",
+        "airdropWhenHasParticipated",
+        "eventImage",
+        "eventName",
+        "description",
+        "location",
+        "eventStartAt",
+        "eventEndAt",
+        "isPublic",
+        "isBurnable",
+        "lockedUntil",
+        "hashedPassword"
+      ],
+      "paramTypes": [
+        "U256",
+        "U256",
+        "U256",
+        "U256",
+        "ByteVec",
+        "Bool",
+        "ByteVec",
+        "U256",
+        "Bool",
+        "ByteVec",
+        "ByteVec",
+        "ByteVec",
+        "ByteVec",
+        "U256",
+        "U256",
+        "Bool",
+        "Bool",
+        "U256",
+        "ByteVec"
+      ],
+      "paramIsMutable": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "returnTypes": []
+    },
+    {
+      "name": "setParticipatedPresence",
+      "paramNames": [
+        "eventId",
+        "nftIndex",
+        "presenceAddressValidate"
+      ],
+      "paramTypes": [
+        "U256",
+        "U256",
+        "Address"
+      ],
+      "paramIsMutable": [
+        false,
+        false,
+        false
+      ],
+      "returnTypes": []
+    },
+    {
+      "name": "claimFunds",
+      "paramNames": [
+        "eventId",
+        "amountToClaim"
+      ],
+      "paramTypes": [
+        "U256",
+        "U256"
+      ],
+      "paramIsMutable": [
+        false,
+        false
+      ],
+      "returnTypes": []
+    },
+    {
+      "name": "withdrawStorageFees",
+      "paramNames": [
+        "eventId",
+        "amount"
+      ],
+      "paramTypes": [
+        "U256",
+        "U256"
+      ],
+      "paramIsMutable": [
+        false,
+        false
+      ],
+      "returnTypes": []
+    },
+    {
+      "name": "withdrawChainFees",
+      "paramNames": [
+        "eventId",
+        "amount"
+      ],
+      "paramTypes": [
+        "U256",
+        "U256"
+      ],
+      "paramIsMutable": [
+        false,
+        false
+      ],
+      "returnTypes": []
+    },
+    {
+      "name": "depositStorageFees",
+      "paramNames": [
+        "eventId",
+        "amount"
+      ],
+      "paramTypes": [
+        "U256",
+        "U256"
+      ],
+      "paramIsMutable": [
+        false,
+        false
+      ],
+      "returnTypes": []
+    },
+    {
+      "name": "depositChainFees",
+      "paramNames": [
+        "eventId",
+        "amount"
+      ],
+      "paramTypes": [
+        "U256",
+        "U256"
+      ],
+      "paramIsMutable": [
+        false,
+        false
+      ],
+      "returnTypes": []
+    },
+    {
+      "name": "withdrawAirdrop",
+      "paramNames": [
+        "eventId",
+        "amount"
+      ],
+      "paramTypes": [
+        "U256",
+        "U256"
+      ],
+      "paramIsMutable": [
+        false,
+        false
+      ],
+      "returnTypes": []
+    },
+    {
+      "name": "getOrganizer",
+      "paramNames": [],
+      "paramTypes": [],
+      "paramIsMutable": [],
+      "returnTypes": [
+        "Address"
+      ]
+    }
+  ],
+  "constants": [],
+  "enums": [],
+  "mapsSig": {
+    "names": [
+      "nftMetadata"
+    ],
+    "types": [
+      "Map[U256,PoapData]"
+    ]
+  },
+  "stdInterfaceId": "0002"
+}

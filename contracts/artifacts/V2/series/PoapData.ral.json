@@ -1,0 +1,420 @@
+{
+  "version": "v3.12.7",
+  "name": "PoapData",
+  "bytecode": "1a40211840514079409f40c440ea41084130413e414c415a416841764184419241a041ae41bc41ca41d841e641f442024210421e422c423a42484256426442724280428e01000000000ad351fa1fa8b3ce004113077ba0000d2aa100010101010018d35eaeb793b3ce004113077ba004ce08344c0ece094c04ce0d160013c3038d7ea4c68000a71600ce07ce08aba004ce082ba104010201010013d39a80362ab4ce0d4513077b1600a0033213097bce0dce051600aba00316002ba103010201010012d346430486b4ce0d4513077b1600a0013213097bce0d1600a8a00116002ba101010101010012d389311854b4ce0d4513077b1600d13413097bce0d1600a9a00116002aa101010201010012d319b22814b4ce0d4513077b1600a0023213097bce0d1600a8a00216002ba10201010101000dd3aaccf062b4ce0d4513077bce0d1600a9a00216002aa102010201010013d3264cd13fb4ce0d4513077b1600a0043213097bce0dce071600aba00416002ba104010000000103d331a16197a00102010000000103d3bed14ce5a00202010000000103d3e2a5fdaba00302010000000103d3d399d109a00402010000000103d3f4544ae5ce0b02010000000103d33a1baf08ce0c02010000000103d305b7f687ce0a02010000000103d3bc2e7f35a00002010000000103d3efb307b7ce0102010000000103d39cb94edfce0202010000000103d396b173a8ce0302010000000103d30326d449ce0d02010000000103d3ca83e6bdce0e02010000000103d31dc04609ce0f02010000000103d3005c9852ce1002010000000103d39fe52579ce1102010000000103d3699a9a45ce1202010000000103d393343a42ce1302010000000103d3a72fffffce0602010000000103d3c5b1f707ce0402010000000103d3bdc36342ce0502010000000103d3891b2aa3ce0702010000000103d31f89cd6fce0802010000000103d3bee713f7ce0902010000000103d3d230d384ce1402",
+  "codeHash": "ac9606d742ee15a11f5d2b1fbcb8665063add4c69df1509d7ed9f1201c92c31d",
+  "fieldsSig": {
+    "names": [
+      "collectionId",
+      "maxSupply",
+      "mintStartAt",
+      "mintEndAt",
+      "poapPrice",
+      "tokenIdPoap",
+      "isOpenPrice",
+      "tokenIdAirdrop",
+      "amountAirdropPerUser",
+      "airdropWhenHasParticipated",
+      "eventImage",
+      "eventName",
+      "description",
+      "organizer",
+      "location",
+      "eventStartAt",
+      "eventEndAt",
+      "isPublic",
+      "isBurnable",
+      "lockedUntil",
+      "hashedPassword",
+      "totalSupply",
+      "amountForStorageFees",
+      "amountForChainFees",
+      "amountPoapFees",
+      "amountAirdrop"
+    ],
+    "types": [
+      "ByteVec",
+      "U256",
+      "U256",
+      "U256",
+      "U256",
+      "ByteVec",
+      "Bool",
+      "ByteVec",
+      "U256",
+      "Bool",
+      "ByteVec",
+      "ByteVec",
+      "ByteVec",
+      "Address",
+      "ByteVec",
+      "U256",
+      "U256",
+      "Bool",
+      "Bool",
+      "U256",
+      "ByteVec",
+      "U256",
+      "U256",
+      "U256",
+      "U256",
+      "U256"
+    ],
+    "isMutable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      true,
+      true,
+      true,
+      true
+    ]
+  },
+  "eventsSig": [],
+  "functions": [
+    {
+      "name": "incrementTotalSupply",
+      "paramNames": [],
+      "paramTypes": [],
+      "paramIsMutable": [],
+      "returnTypes": []
+    },
+    {
+      "name": "sendAirdrop",
+      "paramNames": [
+        "addressToAirdrop"
+      ],
+      "paramTypes": [
+        "Address"
+      ],
+      "paramIsMutable": [
+        false
+      ],
+      "returnTypes": []
+    },
+    {
+      "name": "claimFunds",
+      "paramNames": [
+        "amountToClaim"
+      ],
+      "paramTypes": [
+        "U256"
+      ],
+      "paramIsMutable": [
+        false
+      ],
+      "returnTypes": []
+    },
+    {
+      "name": "withdrawStorageFees",
+      "paramNames": [
+        "amount"
+      ],
+      "paramTypes": [
+        "U256"
+      ],
+      "paramIsMutable": [
+        false
+      ],
+      "returnTypes": []
+    },
+    {
+      "name": "depositStorageFees",
+      "paramNames": [
+        "amount"
+      ],
+      "paramTypes": [
+        "U256"
+      ],
+      "paramIsMutable": [
+        false
+      ],
+      "returnTypes": []
+    },
+    {
+      "name": "withdrawChainFees",
+      "paramNames": [
+        "amount"
+      ],
+      "paramTypes": [
+        "U256"
+      ],
+      "paramIsMutable": [
+        false
+      ],
+      "returnTypes": []
+    },
+    {
+      "name": "depositChainFees",
+      "paramNames": [
+        "amount"
+      ],
+      "paramTypes": [
+        "U256"
+      ],
+      "paramIsMutable": [
+        false
+      ],
+      "returnTypes": []
+    },
+    {
+      "name": "withdrawAirdrop",
+      "paramNames": [
+        "amount"
+      ],
+      "paramTypes": [
+        "U256"
+      ],
+      "paramIsMutable": [
+        false
+      ],
+      "returnTypes": []
+    },
+    {
+      "name": "getAmountForStorageFees",
+      "paramNames": [],
+      "paramTypes": [],
+      "paramIsMutable": [],
+      "returnTypes": [
+        "U256"
+      ]
+    },
+    {
+      "name": "getAmountForChainFees",
+      "paramNames": [],
+      "paramTypes": [],
+      "paramIsMutable": [],
+      "returnTypes": [
+        "U256"
+      ]
+    },
+    {
+      "name": "getAmountPoapFees",
+      "paramNames": [],
+      "paramTypes": [],
+      "paramIsMutable": [],
+      "returnTypes": [
+        "U256"
+      ]
+    },
+    {
+      "name": "getAmountAirdrop",
+      "paramNames": [],
+      "paramTypes": [],
+      "paramIsMutable": [],
+      "returnTypes": [
+        "U256"
+      ]
+    },
+    {
+      "name": "getName",
+      "paramNames": [],
+      "paramTypes": [],
+      "paramIsMutable": [],
+      "returnTypes": [
+        "ByteVec"
+      ]
+    },
+    {
+      "name": "getDescription",
+      "paramNames": [],
+      "paramTypes": [],
+      "paramIsMutable": [],
+      "returnTypes": [
+        "ByteVec"
+      ]
+    },
+    {
+      "name": "getImage",
+      "paramNames": [],
+      "paramTypes": [],
+      "paramIsMutable": [],
+      "returnTypes": [
+        "ByteVec"
+      ]
+    },
+    {
+      "name": "getTotalSupply",
+      "paramNames": [],
+      "paramTypes": [],
+      "paramIsMutable": [],
+      "returnTypes": [
+        "U256"
+      ]
+    },
+    {
+      "name": "getMaxSupply",
+      "paramNames": [],
+      "paramTypes": [],
+      "paramIsMutable": [],
+      "returnTypes": [
+        "U256"
+      ]
+    },
+    {
+      "name": "getMintStartAt",
+      "paramNames": [],
+      "paramTypes": [],
+      "paramIsMutable": [],
+      "returnTypes": [
+        "U256"
+      ]
+    },
+    {
+      "name": "getMintEndAt",
+      "paramNames": [],
+      "paramTypes": [],
+      "paramIsMutable": [],
+      "returnTypes": [
+        "U256"
+      ]
+    },
+    {
+      "name": "getOrganizer",
+      "paramNames": [],
+      "paramTypes": [],
+      "paramIsMutable": [],
+      "returnTypes": [
+        "Address"
+      ]
+    },
+    {
+      "name": "getLocation",
+      "paramNames": [],
+      "paramTypes": [],
+      "paramIsMutable": [],
+      "returnTypes": [
+        "ByteVec"
+      ]
+    },
+    {
+      "name": "getEventStartAt",
+      "paramNames": [],
+      "paramTypes": [],
+      "paramIsMutable": [],
+      "returnTypes": [
+        "U256"
+      ]
+    },
+    {
+      "name": "getEventEndAt",
+      "paramNames": [],
+      "paramTypes": [],
+      "paramIsMutable": [],
+      "returnTypes": [
+        "U256"
+      ]
+    },
+    {
+      "name": "getIsPublic",
+      "paramNames": [],
+      "paramTypes": [],
+      "paramIsMutable": [],
+      "returnTypes": [
+        "Bool"
+      ]
+    },
+    {
+      "name": "getIsBurnable",
+      "paramNames": [],
+      "paramTypes": [],
+      "paramIsMutable": [],
+      "returnTypes": [
+        "Bool"
+      ]
+    },
+    {
+      "name": "getLockedUntil",
+      "paramNames": [],
+      "paramTypes": [],
+      "paramIsMutable": [],
+      "returnTypes": [
+        "U256"
+      ]
+    },
+    {
+      "name": "getIsOpenPrice",
+      "paramNames": [],
+      "paramTypes": [],
+      "paramIsMutable": [],
+      "returnTypes": [
+        "Bool"
+      ]
+    },
+    {
+      "name": "getPoapPrice",
+      "paramNames": [],
+      "paramTypes": [],
+      "paramIsMutable": [],
+      "returnTypes": [
+        "U256"
+      ]
+    },
+    {
+      "name": "getTokenIdPoap",
+      "paramNames": [],
+      "paramTypes": [],
+      "paramIsMutable": [],
+      "returnTypes": [
+        "ByteVec"
+      ]
+    },
+    {
+      "name": "getTokenIdAirdrop",
+      "paramNames": [],
+      "paramTypes": [],
+      "paramIsMutable": [],
+      "returnTypes": [
+        "ByteVec"
+      ]
+    },
+    {
+      "name": "getAmountAirdropPerUser",
+      "paramNames": [],
+      "paramTypes": [],
+      "paramIsMutable": [],
+      "returnTypes": [
+        "U256"
+      ]
+    },
+    {
+      "name": "getAirdropWhenHasParticipated",
+      "paramNames": [],
+      "paramTypes": [],
+      "paramIsMutable": [],
+      "returnTypes": [
+        "Bool"
+      ]
+    },
+    {
+      "name": "getHashedPassword",
+      "paramNames": [],
+      "paramTypes": [],
+      "paramIsMutable": [],
+      "returnTypes": [
+        "ByteVec"
+      ]
+    }
+  ],
+  "constants": [],
+  "enums": []
+}

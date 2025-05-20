@@ -1,0 +1,136 @@
+import "std/nft_interface"
+
+Contract PoapNFTSerieV2(
+  collectionId: ByteVec,
+  nftIndex: U256,
+  eventImage: ByteVec,
+  eventName: ByteVec,
+  description: ByteVec,
+  organizer: ByteVec,
+  location: ByteVec,
+  eventStartAt: U256,
+  eventEndAt: U256,
+  isPublic: Bool,
+  minter: Address,
+  isBurnable: Bool,
+  lockedUntil: U256,
+  oneMintPerAddress: Bool,
+  mut hasParticipated: Bool
+) implements INFT {
+  
+  pub fn getTokenUri() -> ByteVec {
+
+    return b`data:application/json,{"name": "` ++ eventName ++ b`","image": "` ++ eventImage ++ b`", "attributes": [{"trait_type": "Event Name", "value": "` ++ eventName ++ b`"}, {"trait_type": "Description", "value": "` ++ description ++ b`"}, {"trait_type": "Organizer", "value": "` ++ organizer ++ b`"}, {"trait_type": "Location", "value": "` ++ location ++ b`"}, {"trait_type": "Event Start At", "value": ` ++ u256ToString!(eventStartAt) ++ b`}, {"trait_type": "Event End At", "value": ` ++ u256ToString!(eventEndAt) ++ b`},{"trait_type": "Has Particpated", "value": ` ++ boolToString!(hasParticipated) ++ b`}, {"trait_type": "Locked Until", "value": ` ++ u256ToString!(lockedUntil) ++ b`}]}`
+  }
+
+  pub fn getCollectionIndex() -> (ByteVec, U256) {
+    return collectionId, nftIndex
+  }
+
+  pub fn getNFTIndex() -> U256 {
+    return nftIndex
+  }
+
+    // DynamicNFT methods
+
+  pub fn getName() -> ByteVec {
+    return eventName
+  }
+
+  pub fn getDescription() -> ByteVec {
+    return description
+  }
+
+  pub fn getImage() -> ByteVec {
+      return eventImage
+  }
+
+
+  pub fn getTraits() -> [Trait; 9] {
+
+    return [
+        Trait {
+            traitType: b`Event Name`,
+            value: eventName
+        },
+        Trait {
+            traitType: b`Description`,
+            value: description
+        },
+        Trait {
+            traitType: b`Organizer`,
+            value: organizer
+        },
+        Trait {
+            traitType: b`Location`,
+            value: location
+        },
+        Trait {
+            traitType: b`Event Start At`,
+            value: u256ToString!(eventStartAt)
+        },
+        Trait {
+            traitType: b`Event End At`,
+            value: u256ToString!(eventEndAt)
+        },
+        Trait {
+            traitType: b`Public Event`,
+            value: boolToString!(isPublic)
+        },
+        Trait {
+          traitType: b`Has Participated`,
+          value: boolToString!(hasParticipated)
+      }, 
+      Trait {
+        traitType: b`Locked Until`,
+        value: u256ToString!(lockedUntil)
+      }
+    ]
+  }
+
+  pub fn getTraitCount() -> U256 {
+    return 9
+  }
+
+  pub fn getTraitAtIndex(index: U256) -> Trait {
+      return getTraits()[index]
+  }
+
+  pub fn getHasParticipated() -> (Bool) {
+    return hasParticipated
+  }
+
+  pub fn isOneMintPerAddress() -> (Bool) {
+    return oneMintPerAddress
+  }
+
+
+  pub fn getMinter() -> Address {
+    return minter
+  }
+
+  @using(preapprovedAssets = true, assetsInContract = true, checkExternalCaller = false)
+  pub fn burn() -> () {
+    assert!(isBurnable, ErrorCodes.NotBurnable)
+    assert!(callerAddress!() == minter, ErrorCodes.InvalidCaller)
+
+
+    destroySelf!(minter)
+  }
+
+  @using(checkExternalCaller = true, updateFields = true)
+  pub fn setParticipated() -> (){
+    checkCaller!(callerContractId!() == collectionId, ErrorCodes.InvalidCaller)
+    assert!(!hasParticipated, ErrorCodes.AlreadySet)
+
+    hasParticipated = true
+  }
+
+  @using(assetsInContract = true)
+  pub fn lock(recipient: Address, lockedPresenceUntil: U256) -> () {
+    checkCaller!(callerContractId!() == collectionId, ErrorCodes.InvalidCaller)
+    lockApprovedAssets!{selfAddress!() -> selfTokenId!(): 1, ALPH: dustAmount!()}(recipient, lockedPresenceUntil)
+  }
+
+
+}
