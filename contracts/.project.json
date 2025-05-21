@@ -1,5 +1,5 @@
 {
-  "fullNodeVersion": "v3.12.7",
+  "fullNodeVersion": "v3.14.0",
   "compilerOptionsUsed": {
     "ignoreUnusedConstantsWarnings": false,
     "ignoreUnusedVariablesWarnings": false,
@@ -43,9 +43,9 @@
     },
     "PoapData": {
       "sourceFile": "V2/series/nftData.ral",
-      "sourceCodeHash": "b28bd33f822adb9490d7f13207093f456cf75457d50d946a5a0e5dd659b399c0",
+      "sourceCodeHash": "2603389f0d6d798abf8999e59f8c4f91e034a1d17e880f7987767af168e28edb",
       "bytecodeDebugPatch": "",
-      "codeHashDebug": "ac9606d742ee15a11f5d2b1fbcb8665063add4c69df1509d7ed9f1201c92c31d"
+      "codeHashDebug": "85bb9e7d3ff4f634422464c048fa97dba444559157b216414478524a233c8b9e"
     },
     "PoapFactory": {
       "sourceFile": "factoryPoap.ral",
@@ -55,9 +55,9 @@
     },
     "PoapFactoryV2": {
       "sourceFile": "V2/factoryPoapV2.ral",
-      "sourceCodeHash": "6a766b17cedb7f6ffb2ddd4c97fb7d19a6dce419fe240d3ca6c91a6f05c432a7",
+      "sourceCodeHash": "fb2323bdbfbb19bc4484c2472885d41b54dc4a3e46899bf957fa434bc69d4dcb",
       "bytecodeDebugPatch": "",
-      "codeHashDebug": "e82bc66ace54074171083be99fcb086dc38c6a58a363dd765e9a09d578afa87c"
+      "codeHashDebug": "43d9f035087405b40aa44780de63d7d46922e88fd48dfc2fe23460fb5c17a7fc"
     },
     "PoapNFT": {
       "sourceFile": "nftTemplate.ral",
@@ -79,9 +79,9 @@
     },
     "PoapSerieCollectionV2": {
       "sourceFile": "V2/series/collectionSerieTemplate.ral",
-      "sourceCodeHash": "eaa5e7b8d5b9a0df63882e7625b570fce117bf977932ba7ba00dc0fe638336df",
-      "bytecodeDebugPatch": "=30-2+69=2-2+ee=2+3=1-1=2-1+7444=1+7=2-1+f=2+5=1-1=3-2+88=2+9=1-1=2-2+a=1-3=1458-2+41=202+7a7e0214696e73657274206174206d617020706174683a2000=1176",
-      "codeHashDebug": "07b512e4056c5fc28efa5c232cc13d594ab2c38021dcad3a86cf37d5e86e5139"
+      "sourceCodeHash": "0d62d1d8ddc3020d577561fb801b9a74f8b996d2e4f2387a77b36dcb7788bf10",
+      "bytecodeDebugPatch": "=30-8+7=1-1=1-2=1+f6=2+3=1-1=2-2+7c=1-2=1+bf=2+0=1-1=2-2+4d=2-2+90=2-1+9=3-2+ac45e74622=1435-1+5=146+7e01056865726531=18+7e01056865726532=40+7a7e0214696e73657274206174206d617020706174683a2000=1418",
+      "codeHashDebug": "3a2559e53f1b5019d7dfe99e7114688f7585206444ff1dfbcd7ff504d9c40e4a"
     },
     "Trait": {
       "sourceFile": "dynamic_nft_standard.ral",

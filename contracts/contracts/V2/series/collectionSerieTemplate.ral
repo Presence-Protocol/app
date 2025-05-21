@@ -33,9 +33,8 @@ Contract PoapSerieCollectionV2(
      let caller = callerAddress!()
      
      let organizerAddressHex = convert(toByteVec!(eventData.getOrganizer()))
-     let poapPrice = eventData.getPoapPrice()
-     let isOpenPrice = eventData.getIsOpenPrice()
-     let tokenIdPoap = eventData.getTokenIdPoap()
+     let (poapPrice, tokenIdPoap, isOpenPrice)  = eventData.getPoapPrice()
+ 
      let airdropWhenHasParticipated = eventData.getAirdropWhenHasParticipated()
      let hashedPassword = eventData.getHashedPassword()
      let lockPresenceUntil = eventData.getLockedUntil()
@@ -132,8 +131,9 @@ Contract PoapSerieCollectionV2(
     isPublic: Bool,
     isBurnable: Bool,
     lockedUntil: U256,
-    hashedPassword: ByteVec
-    ) -> (){
+    hashedPassword: ByteVec,
+    amountAirdrop: U256
+    ) -> (ByteVec){
       let caller = callerAddress!()
       checkCaller!(caller == organizer, ErrorCodes.InvalidCaller)
 
@@ -163,15 +163,21 @@ Contract PoapSerieCollectionV2(
         0,
         0,
         0,
-        0
+        amountAirdrop
       )
      
+      emit Debug(`here1`)
       let contract = createContract!(poapDataTemplateId, initialImmState, initialMutState)
+      emit Debug(`here2`)
       nftMetadata.insert!(caller, totalSupplySeries, PoapData(contract))
+                    
+
 
       emit SerieAdded(selfContractId!(), totalSupplySeries)
 
       totalSupplySeries = totalSupplySeries + 1
+
+      return contract
 
    }
 
@@ -301,8 +307,20 @@ Contract PoapSerieCollectionV2(
     pub fn getOrganizer() -> (Address){
       return organizer
     }
+
     pub fn isCollectionPublic() -> (Bool){
       return isPublicCollection
+    }
+
+    pub fn getEventPublic(eventId: U256) -> (Bool){
+      assert!(nftMetadata.contains!(eventId), ErrorCodes.IncorrectEventIndex)
+      return nftMetadata[eventId].getIsPublic()
+    }
+
+    pub fn getPoapPrice(eventId: U256) -> (U256, ByteVec, Bool){
+      assert!(nftMetadata.contains!(eventId), ErrorCodes.IncorrectEventIndex)
+      return nftMetadata[eventId].getPoapPrice()
+
     }
 
 }

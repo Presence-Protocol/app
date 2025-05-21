@@ -191,8 +191,8 @@ Contract PoapData(
     return isOpenPrice
   }
 
-  pub fn getPoapPrice() -> U256 {
-    return poapPrice
+  pub fn getPoapPrice() -> (U256, ByteVec, Bool) {
+    return poapPrice, tokenIdPoap, isOpenPrice
   }
 
   pub fn getTokenIdPoap() -> ByteVec {

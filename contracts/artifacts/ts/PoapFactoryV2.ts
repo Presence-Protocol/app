@@ -66,11 +66,28 @@ export namespace PoapFactoryV2Types {
     isPublic: boolean;
     timestamp: bigint;
   }>;
+  export type PoapSerieMintedEvent = ContractEvent<{
+    contractId: HexString;
+    collectionId: HexString;
+    eventId: bigint;
+    nftIndex: bigint;
+    caller: Address;
+    isPublic: boolean;
+    timestamp: bigint;
+  }>;
   export type PoapParticipatedInEvent = ContractEvent<{
     organizerAddress: Address;
     collectionId: HexString;
     nftIndex: bigint;
     presenceAddressValidate: Address;
+  }>;
+  export type SerieAddedEvent = ContractEvent<{
+    collectionId: HexString;
+    eventContractId: HexString;
+    eventName: HexString;
+    organizer: Address;
+    isPublic: boolean;
+    timestamp: bigint;
   }>;
 
   export interface CallMethodTable {
@@ -112,6 +129,41 @@ export namespace PoapFactoryV2Types {
         isPublic: boolean;
       }>;
       result: CallContractResult<HexString>;
+    };
+    createNewEvent: {
+      params: CallContractParams<{
+        collection: HexString;
+        maxSupply: bigint;
+        mintStartAt: bigint;
+        mintEndAt: bigint;
+        poapPrice: bigint;
+        tokenIdPoap: HexString;
+        isOpenPrice: boolean;
+        tokenIdAirdrop: HexString;
+        amountAirdropPerUser: bigint;
+        airdropWhenHasParticipated: boolean;
+        eventImage: HexString;
+        eventName: HexString;
+        description: HexString;
+        location: HexString;
+        eventStartAt: bigint;
+        eventEndAt: bigint;
+        isPublic: boolean;
+        isBurnable: boolean;
+        lockedUntil: bigint;
+        hashedPassword: HexString;
+        amountAirdrop: bigint;
+      }>;
+      result: CallContractResult<null>;
+    };
+    mintPoapSerie: {
+      params: CallContractParams<{
+        collection: HexString;
+        eventId: bigint;
+        amount: bigint;
+        password: HexString;
+      }>;
+      result: CallContractResult<null>;
     };
     mintPoap: {
       params: CallContractParams<{
@@ -190,6 +242,41 @@ export namespace PoapFactoryV2Types {
       }>;
       result: SignExecuteScriptTxResult;
     };
+    createNewEvent: {
+      params: SignExecuteContractMethodParams<{
+        collection: HexString;
+        maxSupply: bigint;
+        mintStartAt: bigint;
+        mintEndAt: bigint;
+        poapPrice: bigint;
+        tokenIdPoap: HexString;
+        isOpenPrice: boolean;
+        tokenIdAirdrop: HexString;
+        amountAirdropPerUser: bigint;
+        airdropWhenHasParticipated: boolean;
+        eventImage: HexString;
+        eventName: HexString;
+        description: HexString;
+        location: HexString;
+        eventStartAt: bigint;
+        eventEndAt: bigint;
+        isPublic: boolean;
+        isBurnable: boolean;
+        lockedUntil: bigint;
+        hashedPassword: HexString;
+        amountAirdrop: bigint;
+      }>;
+      result: SignExecuteScriptTxResult;
+    };
+    mintPoapSerie: {
+      params: SignExecuteContractMethodParams<{
+        collection: HexString;
+        eventId: bigint;
+        amount: bigint;
+        password: HexString;
+      }>;
+      result: SignExecuteScriptTxResult;
+    };
     mintPoap: {
       params: SignExecuteContractMethodParams<{
         collection: HexString;
@@ -229,7 +316,13 @@ class Factory extends ContractFactory<
     );
   }
 
-  eventIndex = { EventCreated: 0, PoapMinted: 1, PoapParticipatedIn: 2 };
+  eventIndex = {
+    EventCreated: 0,
+    PoapMinted: 1,
+    PoapSerieMinted: 2,
+    PoapParticipatedIn: 3,
+    SerieAdded: 4,
+  };
 
   at(address: string): PoapFactoryV2Instance {
     return new PoapFactoryV2Instance(address);
@@ -293,6 +386,49 @@ class Factory extends ContractFactory<
         getContractByCodeHash
       );
     },
+    createNewEvent: async (
+      params: TestContractParamsWithoutMaps<
+        PoapFactoryV2Types.Fields,
+        {
+          collection: HexString;
+          maxSupply: bigint;
+          mintStartAt: bigint;
+          mintEndAt: bigint;
+          poapPrice: bigint;
+          tokenIdPoap: HexString;
+          isOpenPrice: boolean;
+          tokenIdAirdrop: HexString;
+          amountAirdropPerUser: bigint;
+          airdropWhenHasParticipated: boolean;
+          eventImage: HexString;
+          eventName: HexString;
+          description: HexString;
+          location: HexString;
+          eventStartAt: bigint;
+          eventEndAt: bigint;
+          isPublic: boolean;
+          isBurnable: boolean;
+          lockedUntil: bigint;
+          hashedPassword: HexString;
+          amountAirdrop: bigint;
+        }
+      >
+    ): Promise<TestContractResultWithoutMaps<null>> => {
+      return testMethod(this, "createNewEvent", params, getContractByCodeHash);
+    },
+    mintPoapSerie: async (
+      params: TestContractParamsWithoutMaps<
+        PoapFactoryV2Types.Fields,
+        {
+          collection: HexString;
+          eventId: bigint;
+          amount: bigint;
+          password: HexString;
+        }
+      >
+    ): Promise<TestContractResultWithoutMaps<null>> => {
+      return testMethod(this, "mintPoapSerie", params, getContractByCodeHash);
+    },
     mintPoap: async (
       params: TestContractParamsWithoutMaps<
         PoapFactoryV2Types.Fields,
@@ -347,7 +483,7 @@ export const PoapFactoryV2 = new Factory(
   Contract.fromJson(
     PoapFactoryV2ContractJson,
     "",
-    "e82bc66ace54074171083be99fcb086dc38c6a58a363dd765e9a09d578afa87c",
+    "43d9f035087405b40aa44780de63d7d46922e88fd48dfc2fe23460fb5c17a7fc",
     AllStructs
   )
 );
@@ -393,6 +529,19 @@ export class PoapFactoryV2Instance extends ContractInstance {
     );
   }
 
+  subscribePoapSerieMintedEvent(
+    options: EventSubscribeOptions<PoapFactoryV2Types.PoapSerieMintedEvent>,
+    fromCount?: number
+  ): EventSubscription {
+    return subscribeContractEvent(
+      PoapFactoryV2.contract,
+      this,
+      options,
+      "PoapSerieMinted",
+      fromCount
+    );
+  }
+
   subscribePoapParticipatedInEvent(
     options: EventSubscribeOptions<PoapFactoryV2Types.PoapParticipatedInEvent>,
     fromCount?: number
@@ -406,11 +555,26 @@ export class PoapFactoryV2Instance extends ContractInstance {
     );
   }
 
+  subscribeSerieAddedEvent(
+    options: EventSubscribeOptions<PoapFactoryV2Types.SerieAddedEvent>,
+    fromCount?: number
+  ): EventSubscription {
+    return subscribeContractEvent(
+      PoapFactoryV2.contract,
+      this,
+      options,
+      "SerieAdded",
+      fromCount
+    );
+  }
+
   subscribeAllEvents(
     options: EventSubscribeOptions<
       | PoapFactoryV2Types.EventCreatedEvent
       | PoapFactoryV2Types.PoapMintedEvent
+      | PoapFactoryV2Types.PoapSerieMintedEvent
       | PoapFactoryV2Types.PoapParticipatedInEvent
+      | PoapFactoryV2Types.SerieAddedEvent
     >,
     fromCount?: number
   ): EventSubscription {
@@ -443,6 +607,28 @@ export class PoapFactoryV2Instance extends ContractInstance {
         PoapFactoryV2,
         this,
         "mintNewCollectionWithSerie",
+        params,
+        getContractByCodeHash
+      );
+    },
+    createNewEvent: async (
+      params: PoapFactoryV2Types.CallMethodParams<"createNewEvent">
+    ): Promise<PoapFactoryV2Types.CallMethodResult<"createNewEvent">> => {
+      return callMethod(
+        PoapFactoryV2,
+        this,
+        "createNewEvent",
+        params,
+        getContractByCodeHash
+      );
+    },
+    mintPoapSerie: async (
+      params: PoapFactoryV2Types.CallMethodParams<"mintPoapSerie">
+    ): Promise<PoapFactoryV2Types.CallMethodResult<"mintPoapSerie">> => {
+      return callMethod(
+        PoapFactoryV2,
+        this,
+        "mintPoapSerie",
         params,
         getContractByCodeHash
       );
@@ -508,6 +694,18 @@ export class PoapFactoryV2Instance extends ContractInstance {
         "mintNewCollectionWithSerie",
         params
       );
+    },
+    createNewEvent: async (
+      params: PoapFactoryV2Types.SignExecuteMethodParams<"createNewEvent">
+    ): Promise<
+      PoapFactoryV2Types.SignExecuteMethodResult<"createNewEvent">
+    > => {
+      return signExecuteMethod(PoapFactoryV2, this, "createNewEvent", params);
+    },
+    mintPoapSerie: async (
+      params: PoapFactoryV2Types.SignExecuteMethodParams<"mintPoapSerie">
+    ): Promise<PoapFactoryV2Types.SignExecuteMethodResult<"mintPoapSerie">> => {
+      return signExecuteMethod(PoapFactoryV2, this, "mintPoapSerie", params);
     },
     mintPoap: async (
       params: PoapFactoryV2Types.SignExecuteMethodParams<"mintPoap">

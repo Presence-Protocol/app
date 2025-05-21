@@ -120,8 +120,9 @@ export namespace PoapSerieCollectionV2Types {
         isBurnable: boolean;
         lockedUntil: bigint;
         hashedPassword: HexString;
+        amountAirdrop: bigint;
       }>;
-      result: CallContractResult<null>;
+      result: CallContractResult<HexString>;
     };
     setParticipatedPresence: {
       params: CallContractParams<{
@@ -162,6 +163,14 @@ export namespace PoapSerieCollectionV2Types {
     isCollectionPublic: {
       params: Omit<CallContractParams<{}>, "args">;
       result: CallContractResult<boolean>;
+    };
+    getEventPublic: {
+      params: CallContractParams<{ eventId: bigint }>;
+      result: CallContractResult<boolean>;
+    };
+    getPoapPrice: {
+      params: CallContractParams<{ eventId: bigint }>;
+      result: CallContractResult<[bigint, HexString, boolean]>;
     };
   }
   export type CallMethodParams<T extends keyof CallMethodTable> =
@@ -233,6 +242,7 @@ export namespace PoapSerieCollectionV2Types {
         isBurnable: boolean;
         lockedUntil: bigint;
         hashedPassword: HexString;
+        amountAirdrop: bigint;
       }>;
       result: SignExecuteScriptTxResult;
     };
@@ -292,6 +302,14 @@ export namespace PoapSerieCollectionV2Types {
     };
     isCollectionPublic: {
       params: Omit<SignExecuteContractMethodParams<{}>, "args">;
+      result: SignExecuteScriptTxResult;
+    };
+    getEventPublic: {
+      params: SignExecuteContractMethodParams<{ eventId: bigint }>;
+      result: SignExecuteScriptTxResult;
+    };
+    getPoapPrice: {
+      params: SignExecuteContractMethodParams<{ eventId: bigint }>;
       result: SignExecuteScriptTxResult;
     };
   }
@@ -418,10 +436,13 @@ class Factory extends ContractFactory<
           isBurnable: boolean;
           lockedUntil: bigint;
           hashedPassword: HexString;
+          amountAirdrop: bigint;
         },
         PoapSerieCollectionV2Types.Maps
       >
-    ): Promise<TestContractResult<null, PoapSerieCollectionV2Types.Maps>> => {
+    ): Promise<
+      TestContractResult<HexString, PoapSerieCollectionV2Types.Maps>
+    > => {
       return testMethod(this, "addNewEvent", params, getContractByCodeHash);
     },
     setParticipatedPresence: async (
@@ -545,6 +566,31 @@ class Factory extends ContractFactory<
         getContractByCodeHash
       );
     },
+    getEventPublic: async (
+      params: TestContractParams<
+        PoapSerieCollectionV2Types.Fields,
+        { eventId: bigint },
+        PoapSerieCollectionV2Types.Maps
+      >
+    ): Promise<
+      TestContractResult<boolean, PoapSerieCollectionV2Types.Maps>
+    > => {
+      return testMethod(this, "getEventPublic", params, getContractByCodeHash);
+    },
+    getPoapPrice: async (
+      params: TestContractParams<
+        PoapSerieCollectionV2Types.Fields,
+        { eventId: bigint },
+        PoapSerieCollectionV2Types.Maps
+      >
+    ): Promise<
+      TestContractResult<
+        [bigint, HexString, boolean],
+        PoapSerieCollectionV2Types.Maps
+      >
+    > => {
+      return testMethod(this, "getPoapPrice", params, getContractByCodeHash);
+    },
   };
 
   stateForTest(
@@ -561,8 +607,8 @@ class Factory extends ContractFactory<
 export const PoapSerieCollectionV2 = new Factory(
   Contract.fromJson(
     PoapSerieCollectionV2ContractJson,
-    "=30-2+69=2-2+ee=2+3=1-1=2-1+7444=1+7=2-1+f=2+5=1-1=3-2+88=2+9=1-1=2-2+a=1-3=1458-2+41=202+7a7e0214696e73657274206174206d617020706174683a2000=1176",
-    "07b512e4056c5fc28efa5c232cc13d594ab2c38021dcad3a86cf37d5e86e5139",
+    "=30-8+7=1-1=1-2=1+f6=2+3=1-1=2-2+7c=1-2=1+bf=2+0=1-1=2-2+4d=2-2+90=2-1+9=3-2+ac45e74622=1435-1+5=146+7e01056865726531=18+7e01056865726532=40+7a7e0214696e73657274206174206d617020706174683a2000=1418",
+    "3a2559e53f1b5019d7dfe99e7114688f7585206444ff1dfbcd7ff504d9c40e4a",
     AllStructs
   )
 );
@@ -838,6 +884,30 @@ export class PoapSerieCollectionV2Instance extends ContractInstance {
         getContractByCodeHash
       );
     },
+    getEventPublic: async (
+      params: PoapSerieCollectionV2Types.CallMethodParams<"getEventPublic">
+    ): Promise<
+      PoapSerieCollectionV2Types.CallMethodResult<"getEventPublic">
+    > => {
+      return callMethod(
+        PoapSerieCollectionV2,
+        this,
+        "getEventPublic",
+        params,
+        getContractByCodeHash
+      );
+    },
+    getPoapPrice: async (
+      params: PoapSerieCollectionV2Types.CallMethodParams<"getPoapPrice">
+    ): Promise<PoapSerieCollectionV2Types.CallMethodResult<"getPoapPrice">> => {
+      return callMethod(
+        PoapSerieCollectionV2,
+        this,
+        "getPoapPrice",
+        params,
+        getContractByCodeHash
+      );
+    },
   };
 
   transact = {
@@ -1018,6 +1088,30 @@ export class PoapSerieCollectionV2Instance extends ContractInstance {
         PoapSerieCollectionV2,
         this,
         "isCollectionPublic",
+        params
+      );
+    },
+    getEventPublic: async (
+      params: PoapSerieCollectionV2Types.SignExecuteMethodParams<"getEventPublic">
+    ): Promise<
+      PoapSerieCollectionV2Types.SignExecuteMethodResult<"getEventPublic">
+    > => {
+      return signExecuteMethod(
+        PoapSerieCollectionV2,
+        this,
+        "getEventPublic",
+        params
+      );
+    },
+    getPoapPrice: async (
+      params: PoapSerieCollectionV2Types.SignExecuteMethodParams<"getPoapPrice">
+    ): Promise<
+      PoapSerieCollectionV2Types.SignExecuteMethodResult<"getPoapPrice">
+    > => {
+      return signExecuteMethod(
+        PoapSerieCollectionV2,
+        this,
+        "getPoapPrice",
         params
       );
     },

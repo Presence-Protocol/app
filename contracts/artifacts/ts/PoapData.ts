@@ -181,7 +181,7 @@ export namespace PoapDataTypes {
     };
     getPoapPrice: {
       params: Omit<CallContractParams<{}>, "args">;
-      result: CallContractResult<bigint>;
+      result: CallContractResult<[bigint, HexString, boolean]>;
     };
     getTokenIdPoap: {
       params: Omit<CallContractParams<{}>, "args">;
@@ -640,7 +640,7 @@ class Factory extends ContractFactory<PoapDataInstance, PoapDataTypes.Fields> {
         TestContractParamsWithoutMaps<PoapDataTypes.Fields, never>,
         "testArgs"
       >
-    ): Promise<TestContractResultWithoutMaps<bigint>> => {
+    ): Promise<TestContractResultWithoutMaps<[bigint, HexString, boolean]>> => {
       return testMethod(this, "getPoapPrice", params, getContractByCodeHash);
     },
     getTokenIdPoap: async (
@@ -719,7 +719,7 @@ export const PoapData = new Factory(
   Contract.fromJson(
     PoapDataContractJson,
     "",
-    "ac9606d742ee15a11f5d2b1fbcb8665063add4c69df1509d7ed9f1201c92c31d",
+    "85bb9e7d3ff4f634422464c048fa97dba444559157b216414478524a233c8b9e",
     AllStructs
   )
 );
