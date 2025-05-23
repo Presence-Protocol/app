@@ -100,7 +100,7 @@ Contract PoapFactoryV2(
         
         }
     
-        @using(preapprovedAssets = true, checkExternalCaller = false, updateFields = true)
+        @using(preapprovedAssets = true, checkExternalCaller = false, updateFields = true, preserveCaller = true)
         pub fn mintNewCollectionWithSerie(
             eventImage: ByteVec,
             eventName: ByteVec,
@@ -164,9 +164,7 @@ Contract PoapFactoryV2(
         let caller = callerAddress!()
         checkCaller!(caller == collection.getOrganizer(), ErrorCodes.InvalidCaller)
         
-
-
-       let contractId = collection.addNewEvent{caller -> tokenIdAirdrop: amountAirdrop}(
+       let contractId = collection.addNewEvent{caller -> ALPH: 2*minimalContractDeposit!(), tokenIdAirdrop: amountAirdrop}(
             maxSupply,
             mintStartAt,
             mintEndAt,
@@ -205,7 +203,7 @@ Contract PoapFactoryV2(
             poapPriceAmount = amount
         }
 
-        let poapContractId = collection.mint{caller -> ALPH: dustAmount!(), poapTokenId: poapPriceAmount}(eventId, poapPriceAmount, password)
+        let poapContractId = collection.mint{caller -> ALPH: minimalContractDeposit!(), poapTokenId: poapPriceAmount}(eventId, poapPriceAmount, password)
         let collectionTotalSupply = collection.totalSupply()
 
         emit PoapSerieMinted(poapContractId, collection, eventId, collectionTotalSupply ,caller, collection.getEventPublic(eventId), blockTimeStamp!())

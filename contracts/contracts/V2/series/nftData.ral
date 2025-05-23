@@ -143,7 +143,7 @@ Contract PoapData(
   }
 
 
-  pub fn getTotalSupply() -> U256 {
+  pub fn getCurrentSupply() -> U256 {
     return totalSupply
   }
 

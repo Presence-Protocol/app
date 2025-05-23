@@ -12,5 +12,36 @@ import {
   HexString,
 } from "@alephium/web3";
 import { getContractByCodeHash } from "./contracts";
-
+import { default as NewPresenceNewEventScriptJson } from "../V2/series/scripts/NewPresenceNewEvent.ral.json";
 import { Trait, AllStructs } from "./types";
+
+export const NewPresenceNewEvent = new ExecutableScript<{
+  factory: HexString;
+  eventImage: HexString;
+  eventName: HexString;
+  description: HexString;
+  isPublic: boolean;
+  maxSupply: bigint;
+  mintStartAt: bigint;
+  mintEndAt: bigint;
+  poapPrice: bigint;
+  tokenIdPoap: HexString;
+  isOpenPrice: boolean;
+  tokenIdAirdrop: HexString;
+  amountAirdropPerUser: bigint;
+  airdropWhenHasParticipated: boolean;
+  image: HexString;
+  name: HexString;
+  eventDescription: HexString;
+  location: HexString;
+  eventStartAt: bigint;
+  eventEndAt: bigint;
+  eventIsPublic: boolean;
+  isBurnable: boolean;
+  lockedUntil: bigint;
+  hashedPassword: HexString;
+  amountAirdrop: bigint;
+}>(
+  Script.fromJson(NewPresenceNewEventScriptJson, "", AllStructs),
+  getContractByCodeHash
+);

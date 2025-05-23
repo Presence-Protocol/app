@@ -14,7 +14,6 @@ Contract PoapNFTSerieV2(
   minter: Address,
   isBurnable: Bool,
   lockedUntil: U256,
-  oneMintPerAddress: Bool,
   mut hasParticipated: Bool
 ) implements INFT {
   
@@ -100,9 +99,6 @@ Contract PoapNFTSerieV2(
     return hasParticipated
   }
 
-  pub fn isOneMintPerAddress() -> (Bool) {
-    return oneMintPerAddress
-  }
 
 
   pub fn getMinter() -> Address {

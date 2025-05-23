@@ -607,8 +607,8 @@ class Factory extends ContractFactory<
 export const PoapSerieCollectionV2 = new Factory(
   Contract.fromJson(
     PoapSerieCollectionV2ContractJson,
-    "=30-8+7=1-1=1-2=1+f6=2+3=1-1=2-2+7c=1-2=1+bf=2+0=1-1=2-2+4d=2-2+90=2-1+9=3-2+ac45e74622=1435-1+5=146+7e01056865726531=18+7e01056865726532=40+7a7e0214696e73657274206174206d617020706174683a2000=1418",
-    "3a2559e53f1b5019d7dfe99e7114688f7585206444ff1dfbcd7ff504d9c40e4a",
+    "=30+6543ea=1-1=1-1+2=1-1=2-2+70=2-2+b3=2-1+f=2+5=1-1=3-1=2-3=2-1=1+2=2-2+a0=2-5=1+b4616=1435-1+6=212+7a7e0214696e73657274206174206d617020706174683a2000=1418",
+    "c7bbb75ba5e6ee4b21cffe3735e2eb38b8651c88ccedcfacc6ae2ab78bb870d7",
     AllStructs
   )
 );

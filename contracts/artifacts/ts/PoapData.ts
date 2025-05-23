@@ -131,7 +131,7 @@ export namespace PoapDataTypes {
       params: Omit<CallContractParams<{}>, "args">;
       result: CallContractResult<HexString>;
     };
-    getTotalSupply: {
+    getCurrentSupply: {
       params: Omit<CallContractParams<{}>, "args">;
       result: CallContractResult<bigint>;
     };
@@ -281,7 +281,7 @@ export namespace PoapDataTypes {
       params: Omit<SignExecuteContractMethodParams<{}>, "args">;
       result: SignExecuteScriptTxResult;
     };
-    getTotalSupply: {
+    getCurrentSupply: {
       params: Omit<SignExecuteContractMethodParams<{}>, "args">;
       result: SignExecuteScriptTxResult;
     };
@@ -539,13 +539,18 @@ class Factory extends ContractFactory<PoapDataInstance, PoapDataTypes.Fields> {
     ): Promise<TestContractResultWithoutMaps<HexString>> => {
       return testMethod(this, "getImage", params, getContractByCodeHash);
     },
-    getTotalSupply: async (
+    getCurrentSupply: async (
       params: Omit<
         TestContractParamsWithoutMaps<PoapDataTypes.Fields, never>,
         "testArgs"
       >
     ): Promise<TestContractResultWithoutMaps<bigint>> => {
-      return testMethod(this, "getTotalSupply", params, getContractByCodeHash);
+      return testMethod(
+        this,
+        "getCurrentSupply",
+        params,
+        getContractByCodeHash
+      );
     },
     getMaxSupply: async (
       params: Omit<
@@ -719,7 +724,7 @@ export const PoapData = new Factory(
   Contract.fromJson(
     PoapDataContractJson,
     "",
-    "85bb9e7d3ff4f634422464c048fa97dba444559157b216414478524a233c8b9e",
+    "95a95dd74b11dd7b2215f7fd71a3b5162b0503d031b7905ea1a47299be2cc70c",
     AllStructs
   )
 );
@@ -901,13 +906,13 @@ export class PoapDataInstance extends ContractInstance {
         getContractByCodeHash
       );
     },
-    getTotalSupply: async (
-      params?: PoapDataTypes.CallMethodParams<"getTotalSupply">
-    ): Promise<PoapDataTypes.CallMethodResult<"getTotalSupply">> => {
+    getCurrentSupply: async (
+      params?: PoapDataTypes.CallMethodParams<"getCurrentSupply">
+    ): Promise<PoapDataTypes.CallMethodResult<"getCurrentSupply">> => {
       return callMethod(
         PoapData,
         this,
-        "getTotalSupply",
+        "getCurrentSupply",
         params === undefined ? {} : params,
         getContractByCodeHash
       );
@@ -1192,10 +1197,10 @@ export class PoapDataInstance extends ContractInstance {
     ): Promise<PoapDataTypes.SignExecuteMethodResult<"getImage">> => {
       return signExecuteMethod(PoapData, this, "getImage", params);
     },
-    getTotalSupply: async (
-      params: PoapDataTypes.SignExecuteMethodParams<"getTotalSupply">
-    ): Promise<PoapDataTypes.SignExecuteMethodResult<"getTotalSupply">> => {
-      return signExecuteMethod(PoapData, this, "getTotalSupply", params);
+    getCurrentSupply: async (
+      params: PoapDataTypes.SignExecuteMethodParams<"getCurrentSupply">
+    ): Promise<PoapDataTypes.SignExecuteMethodResult<"getCurrentSupply">> => {
+      return signExecuteMethod(PoapData, this, "getCurrentSupply", params);
     },
     getMaxSupply: async (
       params: PoapDataTypes.SignExecuteMethodParams<"getMaxSupply">

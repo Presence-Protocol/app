@@ -26,7 +26,7 @@ Contract PoapSerieCollectionV2(
      let eventData = nftMetadata[eventId]
 
 
-     assert!(eventData.getMaxSupply() < eventData.getMaxSupply(), ErrorCodes.MaxSupplyReached)
+     assert!(eventData.getCurrentSupply() < eventData.getMaxSupply(), ErrorCodes.MaxSupplyReached)
      assert!(blockTimeStamp!() >= eventData.getMintStartAt(), ErrorCodes.MintNotStarted)
      assert!(blockTimeStamp!() <= eventData.getMintEndAt(), ErrorCodes.MintEnded)
 
@@ -40,7 +40,7 @@ Contract PoapSerieCollectionV2(
      let lockPresenceUntil = eventData.getLockedUntil()
 
      // todo change nftindex to include eventId
-     let (initialImmState, initialMutState) = PoapNFTV2.encodeFields!(selfContractId!(), totalSupply, eventData.getImage(), eventData.getName(), eventData.getDescription(), organizerAddressHex, eventData.getLocation(), eventData.getEventStartAt(), eventData.getEventEndAt(), eventData.getIsPublic(), caller, eventData.getIsBurnable(), eventData.getLockedUntil(), false)
+     let (initialImmState, initialMutState) = PoapNFTSerieV2.encodeFields!(selfContractId!(), totalSupply, eventData.getImage(), eventData.getName(), eventData.getDescription(), organizerAddressHex, eventData.getLocation(), eventData.getEventStartAt(), eventData.getEventEndAt(), eventData.getIsPublic(), caller, eventData.getIsBurnable(), eventData.getLockedUntil(), false)
      
      let contractPath = toByteVec!(totalSupply)
   
@@ -166,12 +166,8 @@ Contract PoapSerieCollectionV2(
         amountAirdrop
       )
      
-      emit Debug(`here1`)
-      let contract = createContract!(poapDataTemplateId, initialImmState, initialMutState)
-      emit Debug(`here2`)
-      nftMetadata.insert!(caller, totalSupplySeries, PoapData(contract))
-                    
-
+      let contract = copyCreateContract!{caller -> ALPH: minimalContractDeposit!()}(poapDataTemplateId, initialImmState, initialMutState)
+      nftMetadata.insert!(caller, totalSupplySeries, PoapData(contract))                  
 
       emit SerieAdded(selfContractId!(), totalSupplySeries)
 
