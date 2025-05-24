@@ -166,7 +166,7 @@ Contract PoapSerieCollectionV2(
         amountAirdrop
       )
      
-      let contract = copyCreateContract!{caller -> ALPH: minimalContractDeposit!()}(poapDataTemplateId, initialImmState, initialMutState)
+      let contract = copyCreateContract!{caller -> ALPH: minimalContractDeposit!(), tokenIdAirdrop: amountAirdrop}(poapDataTemplateId, initialImmState, initialMutState)
       nftMetadata.insert!(caller, totalSupplySeries, PoapData(contract))                  
 
       emit SerieAdded(selfContractId!(), totalSupplySeries)
@@ -207,12 +207,16 @@ Contract PoapSerieCollectionV2(
     }
     
     pub fn totalSupply() -> U256 {
+        return totalSupply
+    }
+
+    pub fn totalSupplySeries() -> U256 {
         return totalSupplySeries
     }
 
 
     pub fn nftByIndex(index: U256) -> INFT {
-        assert!(index < totalSupply(), ErrorCodes.IncorrectTokenIndex)
+        assert!(index < totalSupply, ErrorCodes.IncorrectTokenIndex)
     
         let nftTokenId = subContractId!(toByteVec!(index))
         assert!(contractExists!(nftTokenId), ErrorCodes.NFTNotFound)
@@ -317,6 +321,11 @@ Contract PoapSerieCollectionV2(
       assert!(nftMetadata.contains!(eventId), ErrorCodes.IncorrectEventIndex)
       return nftMetadata[eventId].getPoapPrice()
 
+    }
+
+    pub fn getPoapDataByEvent(eventId: U256) -> (ByteVec) {
+      assert!(nftMetadata.contains!(eventId), ErrorCodes.IncorrectEventIndex)
+      return contractId!(nftMetadata[eventId])
     }
 
 }

@@ -31,10 +31,9 @@ Contract PoapData(
   
   @using(updateFields = true)
   pub fn incrementTotalSupply() -> (){
-    checkCaller!(callerContractId!() == collectionId,ErrorCodes.InvalidCaller)
+    checkCaller!(callerContractId!() == collectionId, ErrorCodes.InvalidCaller)
     totalSupply = totalSupply + 1
   }
-
 
 
    @using(assetsInContract = true, updateFields = true, preapprovedAssets = true)

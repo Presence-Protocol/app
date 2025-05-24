@@ -31,8 +31,8 @@
     },
     "NewPresenceNewEvent": {
       "sourceFile": "V2/series/scripts/collection.ral",
-      "sourceCodeHash": "1624d009fbd0efaa3b7c1dd75d395247ed70a1f134782d847d85aba3c6a8059a",
-      "bytecodeDebugPatch": "=15-1+e=6+7e011a4e657750726573656e63654e65774576656e742063616c6c6564=35+7e011c4e657750726573656e63654e65774576656e742063616c6c65642032=104",
+      "sourceCodeHash": "50893fcb35c3a8792f257eee583a1b56c2aa1ea6ae1081ae2fefd396044f4089",
+      "bytecodeDebugPatch": "=15-1+2=6+7e011a4e657750726573656e63654e65774576656e742063616c6c6564=35+7e011c4e657750726573656e63654e65774576656e742063616c6c65642032=116",
       "codeHashDebug": ""
     },
     "PoapCollection": {
@@ -49,7 +49,7 @@
     },
     "PoapData": {
       "sourceFile": "V2/series/nftData.ral",
-      "sourceCodeHash": "f4e53f5e88d3f4a226724134edb7b7e278ffb629ee540b051070bd7c5736dbe3",
+      "sourceCodeHash": "8ed6d8573a1a70b90955349165171ad16d8e236f65105400a71d49cdf6a38f88",
       "bytecodeDebugPatch": "",
       "codeHashDebug": "95a95dd74b11dd7b2215f7fd71a3b5162b0503d031b7905ea1a47299be2cc70c"
     },
@@ -63,7 +63,7 @@
       "sourceFile": "V2/factoryPoapV2.ral",
       "sourceCodeHash": "54f30e9cd450a51478d90e0f14fc5fd56c3717062eaea1e64acc5450168badc3",
       "bytecodeDebugPatch": "",
-      "codeHashDebug": "861274fbbcc20d59d122321e5769245c461493675ce6ee24aa30b8a3fa2b5f4d"
+      "codeHashDebug": "5a5dbeccf55e220638df4d3fb227818e2e6ad465369ae2b6c53b124b715b58ae"
     },
     "PoapNFT": {
       "sourceFile": "nftTemplate.ral",
@@ -85,9 +85,9 @@
     },
     "PoapSerieCollectionV2": {
       "sourceFile": "V2/series/collectionSerieTemplate.ral",
-      "sourceCodeHash": "b098a808a63fcd4193390e28b2ed5d3772d27579f485009abd7f319504868b3b",
-      "bytecodeDebugPatch": "=30+6543ea=1-1=1-1+2=1-1=2-2+70=2-2+b3=2-1+f=2+5=1-1=3-1=2-3=2-1=1+2=2-2+a0=2-5=1+b4616=1435-1+6=212+7a7e0214696e73657274206174206d617020706174683a2000=1418",
-      "codeHashDebug": "242da18658ca480e85ff83dbf308a81172a7a5286e2beb9924495aeffda7459b"
+      "sourceCodeHash": "af6602b201ef2dc9eb375e9c549ca0040807483cf6136a306bcc8fdd0834d606",
+      "bytecodeDebugPatch": "=30-2+6b=2-2+f0=2+f=1-1=2-2=1+1=1-2=1+8=1-2=2-2+c7=2-2+0e=2-2+55=2+9=1-1+45a6=2-1=1+4=2-2+ef=2-2+2a=2-2+61=1435-1+a=224+7a7e0214696e73657274206174206d617020706174683a2000=1556",
+      "codeHashDebug": "84d43c0e8308fa8973fc17311a32cb5c6e4db64fd3978132ccab191a75c2532e"
     },
     "Trait": {
       "sourceFile": "dynamic_nft_standard.ral",

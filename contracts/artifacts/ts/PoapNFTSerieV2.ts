@@ -53,7 +53,6 @@ export namespace PoapNFTSerieV2Types {
     minter: Address;
     isBurnable: boolean;
     lockedUntil: bigint;
-    oneMintPerAddress: boolean;
     hasParticipated: boolean;
   };
 
@@ -99,10 +98,6 @@ export namespace PoapNFTSerieV2Types {
       result: CallContractResult<Trait>;
     };
     getHasParticipated: {
-      params: Omit<CallContractParams<{}>, "args">;
-      result: CallContractResult<boolean>;
-    };
-    isOneMintPerAddress: {
       params: Omit<CallContractParams<{}>, "args">;
       result: CallContractResult<boolean>;
     };
@@ -180,10 +175,6 @@ export namespace PoapNFTSerieV2Types {
       result: SignExecuteScriptTxResult;
     };
     getHasParticipated: {
-      params: Omit<SignExecuteContractMethodParams<{}>, "args">;
-      result: SignExecuteScriptTxResult;
-    };
-    isOneMintPerAddress: {
       params: Omit<SignExecuteContractMethodParams<{}>, "args">;
       result: SignExecuteScriptTxResult;
     };
@@ -324,19 +315,6 @@ class Factory extends ContractFactory<
         getContractByCodeHash
       );
     },
-    isOneMintPerAddress: async (
-      params: Omit<
-        TestContractParamsWithoutMaps<PoapNFTSerieV2Types.Fields, never>,
-        "testArgs"
-      >
-    ): Promise<TestContractResultWithoutMaps<boolean>> => {
-      return testMethod(
-        this,
-        "isOneMintPerAddress",
-        params,
-        getContractByCodeHash
-      );
-    },
     getMinter: async (
       params: Omit<
         TestContractParamsWithoutMaps<PoapNFTSerieV2Types.Fields, never>,
@@ -385,7 +363,7 @@ export const PoapNFTSerieV2 = new Factory(
   Contract.fromJson(
     PoapNFTSerieV2ContractJson,
     "",
-    "bddc792c85c5617d0a8903b0a919cfd9d0c63eb2c79a24197663848c1486af08",
+    "5eafdf51e14a05eb56f826a111b5cbd4e4cf3ffec834b8c5d3ce813dd7b9b9f0",
     AllStructs
   )
 );
@@ -512,17 +490,6 @@ export class PoapNFTSerieV2Instance extends ContractInstance {
         getContractByCodeHash
       );
     },
-    isOneMintPerAddress: async (
-      params?: PoapNFTSerieV2Types.CallMethodParams<"isOneMintPerAddress">
-    ): Promise<PoapNFTSerieV2Types.CallMethodResult<"isOneMintPerAddress">> => {
-      return callMethod(
-        PoapNFTSerieV2,
-        this,
-        "isOneMintPerAddress",
-        params === undefined ? {} : params,
-        getContractByCodeHash
-      );
-    },
     getMinter: async (
       params?: PoapNFTSerieV2Types.CallMethodParams<"getMinter">
     ): Promise<PoapNFTSerieV2Types.CallMethodResult<"getMinter">> => {
@@ -637,18 +604,6 @@ export class PoapNFTSerieV2Instance extends ContractInstance {
         PoapNFTSerieV2,
         this,
         "getHasParticipated",
-        params
-      );
-    },
-    isOneMintPerAddress: async (
-      params: PoapNFTSerieV2Types.SignExecuteMethodParams<"isOneMintPerAddress">
-    ): Promise<
-      PoapNFTSerieV2Types.SignExecuteMethodResult<"isOneMintPerAddress">
-    > => {
-      return signExecuteMethod(
-        PoapNFTSerieV2,
-        this,
-        "isOneMintPerAddress",
         params
       );
     },

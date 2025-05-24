@@ -132,6 +132,10 @@ export namespace PoapSerieCollectionV2Types {
       }>;
       result: CallContractResult<null>;
     };
+    totalSupplySeries: {
+      params: Omit<CallContractParams<{}>, "args">;
+      result: CallContractResult<bigint>;
+    };
     claimFunds: {
       params: CallContractParams<{ eventId: bigint; amountToClaim: bigint }>;
       result: CallContractResult<null>;
@@ -171,6 +175,10 @@ export namespace PoapSerieCollectionV2Types {
     getPoapPrice: {
       params: CallContractParams<{ eventId: bigint }>;
       result: CallContractResult<[bigint, HexString, boolean]>;
+    };
+    getPoapDataByEvent: {
+      params: CallContractParams<{ eventId: bigint }>;
+      result: CallContractResult<HexString>;
     };
   }
   export type CallMethodParams<T extends keyof CallMethodTable> =
@@ -254,6 +262,10 @@ export namespace PoapSerieCollectionV2Types {
       }>;
       result: SignExecuteScriptTxResult;
     };
+    totalSupplySeries: {
+      params: Omit<SignExecuteContractMethodParams<{}>, "args">;
+      result: SignExecuteScriptTxResult;
+    };
     claimFunds: {
       params: SignExecuteContractMethodParams<{
         eventId: bigint;
@@ -309,6 +321,10 @@ export namespace PoapSerieCollectionV2Types {
       result: SignExecuteScriptTxResult;
     };
     getPoapPrice: {
+      params: SignExecuteContractMethodParams<{ eventId: bigint }>;
+      result: SignExecuteScriptTxResult;
+    };
+    getPoapDataByEvent: {
       params: SignExecuteContractMethodParams<{ eventId: bigint }>;
       result: SignExecuteScriptTxResult;
     };
@@ -459,6 +475,23 @@ class Factory extends ContractFactory<
         getContractByCodeHash
       );
     },
+    totalSupplySeries: async (
+      params: Omit<
+        TestContractParams<
+          PoapSerieCollectionV2Types.Fields,
+          never,
+          PoapSerieCollectionV2Types.Maps
+        >,
+        "testArgs"
+      >
+    ): Promise<TestContractResult<bigint, PoapSerieCollectionV2Types.Maps>> => {
+      return testMethod(
+        this,
+        "totalSupplySeries",
+        params,
+        getContractByCodeHash
+      );
+    },
     claimFunds: async (
       params: TestContractParams<
         PoapSerieCollectionV2Types.Fields,
@@ -591,6 +624,22 @@ class Factory extends ContractFactory<
     > => {
       return testMethod(this, "getPoapPrice", params, getContractByCodeHash);
     },
+    getPoapDataByEvent: async (
+      params: TestContractParams<
+        PoapSerieCollectionV2Types.Fields,
+        { eventId: bigint },
+        PoapSerieCollectionV2Types.Maps
+      >
+    ): Promise<
+      TestContractResult<HexString, PoapSerieCollectionV2Types.Maps>
+    > => {
+      return testMethod(
+        this,
+        "getPoapDataByEvent",
+        params,
+        getContractByCodeHash
+      );
+    },
   };
 
   stateForTest(
@@ -607,8 +656,8 @@ class Factory extends ContractFactory<
 export const PoapSerieCollectionV2 = new Factory(
   Contract.fromJson(
     PoapSerieCollectionV2ContractJson,
-    "=30+6543ea=1-1=1-1+2=1-1=2-2+70=2-2+b3=2-1+f=2+5=1-1=3-1=2-3=2-1=1+2=2-2+a0=2-5=1+b4616=1435-1+6=212+7a7e0214696e73657274206174206d617020706174683a2000=1418",
-    "c7bbb75ba5e6ee4b21cffe3735e2eb38b8651c88ccedcfacc6ae2ab78bb870d7",
+    "=30-2+6b=2-2+f0=2+f=1-1=2-2=1+1=1-2=1+8=1-2=2-2+c7=2-2+0e=2-2+55=2+9=1-1+45a6=2-1=1+4=2-2+ef=2-2+2a=2-2+61=1435-1+a=224+7a7e0214696e73657274206174206d617020706174683a2000=1556",
+    "84d43c0e8308fa8973fc17311a32cb5c6e4db64fd3978132ccab191a75c2532e",
     AllStructs
   )
 );
@@ -784,6 +833,19 @@ export class PoapSerieCollectionV2Instance extends ContractInstance {
         getContractByCodeHash
       );
     },
+    totalSupplySeries: async (
+      params?: PoapSerieCollectionV2Types.CallMethodParams<"totalSupplySeries">
+    ): Promise<
+      PoapSerieCollectionV2Types.CallMethodResult<"totalSupplySeries">
+    > => {
+      return callMethod(
+        PoapSerieCollectionV2,
+        this,
+        "totalSupplySeries",
+        params === undefined ? {} : params,
+        getContractByCodeHash
+      );
+    },
     claimFunds: async (
       params: PoapSerieCollectionV2Types.CallMethodParams<"claimFunds">
     ): Promise<PoapSerieCollectionV2Types.CallMethodResult<"claimFunds">> => {
@@ -908,6 +970,19 @@ export class PoapSerieCollectionV2Instance extends ContractInstance {
         getContractByCodeHash
       );
     },
+    getPoapDataByEvent: async (
+      params: PoapSerieCollectionV2Types.CallMethodParams<"getPoapDataByEvent">
+    ): Promise<
+      PoapSerieCollectionV2Types.CallMethodResult<"getPoapDataByEvent">
+    > => {
+      return callMethod(
+        PoapSerieCollectionV2,
+        this,
+        "getPoapDataByEvent",
+        params,
+        getContractByCodeHash
+      );
+    },
   };
 
   transact = {
@@ -992,6 +1067,18 @@ export class PoapSerieCollectionV2Instance extends ContractInstance {
         PoapSerieCollectionV2,
         this,
         "setParticipatedPresence",
+        params
+      );
+    },
+    totalSupplySeries: async (
+      params: PoapSerieCollectionV2Types.SignExecuteMethodParams<"totalSupplySeries">
+    ): Promise<
+      PoapSerieCollectionV2Types.SignExecuteMethodResult<"totalSupplySeries">
+    > => {
+      return signExecuteMethod(
+        PoapSerieCollectionV2,
+        this,
+        "totalSupplySeries",
         params
       );
     },
@@ -1112,6 +1199,18 @@ export class PoapSerieCollectionV2Instance extends ContractInstance {
         PoapSerieCollectionV2,
         this,
         "getPoapPrice",
+        params
+      );
+    },
+    getPoapDataByEvent: async (
+      params: PoapSerieCollectionV2Types.SignExecuteMethodParams<"getPoapDataByEvent">
+    ): Promise<
+      PoapSerieCollectionV2Types.SignExecuteMethodResult<"getPoapDataByEvent">
+    > => {
+      return signExecuteMethod(
+        PoapSerieCollectionV2,
+        this,
+        "getPoapDataByEvent",
         params
       );
     },

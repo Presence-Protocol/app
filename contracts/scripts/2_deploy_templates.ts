@@ -125,7 +125,6 @@ const deployTemplates: DeployFunction<Settings> = async (
       minter: NULL_CONTRACT_ADDRESS,
       isBurnable: false,
       lockedUntil: 0n,
-      oneMintPerAddress: false,
       hasParticipated: false
     }
   })
