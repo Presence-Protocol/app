@@ -217,13 +217,28 @@ export default function NewEvent() {
         setIsLargeImageWarningOpen(true);
         return;
       }
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setPreviewImage(reader.result as string);
-        setImageString(reader.result as string);
-        setIsImageValid(true);
-      };
-      reader.readAsDataURL(file);
+
+      // Check if it's a video file
+      if (file.type.startsWith('video/')) {
+        const videoUrl = URL.createObjectURL(file);
+        setPreviewImage(videoUrl);
+        // Read the file as data URL for storage
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          setImageString(reader.result as string);
+          setIsImageValid(true);
+        };
+        reader.readAsDataURL(file);
+      } else {
+        // Handle image files as before
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          setPreviewImage(reader.result as string);
+          setImageString(reader.result as string);
+          setIsImageValid(true);
+        };
+        reader.readAsDataURL(file);
+      }
     }
   };
 
@@ -232,8 +247,8 @@ export default function NewEvent() {
       const response = await fetch(url);
       const blob = await response.blob();
       
-      if (!blob.type.startsWith('image/')) {
-        throw new Error('URL must point to an image');
+      if (!blob.type.startsWith('image/') && !blob.type.startsWith('video/')) {
+        throw new Error('URL must point to an image or video');
       }
       
       /*if (blob.size > 3072) {
@@ -248,7 +263,7 @@ export default function NewEvent() {
       };
       reader.readAsDataURL(blob);
     } catch (error) {
-      toast.error('Failed to load image from URL');
+      toast.error('Failed to load media from URL');
       setIsImageValid(false);
     }
   };
@@ -267,6 +282,10 @@ export default function NewEvent() {
   };
 
   const handleRemoveImage = () => {
+    // Revoke the object URL if it's a video
+    if (previewImage && previewImage.startsWith('blob:')) {
+      URL.revokeObjectURL(previewImage);
+    }
     setPreviewImage(null);
     setIsImageValid(true);
     setImageString(null);
@@ -1045,13 +1064,23 @@ export default function NewEvent() {
                   <div className="w-full max-w-lg p-8 text-center fixed">
                     <div className="relative w-64 h-64 mx-auto rounded-2xl border-2 border-black shadow bg-white">
                       {previewImage ? (
-                        <img src={previewImage} alt="Preview" className="w-full h-full object-cover rounded-2xl" />
+                        previewImage.startsWith('blob:') || previewImage.startsWith('data:video') ? (
+                          <video 
+                            src={previewImage} 
+                            className="w-full h-full object-cover rounded-2xl"
+                            autoPlay={true}
+                            loop={true}
+                            muted
+                          />
+                        ) : (
+                          <img src={previewImage} alt="Preview" className="w-full h-full object-cover rounded-2xl" />
+                        )
                       ) : (
                         <div className="w-full h-full flex flex-col items-center justify-center text-gray-400">
                           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1} stroke="currentColor" className="w-12 h-12 mb-2">
                             <path strokeLinecap="round" strokeLinejoin="round" d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 0 0 1.5-1.5V6a1.5 1.5 0 0 0-1.5-1.5H3.75A1.5 1.5 0 0 0 2.25 6v12a1.5 1.5 0 0 0 1.5 1.5Zm10.5-11.25h.008v.008h-.008V8.25Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
                           </svg>
-                          No image uploaded
+                          No media uploaded
                         </div>
                       )}
                     </div>
@@ -1371,11 +1400,21 @@ export default function NewEvent() {
                           <div className="p-4">
                             {previewImage ? (
                               <div className="relative w-full bg-lila-100">
-                                <img 
-                                  src={previewImage} 
-                                  alt="Preview" 
-                                  className="w-full h-[100px] object-contain"
-                                />
+                                {previewImage.startsWith('blob:') || previewImage.startsWith('data:video') ? (
+                                  <video 
+                                    src={previewImage} 
+                                    className="w-full h-[100px] object-contain"
+                                    autoPlay={true}
+                                    loop={true}
+                                    muted
+                                  />
+                                ) : (
+                                  <img 
+                                    src={previewImage} 
+                                    alt="Preview" 
+                                    className="w-full h-[100px] object-contain"
+                                  />
+                                )}
                                 <button
                                   type="button"
                                   onClick={handleRemoveImage}
@@ -1413,14 +1452,14 @@ export default function NewEvent() {
                                     <path d="M12 11v6"></path>
                                     <path d="M9.5 13.5l2.5 -2.5l2.5 2.5"></path>
                                   </svg>
-                                  <p className="text-sm text-black">Upload Event Image (PNG, JPG, GIF up to 2KB)</p>
+                                  <p className="text-sm text-black">Upload Event Media (PNG, JPG, GIF, MP4 up to 2KB)</p>
                                 </div>
                                 <input 
                                   id="file-upload" 
                                   name="file-upload" 
                                   type="file" 
                                   className="sr-only" 
-                                  accept="image/*"
+                                  accept="image/*,video/mp4"
                                   onChange={handleImageUpload}
                                 />
                               </label>
