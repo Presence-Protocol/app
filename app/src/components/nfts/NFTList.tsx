@@ -11,6 +11,59 @@ import Snackbar from '../ui/Snackbar';
 import { findTokenFromId, getTokenList, Token } from '@/services/utils';
 import { truncateAddress } from '@/utils/stringUtils';
 
+// Video file extensions
+const VIDEO_EXTENSIONS: string[] = ['.mp4', '.webm', '.ogg', '.mov', '.m4v'];
+
+// Helper function to check media type
+const getMediaType = async (url: string): Promise<'video' | 'image'> => {
+  try {
+    console.log('Checking media type for URL:', url);
+    
+    // First check if the URL ends with common video extensions
+    if (VIDEO_EXTENSIONS.some((ext: string) => url.toLowerCase().endsWith(ext))) {
+      console.log('Detected video by extension');
+      return 'video';
+    }
+
+    // Check for Google thumbnail URLs and extract original URL if possible
+    if (url.includes('encrypted-tbn') && url.includes('gstatic.com')) {
+      console.log('Detected Google thumbnail URL, treating as image');
+      return 'image';
+    }
+
+    const response = await fetch(url, { method: 'HEAD', redirect: 'follow' });
+    const contentType = response.headers.get('content-type');
+    console.log('Content type from HEAD request:', contentType);
+    
+    // Check if it's a video content type
+    if (contentType?.startsWith('video/')) {
+      console.log('Detected video by content-type');
+      return 'video';
+    }
+
+    // Additional check for video content type variations
+    if (contentType?.includes('video') || 
+        contentType?.includes('media') ||
+        contentType?.includes('stream')) {
+      console.log('Detected video from extended content-type check');
+      return 'video';
+    }
+    
+    console.log('Defaulting to image type');
+    return 'image';
+  } catch (error) {
+    console.error('Error checking media type:', error);
+    // If we can't check, try to guess from the URL
+    const url_lower = url.toLowerCase();
+    if (VIDEO_EXTENSIONS.some((ext: string) => url_lower.endsWith(ext))) {
+      console.log('Fallback: Detected video from URL extension');
+      return 'video';
+    }
+    console.log('Fallback: Defaulting to image type');
+    return 'image';
+  }
+};
+
 interface NFTMetadata {
   title: string;
   description: string;
@@ -48,6 +101,124 @@ interface EventResponse {
   tokenMetadata?: Token;
 }
 
+interface MediaDisplayProps {
+  url: string;
+  alt: string;
+  title: string;
+  eventDateStart?: string;
+  eventDateEnd?: string;
+}
+
+function MediaDisplay({ url, alt, title, eventDateStart, eventDateEnd }: MediaDisplayProps) {
+  const [mediaType, setMediaType] = useState<'video' | 'image'>('image');
+  const [mediaError, setMediaError] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const checkMediaType = async () => {
+      try {
+        setIsLoading(true);
+        const type = await getMediaType(url);
+        console.log('Media type determined:', type, 'for URL:', url);
+        setMediaType(type);
+      } catch (error) {
+        console.error('Error determining media type:', error);
+        setMediaType('image');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    checkMediaType();
+  }, [url]);
+
+  const fallbackContent = (
+    <div className="w-full h-full bg-lila-500 flex flex-col items-center justify-center p-2">
+      <span className="text-sm font-medium text-black">
+        {title}
+      </span>
+      <span className="text-xs text-black mt-1">
+        {eventDateStart} - {eventDateEnd}
+      </span>
+    </div>
+  );
+
+  if (isLoading) {
+    return (
+      <div className="w-full h-full bg-lila-300 flex items-center justify-center">
+        <div className="animate-pulse">Loading...</div>
+      </div>
+    );
+  }
+
+  if (mediaError) {
+    return fallbackContent;
+  }
+
+  if (mediaType === 'video') {
+    console.log('Rendering video component for URL:', url);
+    return (
+      <div className="relative w-full h-full">
+        <video
+          key={url}
+          src={url}
+          className="w-full h-full object-cover"
+          autoPlay={true}
+          loop={true}
+          muted
+          playsInline
+          controls={false}
+          onLoadStart={() => {
+            console.log('Video load started:', url);
+          }}
+          onLoadedMetadata={(e) => {
+            const video = e.target as HTMLVideoElement;
+            console.log('Video metadata loaded:', {
+              duration: video.duration,
+              width: video.videoWidth,
+              height: video.videoHeight,
+              url: url
+            });
+          }}
+          onError={(e) => {
+            const video = e.target as HTMLVideoElement;
+            console.error('Video error:', {
+              error: e,
+              networkState: video.networkState,
+              readyState: video.readyState,
+              errorCode: video.error?.code,
+              errorMessage: video.error?.message,
+              url: url
+            });
+            setMediaError(true);
+          }}
+          onPlay={() => {
+            console.log('Video started playing:', url);
+          }}
+        />
+        {mediaError && fallbackContent}
+      </div>
+    );
+  }
+
+  return (
+    <div className="relative w-full h-full">
+      <img
+        src={url}
+        alt={alt}
+        className="w-full h-full object-cover"
+        onError={(e) => {
+          console.error('Image error:', e);
+          setMediaError(true);
+        }}
+        onLoad={() => {
+          console.log('Image loaded successfully:', url);
+        }}
+      />
+      {mediaError && fallbackContent}
+    </div>
+  );
+}
 
 // Helper function to humanize amounts with K, M, B suffixes for large numbers
 const humanizeAmount = (amount: bigint, decimals: number = 18): string => {
@@ -385,10 +556,12 @@ export default function NFTList({ account: connectedAccount }: { account: string
                   >
                     <div className="relative aspect-square overflow-hidden border-b-2 border-black">
                       {nft.image ? (
-                        <img
-                          src={nft.image}
+                        <MediaDisplay
+                          url={nft.image}
                           alt={nft.title}
-                          className="w-full h-full object-cover"
+                          title={nft.title}
+                          eventDateStart={nft.eventDateStart}
+                          eventDateEnd={nft.eventDateEnd}
                         />
                       ) : (
                         <div className="w-full h-full flex flex-col items-center justify-center p-4 bg-gradient-to-br from-lila-100 to-lila-300">
@@ -498,19 +671,21 @@ export default function NFTList({ account: connectedAccount }: { account: string
                   >
                     <div className="relative aspect-square overflow-hidden border-b-2 border-black">
                       {event.image ? (
-                        <img
-                          src={event.image}
+                        <MediaDisplay
+                          url={event.image}
                           alt={event.eventName}
-                          className="w-full h-full object-cover"
+                          title={event.eventName}
+                          eventDateStart={event.eventDateStart}
+                          eventDateEnd={event.eventDateEnd}
                         />
                       ) : (
-                        <div className="w-full h-full flex flex-col items-center justify-center p-4 bg-gradient-to-br from-lila-100 to-lila-300">
-                          <h4 className="text-xl font-semibold text-black text-center mb-2">{event.eventName}</h4>
-                          {event.eventDateStart && event.eventDateEnd && (
-                            <p className="text-sm text-gray-600 text-center">
-                              {`${event.eventDateStart} - ${event.eventDateEnd}`}
-                            </p>
-                          )}
+                        <div className="w-full h-full bg-lila-500 flex flex-col items-center justify-center p-2">
+                          <span className="text-sm font-medium text-black">
+                            {event.eventName}
+                          </span>
+                          <span className="text-xs text-black mt-1">
+                            {event.eventDateStart} - {event.eventDateEnd}
+                          </span>
                         </div>
                       )}
                       {(event.pricePoap && event.pricePoap > 0n || event.isOpenPrice) && (
