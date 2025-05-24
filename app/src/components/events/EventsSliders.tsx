@@ -33,6 +33,63 @@ interface EventMetadata {
   createdAt: string;
 }
 
+// Video file extensions
+const VIDEO_EXTENSIONS: string[] = ['.mp4', '.webm', '.ogg', '.mov', '.m4v'];
+
+// Helper function to check media type
+const getMediaType = async (url: string): Promise<'video' | 'image'> => {
+  try {
+    console.log('Checking media type for URL:', url);
+    
+    // First check if the URL ends with common video extensions
+    if (VIDEO_EXTENSIONS.some((ext: string) => url.toLowerCase().endsWith(ext))) {
+      console.log('Detected video by extension');
+      return 'video';
+    }
+
+    const response = await fetch(url, { method: 'HEAD' });
+    const contentType = response.headers.get('content-type');
+    console.log('Content type from HEAD request:', contentType);
+    
+    // Check if it's a video content type
+    if (contentType?.startsWith('video/')) {
+      console.log('Detected video by content-type');
+      return 'video';
+    }
+    
+    // If no content type or not video, check the final URL (after redirects)
+    const finalUrl = response.url.toLowerCase();
+    console.log('Final URL after redirects:', finalUrl);
+    
+    if (finalUrl.includes('video/') || 
+        VIDEO_EXTENSIONS.some((ext: string) => finalUrl.endsWith(ext))) {
+      console.log('Detected video from final URL');
+      return 'video';
+    }
+
+    // Additional check for video content type variations
+    if (contentType?.includes('video') || 
+        contentType?.includes('media') ||
+        contentType?.includes('stream')) {
+      console.log('Detected video from extended content-type check');
+      return 'video';
+    }
+    
+    console.log('Defaulting to image type');
+    return 'image';
+  } catch (error) {
+    console.error('Error checking media type:', error);
+    // If we can't check, try to guess from the URL
+    const url_lower = url.toLowerCase();
+    if (VIDEO_EXTENSIONS.some((ext: string) => url_lower.endsWith(ext))) {
+      console.log('Fallback: Detected video from URL extension');
+      return 'video';
+    }
+    console.log('Fallback: Defaulting to image type');
+    return 'image';
+  }
+};
+
 export default function EventsSliders() {
   const [events, setEvents] = useState<Event[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -123,7 +180,6 @@ export default function EventsSliders() {
   const liveEvents = events.slice(0, 50);
   const premiumEvents = events.slice(4, 8);
   const freeEvents = events.slice(8, 12);
-
   return (
     <div className="mx-auto bg-lila-200 pb-24">
       <ExplorerHeader totalEvents={events.length} last24Hours={last24Hours} />
@@ -181,7 +237,25 @@ function EventSection({ title, events, viewAllLink }: {
 function EventCard({ event }: { event: Event }) {
   const router = useRouter();
   const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
+  const [mediaType, setMediaType] = useState<'video' | 'image'>('image');
+  const [mediaError, setMediaError] = useState(false);
   
+  useEffect(() => {
+    const checkMediaType = async () => {
+      if (event.image) {
+        try {
+          const type = await getMediaType(event.image);
+          setMediaType(type);
+        } catch (error) {
+          console.error('Error determining media type:', error);
+          setMediaType('image');
+        }
+      }
+    };
+    
+    checkMediaType();
+  }, [event.image]);
+
   const handleClick = () => {
     router.push(`/mint-presence/#id=${addressFromContractId(event.contractId)}`);
   };
@@ -192,25 +266,64 @@ function EventCard({ event }: { event: Event }) {
     setIsSnackbarOpen(true);
   };
 
+  const renderMedia = () => {
+    const fallbackContent = (
+      <div className="w-full h-full bg-lila-500 flex flex-col items-center justify-center p-2">
+        <span className="text-sm font-medium text-black">
+          {event.eventName}
+        </span>
+        <span className="text-xs text-black mt-1">
+          {event.eventDateStart} - {event.eventDateEnd}
+        </span>
+      </div>
+    );
+
+    if (!event.image) {
+      return fallbackContent;
+    }
+
+    if (mediaType === 'video') {
+      return (
+        <div className="relative w-full h-full">
+          <video
+            key={event.image}
+            src={event.image}
+            className="w-full h-full object-cover"
+            autoPlay={true}
+            loop={true}
+            muted
+            playsInline
+            controls={false}
+            onError={(e) => {
+              console.error('Video error:', e);
+              setMediaError(true);
+            }}
+          />
+          {mediaError && fallbackContent}
+        </div>
+      );
+    }
+
+    return (
+      <div className="relative w-full h-full">
+        <img
+          src={event.image}
+          alt={event.eventName}
+          className="w-full h-full object-cover"
+          onError={(e) => {
+            console.error('Image error:', e);
+            setMediaError(true);
+          }}
+        />
+        {mediaError && fallbackContent}
+      </div>
+    );
+  };
+
   return (
     <div className="border-2 border-black rounded-xl overflow-hidden bg-white shadow">
       <div className="relative aspect-square overflow-hidden border-b-2 border-black">
-        {event.image ? (
-          <img
-            src={event.image}
-            alt={event.eventName}
-            className="w-full h-full object-cover"
-          />
-        ) : (
-          <div className="w-full h-full bg-lila-500 flex flex-col items-center justify-center p-2">
-            <span className="text-sm font-medium text-black">
-              {event.eventName}
-            </span>
-            <span className="text-xs text-black mt-1">
-            {event.eventDateStart} - {event.eventDateEnd}
-            </span>
-          </div>
-        )}
+        {renderMedia()}
         <button
           onClick={handleShare}
           className="absolute top-2 right-2 text-black items-center shadow-small shadow-black text-[10px] font-semibold inline-flex px-2 bg-white border-black ease-in-out transform transition-all focus:ring-lila-700 focus:shadow-none border-2 duration-100 py-1 rounded-lg h-6 focus:translate-y-1 hover:text-lila-800 tracking-wide"
