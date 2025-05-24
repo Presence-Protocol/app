@@ -5,7 +5,6 @@ import Link from 'next/link';
 import ExplorerHeader from './EventsHeader';
 import { useRouter } from 'next/navigation';
 import { addressFromContractId, hexToString, web3 } from '@alephium/web3';
-import EventSlider from '../nfts/EventSlider';
 import { PoapCollection } from 'my-contracts';
 
 interface Event {
