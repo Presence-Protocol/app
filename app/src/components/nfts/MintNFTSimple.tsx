@@ -20,6 +20,7 @@ interface NFTCollection {
   title: string;
   description: string;
   image: string | null;
+  mediaType?: 'image' | 'video';
   price: number;
   maxSupply: bigint;
   mintEndDate: bigint;
@@ -75,6 +76,38 @@ const ConnectButton = () => (
     )}
   </AlephiumConnectButton.Custom>
 );
+
+// Add this helper function near the top of the component
+const isVideoMedia = (src: string | null | undefined) => {
+  if (!src) return false;
+  const lower = src.toLowerCase();
+  return (
+    lower.startsWith('blob:') ||
+    lower.startsWith('data:video') ||
+    lower.endsWith('.mp4') ||
+    lower.endsWith('.webm') ||
+    lower.endsWith('.ogg') ||
+    lower.includes('video/mp4') ||
+    lower.includes('video/webm') ||
+    lower.includes('video/ogg')
+  );
+};
+
+const getMediaType = async (url: string): Promise<'video' | 'image'> => {
+  try {
+    const response = await fetch(url, { method: 'HEAD' });
+    const contentType = response.headers.get('content-type');
+    if (contentType?.startsWith('video/')) {
+      return 'video';
+    }
+    // If content-type header is missing or not video, check the URL
+    return isVideoMedia(response.url) ? 'video' : 'image';
+  } catch (error) {
+    console.error('Error checking media type:', error);
+    // Fallback to checking the original URL
+    return isVideoMedia(url) ? 'video' : 'image';
+  }
+};
 
 export default function MintNFTSimple() {
   const { connectionStatus } = useWallet();
@@ -181,6 +214,9 @@ export default function MintNFTSimple() {
       undefined
     );
     const deployment = loadDeployments(process.env.NEXT_PUBLIC_NETWORK as NetworkId ?? 'testnet');
+    if (!deployment.contracts.PoapFactory) {
+      throw new Error('PoapFactory contract not found in deployments');
+    }
     setFactoryContract(PoapFactory.at(deployment.contracts.PoapFactory.contractInstance.address));
 
 
@@ -194,7 +230,79 @@ export default function MintNFTSimple() {
 
       collection.fetchState()
         .then(async (collectionMetadata) => {
-          // console.log(collectionMetadata)
+          const imageData = hexToString(collectionMetadata.fields.eventImage);
+          console.log('Raw hex data length:', imageData?.length);
+          console.log('Raw hex data start:', imageData?.substring(0, 50));
+          
+          // Validate and process the data
+          let processedImageData = imageData;
+          let isVideo = false;
+          
+          if (!imageData) {
+            console.log('No image data found');
+          } else {
+            // Check if it's a valid data URL
+            const isValidDataUrl = imageData.startsWith('data:');
+            console.log('Is valid data URL:', isValidDataUrl);
+            
+            if (isValidDataUrl) {
+              // Check if it's a video
+              if (imageData.includes('video/mp4')) {
+                isVideo = true;
+                console.log('Detected video data URL');
+                
+                // Ensure proper base64 format
+                if (!imageData.includes('base64,')) {
+                  const base64Data = imageData.split(',')[1] || imageData;
+                  processedImageData = `data:video/mp4;base64,${base64Data}`;
+                  console.log('Reformatted video data URL');
+                }
+              } else if (imageData.includes('image/')) {
+                console.log('Detected image data URL');
+                // Ensure proper base64 format for images too
+                if (!imageData.includes('base64,')) {
+                  const base64Data = imageData.split(',')[1] || imageData;
+                  const mimeType = imageData.split(',')[0].split(':')[1] || 'image/png';
+                  processedImageData = `data:${mimeType};base64,${base64Data}`;
+                  console.log('Reformatted image data URL');
+                }
+              } else {
+                console.log('Unknown data URL type:', imageData.split(',')[0]);
+              }
+            } else {
+              // If it's not a data URL, try to detect the content type
+              console.log('Not a data URL, attempting to detect content type');
+              // Detect video by file extension or video mime in URL
+              const lower = imageData.toLowerCase();
+              if (
+                lower.endsWith('.mp4') ||
+                lower.endsWith('.webm') ||
+                lower.endsWith('.ogg') ||
+                lower.includes('video/mp4') ||
+                lower.includes('video/webm') ||
+                lower.includes('video/ogg') ||
+                lower.match(/\.(mp4|webm|ogg)(\?|$)/)
+              ) {
+                isVideo = true;
+                processedImageData = imageData;
+                console.log('Detected video URL or file extension');
+              } else if (imageData.startsWith('/9j/') || imageData.startsWith('iVBORw0KGgo')) {
+                // Common image base64 patterns
+                processedImageData = `data:image/jpeg;base64,${imageData}`;
+                console.log('Detected and formatted as JPEG');
+              } else if (imageData.startsWith('AAAAIGZ0eXBpc')) {
+                // Common video base64 pattern
+                isVideo = true;
+                processedImageData = `data:video/mp4;base64,${imageData}`;
+                console.log('Detected and formatted as MP4');
+              } else {
+                console.log('Could not detect content type, using as-is');
+              }
+            }
+          }
+          
+          console.log('Final processed data type:', processedImageData?.substring(0, 50));
+          console.log('Is video:', isVideo);
           
           // Get token name from token list
           let tokenName = 'ALPH';
@@ -213,11 +321,12 @@ export default function MintNFTSimple() {
           const hasPassword = collectionMetadata.fields.hashedPassword !== '00';
           setPasswordRequired(hasPassword);
 
-
+          console.log('Detection result:', { processedImageData, isVideo, imageData });
           setNftCollection({
             title: hexToString(collectionMetadata.fields.eventName),
             description: hexToString(collectionMetadata.fields.description),
-            image: hexToString(collectionMetadata.fields.eventImage),
+            image: processedImageData,
+            mediaType: isVideo ? 'video' : 'image',
             price:  collectionMetadata.fields.amountForStorageFees >= 10n**17n ? 0 : 0.1,
             maxSupply: collectionMetadata.fields.maxSupply,
             currentSupply: collectionMetadata.fields.totalSupply,
@@ -241,7 +350,7 @@ export default function MintNFTSimple() {
           setIsLoading(false);
         })
         .catch((error) => {
-          console.error('Error fetching collection state:', error);
+          console.error('Error in collection state fetch:', error);
           setError('Failed to load event details. Please try again later.');
           setIsLoading(false);
         });
@@ -662,6 +771,28 @@ export default function MintNFTSimple() {
     return account.address === nftCollection.organizer;
   };
 
+  // Add this state to track media types
+  const [mediaTypes, setMediaTypes] = useState<Record<string, 'video' | 'image'>>({});
+
+  // Add this effect to check media types when image changes
+  useEffect(() => {
+    const checkMediaType = async () => {
+      if (nftCollection.image && !nftCollection.image.startsWith('data:')) {
+        try {
+          const mediaType = await getMediaType(nftCollection.image);
+          setMediaTypes(prev => ({
+            ...prev,
+            [nftCollection.image!]: mediaType
+          }));
+        } catch (error) {
+          console.error('Error determining media type:', error);
+        }
+      }
+    };
+    
+    checkMediaType();
+  }, [nftCollection.image]);
+
   return (
     <section className="bg-lila-200 pt-16 pb-16 sm:pt-0 sm:pb-0">
       {showConfetti && (
@@ -717,11 +848,59 @@ export default function MintNFTSimple() {
                 <>
                   <div className="w-64 h-64 mx-auto rounded-2xl border-2 border-black shadow bg-white nft-image">
                     {nftCollection.image ? (
-                      <img
-                        src={nftCollection.image}
-                        alt={nftCollection.title}
-                        className="w-full h-full object-cover rounded-xl"
-                      />
+                      (mediaTypes[nftCollection.image] === 'video' || isVideoMedia(nftCollection.image)) ? (
+                        <video 
+                          key={nftCollection.image}
+                          src={nftCollection.image}
+                          className="w-full h-full object-cover rounded-xl"
+                          loop={true}
+                          autoPlay={true}
+                          muted
+                          playsInline
+                          onError={(e) => {
+                            const target = e.target as HTMLVideoElement;
+                            console.error('Video loading error:', {
+                              error: e,
+                              src: nftCollection.image?.substring(0, 100),
+                              element: target,
+                              mediaType: mediaTypes[nftCollection.image!]
+                            });
+                            target.style.display = 'none';
+                            target.parentElement?.classList.add('bg-gradient-to-br', 'from-lila-100', 'to-lila-300');
+                          }}
+                          onLoadedData={(e) => {
+                            console.log('Video loaded successfully:', {
+                              src: nftCollection.image?.substring(0, 50),
+                              mediaType: mediaTypes[nftCollection.image!]
+                            });
+                            const target = e.target as HTMLVideoElement;
+                            target.style.display = 'block';
+                          }}
+                        />
+                      ) : (
+                        <img
+                          src={nftCollection.image}
+                          alt={nftCollection.title}
+                          className="w-full h-full object-cover rounded-xl"
+                          onError={(e) => {
+                            const target = e.target as HTMLImageElement;
+                            console.error('Image loading error:', {
+                              error: e,
+                              src: nftCollection.image?.substring(0, 100),
+                              element: target,
+                              mediaType: mediaTypes[nftCollection.image!]
+                            });
+                            target.style.display = 'none';
+                            target.parentElement?.classList.add('bg-gradient-to-br', 'from-lila-100', 'to-lila-300');
+                          }}
+                          onLoad={(e) => {
+                            console.log('Image loaded successfully:', {
+                              src: nftCollection.image?.substring(0, 50),
+                              mediaType: mediaTypes[nftCollection.image!]
+                            });
+                          }}
+                        />
+                      )
                     ) : (
                       <div className="w-full h-full flex flex-col items-center justify-center p-4 rounded-xl bg-gradient-to-br from-lila-100 to-lila-300">
                         <h4 className="text-xl font-semibold text-black text-center mb-2">{nftCollection.title}</h4>
