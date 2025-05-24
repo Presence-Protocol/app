@@ -62,7 +62,11 @@ export default function MintNFTSimple() {
       undefined
     );
     const deployment = loadDeployments(process.env.NEXT_PUBLIC_NETWORK as NetworkId ?? 'testnet');
+    if (!deployment.contracts.PoapFactory) {
+      throw new Error('PoapFactory contract not found in deployments');
+    }
     setFactoryContract(PoapFactory.at(deployment.contracts.PoapFactory.contractInstance.address));
+    
 
     if (contractId) {
       const collectionAddress = contractId;
