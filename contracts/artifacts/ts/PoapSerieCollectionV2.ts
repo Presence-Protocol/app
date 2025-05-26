@@ -363,7 +363,7 @@ class Factory extends ContractFactory<
           never,
           PoapSerieCollectionV2Types.Maps
         >,
-        "testArgs"
+        "args"
       >
     ): Promise<
       TestContractResult<HexString, PoapSerieCollectionV2Types.Maps>
@@ -382,7 +382,7 @@ class Factory extends ContractFactory<
           never,
           PoapSerieCollectionV2Types.Maps
         >,
-        "testArgs"
+        "args"
       >
     ): Promise<TestContractResult<bigint, PoapSerieCollectionV2Types.Maps>> => {
       return testMethod(this, "totalSupply", params, getContractByCodeHash);
@@ -482,7 +482,7 @@ class Factory extends ContractFactory<
           never,
           PoapSerieCollectionV2Types.Maps
         >,
-        "testArgs"
+        "args"
       >
     ): Promise<TestContractResult<bigint, PoapSerieCollectionV2Types.Maps>> => {
       return testMethod(
@@ -573,7 +573,7 @@ class Factory extends ContractFactory<
           never,
           PoapSerieCollectionV2Types.Maps
         >,
-        "testArgs"
+        "args"
       >
     ): Promise<
       TestContractResult<Address, PoapSerieCollectionV2Types.Maps>
@@ -587,7 +587,7 @@ class Factory extends ContractFactory<
           never,
           PoapSerieCollectionV2Types.Maps
         >,
-        "testArgs"
+        "args"
       >
     ): Promise<
       TestContractResult<boolean, PoapSerieCollectionV2Types.Maps>
@@ -656,8 +656,8 @@ class Factory extends ContractFactory<
 export const PoapSerieCollectionV2 = new Factory(
   Contract.fromJson(
     PoapSerieCollectionV2ContractJson,
-    "=30-2+6b=2-2+f0=2+f=1-1=2-2=1+1=1-2=1+8=1-2=2-2+c7=2-2+0e=2-2+55=2+9=1-1+45a6=2-1=1+4=2-2+ef=2-2+2a=2-2+61=1435-1+a=224+7a7e0214696e73657274206174206d617020706174683a2000=1556",
-    "84d43c0e8308fa8973fc17311a32cb5c6e4db64fd3978132ccab191a75c2532e",
+    "=30-1=1+0=2-2+f5=1+40=1-2=2-2=1-3+6=2-2+89=2-2+cc=2-1=1+3=2-2+5a=3-1+d=3-1+b=2-1=1+9=1-3+5f4=2+2f=1-1+666=1445-1+a=224+7a7e0214696e73657274206174206d617020706174683a2000=1556",
+    "68ea1e823ab9ee2b9c677d809267650be04224cff7983ebbe97db454ee5b8c6a",
     AllStructs
   )
 );

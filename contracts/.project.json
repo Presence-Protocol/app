@@ -49,9 +49,9 @@
     },
     "PoapData": {
       "sourceFile": "V2/series/nftData.ral",
-      "sourceCodeHash": "8ed6d8573a1a70b90955349165171ad16d8e236f65105400a71d49cdf6a38f88",
+      "sourceCodeHash": "42d2d5d327085cf76f3db21fa25bcc3347915fd6d4e96d69f02e6a81aaa08e9a",
       "bytecodeDebugPatch": "",
-      "codeHashDebug": "95a95dd74b11dd7b2215f7fd71a3b5162b0503d031b7905ea1a47299be2cc70c"
+      "codeHashDebug": "e0e36c3a61214c25e1ab6159a0a1d1d8e9b1684a1bc47249f8575e6f011ec905"
     },
     "PoapFactory": {
       "sourceFile": "factoryPoap.ral",
@@ -61,7 +61,7 @@
     },
     "PoapFactoryV2": {
       "sourceFile": "V2/factoryPoapV2.ral",
-      "sourceCodeHash": "54f30e9cd450a51478d90e0f14fc5fd56c3717062eaea1e64acc5450168badc3",
+      "sourceCodeHash": "b5157c4fbc771961772b4c2e518328955b213d6f16607a2864f027857ccb2670",
       "bytecodeDebugPatch": "",
       "codeHashDebug": "5a5dbeccf55e220638df4d3fb227818e2e6ad465369ae2b6c53b124b715b58ae"
     },
@@ -85,9 +85,9 @@
     },
     "PoapSerieCollectionV2": {
       "sourceFile": "V2/series/collectionSerieTemplate.ral",
-      "sourceCodeHash": "af6602b201ef2dc9eb375e9c549ca0040807483cf6136a306bcc8fdd0834d606",
-      "bytecodeDebugPatch": "=30-2+6b=2-2+f0=2+f=1-1=2-2=1+1=1-2=1+8=1-2=2-2+c7=2-2+0e=2-2+55=2+9=1-1+45a6=2-1=1+4=2-2+ef=2-2+2a=2-2+61=1435-1+a=224+7a7e0214696e73657274206174206d617020706174683a2000=1556",
-      "codeHashDebug": "84d43c0e8308fa8973fc17311a32cb5c6e4db64fd3978132ccab191a75c2532e"
+      "sourceCodeHash": "3f211dfbc54d037cd322d793d82157775d20e10e3658c8ef0328094800618f53",
+      "bytecodeDebugPatch": "=30-1=1+0=2-2+f5=1+40=1-2=2-2=1-3+6=2-2+89=2-2+cc=2-1=1+3=2-2+5a=3-1+d=3-1+b=2-1=1+9=1-3+5f4=2+2f=1-1+666=1445-1+a=224+7a7e0214696e73657274206174206d617020706174683a2000=1556",
+      "codeHashDebug": "68ea1e823ab9ee2b9c677d809267650be04224cff7983ebbe97db454ee5b8c6a"
     },
     "Trait": {
       "sourceFile": "dynamic_nft_standard.ral",
@@ -103,7 +103,7 @@
     },
     "constants": {
       "sourceFile": "constants.ral",
-      "sourceCodeHash": "dc9f189eed69eebc0c001e37f4fd794fe35c9a49b7e424f4599a6de2f1c1f469",
+      "sourceCodeHash": "04ebf5399929b97b1828f876e66953bfb7e37f35dfd6b56ab1b19774786689c6",
       "bytecodeDebugPatch": "",
       "codeHashDebug": ""
     }

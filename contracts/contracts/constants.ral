@@ -12,4 +12,5 @@ enum ErrorCodes {
     AlreadySet = 10
     InvalidPassword = 11
     IncorrectEventIndex = 12
+    PoapPriceNotSet = 13
 }

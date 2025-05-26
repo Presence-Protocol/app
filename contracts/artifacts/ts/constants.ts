@@ -16,4 +16,5 @@ export const ErrorCodes = {
   AlreadySet: BigInt("10"),
   InvalidPassword: BigInt("11"),
   IncorrectEventIndex: BigInt("12"),
+  PoapPriceNotSet: BigInt("13"),
 };

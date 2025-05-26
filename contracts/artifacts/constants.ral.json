@@ -93,6 +93,13 @@
             "type": "U256",
             "value": "12"
           }
+        },
+        {
+          "name": "PoapPriceNotSet",
+          "value": {
+            "type": "U256",
+            "value": "13"
+          }
         }
       ]
     }

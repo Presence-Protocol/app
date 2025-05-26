@@ -457,7 +457,7 @@ class Factory extends ContractFactory<
     getNumEventsCreated: async (
       params: Omit<
         TestContractParamsWithoutMaps<PoapFactoryV2Types.Fields, never>,
-        "testArgs"
+        "args"
       >
     ): Promise<TestContractResultWithoutMaps<bigint>> => {
       return testMethod(

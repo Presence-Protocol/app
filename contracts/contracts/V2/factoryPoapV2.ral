@@ -195,7 +195,6 @@ Contract PoapFactoryV2(
     @using(preapprovedAssets = true, checkExternalCaller = false, preserveCaller = true)
     pub fn mintPoapSerie(collection: PoapSerieCollectionV2, eventId: U256, amount: U256, password: ByteVec) -> (){
         let caller = callerAddress!()
-
         
         let (poapPrice, poapTokenId, isOpenPrice) = collection.getPoapPrice(eventId)
         let mut poapPriceAmount = poapPrice // when isOpenPrice true just set the amount the user wants to pay
@@ -207,6 +206,7 @@ Contract PoapFactoryV2(
         let collectionTotalSupply = collection.totalSupply()
 
         emit PoapSerieMinted(poapContractId, collection, eventId, collectionTotalSupply ,caller, collection.getEventPublic(eventId), blockTimeStamp!())
+
 
     }
 

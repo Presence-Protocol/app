@@ -79,6 +79,10 @@ export namespace PoapDataTypes {
       params: CallContractParams<{ addressToAirdrop: Address }>;
       result: CallContractResult<null>;
     };
+    depositPaidPoap: {
+      params: CallContractParams<{ amount: bigint }>;
+      result: CallContractResult<null>;
+    };
     claimFunds: {
       params: CallContractParams<{ amountToClaim: bigint }>;
       result: CallContractResult<null>;
@@ -229,6 +233,10 @@ export namespace PoapDataTypes {
       params: SignExecuteContractMethodParams<{ addressToAirdrop: Address }>;
       result: SignExecuteScriptTxResult;
     };
+    depositPaidPoap: {
+      params: SignExecuteContractMethodParams<{ amount: bigint }>;
+      result: SignExecuteScriptTxResult;
+    };
     claimFunds: {
       params: SignExecuteContractMethodParams<{ amountToClaim: bigint }>;
       result: SignExecuteScriptTxResult;
@@ -377,7 +385,7 @@ class Factory extends ContractFactory<PoapDataInstance, PoapDataTypes.Fields> {
     incrementTotalSupply: async (
       params: Omit<
         TestContractParamsWithoutMaps<PoapDataTypes.Fields, never>,
-        "testArgs"
+        "args"
       >
     ): Promise<TestContractResultWithoutMaps<null>> => {
       return testMethod(
@@ -394,6 +402,14 @@ class Factory extends ContractFactory<PoapDataInstance, PoapDataTypes.Fields> {
       >
     ): Promise<TestContractResultWithoutMaps<null>> => {
       return testMethod(this, "sendAirdrop", params, getContractByCodeHash);
+    },
+    depositPaidPoap: async (
+      params: TestContractParamsWithoutMaps<
+        PoapDataTypes.Fields,
+        { amount: bigint }
+      >
+    ): Promise<TestContractResultWithoutMaps<null>> => {
+      return testMethod(this, "depositPaidPoap", params, getContractByCodeHash);
     },
     claimFunds: async (
       params: TestContractParamsWithoutMaps<
@@ -466,7 +482,7 @@ class Factory extends ContractFactory<PoapDataInstance, PoapDataTypes.Fields> {
     getAmountForStorageFees: async (
       params: Omit<
         TestContractParamsWithoutMaps<PoapDataTypes.Fields, never>,
-        "testArgs"
+        "args"
       >
     ): Promise<TestContractResultWithoutMaps<bigint>> => {
       return testMethod(
@@ -479,7 +495,7 @@ class Factory extends ContractFactory<PoapDataInstance, PoapDataTypes.Fields> {
     getAmountForChainFees: async (
       params: Omit<
         TestContractParamsWithoutMaps<PoapDataTypes.Fields, never>,
-        "testArgs"
+        "args"
       >
     ): Promise<TestContractResultWithoutMaps<bigint>> => {
       return testMethod(
@@ -492,7 +508,7 @@ class Factory extends ContractFactory<PoapDataInstance, PoapDataTypes.Fields> {
     getAmountPoapFees: async (
       params: Omit<
         TestContractParamsWithoutMaps<PoapDataTypes.Fields, never>,
-        "testArgs"
+        "args"
       >
     ): Promise<TestContractResultWithoutMaps<bigint>> => {
       return testMethod(
@@ -505,7 +521,7 @@ class Factory extends ContractFactory<PoapDataInstance, PoapDataTypes.Fields> {
     getAmountAirdrop: async (
       params: Omit<
         TestContractParamsWithoutMaps<PoapDataTypes.Fields, never>,
-        "testArgs"
+        "args"
       >
     ): Promise<TestContractResultWithoutMaps<bigint>> => {
       return testMethod(
@@ -518,7 +534,7 @@ class Factory extends ContractFactory<PoapDataInstance, PoapDataTypes.Fields> {
     getName: async (
       params: Omit<
         TestContractParamsWithoutMaps<PoapDataTypes.Fields, never>,
-        "testArgs"
+        "args"
       >
     ): Promise<TestContractResultWithoutMaps<HexString>> => {
       return testMethod(this, "getName", params, getContractByCodeHash);
@@ -526,7 +542,7 @@ class Factory extends ContractFactory<PoapDataInstance, PoapDataTypes.Fields> {
     getDescription: async (
       params: Omit<
         TestContractParamsWithoutMaps<PoapDataTypes.Fields, never>,
-        "testArgs"
+        "args"
       >
     ): Promise<TestContractResultWithoutMaps<HexString>> => {
       return testMethod(this, "getDescription", params, getContractByCodeHash);
@@ -534,7 +550,7 @@ class Factory extends ContractFactory<PoapDataInstance, PoapDataTypes.Fields> {
     getImage: async (
       params: Omit<
         TestContractParamsWithoutMaps<PoapDataTypes.Fields, never>,
-        "testArgs"
+        "args"
       >
     ): Promise<TestContractResultWithoutMaps<HexString>> => {
       return testMethod(this, "getImage", params, getContractByCodeHash);
@@ -542,7 +558,7 @@ class Factory extends ContractFactory<PoapDataInstance, PoapDataTypes.Fields> {
     getCurrentSupply: async (
       params: Omit<
         TestContractParamsWithoutMaps<PoapDataTypes.Fields, never>,
-        "testArgs"
+        "args"
       >
     ): Promise<TestContractResultWithoutMaps<bigint>> => {
       return testMethod(
@@ -555,7 +571,7 @@ class Factory extends ContractFactory<PoapDataInstance, PoapDataTypes.Fields> {
     getMaxSupply: async (
       params: Omit<
         TestContractParamsWithoutMaps<PoapDataTypes.Fields, never>,
-        "testArgs"
+        "args"
       >
     ): Promise<TestContractResultWithoutMaps<bigint>> => {
       return testMethod(this, "getMaxSupply", params, getContractByCodeHash);
@@ -563,7 +579,7 @@ class Factory extends ContractFactory<PoapDataInstance, PoapDataTypes.Fields> {
     getMintStartAt: async (
       params: Omit<
         TestContractParamsWithoutMaps<PoapDataTypes.Fields, never>,
-        "testArgs"
+        "args"
       >
     ): Promise<TestContractResultWithoutMaps<bigint>> => {
       return testMethod(this, "getMintStartAt", params, getContractByCodeHash);
@@ -571,7 +587,7 @@ class Factory extends ContractFactory<PoapDataInstance, PoapDataTypes.Fields> {
     getMintEndAt: async (
       params: Omit<
         TestContractParamsWithoutMaps<PoapDataTypes.Fields, never>,
-        "testArgs"
+        "args"
       >
     ): Promise<TestContractResultWithoutMaps<bigint>> => {
       return testMethod(this, "getMintEndAt", params, getContractByCodeHash);
@@ -579,7 +595,7 @@ class Factory extends ContractFactory<PoapDataInstance, PoapDataTypes.Fields> {
     getOrganizer: async (
       params: Omit<
         TestContractParamsWithoutMaps<PoapDataTypes.Fields, never>,
-        "testArgs"
+        "args"
       >
     ): Promise<TestContractResultWithoutMaps<Address>> => {
       return testMethod(this, "getOrganizer", params, getContractByCodeHash);
@@ -587,7 +603,7 @@ class Factory extends ContractFactory<PoapDataInstance, PoapDataTypes.Fields> {
     getLocation: async (
       params: Omit<
         TestContractParamsWithoutMaps<PoapDataTypes.Fields, never>,
-        "testArgs"
+        "args"
       >
     ): Promise<TestContractResultWithoutMaps<HexString>> => {
       return testMethod(this, "getLocation", params, getContractByCodeHash);
@@ -595,7 +611,7 @@ class Factory extends ContractFactory<PoapDataInstance, PoapDataTypes.Fields> {
     getEventStartAt: async (
       params: Omit<
         TestContractParamsWithoutMaps<PoapDataTypes.Fields, never>,
-        "testArgs"
+        "args"
       >
     ): Promise<TestContractResultWithoutMaps<bigint>> => {
       return testMethod(this, "getEventStartAt", params, getContractByCodeHash);
@@ -603,7 +619,7 @@ class Factory extends ContractFactory<PoapDataInstance, PoapDataTypes.Fields> {
     getEventEndAt: async (
       params: Omit<
         TestContractParamsWithoutMaps<PoapDataTypes.Fields, never>,
-        "testArgs"
+        "args"
       >
     ): Promise<TestContractResultWithoutMaps<bigint>> => {
       return testMethod(this, "getEventEndAt", params, getContractByCodeHash);
@@ -611,7 +627,7 @@ class Factory extends ContractFactory<PoapDataInstance, PoapDataTypes.Fields> {
     getIsPublic: async (
       params: Omit<
         TestContractParamsWithoutMaps<PoapDataTypes.Fields, never>,
-        "testArgs"
+        "args"
       >
     ): Promise<TestContractResultWithoutMaps<boolean>> => {
       return testMethod(this, "getIsPublic", params, getContractByCodeHash);
@@ -619,7 +635,7 @@ class Factory extends ContractFactory<PoapDataInstance, PoapDataTypes.Fields> {
     getIsBurnable: async (
       params: Omit<
         TestContractParamsWithoutMaps<PoapDataTypes.Fields, never>,
-        "testArgs"
+        "args"
       >
     ): Promise<TestContractResultWithoutMaps<boolean>> => {
       return testMethod(this, "getIsBurnable", params, getContractByCodeHash);
@@ -627,7 +643,7 @@ class Factory extends ContractFactory<PoapDataInstance, PoapDataTypes.Fields> {
     getLockedUntil: async (
       params: Omit<
         TestContractParamsWithoutMaps<PoapDataTypes.Fields, never>,
-        "testArgs"
+        "args"
       >
     ): Promise<TestContractResultWithoutMaps<bigint>> => {
       return testMethod(this, "getLockedUntil", params, getContractByCodeHash);
@@ -635,7 +651,7 @@ class Factory extends ContractFactory<PoapDataInstance, PoapDataTypes.Fields> {
     getIsOpenPrice: async (
       params: Omit<
         TestContractParamsWithoutMaps<PoapDataTypes.Fields, never>,
-        "testArgs"
+        "args"
       >
     ): Promise<TestContractResultWithoutMaps<boolean>> => {
       return testMethod(this, "getIsOpenPrice", params, getContractByCodeHash);
@@ -643,7 +659,7 @@ class Factory extends ContractFactory<PoapDataInstance, PoapDataTypes.Fields> {
     getPoapPrice: async (
       params: Omit<
         TestContractParamsWithoutMaps<PoapDataTypes.Fields, never>,
-        "testArgs"
+        "args"
       >
     ): Promise<TestContractResultWithoutMaps<[bigint, HexString, boolean]>> => {
       return testMethod(this, "getPoapPrice", params, getContractByCodeHash);
@@ -651,7 +667,7 @@ class Factory extends ContractFactory<PoapDataInstance, PoapDataTypes.Fields> {
     getTokenIdPoap: async (
       params: Omit<
         TestContractParamsWithoutMaps<PoapDataTypes.Fields, never>,
-        "testArgs"
+        "args"
       >
     ): Promise<TestContractResultWithoutMaps<HexString>> => {
       return testMethod(this, "getTokenIdPoap", params, getContractByCodeHash);
@@ -659,7 +675,7 @@ class Factory extends ContractFactory<PoapDataInstance, PoapDataTypes.Fields> {
     getTokenIdAirdrop: async (
       params: Omit<
         TestContractParamsWithoutMaps<PoapDataTypes.Fields, never>,
-        "testArgs"
+        "args"
       >
     ): Promise<TestContractResultWithoutMaps<HexString>> => {
       return testMethod(
@@ -672,7 +688,7 @@ class Factory extends ContractFactory<PoapDataInstance, PoapDataTypes.Fields> {
     getAmountAirdropPerUser: async (
       params: Omit<
         TestContractParamsWithoutMaps<PoapDataTypes.Fields, never>,
-        "testArgs"
+        "args"
       >
     ): Promise<TestContractResultWithoutMaps<bigint>> => {
       return testMethod(
@@ -685,7 +701,7 @@ class Factory extends ContractFactory<PoapDataInstance, PoapDataTypes.Fields> {
     getAirdropWhenHasParticipated: async (
       params: Omit<
         TestContractParamsWithoutMaps<PoapDataTypes.Fields, never>,
-        "testArgs"
+        "args"
       >
     ): Promise<TestContractResultWithoutMaps<boolean>> => {
       return testMethod(
@@ -698,7 +714,7 @@ class Factory extends ContractFactory<PoapDataInstance, PoapDataTypes.Fields> {
     getHashedPassword: async (
       params: Omit<
         TestContractParamsWithoutMaps<PoapDataTypes.Fields, never>,
-        "testArgs"
+        "args"
       >
     ): Promise<TestContractResultWithoutMaps<HexString>> => {
       return testMethod(
@@ -724,7 +740,7 @@ export const PoapData = new Factory(
   Contract.fromJson(
     PoapDataContractJson,
     "",
-    "95a95dd74b11dd7b2215f7fd71a3b5162b0503d031b7905ea1a47299be2cc70c",
+    "e0e36c3a61214c25e1ab6159a0a1d1d8e9b1684a1bc47249f8575e6f011ec905",
     AllStructs
   )
 );
@@ -759,6 +775,17 @@ export class PoapDataInstance extends ContractInstance {
         PoapData,
         this,
         "sendAirdrop",
+        params,
+        getContractByCodeHash
+      );
+    },
+    depositPaidPoap: async (
+      params: PoapDataTypes.CallMethodParams<"depositPaidPoap">
+    ): Promise<PoapDataTypes.CallMethodResult<"depositPaidPoap">> => {
+      return callMethod(
+        PoapData,
+        this,
+        "depositPaidPoap",
         params,
         getContractByCodeHash
       );
@@ -1120,6 +1147,11 @@ export class PoapDataInstance extends ContractInstance {
       params: PoapDataTypes.SignExecuteMethodParams<"sendAirdrop">
     ): Promise<PoapDataTypes.SignExecuteMethodResult<"sendAirdrop">> => {
       return signExecuteMethod(PoapData, this, "sendAirdrop", params);
+    },
+    depositPaidPoap: async (
+      params: PoapDataTypes.SignExecuteMethodParams<"depositPaidPoap">
+    ): Promise<PoapDataTypes.SignExecuteMethodResult<"depositPaidPoap">> => {
+      return signExecuteMethod(PoapData, this, "depositPaidPoap", params);
     },
     claimFunds: async (
       params: PoapDataTypes.SignExecuteMethodParams<"claimFunds">

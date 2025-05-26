@@ -51,6 +51,20 @@ Contract PoapData(
     }
    }
 
+   @using(assetsInContract = true, updateFields = true, preapprovedAssets = true, checkExternalCaller = false, preserveCaller = true)
+    pub fn depositPaidPoap(amount: U256) -> () { // todo: need to use externalCallerAddress
+      let caller = externalCallerAddress!()
+      assert!(poapPrice > 0 || isOpenPrice, ErrorCodes.PoapPriceNotSet)
+        let mut priceToPay = poapPrice
+        if(isOpenPrice){
+          assert!(amount >= 1, ErrorCodes.NotEnoughAlph)
+          priceToPay = amount
+        }
+
+        transferTokenToSelf!(caller, tokenIdPoap, priceToPay)
+        amountPoapFees = amountPoapFees + priceToPay
+      
+    }
 
   @using(assetsInContract = true, updateFields = true)
   pub fn claimFunds(amountToClaim: U256) -> () {

@@ -59,9 +59,8 @@ Contract PoapSerieCollectionV2(
           assert!(amount >= 1, ErrorCodes.NotEnoughAlph)
           priceToPay = amount
         }
-
-        transferToken!(caller, contractAddress!(eventData) , tokenIdPoap, priceToPay)
-  
+        eventData.depositPaidPoap{caller -> tokenIdPoap: priceToPay}(priceToPay)
+        
      }
 
      if(!airdropWhenHasParticipated){
