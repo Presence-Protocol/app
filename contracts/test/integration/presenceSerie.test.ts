@@ -465,7 +465,7 @@ describe('integration tests', () => {
     const customTokenA = await mintToken((await signer.getSelectedAccount()).address, 200n)
     const now = BigInt(Date.now())
 
-    await NewPresenceNewEvent.execute(signer, {
+    await NewPresenceNewEvent.execute({
       initialFields: {
         factory: factory.contractId,
         eventImage: stringToHex('https://arweave.net/hoxK8xC9wRjD_6HiOzhdY2jW0ZnJoF2f0N4FcSLXqzQ'),
@@ -497,8 +497,8 @@ describe('integration tests', () => {
       tokens: [{
         id: customTokenA.tokenId,
         amount: 20n
-      }]
-    })
+      }],
+    signer)
 
 
     // Check that event is emitted

@@ -1,0 +1,62 @@
+TxScript NewPresenceNewEvent(
+        factory: PoapFactoryV2,
+        eventImage: ByteVec,
+        eventName: ByteVec,
+        description: ByteVec,
+        isPublic: Bool,
+        maxSupply: U256,
+        mintStartAt: U256,
+        mintEndAt: U256,
+        poapPrice: U256,
+        tokenIdPoap: ByteVec,
+        isOpenPrice: Bool,
+        tokenIdAirdrop: ByteVec,
+        amountAirdropPerUser: U256,
+        airdropWhenHasParticipated: Bool,
+        image: ByteVec,
+        name: ByteVec,
+        eventDescription: ByteVec,
+        location: ByteVec,
+        eventStartAt: U256,
+        eventEndAt: U256,
+        eventIsPublic: Bool,
+        isBurnable: Bool,
+        lockedUntil: U256,
+        hashedPassword: ByteVec,
+        amountAirdrop: U256
+) {
+
+    let caller = callerAddress!()
+    emit Debug(`NewPresenceNewEvent called`)
+    let collection = factory.mintNewCollectionWithSerie{caller -> ALPH: minimalContractDeposit!()}(
+            eventImage,
+            eventName,
+            description,
+            isPublic)
+
+    emit Debug(`NewPresenceNewEvent called 2`)
+    factory.createNewEvent{caller -> ALPH: 2 * minimalContractDeposit!(), tokenIdAirdrop: amountAirdrop}(
+        PoapSerieCollectionV2(collection),
+        maxSupply,
+        mintStartAt,
+        mintEndAt,
+        poapPrice,
+        tokenIdPoap,
+        isOpenPrice,
+        tokenIdAirdrop,
+        amountAirdropPerUser,
+        airdropWhenHasParticipated,
+        image,
+        name,
+        eventDescription,
+        location,
+        eventStartAt,
+        eventEndAt,
+        eventIsPublic,
+        isBurnable,
+        lockedUntil,
+        hashedPassword,
+        amountAirdrop
+
+    )
+}
