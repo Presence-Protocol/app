@@ -111,7 +111,8 @@ describe('integration tests', () => {
     }
 
 
-    await NewPresenceNewEvent.execute(signer, {
+    await NewPresenceNewEvent.execute( {
+      signer,
       initialFields: {
         factory: factory.contractId,
         eventImage: stringToHex('https://arweave.net/hoxK8xC9wRjD_6HiOzhdY2jW0ZnJoF2f0N4FcSLXqzQ'),
@@ -162,7 +163,8 @@ describe('integration tests', () => {
 
     let now = BigInt(Date.now())
 
-    await NewPresenceNewEvent.execute(signer, {
+    await NewPresenceNewEvent.execute({
+      signer,
       initialFields: {
         factory: factory.contractId,
         eventImage: stringToHex('https://arweave.net/hoxK8xC9wRjD_6HiOzhdY2jW0ZnJoF2f0N4FcSLXqzQ'),
@@ -465,7 +467,8 @@ describe('integration tests', () => {
     const customTokenA = await mintToken((await signer.getSelectedAccount()).address, 200n)
     const now = BigInt(Date.now())
 
-    await NewPresenceNewEvent.execute({
+    await NewPresenceNewEvent.execute( {
+      signer,
       initialFields: {
         factory: factory.contractId,
         eventImage: stringToHex('https://arweave.net/hoxK8xC9wRjD_6HiOzhdY2jW0ZnJoF2f0N4FcSLXqzQ'),
@@ -497,8 +500,8 @@ describe('integration tests', () => {
       tokens: [{
         id: customTokenA.tokenId,
         amount: 20n
-      }],
-    signer)
+      }]
+    })
 
 
     // Check that event is emitted
@@ -580,7 +583,8 @@ describe('integration tests', () => {
     const customTokenA = await mintToken((await signer.getSelectedAccount()).address, 200n)
     const now = BigInt(Date.now())
 
-    await NewPresenceNewEvent.execute(signer, {
+    await NewPresenceNewEvent.execute({
+      signer,
       initialFields: {
         factory: factory.contractId,
         eventImage: stringToHex('https://arweave.net/hoxK8xC9wRjD_6HiOzhdY2jW0ZnJoF2f0N4FcSLXqzQ'),
@@ -676,7 +680,8 @@ describe('integration tests', () => {
 
     const now = BigInt(Date.now())
 
-    await NewPresenceNewEvent.execute(signer, {
+    await NewPresenceNewEvent.execute({
+      signer,
       initialFields: {
         factory: factory.contractId,
         eventImage: stringToHex('https://arweave.net/hoxK8xC9wRjD_6HiOzhdY2jW0ZnJoF2f0N4FcSLXqzQ'),
@@ -786,8 +791,9 @@ describe('integration tests', () => {
       throw new Error('Factory is undefined')
     }
 
-await NewPresenceNewEvent.execute(signer, {
-      initialFields: {
+await NewPresenceNewEvent.execute({
+  signer,
+  initialFields: {
         factory: factory.contractId,
         eventImage: stringToHex('https://arweave.net/hoxK8xC9wRjD_6HiOzhdY2jW0ZnJoF2f0N4FcSLXqzQ'),
         eventName: stringToHex("Test 1"),
@@ -870,7 +876,8 @@ await NewPresenceNewEvent.execute(signer, {
       }
   
 
-      await NewPresenceNewEvent.execute(signer, {
+      await NewPresenceNewEvent.execute({
+        signer,
       initialFields: {
         factory: factory.contractId,
         eventImage: stringToHex('https://arweave.net/hoxK8xC9wRjD_6HiOzhdY2jW0ZnJoF2f0N4FcSLXqzQ'),
@@ -949,7 +956,8 @@ await NewPresenceNewEvent.execute(signer, {
       throw new Error('Factory is undefined')
     }
 
-    await NewPresenceNewEvent.execute(signer, {
+    await NewPresenceNewEvent.execute({
+      signer,
       initialFields: {
         factory: factory.contractId,
         eventImage: stringToHex('https://arweave.net/hoxK8xC9wRjD_6HiOzhdY2jW0ZnJoF2f0N4FcSLXqzQ'),
