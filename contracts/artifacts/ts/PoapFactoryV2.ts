@@ -153,6 +153,8 @@ export namespace PoapFactoryV2Types {
         lockedUntil: bigint;
         hashedPassword: HexString;
         amountAirdrop: bigint;
+        amountForStorageFees: bigint;
+        amountForChainFees: bigint;
       }>;
       result: CallContractResult<null>;
     };
@@ -265,6 +267,8 @@ export namespace PoapFactoryV2Types {
         lockedUntil: bigint;
         hashedPassword: HexString;
         amountAirdrop: bigint;
+        amountForStorageFees: bigint;
+        amountForChainFees: bigint;
       }>;
       result: SignExecuteScriptTxResult;
     };
@@ -411,6 +415,8 @@ class Factory extends ContractFactory<
           lockedUntil: bigint;
           hashedPassword: HexString;
           amountAirdrop: bigint;
+          amountForStorageFees: bigint;
+          amountForChainFees: bigint;
         }
       >
     ): Promise<TestContractResultWithoutMaps<null>> => {
@@ -482,8 +488,8 @@ class Factory extends ContractFactory<
 export const PoapFactoryV2 = new Factory(
   Contract.fromJson(
     PoapFactoryV2ContractJson,
-    "",
-    "5a5dbeccf55e220638df4d3fb227818e2e6ad465369ae2b6c53b124b715b58ae",
+    "=17-3+204=3-1+f=3-1+c=3-1+a=791-1+3=94+160a16097e0300012000=522",
+    "151877e4a1757ef400cde53838f4601e8b27643bba95942c9d8d499b90558af0",
     AllStructs
   )
 );

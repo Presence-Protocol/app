@@ -41,6 +41,8 @@ export const NewPresenceNewEvent = new ExecutableScript<{
   lockedUntil: bigint;
   hashedPassword: HexString;
   amountAirdrop: bigint;
+  amountForStorageFees: bigint;
+  amountForChainFees: bigint;
 }>(
   Script.fromJson(NewPresenceNewEventScriptJson, "", AllStructs),
   getContractByCodeHash

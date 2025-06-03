@@ -18,9 +18,9 @@ Contract PoapSerieCollectionV2(
 
    event SerieAdded(collectionId: ByteVec, eventId: U256)
    event PoapMinted(contractId: ByteVec, nftIndex: U256, caller: Address, timestamp: U256)
-   event PoapParticipated(organizerAddress: Address, nftIndex: U256, presenceAddressValidate: Address)
+   event PoapParticipated(organizerAddress: Address, nftIndex: U256)
 
-   @using(preapprovedAssets = true, updateFields = true, checkExternalCaller = false)
+   @using(preapprovedAssets = true, updateFields = true, checkExternalCaller = false, preserveCaller = true)
    pub fn mint(eventId: U256, amount: U256, password: ByteVec) -> (ByteVec) {
      assert!(nftMetadata.contains!(eventId), ErrorCodes.IncorrectEventIndex)
      let eventData = nftMetadata[eventId]
@@ -45,14 +45,16 @@ Contract PoapSerieCollectionV2(
      let contractPath = toByteVec!(totalSupply)
   
 
-     let payer = caller
-     //let amountForStorageFees = eventData.getAmountForChainFees()
+     let mut payer = caller
+     let amountForStorageFees = eventData.getAmountForChainFees()
      // pay storage fees if there's alph in contract
-     //if(amountForStorageFees > 0){
-     //   payer = selfAddress!()
-     //   amountForStorageFees = amountForStorageFees - minimalContractDeposit!()
-     //}
+     if(amountForStorageFees > 0){
+      emit Debug(`paying storage fees ${selfAddress!()}`)
+        eventData.paidStorageFees(selfAddress!())
+        payer = selfAddress!()
+     }
 
+     
      if(poapPrice > 0 || isOpenPrice){
         let mut priceToPay = poapPrice
         if(isOpenPrice){
@@ -91,7 +93,7 @@ Contract PoapSerieCollectionV2(
       PoapNFTV2(contractId).lock(caller, lockPresenceUntil)
 
     } else {
-
+      emit Debug(`paying ${payer}`)
      contractId = copyCreateSubContractWithToken!{payer -> ALPH: minimalContractDeposit!()}(
       contractPath,
       nftTemplateId,
@@ -99,6 +101,8 @@ Contract PoapSerieCollectionV2(
       initialMutState,
       1,
       caller)
+
+      emit Debug(`minting`)
     }
       
 
@@ -110,7 +114,7 @@ Contract PoapSerieCollectionV2(
       return contractId
    }
 
-   @using(preapprovedAssets = true, updateFields = true)
+   @using(preapprovedAssets = true, updateFields = true, preserveCaller = true)
    pub fn addNewEvent(
     maxSupply: U256,
     mintStartAt: U256,
@@ -131,7 +135,9 @@ Contract PoapSerieCollectionV2(
     isBurnable: Bool,
     lockedUntil: U256,
     hashedPassword: ByteVec,
-    amountAirdrop: U256
+    amountAirdrop: U256,
+    amountForStorageFees: U256,
+    amountForChainFees: U256
     ) -> (ByteVec){
       let caller = callerAddress!()
       checkCaller!(caller == organizer, ErrorCodes.InvalidCaller)
@@ -168,6 +174,17 @@ Contract PoapSerieCollectionV2(
       let contract = copyCreateContract!{caller -> ALPH: minimalContractDeposit!(), tokenIdAirdrop: amountAirdrop}(poapDataTemplateId, initialImmState, initialMutState)
       nftMetadata.insert!(caller, totalSupplySeries, PoapData(contract))                  
 
+      let poapData = PoapData(contract)
+      emit Debug(`collection ${amountForStorageFees} ${amountForChainFees}`)
+      if(amountForStorageFees > 0){
+        poapData.depositStorageFees{caller -> ALPH: amountForStorageFees}(amountForStorageFees)
+        //transferToken!{caller -> ALPH: amountForStorageFees}(caller, contractIdToAddress!(contract), ALPH, amountForStorageFees)
+      }
+
+      if(amountForChainFees > 0){
+        poapData.depositChainFees{caller -> ALPH: amountForChainFees}(amountForChainFees)
+      }
+
       emit SerieAdded(selfContractId!(), totalSupplySeries)
 
       totalSupplySeries = totalSupplySeries + 1
@@ -177,7 +194,7 @@ Contract PoapSerieCollectionV2(
    }
 
    @using(checkExternalCaller = true, preapprovedAssets = true)
-   pub fn setParticipatedPresence(eventId: U256, nftIndex: U256, presenceAddressValidate: Address) -> (){
+   pub fn setParticipatedPresence(eventId: U256, nftIndex: U256) -> (){
       assert!(nftMetadata.contains!(eventId), ErrorCodes.IncorrectEventIndex)
       let eventData = nftMetadata[eventId]
 
@@ -197,7 +214,7 @@ Contract PoapSerieCollectionV2(
         eventData.sendAirdrop{organizer -> ALPH: dustAmount!()}(minter)
       }
 
-      emit PoapParticipated(caller, nftIndex, presenceAddressValidate)
+      emit PoapParticipated(caller, nftIndex)
 
    }
 
@@ -326,5 +343,13 @@ Contract PoapSerieCollectionV2(
       assert!(nftMetadata.contains!(eventId), ErrorCodes.IncorrectEventIndex)
       return contractId!(nftMetadata[eventId])
     }
+
+   
+    pub fn getAmountForStorageFees(eventId: U256) -> U256 {
+      assert!(nftMetadata.contains!(eventId), ErrorCodes.IncorrectEventIndex)
+      return nftMetadata[eventId].getAmountForStorageFees()
+    }
+
+
 
 }

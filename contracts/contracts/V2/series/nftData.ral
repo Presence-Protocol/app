@@ -51,9 +51,10 @@ Contract PoapData(
     }
    }
 
-   @using(assetsInContract = true, updateFields = true, preapprovedAssets = true, checkExternalCaller = false, preserveCaller = true)
+   @using(assetsInContract = true, updateFields = true, preapprovedAssets = true, checkExternalCaller = false)
     pub fn depositPaidPoap(amount: U256) -> () { // todo: need to use externalCallerAddress
-      let caller = externalCallerAddress!()
+      let caller = callerAddress!()
+
       assert!(poapPrice > 0 || isOpenPrice, ErrorCodes.PoapPriceNotSet)
         let mut priceToPay = poapPrice
         if(isOpenPrice){
@@ -66,6 +67,7 @@ Contract PoapData(
       
     }
 
+  
   @using(assetsInContract = true, updateFields = true)
   pub fn claimFunds(amountToClaim: U256) -> () {
     checkCaller!(callerAddress!() == organizer,ErrorCodes.InvalidCaller)
@@ -86,14 +88,26 @@ Contract PoapData(
     amountForStorageFees = amountForStorageFees - amount
   }
 
+  @using(updateFields = true, assetsInContract= true)
+  pub fn paidStorageFees(caller: Address) -> (){
+    checkCaller!(callerContractId!() == collectionId, ErrorCodes.InvalidCaller)
+    assert!(amountForStorageFees >= minimalContractDeposit!(), ErrorCodes.NotEnoughAlph)
+    emit Debug(`caller ${callerAddress!()} caller param ${caller} self ${selfAddress!()}`)
+    transferTokenFromSelf!(caller, ALPH, minimalContractDeposit!())
+    amountForStorageFees = amountForStorageFees - minimalContractDeposit!()
+  }
+
   @using(assetsInContract = true, updateFields = true, preapprovedAssets = true)
-    pub fn depositStorageFees(amount: U256) -> () {
+  pub fn depositStorageFees(amount: U256) -> () {
+        emit Debug(`storage ${amountForStorageFees} ${amount}`)
+
         checkCaller!(callerAddress!() == organizer, ErrorCodes.InvalidCaller)
         assert!(amount >= minimalContractDeposit!(), ErrorCodes.NotEnoughAlph)
 
         transferTokenToSelf!(organizer, ALPH, amount)
 
         amountForStorageFees = amountForStorageFees + amount
+        emit Debug(`storage after ${amountForStorageFees} ${amount}`)
     }
 
   @using(assetsInContract = true, updateFields = true)
@@ -108,8 +122,9 @@ Contract PoapData(
 
   @using(assetsInContract = true, updateFields = true, preapprovedAssets = true)
     pub fn depositChainFees(amount: U256) -> () {
+      
+        emit Debug(`chain ${amountForChainFees} ${amount}`)
         checkCaller!(callerAddress!() == organizer, ErrorCodes.InvalidCaller)
-
         transferTokenToSelf!(organizer, ALPH, amount)
 
         amountForChainFees = amountForChainFees + amount

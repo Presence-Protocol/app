@@ -1,7 +1,7 @@
 {
   "version": "v3.14.0",
   "name": "NewPresenceNewEvent",
-  "bytecodeTemplate": "0101030002004030b417001600d1a2{1}{2}{3}{4}100d{0}0101170116007a0ed12ca2{11}{24}a31601{5}{6}{7}{8}{9}{10}{11}{12}{13}{14}{15}{16}{17}{18}{19}{20}{21}{22}{23}{24}13150c{0}0102",
+  "bytecodeTemplate": "0101030003004049b417001600d1a2{1}{2}{3}{4}100d{0}010117010ed12c1702{25}0c334c09{25}d13413097b1602{25}2a1702{26}0c334c041602{26}2a170216007a1602a2{11}{24}a31601{5}{6}{7}{8}{9}{10}{11}{12}{13}{14}{15}{16}{17}{18}{19}{20}{21}{22}{23}{24}{25}{26}13170c{0}0102",
   "fieldsSig": {
     "names": [
       "factory",
@@ -28,7 +28,9 @@
       "isBurnable",
       "lockedUntil",
       "hashedPassword",
-      "amountAirdrop"
+      "amountAirdrop",
+      "amountForStorageFees",
+      "amountForChainFees"
     ],
     "types": [
       "PoapFactoryV2",
@@ -55,9 +57,13 @@
       "Bool",
       "U256",
       "ByteVec",
+      "U256",
+      "U256",
       "U256"
     ],
     "isMutable": [
+      false,
+      false,
       false,
       false,
       false,

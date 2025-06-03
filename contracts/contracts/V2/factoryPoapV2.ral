@@ -159,12 +159,25 @@ Contract PoapFactoryV2(
         isBurnable: Bool,
         lockedUntil: U256,
         hashedPassword: ByteVec,
-        amountAirdrop: U256
+        amountAirdrop: U256,
+        amountForStorageFees: U256,
+        amountForChainFees: U256
     ) -> (){
         let caller = callerAddress!()
         checkCaller!(caller == collection.getOrganizer(), ErrorCodes.InvalidCaller)
         
-       let contractId = collection.addNewEvent{caller -> ALPH: 2*minimalContractDeposit!(), tokenIdAirdrop: amountAirdrop}(
+        let mut totalAlphAmount = 2 * minimalContractDeposit!()
+
+        if(amountForStorageFees > 0){
+            assert!(amountForStorageFees >= minimalContractDeposit!(), ErrorCodes.NotEnoughAlph)
+            totalAlphAmount = totalAlphAmount + amountForStorageFees
+        }
+
+        if(amountForChainFees > 0){
+            totalAlphAmount = totalAlphAmount + amountForChainFees
+        }
+
+       let contractId = collection.addNewEvent{caller -> ALPH: totalAlphAmount , tokenIdAirdrop: amountAirdrop}(
             maxSupply,
             mintStartAt,
             mintEndAt,
@@ -184,7 +197,9 @@ Contract PoapFactoryV2(
             isBurnable,
             lockedUntil,
             hashedPassword,
-            amountAirdrop
+            amountAirdrop,
+            amountForStorageFees,
+            amountForChainFees
         )
 
         emit SerieAdded(collection, contractId, eventName, caller, isPublic, blockTimeStamp!())
@@ -197,12 +212,23 @@ Contract PoapFactoryV2(
         let caller = callerAddress!()
         
         let (poapPrice, poapTokenId, isOpenPrice) = collection.getPoapPrice(eventId)
+
+
         let mut poapPriceAmount = poapPrice // when isOpenPrice true just set the amount the user wants to pay
         if(isOpenPrice){
             poapPriceAmount = amount
         }
+        
+         let collectionAmountAlphInContract = collection.getAmountForStorageFees(eventId)
 
-        let poapContractId = collection.mint{caller -> ALPH: minimalContractDeposit!(), poapTokenId: poapPriceAmount}(eventId, poapPriceAmount, password)
+         
+        let mut feesStorageAmount = minimalContractDeposit!()
+
+        emit Debug(`${feesStorageAmount} ${collectionAmountAlphInContract}`)
+        if(collectionAmountAlphInContract > 0){
+            feesStorageAmount = 0
+        }
+        let poapContractId = collection.mint{caller -> ALPH: feesStorageAmount, poapTokenId: poapPriceAmount}(eventId, poapPriceAmount, password)
         let collectionTotalSupply = collection.totalSupply()
 
         emit PoapSerieMinted(poapContractId, collection, eventId, collectionTotalSupply ,caller, collection.getEventPublic(eventId), blockTimeStamp!())

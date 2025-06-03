@@ -23,19 +23,31 @@ TxScript NewPresenceNewEvent(
         isBurnable: Bool,
         lockedUntil: U256,
         hashedPassword: ByteVec,
-        amountAirdrop: U256
+        amountAirdrop: U256,
+        amountForStorageFees: U256,
+        amountForChainFees: U256
 ) {
 
     let caller = callerAddress!()
-    emit Debug(`NewPresenceNewEvent called`)
     let collection = factory.mintNewCollectionWithSerie{caller -> ALPH: minimalContractDeposit!()}(
             eventImage,
             eventName,
             description,
             isPublic)
 
-    emit Debug(`NewPresenceNewEvent called 2`)
-    factory.createNewEvent{caller -> ALPH: 2 * minimalContractDeposit!(), tokenIdAirdrop: amountAirdrop}(
+       let mut totalAlphAmount = 2 * minimalContractDeposit!()
+
+        if(amountForStorageFees > 0) {
+            assert!(amountForStorageFees >= minimalContractDeposit!(), ErrorCodes.NotEnoughAlph)
+            totalAlphAmount = totalAlphAmount + amountForStorageFees
+        }
+
+        if(amountForChainFees > 0) {
+            totalAlphAmount = totalAlphAmount + amountForChainFees
+        }
+
+
+    factory.createNewEvent{caller -> ALPH: totalAlphAmount, tokenIdAirdrop: amountAirdrop}(
         PoapSerieCollectionV2(collection),
         maxSupply,
         mintStartAt,
@@ -56,7 +68,8 @@ TxScript NewPresenceNewEvent(
         isBurnable,
         lockedUntil,
         hashedPassword,
-        amountAirdrop
-
+        amountAirdrop,
+        amountForStorageFees,
+        amountForChainFees
     )
 }

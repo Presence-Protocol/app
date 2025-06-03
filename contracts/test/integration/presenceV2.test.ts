@@ -3407,26 +3407,16 @@ describe('integration tests', () => {
     let poapBalance = await balanceOf(minter.address, nftId)
     expect(poapBalance.amount).toBe("1")
 
-
-    const uTx = await builder.buildTransferTx(
-      {
-        signerAddress: minter.address,
-        destinations: [{
-          address: minter2.address,
-          attoAlphAmount: DUST_AMOUNT,
-          tokens: [{
-            id: nftId,
-            amount: 1n,
-          }],
-        }],
-
-      },
-      minter.publicKey
-    )
-
-    await minter.signAndSubmitUnsignedTx({
+    await minter.signAndSubmitTransferTx({
       signerAddress: minter.address,
-      unsignedTx: uTx.unsignedTx
+      destinations: [{
+        address: minter2.address,
+        attoAlphAmount: DUST_AMOUNT,
+        tokens: [{
+          id: nftId,
+          amount: 1n,
+        }],
+      }]
     })
 
     poapBalance = await balanceOf(minter.address, nftId)

@@ -67,7 +67,6 @@ export namespace PoapSerieCollectionV2Types {
   export type PoapParticipatedEvent = ContractEvent<{
     organizerAddress: Address;
     nftIndex: bigint;
-    presenceAddressValidate: Address;
   }>;
 
   export interface CallMethodTable {
@@ -121,15 +120,13 @@ export namespace PoapSerieCollectionV2Types {
         lockedUntil: bigint;
         hashedPassword: HexString;
         amountAirdrop: bigint;
+        amountForStorageFees: bigint;
+        amountForChainFees: bigint;
       }>;
       result: CallContractResult<HexString>;
     };
     setParticipatedPresence: {
-      params: CallContractParams<{
-        eventId: bigint;
-        nftIndex: bigint;
-        presenceAddressValidate: Address;
-      }>;
+      params: CallContractParams<{ eventId: bigint; nftIndex: bigint }>;
       result: CallContractResult<null>;
     };
     totalSupplySeries: {
@@ -179,6 +176,10 @@ export namespace PoapSerieCollectionV2Types {
     getPoapDataByEvent: {
       params: CallContractParams<{ eventId: bigint }>;
       result: CallContractResult<HexString>;
+    };
+    getAmountForStorageFees: {
+      params: CallContractParams<{ eventId: bigint }>;
+      result: CallContractResult<bigint>;
     };
   }
   export type CallMethodParams<T extends keyof CallMethodTable> =
@@ -251,6 +252,8 @@ export namespace PoapSerieCollectionV2Types {
         lockedUntil: bigint;
         hashedPassword: HexString;
         amountAirdrop: bigint;
+        amountForStorageFees: bigint;
+        amountForChainFees: bigint;
       }>;
       result: SignExecuteScriptTxResult;
     };
@@ -258,7 +261,6 @@ export namespace PoapSerieCollectionV2Types {
       params: SignExecuteContractMethodParams<{
         eventId: bigint;
         nftIndex: bigint;
-        presenceAddressValidate: Address;
       }>;
       result: SignExecuteScriptTxResult;
     };
@@ -325,6 +327,10 @@ export namespace PoapSerieCollectionV2Types {
       result: SignExecuteScriptTxResult;
     };
     getPoapDataByEvent: {
+      params: SignExecuteContractMethodParams<{ eventId: bigint }>;
+      result: SignExecuteScriptTxResult;
+    };
+    getAmountForStorageFees: {
       params: SignExecuteContractMethodParams<{ eventId: bigint }>;
       result: SignExecuteScriptTxResult;
     };
@@ -453,6 +459,8 @@ class Factory extends ContractFactory<
           lockedUntil: bigint;
           hashedPassword: HexString;
           amountAirdrop: bigint;
+          amountForStorageFees: bigint;
+          amountForChainFees: bigint;
         },
         PoapSerieCollectionV2Types.Maps
       >
@@ -464,7 +472,7 @@ class Factory extends ContractFactory<
     setParticipatedPresence: async (
       params: TestContractParams<
         PoapSerieCollectionV2Types.Fields,
-        { eventId: bigint; nftIndex: bigint; presenceAddressValidate: Address },
+        { eventId: bigint; nftIndex: bigint },
         PoapSerieCollectionV2Types.Maps
       >
     ): Promise<TestContractResult<null, PoapSerieCollectionV2Types.Maps>> => {
@@ -640,6 +648,20 @@ class Factory extends ContractFactory<
         getContractByCodeHash
       );
     },
+    getAmountForStorageFees: async (
+      params: TestContractParams<
+        PoapSerieCollectionV2Types.Fields,
+        { eventId: bigint },
+        PoapSerieCollectionV2Types.Maps
+      >
+    ): Promise<TestContractResult<bigint, PoapSerieCollectionV2Types.Maps>> => {
+      return testMethod(
+        this,
+        "getAmountForStorageFees",
+        params,
+        getContractByCodeHash
+      );
+    },
   };
 
   stateForTest(
@@ -656,8 +678,8 @@ class Factory extends ContractFactory<
 export const PoapSerieCollectionV2 = new Factory(
   Contract.fromJson(
     PoapSerieCollectionV2ContractJson,
-    "=30-1=1+0=2-2+f5=1+40=1-2=2-2=1-3+6=2-2+89=2-2+cc=2-1=1+3=2-2+5a=3-1+d=3-1+b=2-1=1+9=1-3+5f4=2+2f=1-1+666=1445-1+a=224+7a7e0214696e73657274206174206d617020706174683a2000=1556",
-    "68ea1e823ab9ee2b9c677d809267650be04224cff7983ebbe97db454ee5b8c6a",
+    "=25-2+31=3-2+f7=2-5+7=3-2+88=2+c=1-1=1-3+50e=2-3=1-1=3-2+98=3+f462=2-2+63=3-2+3e=2-1+794=1+b4=2-2+eb=1+72=1-2=667-1+8=475+9b2=1+e0214706179696e672073746f7261676520666565732000=251-1+e160f7e0207706179696e672000=36+7e01076d696e74696e67=61-1+7=224+7a7e0214696e73657274206174206d617020706174683a2000=20+161416157e030b636f6c6c656374696f6e20012000=1734",
+    "c28dc0f4a36d1bfd8b462b2cc8964dc85fad672ac983847db4d388ac712e8feb",
     AllStructs
   )
 );
@@ -983,6 +1005,19 @@ export class PoapSerieCollectionV2Instance extends ContractInstance {
         getContractByCodeHash
       );
     },
+    getAmountForStorageFees: async (
+      params: PoapSerieCollectionV2Types.CallMethodParams<"getAmountForStorageFees">
+    ): Promise<
+      PoapSerieCollectionV2Types.CallMethodResult<"getAmountForStorageFees">
+    > => {
+      return callMethod(
+        PoapSerieCollectionV2,
+        this,
+        "getAmountForStorageFees",
+        params,
+        getContractByCodeHash
+      );
+    },
   };
 
   transact = {
@@ -1211,6 +1246,18 @@ export class PoapSerieCollectionV2Instance extends ContractInstance {
         PoapSerieCollectionV2,
         this,
         "getPoapDataByEvent",
+        params
+      );
+    },
+    getAmountForStorageFees: async (
+      params: PoapSerieCollectionV2Types.SignExecuteMethodParams<"getAmountForStorageFees">
+    ): Promise<
+      PoapSerieCollectionV2Types.SignExecuteMethodResult<"getAmountForStorageFees">
+    > => {
+      return signExecuteMethod(
+        PoapSerieCollectionV2,
+        this,
+        "getAmountForStorageFees",
         params
       );
     },
