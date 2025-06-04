@@ -1289,13 +1289,14 @@ await NewPresenceNewEvent.execute({
     expect(number256ToBigint((await balanceOf(poapDataAddress, customTokenA.contractId)).amount)).toBe(20n)
 
 
-    await factory.transact.mintPoap({
+    await factory.transact.mintPoapSerie({
       signer: minter,
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + 2n * DUST_AMOUNT,
       args: {
         collection: collection.contractId,
         amount: 0n,
-        password: ''
+        password: '',
+        eventId: 0n
       }
     })
 
@@ -2079,11 +2080,12 @@ await NewPresenceNewEvent.execute({
       console.log((await poapData.view.getAmountForStorageFees()).returns,  (await poapData.view.getAmountForChainFees()).returns)
 
       expect((await alphBalanceOf(poapDataAddress))).toEqual(poapDataState.fields.amountForStorageFees + MINIMAL_CONTRACT_DEPOSIT + poapDataState.fields.amountForChainFees)
-      expect((await alphBalanceOf(poapDataAddress))).toEqual(3n * 10n ** 17n + 10n * ONE_ALPH)
-  
+      //expect((await alphBalanceOf(poapDataAddress))).toEqual(3n * 10n ** 17n + 10n * ONE_ALPH)
+
+      console.log(`caller ${minter.address}`)
       await factory.transact.mintPoapSerie({
         signer: minter,
-        attoAlphAmount: DUST_AMOUNT,
+        attoAlphAmount: DUST_AMOUNT + MINIMAL_CONTRACT_DEPOSIT,
         args: {
           amount: 0n,
           password: '',

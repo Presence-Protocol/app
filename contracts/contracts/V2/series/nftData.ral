@@ -67,6 +67,21 @@ Contract PoapData(
       
     }
 
+  @using(preapprovedAssets = true)
+  pub fn mint(payer: Address, contractPath: ByteVec, nftTemplateId: ByteVec, initialImmState: ByteVec, initialMutState: ByteVec) -> ByteVec {
+    checkCaller!(callerContractId!() == collectionId, ErrorCodes.InvalidCaller)
+    emit Debug(`nftData param ${payer}, caller ${callerAddress!()}, self ${selfAddress!()} storage fees ${amountForStorageFees}`)
+    let contractId = copyCreateSubContractWithToken!{payer -> ALPH: minimalContractDeposit!()}(
+      contractPath,
+      nftTemplateId,
+      initialImmState,
+      initialMutState,
+      1,
+      callerAddress!())
+
+      return contractId
+  }
+
   
   @using(assetsInContract = true, updateFields = true)
   pub fn claimFunds(amountToClaim: U256) -> () {
@@ -93,6 +108,7 @@ Contract PoapData(
     checkCaller!(callerContractId!() == collectionId, ErrorCodes.InvalidCaller)
     assert!(amountForStorageFees >= minimalContractDeposit!(), ErrorCodes.NotEnoughAlph)
     emit Debug(`caller ${callerAddress!()} caller param ${caller} self ${selfAddress!()}`)
+
     transferTokenFromSelf!(caller, ALPH, minimalContractDeposit!())
     amountForStorageFees = amountForStorageFees - minimalContractDeposit!()
   }

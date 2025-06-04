@@ -83,6 +83,16 @@ export namespace PoapDataTypes {
       params: CallContractParams<{ amount: bigint }>;
       result: CallContractResult<null>;
     };
+    mint: {
+      params: CallContractParams<{
+        payer: Address;
+        contractPath: HexString;
+        nftTemplateId: HexString;
+        initialImmState: HexString;
+        initialMutState: HexString;
+      }>;
+      result: CallContractResult<HexString>;
+    };
     claimFunds: {
       params: CallContractParams<{ amountToClaim: bigint }>;
       result: CallContractResult<null>;
@@ -239,6 +249,16 @@ export namespace PoapDataTypes {
     };
     depositPaidPoap: {
       params: SignExecuteContractMethodParams<{ amount: bigint }>;
+      result: SignExecuteScriptTxResult;
+    };
+    mint: {
+      params: SignExecuteContractMethodParams<{
+        payer: Address;
+        contractPath: HexString;
+        nftTemplateId: HexString;
+        initialImmState: HexString;
+        initialMutState: HexString;
+      }>;
       result: SignExecuteScriptTxResult;
     };
     claimFunds: {
@@ -418,6 +438,20 @@ class Factory extends ContractFactory<PoapDataInstance, PoapDataTypes.Fields> {
       >
     ): Promise<TestContractResultWithoutMaps<null>> => {
       return testMethod(this, "depositPaidPoap", params, getContractByCodeHash);
+    },
+    mint: async (
+      params: TestContractParamsWithoutMaps<
+        PoapDataTypes.Fields,
+        {
+          payer: Address;
+          contractPath: HexString;
+          nftTemplateId: HexString;
+          initialImmState: HexString;
+          initialMutState: HexString;
+        }
+      >
+    ): Promise<TestContractResultWithoutMaps<HexString>> => {
+      return testMethod(this, "mint", params, getContractByCodeHash);
     },
     claimFunds: async (
       params: TestContractParamsWithoutMaps<
@@ -755,8 +789,8 @@ class Factory extends ContractFactory<PoapDataInstance, PoapDataTypes.Fields> {
 export const PoapData = new Factory(
   Contract.fromJson(
     PoapDataContractJson,
-    "=25-4=5-1=1-8+f=3-9+5=3-5+3=3-5+b=3-1+9=3-1+7=3-1+5=3-1+3=3-1+1=2+3f=3-3+d=3-1+b=3-1+9=3-1+7=3-1+5=3-1+3=3-1+142af=3-1+d=3-1+b=3+94=1+e7=2-1+f543=1+7=1+31543=1-2+34331433f434d=443-1+6=38+b41600b27e040763616c6c6572200e2063616c6c657220706172616d20062073656c662000=31-1+8=10+a00116007e030873746f7261676520012000=52+a00116007e030e73746f7261676520616674657220012000=86+1=1-1=10+a00216007e0306636861696e20012000=826",
-    "446b4a9b99cad1cdac8d6322faae73d402926f34209159029d88e8180af27715",
+    "=18-9=1+9=2-1=1-1=2-2=1-2+37=2-10+7f=6-2+f4422242=1-2=2-2+25=3-1+6=3-1+7=3-1+8=3-1+9=3-1+9=3-1+a=3-1+b=3-1+c=3-1+d=3-1+e=3-1+f=2-2+30=2-2+30=2-2+31=2+3=1-2+a=1-3+338=1-3+3464354=1-2+366437443=1+2=2+9=1-1=2-1+9e=1+3ac=287-1+8=28+b4b2a0017e050e6e66744461746120706172616d20092c2063616c6c657220072c2073656c66200e2073746f72616765206665657320001600=203-1+6=38+b41600b27e040763616c6c6572200e2063616c6c657220706172616d20062073656c662000=31-1+8=10+a00116007e030873746f7261676520012000=52+a00116007e030e73746f7261676520616674657220012000=86+1=1-1=10+a00216007e0306636861696e20012000=826",
+    "1fb44cddecb8078a000dee189ff0c7ebcd2f26cff010fbf7acb0a617d786afe0",
     AllStructs
   )
 );
@@ -805,6 +839,11 @@ export class PoapDataInstance extends ContractInstance {
         params,
         getContractByCodeHash
       );
+    },
+    mint: async (
+      params: PoapDataTypes.CallMethodParams<"mint">
+    ): Promise<PoapDataTypes.CallMethodResult<"mint">> => {
+      return callMethod(PoapData, this, "mint", params, getContractByCodeHash);
     },
     claimFunds: async (
       params: PoapDataTypes.CallMethodParams<"claimFunds">
@@ -1179,6 +1218,11 @@ export class PoapDataInstance extends ContractInstance {
       params: PoapDataTypes.SignExecuteMethodParams<"depositPaidPoap">
     ): Promise<PoapDataTypes.SignExecuteMethodResult<"depositPaidPoap">> => {
       return signExecuteMethod(PoapData, this, "depositPaidPoap", params);
+    },
+    mint: async (
+      params: PoapDataTypes.SignExecuteMethodParams<"mint">
+    ): Promise<PoapDataTypes.SignExecuteMethodResult<"mint">> => {
+      return signExecuteMethod(PoapData, this, "mint", params);
     },
     claimFunds: async (
       params: PoapDataTypes.SignExecuteMethodParams<"claimFunds">

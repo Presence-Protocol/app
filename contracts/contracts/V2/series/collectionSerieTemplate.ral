@@ -49,9 +49,8 @@ Contract PoapSerieCollectionV2(
      let amountForStorageFees = eventData.getAmountForChainFees()
      // pay storage fees if there's alph in contract
      if(amountForStorageFees > 0){
-      emit Debug(`paying storage fees ${selfAddress!()}`)
-        eventData.paidStorageFees(selfAddress!())
-        payer = selfAddress!()
+        //eventData.paidStorageFees(selfAddress!())
+        payer = contractAddress!(eventData)
      }
 
      
@@ -93,14 +92,17 @@ Contract PoapSerieCollectionV2(
       PoapNFTV2(contractId).lock(caller, lockPresenceUntil)
 
     } else {
-      emit Debug(`paying ${payer}`)
-     contractId = copyCreateSubContractWithToken!{payer -> ALPH: minimalContractDeposit!()}(
-      contractPath,
-      nftTemplateId,
-      initialImmState,
-      initialMutState,
-      1,
-      caller)
+    emit Debug(`collection payer ${payer}, caller ${callerAddress!()}, self ${selfAddress!()} nftdata ${contractAddress!(eventData)}`)
+    //  contractId = copyCreateSubContractWithToken!{payer -> ALPH: minimalContractDeposit!()}(
+    //   contractPath,
+    //   nftTemplateId,
+    //   initialImmState,
+    //   initialMutState,
+    //   1,
+    //   caller)
+
+
+      contractId = eventData.mint{payer -> ALPH: minimalContractDeposit!()}(payer, contractPath, nftTemplateId, initialImmState, initialMutState)
 
       emit Debug(`minting`)
     }
