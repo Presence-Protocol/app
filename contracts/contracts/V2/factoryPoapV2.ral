@@ -224,7 +224,6 @@ Contract PoapFactoryV2(
          
         let mut feesStorageAmount = minimalContractDeposit!()
 
-        emit Debug(`${feesStorageAmount} ${collectionAmountAlphInContract}`)
         if(collectionAmountAlphInContract > 0){
             feesStorageAmount = 0
         }

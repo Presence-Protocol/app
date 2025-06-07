@@ -83,16 +83,6 @@ export namespace PoapDataTypes {
       params: CallContractParams<{ amount: bigint }>;
       result: CallContractResult<null>;
     };
-    mint: {
-      params: CallContractParams<{
-        payer: Address;
-        contractPath: HexString;
-        nftTemplateId: HexString;
-        initialImmState: HexString;
-        initialMutState: HexString;
-      }>;
-      result: CallContractResult<HexString>;
-    };
     claimFunds: {
       params: CallContractParams<{ amountToClaim: bigint }>;
       result: CallContractResult<null>;
@@ -101,19 +91,23 @@ export namespace PoapDataTypes {
       params: CallContractParams<{ amount: bigint }>;
       result: CallContractResult<null>;
     };
-    paidStorageFees: {
-      params: CallContractParams<{ caller: Address }>;
+    addStorageFees: {
+      params: CallContractParams<{ amount: bigint }>;
       result: CallContractResult<null>;
     };
-    depositStorageFees: {
-      params: CallContractParams<{ amount: bigint }>;
+    useStorageFees: {
+      params: Omit<CallContractParams<{}>, "args">;
       result: CallContractResult<null>;
     };
     withdrawChainFees: {
       params: CallContractParams<{ amount: bigint }>;
       result: CallContractResult<null>;
     };
-    depositChainFees: {
+    addChainFees: {
+      params: CallContractParams<{ amount: bigint }>;
+      result: CallContractResult<null>;
+    };
+    useChainFees: {
       params: CallContractParams<{ amount: bigint }>;
       result: CallContractResult<null>;
     };
@@ -221,6 +215,10 @@ export namespace PoapDataTypes {
       params: Omit<CallContractParams<{}>, "args">;
       result: CallContractResult<HexString>;
     };
+    getPrepaidFeesAmount: {
+      params: Omit<CallContractParams<{}>, "args">;
+      result: CallContractResult<[bigint, bigint]>;
+    };
   }
   export type CallMethodParams<T extends keyof CallMethodTable> =
     CallMethodTable[T]["params"];
@@ -251,16 +249,6 @@ export namespace PoapDataTypes {
       params: SignExecuteContractMethodParams<{ amount: bigint }>;
       result: SignExecuteScriptTxResult;
     };
-    mint: {
-      params: SignExecuteContractMethodParams<{
-        payer: Address;
-        contractPath: HexString;
-        nftTemplateId: HexString;
-        initialImmState: HexString;
-        initialMutState: HexString;
-      }>;
-      result: SignExecuteScriptTxResult;
-    };
     claimFunds: {
       params: SignExecuteContractMethodParams<{ amountToClaim: bigint }>;
       result: SignExecuteScriptTxResult;
@@ -269,19 +257,23 @@ export namespace PoapDataTypes {
       params: SignExecuteContractMethodParams<{ amount: bigint }>;
       result: SignExecuteScriptTxResult;
     };
-    paidStorageFees: {
-      params: SignExecuteContractMethodParams<{ caller: Address }>;
+    addStorageFees: {
+      params: SignExecuteContractMethodParams<{ amount: bigint }>;
       result: SignExecuteScriptTxResult;
     };
-    depositStorageFees: {
-      params: SignExecuteContractMethodParams<{ amount: bigint }>;
+    useStorageFees: {
+      params: Omit<SignExecuteContractMethodParams<{}>, "args">;
       result: SignExecuteScriptTxResult;
     };
     withdrawChainFees: {
       params: SignExecuteContractMethodParams<{ amount: bigint }>;
       result: SignExecuteScriptTxResult;
     };
-    depositChainFees: {
+    addChainFees: {
+      params: SignExecuteContractMethodParams<{ amount: bigint }>;
+      result: SignExecuteScriptTxResult;
+    };
+    useChainFees: {
       params: SignExecuteContractMethodParams<{ amount: bigint }>;
       result: SignExecuteScriptTxResult;
     };
@@ -389,6 +381,10 @@ export namespace PoapDataTypes {
       params: Omit<SignExecuteContractMethodParams<{}>, "args">;
       result: SignExecuteScriptTxResult;
     };
+    getPrepaidFeesAmount: {
+      params: Omit<SignExecuteContractMethodParams<{}>, "args">;
+      result: SignExecuteScriptTxResult;
+    };
   }
   export type SignExecuteMethodParams<T extends keyof SignExecuteMethodTable> =
     SignExecuteMethodTable[T]["params"];
@@ -439,20 +435,6 @@ class Factory extends ContractFactory<PoapDataInstance, PoapDataTypes.Fields> {
     ): Promise<TestContractResultWithoutMaps<null>> => {
       return testMethod(this, "depositPaidPoap", params, getContractByCodeHash);
     },
-    mint: async (
-      params: TestContractParamsWithoutMaps<
-        PoapDataTypes.Fields,
-        {
-          payer: Address;
-          contractPath: HexString;
-          nftTemplateId: HexString;
-          initialImmState: HexString;
-          initialMutState: HexString;
-        }
-      >
-    ): Promise<TestContractResultWithoutMaps<HexString>> => {
-      return testMethod(this, "mint", params, getContractByCodeHash);
-    },
     claimFunds: async (
       params: TestContractParamsWithoutMaps<
         PoapDataTypes.Fields,
@@ -474,26 +456,21 @@ class Factory extends ContractFactory<PoapDataInstance, PoapDataTypes.Fields> {
         getContractByCodeHash
       );
     },
-    paidStorageFees: async (
-      params: TestContractParamsWithoutMaps<
-        PoapDataTypes.Fields,
-        { caller: Address }
-      >
-    ): Promise<TestContractResultWithoutMaps<null>> => {
-      return testMethod(this, "paidStorageFees", params, getContractByCodeHash);
-    },
-    depositStorageFees: async (
+    addStorageFees: async (
       params: TestContractParamsWithoutMaps<
         PoapDataTypes.Fields,
         { amount: bigint }
       >
     ): Promise<TestContractResultWithoutMaps<null>> => {
-      return testMethod(
-        this,
-        "depositStorageFees",
-        params,
-        getContractByCodeHash
-      );
+      return testMethod(this, "addStorageFees", params, getContractByCodeHash);
+    },
+    useStorageFees: async (
+      params: Omit<
+        TestContractParamsWithoutMaps<PoapDataTypes.Fields, never>,
+        "args"
+      >
+    ): Promise<TestContractResultWithoutMaps<null>> => {
+      return testMethod(this, "useStorageFees", params, getContractByCodeHash);
     },
     withdrawChainFees: async (
       params: TestContractParamsWithoutMaps<
@@ -508,18 +485,21 @@ class Factory extends ContractFactory<PoapDataInstance, PoapDataTypes.Fields> {
         getContractByCodeHash
       );
     },
-    depositChainFees: async (
+    addChainFees: async (
       params: TestContractParamsWithoutMaps<
         PoapDataTypes.Fields,
         { amount: bigint }
       >
     ): Promise<TestContractResultWithoutMaps<null>> => {
-      return testMethod(
-        this,
-        "depositChainFees",
-        params,
-        getContractByCodeHash
-      );
+      return testMethod(this, "addChainFees", params, getContractByCodeHash);
+    },
+    useChainFees: async (
+      params: TestContractParamsWithoutMaps<
+        PoapDataTypes.Fields,
+        { amount: bigint }
+      >
+    ): Promise<TestContractResultWithoutMaps<null>> => {
+      return testMethod(this, "useChainFees", params, getContractByCodeHash);
     },
     withdrawAirdrop: async (
       params: TestContractParamsWithoutMaps<
@@ -774,6 +754,19 @@ class Factory extends ContractFactory<PoapDataInstance, PoapDataTypes.Fields> {
         getContractByCodeHash
       );
     },
+    getPrepaidFeesAmount: async (
+      params: Omit<
+        TestContractParamsWithoutMaps<PoapDataTypes.Fields, never>,
+        "args"
+      >
+    ): Promise<TestContractResultWithoutMaps<[bigint, bigint]>> => {
+      return testMethod(
+        this,
+        "getPrepaidFeesAmount",
+        params,
+        getContractByCodeHash
+      );
+    },
   };
 
   stateForTest(
@@ -789,8 +782,8 @@ class Factory extends ContractFactory<PoapDataInstance, PoapDataTypes.Fields> {
 export const PoapData = new Factory(
   Contract.fromJson(
     PoapDataContractJson,
-    "=18-9=1+9=2-1=1-1=2-2=1-2+37=2-10+7f=6-2+f4422242=1-2=2-2+25=3-1+6=3-1+7=3-1+8=3-1+9=3-1+9=3-1+a=3-1+b=3-1+c=3-1+d=3-1+e=3-1+f=2-2+30=2-2+30=2-2+31=2+3=1-2+a=1-3+338=1-3+3464354=1-2+366437443=1+2=2+9=1-1=2-1+9e=1+3ac=287-1+8=28+b4b2a0017e050e6e66744461746120706172616d20092c2063616c6c657220072c2073656c66200e2073746f72616765206665657320001600=203-1+6=38+b41600b27e040763616c6c6572200e2063616c6c657220706172616d20062073656c662000=31-1+8=10+a00116007e030873746f7261676520012000=52+a00116007e030e73746f7261676520616674657220012000=86+1=1-1=10+a00216007e0306636861696e20012000=826",
-    "1fb44cddecb8078a000dee189ff0c7ebcd2f26cff010fbf7acb0a617d786afe0",
+    "=25-4=2-1+8=3-1+7=2-2+58=2-2+71=3-2=1-2=3-1+9=2-5=1+7=3-1+5=3-1+341f1=3-1+f=3-1+d=3-1+b=3-5+9=3-1+7=3-1+5=3-1+3=3+142=1+f=3-1+d=3-1+b=3-3=1-1=2-2+a7=3-1+5=3-1+3=3-1+5=3-1+3=3-1+142ff=3-1+d431b432b=432-2+12=52+1600a0017e031a6465706f73697453746f726167654665657320616d6f756e7420022c2000=1062",
+    "f5880f984cf664a8574a9436809d94405938dc2cad70352efe950e3a7f10c069",
     AllStructs
   )
 );
@@ -840,11 +833,6 @@ export class PoapDataInstance extends ContractInstance {
         getContractByCodeHash
       );
     },
-    mint: async (
-      params: PoapDataTypes.CallMethodParams<"mint">
-    ): Promise<PoapDataTypes.CallMethodResult<"mint">> => {
-      return callMethod(PoapData, this, "mint", params, getContractByCodeHash);
-    },
     claimFunds: async (
       params: PoapDataTypes.CallMethodParams<"claimFunds">
     ): Promise<PoapDataTypes.CallMethodResult<"claimFunds">> => {
@@ -867,25 +855,25 @@ export class PoapDataInstance extends ContractInstance {
         getContractByCodeHash
       );
     },
-    paidStorageFees: async (
-      params: PoapDataTypes.CallMethodParams<"paidStorageFees">
-    ): Promise<PoapDataTypes.CallMethodResult<"paidStorageFees">> => {
+    addStorageFees: async (
+      params: PoapDataTypes.CallMethodParams<"addStorageFees">
+    ): Promise<PoapDataTypes.CallMethodResult<"addStorageFees">> => {
       return callMethod(
         PoapData,
         this,
-        "paidStorageFees",
+        "addStorageFees",
         params,
         getContractByCodeHash
       );
     },
-    depositStorageFees: async (
-      params: PoapDataTypes.CallMethodParams<"depositStorageFees">
-    ): Promise<PoapDataTypes.CallMethodResult<"depositStorageFees">> => {
+    useStorageFees: async (
+      params?: PoapDataTypes.CallMethodParams<"useStorageFees">
+    ): Promise<PoapDataTypes.CallMethodResult<"useStorageFees">> => {
       return callMethod(
         PoapData,
         this,
-        "depositStorageFees",
-        params,
+        "useStorageFees",
+        params === undefined ? {} : params,
         getContractByCodeHash
       );
     },
@@ -900,13 +888,24 @@ export class PoapDataInstance extends ContractInstance {
         getContractByCodeHash
       );
     },
-    depositChainFees: async (
-      params: PoapDataTypes.CallMethodParams<"depositChainFees">
-    ): Promise<PoapDataTypes.CallMethodResult<"depositChainFees">> => {
+    addChainFees: async (
+      params: PoapDataTypes.CallMethodParams<"addChainFees">
+    ): Promise<PoapDataTypes.CallMethodResult<"addChainFees">> => {
       return callMethod(
         PoapData,
         this,
-        "depositChainFees",
+        "addChainFees",
+        params,
+        getContractByCodeHash
+      );
+    },
+    useChainFees: async (
+      params: PoapDataTypes.CallMethodParams<"useChainFees">
+    ): Promise<PoapDataTypes.CallMethodResult<"useChainFees">> => {
+      return callMethod(
+        PoapData,
+        this,
+        "useChainFees",
         params,
         getContractByCodeHash
       );
@@ -1199,6 +1198,17 @@ export class PoapDataInstance extends ContractInstance {
         getContractByCodeHash
       );
     },
+    getPrepaidFeesAmount: async (
+      params?: PoapDataTypes.CallMethodParams<"getPrepaidFeesAmount">
+    ): Promise<PoapDataTypes.CallMethodResult<"getPrepaidFeesAmount">> => {
+      return callMethod(
+        PoapData,
+        this,
+        "getPrepaidFeesAmount",
+        params === undefined ? {} : params,
+        getContractByCodeHash
+      );
+    },
   };
 
   transact = {
@@ -1219,11 +1229,6 @@ export class PoapDataInstance extends ContractInstance {
     ): Promise<PoapDataTypes.SignExecuteMethodResult<"depositPaidPoap">> => {
       return signExecuteMethod(PoapData, this, "depositPaidPoap", params);
     },
-    mint: async (
-      params: PoapDataTypes.SignExecuteMethodParams<"mint">
-    ): Promise<PoapDataTypes.SignExecuteMethodResult<"mint">> => {
-      return signExecuteMethod(PoapData, this, "mint", params);
-    },
     claimFunds: async (
       params: PoapDataTypes.SignExecuteMethodParams<"claimFunds">
     ): Promise<PoapDataTypes.SignExecuteMethodResult<"claimFunds">> => {
@@ -1236,25 +1241,30 @@ export class PoapDataInstance extends ContractInstance {
     > => {
       return signExecuteMethod(PoapData, this, "withdrawStorageFees", params);
     },
-    paidStorageFees: async (
-      params: PoapDataTypes.SignExecuteMethodParams<"paidStorageFees">
-    ): Promise<PoapDataTypes.SignExecuteMethodResult<"paidStorageFees">> => {
-      return signExecuteMethod(PoapData, this, "paidStorageFees", params);
+    addStorageFees: async (
+      params: PoapDataTypes.SignExecuteMethodParams<"addStorageFees">
+    ): Promise<PoapDataTypes.SignExecuteMethodResult<"addStorageFees">> => {
+      return signExecuteMethod(PoapData, this, "addStorageFees", params);
     },
-    depositStorageFees: async (
-      params: PoapDataTypes.SignExecuteMethodParams<"depositStorageFees">
-    ): Promise<PoapDataTypes.SignExecuteMethodResult<"depositStorageFees">> => {
-      return signExecuteMethod(PoapData, this, "depositStorageFees", params);
+    useStorageFees: async (
+      params: PoapDataTypes.SignExecuteMethodParams<"useStorageFees">
+    ): Promise<PoapDataTypes.SignExecuteMethodResult<"useStorageFees">> => {
+      return signExecuteMethod(PoapData, this, "useStorageFees", params);
     },
     withdrawChainFees: async (
       params: PoapDataTypes.SignExecuteMethodParams<"withdrawChainFees">
     ): Promise<PoapDataTypes.SignExecuteMethodResult<"withdrawChainFees">> => {
       return signExecuteMethod(PoapData, this, "withdrawChainFees", params);
     },
-    depositChainFees: async (
-      params: PoapDataTypes.SignExecuteMethodParams<"depositChainFees">
-    ): Promise<PoapDataTypes.SignExecuteMethodResult<"depositChainFees">> => {
-      return signExecuteMethod(PoapData, this, "depositChainFees", params);
+    addChainFees: async (
+      params: PoapDataTypes.SignExecuteMethodParams<"addChainFees">
+    ): Promise<PoapDataTypes.SignExecuteMethodResult<"addChainFees">> => {
+      return signExecuteMethod(PoapData, this, "addChainFees", params);
+    },
+    useChainFees: async (
+      params: PoapDataTypes.SignExecuteMethodParams<"useChainFees">
+    ): Promise<PoapDataTypes.SignExecuteMethodResult<"useChainFees">> => {
+      return signExecuteMethod(PoapData, this, "useChainFees", params);
     },
     withdrawAirdrop: async (
       params: PoapDataTypes.SignExecuteMethodParams<"withdrawAirdrop">
@@ -1408,6 +1418,13 @@ export class PoapDataInstance extends ContractInstance {
       params: PoapDataTypes.SignExecuteMethodParams<"getHashedPassword">
     ): Promise<PoapDataTypes.SignExecuteMethodResult<"getHashedPassword">> => {
       return signExecuteMethod(PoapData, this, "getHashedPassword", params);
+    },
+    getPrepaidFeesAmount: async (
+      params: PoapDataTypes.SignExecuteMethodParams<"getPrepaidFeesAmount">
+    ): Promise<
+      PoapDataTypes.SignExecuteMethodResult<"getPrepaidFeesAmount">
+    > => {
+      return signExecuteMethod(PoapData, this, "getPrepaidFeesAmount", params);
     },
   };
 

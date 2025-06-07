@@ -49,9 +49,9 @@
     },
     "PoapData": {
       "sourceFile": "V2/series/nftData.ral",
-      "sourceCodeHash": "7dbedf62b9345aabbd2612a0c935220e4ecba724ad3f4cd3e83308c8bc9f3497",
-      "bytecodeDebugPatch": "=18-9=1+9=2-1=1-1=2-2=1-2+37=2-10+7f=6-2+f4422242=1-2=2-2+25=3-1+6=3-1+7=3-1+8=3-1+9=3-1+9=3-1+a=3-1+b=3-1+c=3-1+d=3-1+e=3-1+f=2-2+30=2-2+30=2-2+31=2+3=1-2+a=1-3+338=1-3+3464354=1-2+366437443=1+2=2+9=1-1=2-1+9e=1+3ac=287-1+8=28+b4b2a0017e050e6e66744461746120706172616d20092c2063616c6c657220072c2073656c66200e2073746f72616765206665657320001600=203-1+6=38+b41600b27e040763616c6c6572200e2063616c6c657220706172616d20062073656c662000=31-1+8=10+a00116007e030873746f7261676520012000=52+a00116007e030e73746f7261676520616674657220012000=86+1=1-1=10+a00216007e0306636861696e20012000=826",
-      "codeHashDebug": "1fb44cddecb8078a000dee189ff0c7ebcd2f26cff010fbf7acb0a617d786afe0"
+      "sourceCodeHash": "8c105abad629e5a684c2ff87e24de5ed499dc1ef92935b5a9126f160946e1786",
+      "bytecodeDebugPatch": "",
+      "codeHashDebug": "933177a7f89f9c1395770a79322a5508c41694661cf478015cf671f7b2e73e2d"
     },
     "PoapFactory": {
       "sourceFile": "factoryPoap.ral",
@@ -61,9 +61,9 @@
     },
     "PoapFactoryV2": {
       "sourceFile": "V2/factoryPoapV2.ral",
-      "sourceCodeHash": "d224e4a8ff494aee03fe91b127594706a6cca8aac2b1a1d7fafe661da77c087d",
-      "bytecodeDebugPatch": "=17-3+204=3-1+f=3-1+c=3-1+a=791-1+3=94+160a16097e0300012000=522",
-      "codeHashDebug": "151877e4a1757ef400cde53838f4601e8b27643bba95942c9d8d499b90558af0"
+      "sourceCodeHash": "b913ef788a86596f225aa007d8de38c9d8c8b6ccda1b1228702fe63faddd026e",
+      "bytecodeDebugPatch": "",
+      "codeHashDebug": "f57ec78d6f89462ece3749cc14fdb284a29f4984f99565cbeca21b5230ffce67"
     },
     "PoapNFT": {
       "sourceFile": "nftTemplate.ral",
@@ -85,9 +85,9 @@
     },
     "PoapSerieCollectionV2": {
       "sourceFile": "V2/series/collectionSerieTemplate.ral",
-      "sourceCodeHash": "d8b261239c5d81c3c5e10f69e4ba8be0e1c29959001f6061c79ed583981d3ed9",
-      "bytecodeDebugPatch": "=25-2=1-1=1-2+e=2+2=1-1=2-2+a=2-2=1-3+b2=3-1+5=3-3=1-1=2-2+7b=2-2+c2=1-3+609=2-2+4c=3-1+a=1+6=2-1=2-1+a346de47154=1+50=667-1+a=475+5b27e0214706179696e67207=1+746f7261676520666565732000=240+1416=1-1+fb4b21603777e0511636f6c6c656374696f6e20706179657220092c2063616c6c657220072c2073656c662009206e6674646174612000=44+7e01076d696e74696e67=61-1+7=224+7a7e0214696e73657274206174206d617020706174683a2000=20+161416157e030b636f6c6c656374696f6e20012000=1734",
-      "codeHashDebug": "ce8ea0e9e0187e0da6fdf5392eb0a4fcf4b5ab70eb2b0951a23a6af4c491268a"
+      "sourceCodeHash": "6a21482c07a980ed1653d31a1def553fa47dedd6641fcc717717b33ca32192b8",
+      "bytecodeDebugPatch": "=30-2+c1=2-2=2-2=2-2+52=2-1+95=2-3+dd=2+2=1-1=2-2+6d=2-1=1+0=2-2+e3=2-5+f=2-1=1-1+ff=2-1=1+a=2+7546a=1+46=1+7=1539-1+e=224+7a7e0214696e73657274206174206d617020706174683a2000=1720",
+      "codeHashDebug": "b2d1b3b1cf53bd04ee529887388fd2436db408e24bcf5d0a9f1ffae4e4892af6"
     },
     "Trait": {
       "sourceFile": "dynamic_nft_standard.ral",

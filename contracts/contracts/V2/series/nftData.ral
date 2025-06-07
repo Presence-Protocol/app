@@ -67,21 +67,6 @@ Contract PoapData(
       
     }
 
-  @using(preapprovedAssets = true)
-  pub fn mint(payer: Address, contractPath: ByteVec, nftTemplateId: ByteVec, initialImmState: ByteVec, initialMutState: ByteVec) -> ByteVec {
-    checkCaller!(callerContractId!() == collectionId, ErrorCodes.InvalidCaller)
-    emit Debug(`nftData param ${payer}, caller ${callerAddress!()}, self ${selfAddress!()} storage fees ${amountForStorageFees}`)
-    let contractId = copyCreateSubContractWithToken!{payer -> ALPH: minimalContractDeposit!()}(
-      contractPath,
-      nftTemplateId,
-      initialImmState,
-      initialMutState,
-      1,
-      callerAddress!())
-
-      return contractId
-  }
-
   
   @using(assetsInContract = true, updateFields = true)
   pub fn claimFunds(amountToClaim: U256) -> () {
@@ -93,58 +78,57 @@ Contract PoapData(
 
   }
 
-  @using(assetsInContract = true, updateFields = true)
+  @using(updateFields = true)
   pub fn withdrawStorageFees(amount: U256) -> () {
-    checkCaller!(callerAddress!() == organizer,ErrorCodes.InvalidCaller)
+    checkCaller!(callerContractId!() == collectionId, ErrorCodes.InvalidCaller)
     assert!(amount <= amountForStorageFees, ErrorCodes.NotEnoughAlph)
         
-    transferTokenFromSelf!(organizer, ALPH, amount)
-
     amountForStorageFees = amountForStorageFees - amount
   }
 
-  @using(updateFields = true, assetsInContract= true)
-  pub fn paidStorageFees(caller: Address) -> (){
-    checkCaller!(callerContractId!() == collectionId, ErrorCodes.InvalidCaller)
-    assert!(amountForStorageFees >= minimalContractDeposit!(), ErrorCodes.NotEnoughAlph)
-    emit Debug(`caller ${callerAddress!()} caller param ${caller} self ${selfAddress!()}`)
 
-    transferTokenFromSelf!(caller, ALPH, minimalContractDeposit!())
-    amountForStorageFees = amountForStorageFees - minimalContractDeposit!()
-  }
-
-  @using(assetsInContract = true, updateFields = true, preapprovedAssets = true)
-  pub fn depositStorageFees(amount: U256) -> () {
-        emit Debug(`storage ${amountForStorageFees} ${amount}`)
-
+  // this function keep track of the storage fees, collection stores ALPH
+  @using(updateFields = true)
+  pub fn addStorageFees(amount: U256) -> () {
         checkCaller!(callerAddress!() == organizer, ErrorCodes.InvalidCaller)
         assert!(amount >= minimalContractDeposit!(), ErrorCodes.NotEnoughAlph)
 
-        transferTokenToSelf!(organizer, ALPH, amount)
-
         amountForStorageFees = amountForStorageFees + amount
-        emit Debug(`storage after ${amountForStorageFees} ${amount}`)
-    }
 
-  @using(assetsInContract = true, updateFields = true)
+  }
+
+  @using(updateFields = true)
+  pub fn useStorageFees() -> () {
+        checkCaller!(callerContractId!() == collectionId, ErrorCodes.InvalidCaller)
+        assert!(amountForStorageFees >= minimalContractDeposit!(), ErrorCodes.NotEnoughAlph)
+
+        amountForStorageFees = amountForStorageFees - minimalContractDeposit!()
+  }
+
+  @using(updateFields = true)
   pub fn withdrawChainFees(amount: U256) -> () {
-    checkCaller!(callerAddress!() == organizer, ErrorCodes.InvalidCaller)
+    checkCaller!(callerContractId!() == collectionId, ErrorCodes.InvalidCaller)
     assert!(amount <= amountForChainFees, ErrorCodes.NotEnoughAlph)
-
-    transferTokenFromSelf!(organizer, ALPH, amount)
 
     amountForChainFees = amountForChainFees - amount
   }
 
-  @using(assetsInContract = true, updateFields = true, preapprovedAssets = true)
-    pub fn depositChainFees(amount: U256) -> () {
-      
-        emit Debug(`chain ${amountForChainFees} ${amount}`)
+  // this function keep track of the storage fees, collection stores ALPH
+  @using(updateFields = true)
+    pub fn addChainFees(amount: U256) -> () {
         checkCaller!(callerAddress!() == organizer, ErrorCodes.InvalidCaller)
-        transferTokenToSelf!(organizer, ALPH, amount)
 
         amountForChainFees = amountForChainFees + amount
     }
+
+
+     @using(updateFields = true)
+  pub fn useChainFees(amount: U256) -> () {
+        checkCaller!(callerContractId!() == collectionId, ErrorCodes.InvalidCaller)
+        assert!(amountForChainFees > 0, ErrorCodes.NotEnoughAlph)
+
+        amountForChainFees = amountForChainFees - amount
+  }
 
 
 
@@ -257,6 +241,10 @@ Contract PoapData(
 
   pub fn getHashedPassword() -> ByteVec {
     return hashedPassword
+  }
+
+  pub fn getPrepaidFeesAmount() -> (U256, U256) {
+    return amountForStorageFees, amountForChainFees
   }
 
 }

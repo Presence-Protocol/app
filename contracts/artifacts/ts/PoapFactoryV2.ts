@@ -488,8 +488,8 @@ class Factory extends ContractFactory<
 export const PoapFactoryV2 = new Factory(
   Contract.fromJson(
     PoapFactoryV2ContractJson,
-    "=17-3+204=3-1+f=3-1+c=3-1+a=791-1+3=94+160a16097e0300012000=522",
-    "151877e4a1757ef400cde53838f4601e8b27643bba95942c9d8d499b90558af0",
+    "",
+    "f57ec78d6f89462ece3749cc14fdb284a29f4984f99565cbeca21b5230ffce67",
     AllStructs
   )
 );
