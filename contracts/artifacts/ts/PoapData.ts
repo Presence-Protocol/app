@@ -782,8 +782,8 @@ class Factory extends ContractFactory<PoapDataInstance, PoapDataTypes.Fields> {
 export const PoapData = new Factory(
   Contract.fromJson(
     PoapDataContractJson,
-    "=25-4=2-1+8=3-1+7=2-2+58=2-2+71=3-2=1-2=3-1+9=2-5=1+7=3-1+5=3-1+341f1=3-1+f=3-1+d=3-1+b=3-5+9=3-1+7=3-1+5=3-1+3=3+142=1+f=3-1+d=3-1+b=3-3=1-1=2-2+a7=3-1+5=3-1+3=3-1+5=3-1+3=3-1+142ff=3-1+d431b432b=432-2+12=52+1600a0017e031a6465706f73697453746f726167654665657320616d6f756e7420022c2000=1062",
-    "f5880f984cf664a8574a9436809d94405938dc2cad70352efe950e3a7f10c069",
+    "",
+    "933177a7f89f9c1395770a79322a5508c41694661cf478015cf671f7b2e73e2d",
     AllStructs
   )
 );

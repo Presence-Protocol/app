@@ -4,6 +4,7 @@ import { alphBalanceOf, balanceOf, getRandomSigner, transferAlphTo, transferToke
 import { deployToDevnet } from "@alephium/cli"
 import { expectAssertionError, mintToken, testNodeWallet } from "@alephium/web3-test"
 import { NewPresenceNewEvent, PoapCollectionV2, PoapData, PoapFactoryV2, PoapNFTSerieV2, PoapSerieCollectionV2 } from "../../artifacts/ts"
+import keccak256 from "keccak256"
 
 describe('integration tests', () => {
 
@@ -2890,6 +2891,116 @@ describe('integration tests', () => {
         password: ''
       }
     }), addressFromContractId(poapCollectionMinted), 4)
+
+  }, 20000)
+  
+
+    it('Mint poap trough Factory with password', async () => {
+    const signer = await testNodeWallet()
+    const deployments = await deployToDevnet()
+    const factory = deployments.getInstance(PoapFactoryV2)
+
+    expect(factory).toBeDefined()
+
+    if (!factory) {
+      throw new Error('Factory is undefined')
+    }
+
+
+    await NewPresenceNewEvent.execute({
+      signer,
+      initialFields: {
+        factory: factory.contractId,
+        eventImage: stringToHex('https://arweave.net/hoxK8xC9wRjD_6HiOzhdY2jW0ZnJoF2f0N4FcSLXqzQ'),
+        eventName: stringToHex("Test 1"),
+        description: stringToHex("Test Description"),
+        isPublic: false,
+        maxSupply: 10n,
+        mintStartAt: 1735823531000n,
+        mintEndAt: 1893595576000n,
+        poapPrice: 0n,
+        tokenIdPoap: ALPH_TOKEN_ID,
+        isOpenPrice: false,
+        tokenIdAirdrop: ALPH_TOKEN_ID,
+        amountAirdropPerUser: 0n,
+        amountAirdrop: 0n,
+        airdropWhenHasParticipated: true,
+        image: stringToHex('https://arweave.net/hoxK8xC9wRjD_6HiOzhdY2jW0ZnJoF2f0N4FcSLXqzQ'),
+        name: stringToHex("Serie 1"),
+        eventDescription: stringToHex("First serie"),
+        location: stringToHex("Devnet"),
+        eventStartAt: 1735823531000n,
+        eventEndAt: 1735823531000n,
+        eventIsPublic: false,
+        isBurnable: true,
+        lockedUntil: 0n,
+        hashedPassword: keccak256('password').toString('hex'),
+        amountForStorageFees: 2n * 10n ** 17n,
+        amountForChainFees: 10n * ONE_ALPH
+      },
+      attoAlphAmount: 3n*MINIMAL_CONTRACT_DEPOSIT + 2n * 10n ** 17n + DUST_AMOUNT + 10n * ONE_ALPH
+
+    })
+
+    
+
+    // Check that event is emitted
+    const { events } = await web3
+      .getCurrentNodeProvider()
+      .events.getEventsContractContractaddress(factory.address, { start: 0 })
+    expect(events.length).toEqual(2)
+
+    const creationEvent = events[0]
+    const poapCollectionMinted = creationEvent.fields[0].value as string
+
+    const collection = PoapSerieCollectionV2.at(addressFromContractId(poapCollectionMinted))
+
+    await collection.transact.mint({
+      signer: minter,
+      attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT,
+      args: {
+        eventId: 0n,
+        amount: 0n,
+        password: stringToHex('password')
+      }
+    })
+
+    await factory.transact.mintPoapSerie({
+      args: {
+        eventId: 0n,
+        collection: collection.contractId,
+        amount: 0n,
+        password: stringToHex('password')
+      },
+      signer: minter,
+      attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT
+    })
+
+    expect((await collection.view.totalSupply()).returns).toBe(2n)
+
+    await expectAssertionError(factory.transact.mintPoapSerie({
+      args: {
+        eventId: 0n,
+        collection: collection.contractId,
+        amount: 0n,
+        password: stringToHex('wrongpassword')
+      },
+      signer: minter,
+      attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT
+    }), collection.address, 11)
+
+
+
+    expect((await collection.view.totalSupply()).returns).toBe(2n)
+
+    // get Poap    
+    const poap = PoapNFTSerieV2.at(addressFromContractId((await collection.view.nftByIndex({ args: { index: 0n } })).returns))
+    const poapState = await poap.fetchState()
+    expect(hexToString(poapState.fields.eventName)).toBe('Serie 1')
+
+    expect((await poap.view.getTraits()).returns.length).toBe(9)
+
+    expect(hexToString((await poap.view.getTokenUri()).returns)).toBe("data:application/json,{\"name\": \"Serie 1\",\"image\": \"https://arweave.net/hoxK8xC9wRjD_6HiOzhdY2jW0ZnJoF2f0N4FcSLXqzQ\", \"attributes\": [{\"trait_type\": \"Event Name\", \"value\": \"Serie 1\"}, {\"trait_type\": \"Description\", \"value\": \"First serie\"}, {\"trait_type\": \"Organizer\", \"value\": \"00bee85f379545a2ed9f6cceb331288842f378cf0f04012ad4ac8824aae7d6f80a\"}, {\"trait_type\": \"Location\", \"value\": \"Devnet\"}, {\"trait_type\": \"Event Start At\", \"value\": 1735823531000}, {\"trait_type\": \"Event End At\", \"value\": 1735823531000},{\"trait_type\": \"Has Particpated\", \"value\": false}, {\"trait_type\": \"Locked Until\", \"value\": 0}]}")
 
   }, 20000)
 
