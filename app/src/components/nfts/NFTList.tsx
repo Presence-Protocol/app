@@ -10,16 +10,7 @@ import { PoapCollection, PoapNFT } from 'my-contracts';
 import Snackbar from '../ui/Snackbar';
 import { findTokenFromId, getTokenList, Token } from '@/services/utils';
 import { truncateAddress } from '@/utils/stringUtils';
-
-interface NFTMetadata {
-  title: string;
-  description: string;
-  image: string;
-  tokenId: string;
-  eventDateStart: string;
-  eventDateEnd: string;
-  collectionId: string;
-}
+import CollectionModal, { Collection, NFTMetadata } from '../CollectionModal';
 
 interface POAPResponse {
   contractId: string;
@@ -48,6 +39,12 @@ interface EventResponse {
   tokenMetadata?: Token;
 }
 
+interface Collection {
+  id: string;
+  name: string;
+  description: string;
+  nfts: NFTMetadata[];
+}
 
 // Helper function to humanize amounts with K, M, B suffixes for large numbers
 const humanizeAmount = (amount: bigint, decimals: number = 18): string => {
@@ -89,6 +86,31 @@ export default function NFTList({ account: connectedAccount }: { account: string
   const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
   const [claimMessage, setClaimMessage] = useState("Link copied to clipboard!");
   const { account, signer } = useWallet();
+
+  const [collections, setCollections] = useState<Collection[]>([]);
+  const [showAllCollections, setShowAllCollections] = useState(false);
+  const [selectedCollection, setSelectedCollection] = useState<Collection | null>(null);
+  const [isAnimatingOut, setIsAnimatingOut] = useState(false)
+
+  const handleCollectionShare = async (e: React.MouseEvent, collectionId: string) => {
+    e.stopPropagation();
+    const url = `${window.location.origin}/collections/#${collectionId}`;
+    await navigator.clipboard.writeText(url);
+    setClaimMessage("Collection link copied to clipboard!");
+    setIsSnackbarOpen(true);
+  };
+
+  const handleSelectCollection = (collection: Collection) => {
+    setSelectedCollection(collection);
+  };
+
+  const handleClosePanel = () => {
+    setIsAnimatingOut(true)
+    setTimeout(() => {
+      setSelectedCollection(null)
+      setIsAnimatingOut(false)
+    }, 300) // Match animation duration
+  };
 
   const handleClaim = async (e: React.FormEvent, collectionContractId: string) => {
     e.preventDefault();
@@ -137,6 +159,81 @@ export default function NFTList({ account: connectedAccount }: { account: string
       setIsSnackbarOpen(true);
     }
   }
+
+  const demoCollections: Collection[] = [
+    {
+      id: 'collection-1',
+      name: 'Alephium Dev Meetups 2024',
+      description: 'A collection of presences from all Alephium developer meetups in 2024.',
+      nfts: [
+        {
+          title: 'Zurich Meetup',
+          description: 'First Alephium meetup in Zurich.',
+          image: 'https://images.unsplash.com/photo-1599658880122-b43b6b1517b6?q=80&w=2940&auto=format&fit=crop',
+          tokenId: '#1',
+          eventDateStart: '15 Jan, 2024',
+          eventDateEnd: '',
+          collectionId: 'some-collection-id-1'
+        },
+        {
+          title: 'Berlin Meetup',
+          description: 'Alephium meetup in the heart of Berlin.',
+          image: 'https://images.unsplash.com/photo-1552508744-1696344d2f34?q=80&w=2940&auto=format&fit=crop',
+          tokenId: '#2',
+          eventDateStart: '20 Mar, 2024',
+          eventDateEnd: '',
+          collectionId: 'some-collection-id-2'
+        },
+        {
+          title: 'Paris Meetup',
+          description: 'Croissants and smart contracts in Paris.',
+          image: 'https://images.unsplash.com/photo-1502602898455-347376ba3be5?q=80&w=2942&auto=format&fit=crop',
+          tokenId: '#3',
+          eventDateStart: '10 May, 2024',
+          eventDateEnd: '',
+          collectionId: 'some-collection-id-3'
+        },
+        {
+            title: 'Amsterdam Meetup',
+            description: 'Canals and code in Amsterdam.',
+            image: 'https://images.unsplash.com/photo-1583852223833-0498a3b83645?q=80&w=2940&auto=format&fit=crop',
+            tokenId: '#4',
+            eventDateStart: '12 Jul, 2024',
+            eventDateEnd: '',
+            collectionId: 'some-collection-id-4'
+        }
+      ]
+    },
+    {
+      id: 'collection-2',
+      name: 'NFT Workshop Series',
+      description: 'Learn to build, mint, and trade NFTs on Alephium.',
+      nfts: [
+          {
+              title: 'Intro to NFTs',
+              description: 'Basics of Non-Fungible Tokens.',
+              image: 'https://images.unsplash.com/photo-1639431682339-c050a6d3c347?q=80&w=2832&auto=format&fit=crop',
+              tokenId: '#1',
+              eventDateStart: '02 Feb, 2024',
+              eventDateEnd: '',
+              collectionId: 'some-collection-id-5'
+          },
+          {
+            title: 'Minting your First NFT',
+            description: 'A hands-on workshop on minting.',
+            image: 'https://images.unsplash.com/photo-1642104253965-e7a6f02375b6?q=80&w=2940&auto=format&fit=crop',
+            tokenId: '#2',
+            eventDateStart: '09 Feb, 2024',
+            eventDateEnd: '',
+            collectionId: 'some-collection-id-6'
+        },
+      ]
+    }
+  ];
+
+  useEffect(() => {
+    setCollections(demoCollections)
+  }, [])
 
   useEffect(() => {
     // console.log('Setting up node provider...');
@@ -246,6 +343,7 @@ export default function NFTList({ account: connectedAccount }: { account: string
 
   const displayedNFTs = showAllNFTs ? nfts : nfts.slice(0, 6);
   const displayedEvents = showAllEvents ? events : events.slice(0, 6);
+  const displayedCollections = showAllCollections ? collections : collections.slice(0, 4);
 
   const handleShare = async (contractId: string) => {
     const url = `${window.location.origin}/mint-presence/#id=${contractId}`;
@@ -281,7 +379,7 @@ export default function NFTList({ account: connectedAccount }: { account: string
   // console.log('nfts', nfts);
   // console.log('events', events);
 
-  if (nfts.length === 0 && events.length === 0) {
+  if (nfts.length === 0 && events.length === 0 && collections.length === 0) {
     return (
       <section className="py-36 px-4 md:px-8 bg-lila-200">
         <div className="mx-auto max-w-7xl">
@@ -545,7 +643,7 @@ export default function NFTList({ account: connectedAccount }: { account: string
                       </div>
                       <div className="flex justify-between items-center gap-4 ">
                         <button
-                          onClick={() => handleShare(addressFromContractId(event.contractId))}
+                          onClick={(e) => handleCollectionShare(e, event.contractId)}
                           className="mt-4 w-full text-black items-center shadow shadow-black text-xs font-semibold inline-flex px-4 justify-center bg-white border-black ease-in-out transform transition-all focus:ring-lila-700 focus:shadow-none border-2 duration-100   py-2 rounded-lg h-10 focus:translate-y-1 hover:text-lila-800 tracking-wide"
                         >
                           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-3 h-3 mr-1">
@@ -598,11 +696,116 @@ export default function NFTList({ account: connectedAccount }: { account: string
           )}
         </div>
 
+        {/* Collections Section */}
+        <div className="mb-24">
+          <div className="flex items-center justify-between mb-8">
+            <div className="flex items-center gap-4">
+              <h3 className="text-2xl font-semibold text-black">Your Collections</h3>
+              <div className="text-black items-center bg-lila-300 shadow shadow-lila-600 text-xs font-semibold inline-flex px-2  border-lila-600 border-2 py-1 rounded-lg tracking-wide">
+                {collections.length} {collections.length === 1 ? 'Collection' : 'Collections'}
+              </div>
+            </div>
+          </div>
 
+          {collections.length === 0 ? (
+            <div className="bg-lila-200 p-8 rounded-xl">
+              <div className="max-w-lg mx-auto text-center">
+                <h3 className="text-xl font-semibold text-black mb-4">
+                  No Collections Yet
+                </h3>
+                <p className="text-gray-600">
+                  Collections are groups of presences from multi-part events.
+                </p>
+              </div>
+            </div>
+          ) : (
+            <>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                {displayedCollections.map((collection) => {
+                  const topCardNft = collection.nfts[0];
+                  const backgroundNfts = collection.nfts.slice(1, 3);
+                  return (
+                    <div
+                      key={collection.id}
+                      onClick={() => handleSelectCollection(collection)}
+                      className="cursor-pointer group"
+                    >
+                      <div className="relative" style={{ aspectRatio: '3 / 4.2'}}>
+                        {/* Background Cards */}
+                        {backgroundNfts.reverse().map((nft, index) => (
+                          <div
+                            key={nft.tokenId}
+                            className="absolute w-full h-full rounded-xl bg-white border-2 border-black overflow-hidden transition-transform duration-300 ease-in-out group-hover:rotate-0"
+                            style={{
+                              transform: `rotate(${index * 4 - 2}deg)`,
+                              zIndex: index,
+                            }}
+                          >
+                            <img src={nft.image} alt={nft.title} className="w-full h-full object-cover" />
+                          </div>
+                        ))}
+                        {/* Top Card */}
+                        <div
+                          className="absolute w-full h-full rounded-xl bg-white border-2 border-black overflow-hidden transition-transform duration-300 ease-in-out group-hover:scale-105 flex flex-col"
+                          style={{ zIndex: backgroundNfts.length }}
+                        >
+                           <div className="aspect-square w-full border-b-2 border-black overflow-hidden">
+                              {topCardNft.image ? (
+                                  <img src={topCardNft.image} alt={collection.name} className="w-full h-full object-cover" />
+                              ) : (
+                                  <div className="w-full h-full flex flex-col items-center justify-center p-4 bg-gradient-to-br from-lila-100 to-lila-300"></div>
+                              )}
+                            </div>
+                            <div className="p-4 flex flex-col flex-grow">
+                              <div>
+                                <h3 className="text-base font-semibold text-black mb-1">{collection.name}</h3>
+                                <p className="text-xs text-black mb-3 line-clamp-2">{collection.description}</p>
+                              </div>
+                              <div className="flex justify-between items-center pt-3 border-t-2 border-black mt-auto">
+                                <div className="text-black items-center shadow shadow-lila-600 text-[10px] font-semibold inline-flex px-2 bg-lila-300 border-lila-600 border-2 py-1 rounded-lg tracking-wide">
+                                  Collection
+                                </div>
+                                <button
+                                  onClick={(e) => handleCollectionShare(e, collection.id)}
+                                  className="text-black items-center shadow shadow-black text-[10px] font-semibold inline-flex px-2 bg-white border-black ease-in-out transform transition-all focus:ring-lila-700 focus:shadow-none border-2 duration-100 py-1 rounded-lg h-6 focus:translate-y-1 hover:text-lila-800 tracking-wide"
+                                >
+                                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-2.5 h-2.5 mr-1">
+                                    <path fillRule="evenodd" d="M15.75 4.5a3 3 0 1 1 .825 2.066l-8.421 4.679a3.002 3.002 0 0 1 0 1.51l8.421 4.679a3 3 0 1 1-.729 1.31l-8.421-4.678a3 3 0 1 1 0-4.132l8.421-4.679a3 3 0 0 1-.096-.755Z" clipRule="evenodd" />
+                                  </svg>
+                                  Share
+                                </button>
+                              </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
 
+              {collections.length > 4 && (
+                <div className="flex justify-center mt-8">
+                  <button
+                    onClick={() => setShowAllCollections(!showAllCollections)}
+                    className="text-black items-center shadow shadow-black text-base font-semibold inline-flex px-6 focus:outline-none justify-center text-center bg-white border-black ease-in-out transform transition-all focus:ring-lila-700 focus:shadow-none border-2 duration-100   py-2 rounded-lg h-12 focus:translate-y-1 hover:text-lila-800 tracking-wide"
+                  >
+                    {showAllCollections ? 'Show Less' : 'Show More'}
+                  </button>
+                </div>
+              )}
+            </>
+          )}
+        </div>
 
 
       </div>
+      <CollectionModal
+        isOpen={!!selectedCollection}
+        onClose={handleClosePanel}
+        collection={selectedCollection}
+        isAnimatingOut={isAnimatingOut}
+        handleShare={handleShare}
+      />
       <Snackbar 
         message={claimMessage} 
         isOpen={isSnackbarOpen} 

@@ -99,7 +99,8 @@ export default function EventsSliders() {
                 isOpenPrice: collectionMetadata.fields.isOpenPrice,
               };
             } catch (innerError) {
-              console.error('Error fetching collection metadata:', innerError);
+              // Silently ignore errors for contracts that can't be fetched
+              // console.error('Error fetching collection metadata:', innerError);
               return event;
             }
           }

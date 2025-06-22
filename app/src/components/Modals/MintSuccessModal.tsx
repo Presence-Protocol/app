@@ -78,7 +78,7 @@ export default function MintSuccessModal({ isOpen, onClose, nftImage, nftTitle, 
                       Minting your Presence...
                     </h2>
                     <p className="text-sm text-gray-600 text-center">
-                      This will take a minute
+                      This will take a minute, please don't leave this page.
                     </p>
                     <p className="text-sm text-gray-600 text-center italic max-w-sm">
                       "{randomQuote}"
