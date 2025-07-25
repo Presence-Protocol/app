@@ -58,7 +58,8 @@ const deployTemplates: DeployFunction<Settings> = async (
       amountForChainFees: 0n,
       isOpenPrice: false,
       hashedPassword: '00',
-      lockPresenceUntil: 0n
+      lockPresenceUntil: 0n,
+      factoryId: ''
     }
   })
 
@@ -104,7 +105,8 @@ const deployTemplates: DeployFunction<Settings> = async (
       collectionName: '00',
       collectionDescription: '00',
       totalSupply: 0n,
-      totalSupplySeries: 0n
+      totalSupplySeries: 0n,
+      factoryId: ''
     }
   })
 

@@ -224,7 +224,7 @@ class Factory extends ContractFactory<
     getTokenUri: async (
       params: Omit<
         TestContractParamsWithoutMaps<PoapNFTSerieV2Types.Fields, never>,
-        "args"
+        "testArgs"
       >
     ): Promise<TestContractResultWithoutMaps<HexString>> => {
       return testMethod(this, "getTokenUri", params, getContractByCodeHash);
@@ -232,7 +232,7 @@ class Factory extends ContractFactory<
     getCollectionIndex: async (
       params: Omit<
         TestContractParamsWithoutMaps<PoapNFTSerieV2Types.Fields, never>,
-        "args"
+        "testArgs"
       >
     ): Promise<TestContractResultWithoutMaps<[HexString, bigint]>> => {
       return testMethod(
@@ -245,7 +245,7 @@ class Factory extends ContractFactory<
     getNFTIndex: async (
       params: Omit<
         TestContractParamsWithoutMaps<PoapNFTSerieV2Types.Fields, never>,
-        "args"
+        "testArgs"
       >
     ): Promise<TestContractResultWithoutMaps<bigint>> => {
       return testMethod(this, "getNFTIndex", params, getContractByCodeHash);
@@ -253,7 +253,7 @@ class Factory extends ContractFactory<
     getName: async (
       params: Omit<
         TestContractParamsWithoutMaps<PoapNFTSerieV2Types.Fields, never>,
-        "args"
+        "testArgs"
       >
     ): Promise<TestContractResultWithoutMaps<HexString>> => {
       return testMethod(this, "getName", params, getContractByCodeHash);
@@ -261,7 +261,7 @@ class Factory extends ContractFactory<
     getDescription: async (
       params: Omit<
         TestContractParamsWithoutMaps<PoapNFTSerieV2Types.Fields, never>,
-        "args"
+        "testArgs"
       >
     ): Promise<TestContractResultWithoutMaps<HexString>> => {
       return testMethod(this, "getDescription", params, getContractByCodeHash);
@@ -269,7 +269,7 @@ class Factory extends ContractFactory<
     getImage: async (
       params: Omit<
         TestContractParamsWithoutMaps<PoapNFTSerieV2Types.Fields, never>,
-        "args"
+        "testArgs"
       >
     ): Promise<TestContractResultWithoutMaps<HexString>> => {
       return testMethod(this, "getImage", params, getContractByCodeHash);
@@ -277,7 +277,7 @@ class Factory extends ContractFactory<
     getTraits: async (
       params: Omit<
         TestContractParamsWithoutMaps<PoapNFTSerieV2Types.Fields, never>,
-        "args"
+        "testArgs"
       >
     ): Promise<
       TestContractResultWithoutMaps<
@@ -289,7 +289,7 @@ class Factory extends ContractFactory<
     getTraitCount: async (
       params: Omit<
         TestContractParamsWithoutMaps<PoapNFTSerieV2Types.Fields, never>,
-        "args"
+        "testArgs"
       >
     ): Promise<TestContractResultWithoutMaps<bigint>> => {
       return testMethod(this, "getTraitCount", params, getContractByCodeHash);
@@ -305,7 +305,7 @@ class Factory extends ContractFactory<
     getHasParticipated: async (
       params: Omit<
         TestContractParamsWithoutMaps<PoapNFTSerieV2Types.Fields, never>,
-        "args"
+        "testArgs"
       >
     ): Promise<TestContractResultWithoutMaps<boolean>> => {
       return testMethod(
@@ -318,7 +318,7 @@ class Factory extends ContractFactory<
     getMinter: async (
       params: Omit<
         TestContractParamsWithoutMaps<PoapNFTSerieV2Types.Fields, never>,
-        "args"
+        "testArgs"
       >
     ): Promise<TestContractResultWithoutMaps<Address>> => {
       return testMethod(this, "getMinter", params, getContractByCodeHash);
@@ -326,7 +326,7 @@ class Factory extends ContractFactory<
     burn: async (
       params: Omit<
         TestContractParamsWithoutMaps<PoapNFTSerieV2Types.Fields, never>,
-        "args"
+        "testArgs"
       >
     ): Promise<TestContractResultWithoutMaps<null>> => {
       return testMethod(this, "burn", params, getContractByCodeHash);
@@ -334,7 +334,7 @@ class Factory extends ContractFactory<
     setParticipated: async (
       params: Omit<
         TestContractParamsWithoutMaps<PoapNFTSerieV2Types.Fields, never>,
-        "args"
+        "testArgs"
       >
     ): Promise<TestContractResultWithoutMaps<null>> => {
       return testMethod(this, "setParticipated", params, getContractByCodeHash);

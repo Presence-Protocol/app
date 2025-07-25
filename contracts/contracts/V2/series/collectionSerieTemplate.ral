@@ -1,5 +1,6 @@
 import "std/nft_collection_interface"
 Contract PoapSerieCollectionV2(
+    factoryId: ByteVec,
     nftTemplateId: ByteVec,
     poapDataTemplateId: ByteVec,
     organizer: Address,
@@ -20,8 +21,8 @@ Contract PoapSerieCollectionV2(
    event PoapMinted(contractId: ByteVec, nftIndex: U256, caller: Address, timestamp: U256)
    event PoapParticipated(organizerAddress: Address, nftIndex: U256)
 
-   @using(preapprovedAssets = true, updateFields = true, checkExternalCaller = false, preserveCaller = true, assetsInContract = true)
-   pub fn mint(eventId: U256, amount: U256, password: ByteVec) -> (ByteVec) {
+   @using(preapprovedAssets = true, updateFields = true, checkExternalCaller = false, assetsInContract = true)
+   pub fn mint(eventId: U256, amount: U256, password: ByteVec, initialCaller: Address) -> (ByteVec) {
      assert!(nftMetadata.contains!(eventId), ErrorCodes.IncorrectEventIndex)
      let eventData = nftMetadata[eventId]
 
@@ -30,7 +31,10 @@ Contract PoapSerieCollectionV2(
      assert!(blockTimeStamp!() >= eventData.getMintStartAt(), ErrorCodes.MintNotStarted)
      assert!(blockTimeStamp!() <= eventData.getMintEndAt(), ErrorCodes.MintEnded)
 
-     let caller = callerAddress!()
+     let mut caller = callerAddress!()
+     if(isContractAddress!(caller)){
+        caller = initialCaller
+     }
      
      let organizerAddressHex = convert(toByteVec!(eventData.getOrganizer()))
      let (poapPrice, tokenIdPoap, isOpenPrice)  = eventData.getPoapPrice()
@@ -51,15 +55,15 @@ Contract PoapSerieCollectionV2(
         eventData.useStorageFees()
         payer = selfAddress!()
      }
-
      
      if(poapPrice > 0 || isOpenPrice){
+
         let mut priceToPay = poapPrice
         if(isOpenPrice){
           assert!(amount >= 1, ErrorCodes.NotEnoughAlph)
           priceToPay = amount
         }
-        eventData.depositPaidPoap{caller -> tokenIdPoap: priceToPay}(priceToPay)
+        eventData.depositPaidPoap{caller -> tokenIdPoap: priceToPay}(priceToPay, caller)
         
      }
 
@@ -110,7 +114,7 @@ Contract PoapSerieCollectionV2(
       return contractId
    }
 
-   @using(preapprovedAssets = true, updateFields = true, preserveCaller = true)
+   @using(preapprovedAssets = true, updateFields = true)
    pub fn addNewEvent(
     maxSupply: U256,
     mintStartAt: U256,
@@ -133,9 +137,16 @@ Contract PoapSerieCollectionV2(
     hashedPassword: ByteVec,
     amountAirdrop: U256,
     amountForStorageFees: U256,
-    amountForChainFees: U256
+    amountForChainFees: U256,
+    initialCaller: Address
     ) -> (ByteVec){
-      let caller = callerAddress!()
+      let mut caller = callerAddress!()
+
+      if(isContractAddress!(caller)){
+        assert!(callerContractId!() == factoryId, ErrorCodes.InvalidCaller)
+        caller = initialCaller
+      }
+
       checkCaller!(caller == organizer, ErrorCodes.InvalidCaller)
 
       let (initialImmState, initialMutState) = PoapData.encodeFields!(
@@ -170,17 +181,19 @@ Contract PoapSerieCollectionV2(
       let contract = copyCreateContract!{caller -> ALPH: minimalContractDeposit!(), tokenIdAirdrop: amountAirdrop}(poapDataTemplateId, initialImmState, initialMutState)
       nftMetadata.insert!(caller, totalSupplySeries, PoapData(contract))                  
 
+
       if(amountForStorageFees > 0){
-        depositStorageFees{caller -> ALPH: amountForStorageFees}(totalSupplySeries, amountForStorageFees)
+        depositStorageFees{caller -> ALPH: amountForStorageFees}(totalSupplySeries, amountForStorageFees, caller)
       }
 
       if(amountForChainFees > 0){
-        depositChainFees{caller -> ALPH: amountForChainFees}(totalSupplySeries, amountForChainFees)
+        depositChainFees{caller -> ALPH: amountForChainFees}(totalSupplySeries, amountForChainFees, caller)
       }
 
       emit SerieAdded(selfContractId!(), totalSupplySeries)
 
       totalSupplySeries = totalSupplySeries + 1
+
 
       return contract
 
@@ -262,18 +275,26 @@ Contract PoapSerieCollectionV2(
 
 
 
-    @using(preserveCaller = true)
     pub fn claimFunds(eventId: U256, amountToClaim: U256) -> () {
-        checkCaller!(callerAddress!() == organizer, ErrorCodes.InvalidCaller)
+        let caller = callerAddress!()
+      
+        checkCaller!(caller == organizer, ErrorCodes.InvalidCaller)
 
         assert!(nftMetadata.contains!(eventId), ErrorCodes.IncorrectEventIndex)
-        nftMetadata[eventId].claimFunds(amountToClaim)
+        nftMetadata[eventId].claimFunds(amountToClaim, caller)
 
     }
 
-    @using(preserveCaller = true, assetsInContract = true)
-    pub fn withdrawStorageFees(eventId: U256, amount: U256) -> () {
-        checkCaller!(callerAddress!() == organizer, ErrorCodes.InvalidCaller)
+    @using(assetsInContract = true)
+    pub fn withdrawStorageFees(eventId: U256, amount: U256, initialCaller: Address) -> () {
+        let mut caller = callerAddress!()
+
+        if(isContractAddress!(caller)){
+          assert!(callerContractId!() == factoryId, ErrorCodes.InvalidCaller)
+          caller = initialCaller
+        }
+
+        checkCaller!(caller == organizer, ErrorCodes.InvalidCaller)
         
         assert!(nftMetadata.contains!(eventId), ErrorCodes.IncorrectEventIndex)
         nftMetadata[eventId].withdrawStorageFees(amount)
@@ -281,9 +302,16 @@ Contract PoapSerieCollectionV2(
 
     }
 
-    @using(preserveCaller = true, assetsInContract = true)
-    pub fn withdrawChainFees(eventId: U256, amount: U256) -> () {
-        checkCaller!(callerAddress!() == organizer, ErrorCodes.InvalidCaller)
+    @using(assetsInContract = true)
+    pub fn withdrawChainFees(eventId: U256, amount: U256, initialCaller: Address) -> () {
+
+      let mut caller = callerAddress!()
+
+        if(isContractAddress!(caller)){
+          assert!(callerContractId!() == factoryId, ErrorCodes.InvalidCaller)
+          caller = initialCaller
+        }
+        checkCaller!(caller == organizer, ErrorCodes.InvalidCaller)
         
         assert!(nftMetadata.contains!(eventId), ErrorCodes.IncorrectEventIndex)
         nftMetadata[eventId].withdrawChainFees(amount)
@@ -291,29 +319,43 @@ Contract PoapSerieCollectionV2(
 
     }
 
-    @using(preserveCaller = true, preapprovedAssets = true, assetsInContract = true)
-    pub fn depositStorageFees(eventId: U256, amount: U256) -> () {
-        checkCaller!(callerAddress!() == organizer, ErrorCodes.InvalidCaller)
-        
+    @using(preapprovedAssets = true, assetsInContract = true)
+    pub fn depositStorageFees(eventId: U256, amount: U256, initialCaller: Address) -> () {
+        let mut caller = callerAddress!()
+
+        if(isContractAddress!(caller)){
+          let callerId = callerContractId!()
+          assert!(callerId == factoryId || callerId == selfContractId!(), ErrorCodes.InvalidCaller)
+          caller = initialCaller
+        }
+        checkCaller!(caller == organizer, ErrorCodes.InvalidCaller)
         assert!(nftMetadata.contains!(eventId), ErrorCodes.IncorrectEventIndex)
-        nftMetadata[eventId].addStorageFees(amount) // this function will only keep track of the storage fees, collection stores ALPH
+        nftMetadata[eventId].addStorageFees(amount, caller) // this function will only keep track of the storage fees, collection stores ALPH
         transferTokenToSelf!(organizer, ALPH, amount)
     }
 
-    @using(preserveCaller = true, preapprovedAssets = true, assetsInContract = true)
-    pub fn depositChainFees(eventId: U256, amount: U256) -> () {
-        checkCaller!(callerAddress!() == organizer, ErrorCodes.InvalidCaller)
+    @using(preapprovedAssets = true, assetsInContract = true)
+    pub fn depositChainFees(eventId: U256, amount: U256, initialCaller: Address) -> () {
+        let mut caller = callerAddress!()
+
+        if(isContractAddress!(caller)){
+          let callerId = callerContractId!()
+          assert!(callerId == factoryId || callerId == selfContractId!(), ErrorCodes.InvalidCaller)
+          caller = initialCaller
+        }
+        checkCaller!(caller == organizer, ErrorCodes.InvalidCaller)
         
-        nftMetadata[eventId].addChainFees(amount) // this function will only keep track of the storage fees, collection stores ALPH
+        nftMetadata[eventId].addChainFees(amount, caller) // this function will only keep track of the storage fees, collection stores ALPH
         transferTokenToSelf!(organizer, ALPH, amount)
     }
 
-    @using(preserveCaller = true)
+
     pub fn withdrawAirdrop(eventId: U256, amount: U256) -> () {
-        checkCaller!(callerAddress!() == organizer, ErrorCodes.InvalidCaller)
+        let caller = callerAddress!()
+        checkCaller!(caller == organizer, ErrorCodes.InvalidCaller)
 
         assert!(nftMetadata.contains!(eventId), ErrorCodes.IncorrectEventIndex)
-        nftMetadata[eventId].withdrawAirdrop(amount)
+        nftMetadata[eventId].withdrawAirdrop(amount, caller)
     }
 
 

@@ -1,4 +1,4 @@
-import { addressFromContractId, ALPH_TOKEN_ID, DUST_AMOUNT, hexToString, MINIMAL_CONTRACT_DEPOSIT, number256ToBigint, ONE_ALPH, sleep, stringToHex, TransactionBuilder, web3 } from "@alephium/web3"
+import { addressFromContractId, ALPH_TOKEN_ID, DUST_AMOUNT, hexToString, MINIMAL_CONTRACT_DEPOSIT, NULL_CONTRACT_ADDRESS, number256ToBigint, ONE_ALPH, sleep, stringToHex, TransactionBuilder, web3 } from "@alephium/web3"
 import { PrivateKeyWallet } from "@alephium/web3-wallet"
 import { alphBalanceOf, balanceOf, getRandomSigner, transferAlphTo, transferTokenTo } from "../utils"
 import { deployToDevnet } from "@alephium/cli"
@@ -114,8 +114,7 @@ describe('integration tests', () => {
     }
 
 
-    await NewPresenceNewEvent.execute({
-      signer,
+    await NewPresenceNewEvent.execute(signer,{
       initialFields: {
         factory: factory.contractId,
         eventImage: stringToHex('https://arweave.net/hoxK8xC9wRjD_6HiOzhdY2jW0ZnJoF2f0N4FcSLXqzQ'),
@@ -168,8 +167,8 @@ describe('integration tests', () => {
 
     let now = BigInt(Date.now())
 
-    await NewPresenceNewEvent.execute({
-      signer,
+    await NewPresenceNewEvent.execute(signer,{
+      
       initialFields: {
         factory: factory.contractId,
         eventImage: stringToHex('https://arweave.net/hoxK8xC9wRjD_6HiOzhdY2jW0ZnJoF2f0N4FcSLXqzQ'),
@@ -381,7 +380,8 @@ describe('integration tests', () => {
       args: {
         eventId: 0n,
         amount: 0n,
-        password: ''
+        password: '',
+        initialCaller: NULL_CONTRACT_ADDRESS
       }
     }), addressFromContractId(poapCollectionMinted), 5)
 
@@ -458,7 +458,8 @@ describe('integration tests', () => {
       args: {
         eventId: 0n,
         amount: 0n,
-        password: ''
+        password: '',
+        initialCaller: NULL_CONTRACT_ADDRESS
       }
     }), addressFromContractId(poapCollectionMinted), 4)
 
@@ -480,8 +481,7 @@ describe('integration tests', () => {
     const customTokenA = await mintToken((await signer.getSelectedAccount()).address, 200n)
     const now = BigInt(Date.now())
 
-    await NewPresenceNewEvent.execute({
-      signer,
+    await NewPresenceNewEvent.execute(signer,{
       initialFields: {
         factory: factory.contractId,
         eventImage: stringToHex('https://arweave.net/hoxK8xC9wRjD_6HiOzhdY2jW0ZnJoF2f0N4FcSLXqzQ'),
@@ -598,8 +598,7 @@ describe('integration tests', () => {
     const customTokenA = await mintToken((await signer.getSelectedAccount()).address, 200n)
     const now = BigInt(Date.now())
 
-    await NewPresenceNewEvent.execute({
-      signer,
+    await NewPresenceNewEvent.execute(signer,{
       initialFields: {
         factory: factory.contractId,
         eventImage: stringToHex('https://arweave.net/hoxK8xC9wRjD_6HiOzhdY2jW0ZnJoF2f0N4FcSLXqzQ'),
@@ -697,8 +696,7 @@ describe('integration tests', () => {
 
     const now = BigInt(Date.now())
 
-    await NewPresenceNewEvent.execute({
-      signer,
+    await NewPresenceNewEvent.execute(signer,{
       initialFields: {
         factory: factory.contractId,
         eventImage: stringToHex('https://arweave.net/hoxK8xC9wRjD_6HiOzhdY2jW0ZnJoF2f0N4FcSLXqzQ'),
@@ -810,8 +808,7 @@ describe('integration tests', () => {
       throw new Error('Factory is undefined')
     }
 
-    await NewPresenceNewEvent.execute({
-      signer,
+    await NewPresenceNewEvent.execute(signer,{
       initialFields: {
         factory: factory.contractId,
         eventImage: stringToHex('https://arweave.net/hoxK8xC9wRjD_6HiOzhdY2jW0ZnJoF2f0N4FcSLXqzQ'),
@@ -897,8 +894,7 @@ describe('integration tests', () => {
     }
 
 
-    await NewPresenceNewEvent.execute({
-      signer,
+    await NewPresenceNewEvent.execute(signer,{
       initialFields: {
         factory: factory.contractId,
         eventImage: stringToHex('https://arweave.net/hoxK8xC9wRjD_6HiOzhdY2jW0ZnJoF2f0N4FcSLXqzQ'),
@@ -981,8 +977,7 @@ describe('integration tests', () => {
       throw new Error('Factory is undefined')
     }
 
-    await NewPresenceNewEvent.execute({
-      signer,
+    await NewPresenceNewEvent.execute(signer,{
       initialFields: {
         factory: factory.contractId,
         eventImage: stringToHex('https://arweave.net/hoxK8xC9wRjD_6HiOzhdY2jW0ZnJoF2f0N4FcSLXqzQ'),
@@ -1084,8 +1079,7 @@ describe('integration tests', () => {
 
     const customTokenA = await mintToken((await signer.getSelectedAccount()).address, 200n)
 
-    await NewPresenceNewEvent.execute({
-      signer,
+    await NewPresenceNewEvent.execute(signer,{
       initialFields: {
         factory: factory.contractId,
         eventImage: stringToHex('https://arweave.net/hoxK8xC9wRjD_6HiOzhdY2jW0ZnJoF2f0N4FcSLXqzQ'),
@@ -1235,8 +1229,7 @@ describe('integration tests', () => {
 
     const customTokenA = await mintToken((await signer.getSelectedAccount()).address, 200n)
 
-    await NewPresenceNewEvent.execute({
-      signer,
+    await NewPresenceNewEvent.execute(signer,{
       initialFields: {
         factory: factory.contractId,
         eventImage: stringToHex('https://arweave.net/hoxK8xC9wRjD_6HiOzhdY2jW0ZnJoF2f0N4FcSLXqzQ'),
@@ -1355,8 +1348,7 @@ describe('integration tests', () => {
 
     const customTokenA = await mintToken((await signer.getSelectedAccount()).address, 200n)
 
-    await NewPresenceNewEvent.execute({
-      signer,
+    await NewPresenceNewEvent.execute(signer,{
       initialFields: {
         factory: factory.contractId,
         eventImage: stringToHex('https://arweave.net/hoxK8xC9wRjD_6HiOzhdY2jW0ZnJoF2f0N4FcSLXqzQ'),
@@ -1499,8 +1491,7 @@ describe('integration tests', () => {
 
     const customTokenA = await mintToken((await signer.getSelectedAccount()).address, 200n)
 
-    await NewPresenceNewEvent.execute({
-      signer,
+    await NewPresenceNewEvent.execute(signer,{
       initialFields: {
         factory: factory.contractId,
         eventImage: stringToHex('https://arweave.net/hoxK8xC9wRjD_6HiOzhdY2jW0ZnJoF2f0N4FcSLXqzQ'),
@@ -1650,8 +1641,7 @@ describe('integration tests', () => {
 
 
 
-    await NewPresenceNewEvent.execute({
-      signer,
+    await NewPresenceNewEvent.execute(signer,{
       initialFields: {
         factory: factory.contractId,
         eventImage: stringToHex('https://arweave.net/hoxK8xC9wRjD_6HiOzhdY2jW0ZnJoF2f0N4FcSLXqzQ'),
@@ -1833,8 +1823,7 @@ describe('integration tests', () => {
 
     const customTokenA = await mintToken((await signer.getSelectedAccount()).address, 200n)
 
-    await NewPresenceNewEvent.execute({
-      signer,
+    await NewPresenceNewEvent.execute(signer,{
       initialFields: {
         factory: factory.contractId,
         eventImage: stringToHex('https://arweave.net/hoxK8xC9wRjD_6HiOzhdY2jW0ZnJoF2f0N4FcSLXqzQ'),
@@ -2024,8 +2013,7 @@ describe('integration tests', () => {
       throw new Error('Factory is undefined')
     }
 
-    await NewPresenceNewEvent.execute({
-      signer,
+    await NewPresenceNewEvent.execute(signer,{
       initialFields: {
         factory: factory.contractId,
         eventImage: stringToHex('https://arweave.net/hoxK8xC9wRjD_6HiOzhdY2jW0ZnJoF2f0N4FcSLXqzQ'),
@@ -2163,8 +2151,10 @@ describe('integration tests', () => {
       throw new Error('Factory is undefined')
     }
 
-    await NewPresenceNewEvent.execute({
-      signer,
+
+
+    await NewPresenceNewEvent.execute(signer,{
+
       initialFields: {
         factory: factory.contractId,
         eventImage: stringToHex('https://arweave.net/hoxK8xC9wRjD_6HiOzhdY2jW0ZnJoF2f0N4FcSLXqzQ'),
@@ -2250,7 +2240,8 @@ describe('integration tests', () => {
     await collection.transact.withdrawStorageFees({
       args: {
         eventId: 0n,
-        amount: poapDataState.fields.amountForStorageFees
+        amount: poapDataState.fields.amountForStorageFees,
+        initialCaller: NULL_CONTRACT_ADDRESS
       },
       signer: signer
     })
@@ -2261,7 +2252,8 @@ describe('integration tests', () => {
     await collection.transact.depositStorageFees({
       args: {
         amount: 10n * ONE_ALPH,
-        eventId: 0n
+        eventId: 0n,
+        initialCaller: NULL_CONTRACT_ADDRESS
       },
       attoAlphAmount: 10n * ONE_ALPH,
       signer: signer
@@ -2279,7 +2271,8 @@ describe('integration tests', () => {
     await collection.transact.depositChainFees({
       args: {
         amount: 5n * ONE_ALPH,
-        eventId: 0n
+        eventId: 0n,
+        initialCaller: NULL_CONTRACT_ADDRESS
       },
       attoAlphAmount: 5n * ONE_ALPH,
       signer: signer
@@ -2324,7 +2317,8 @@ describe('integration tests', () => {
       collection.transact.withdrawChainFees({
         args: {
           amount: 10n * ONE_ALPH,
-          eventId: 0n
+          eventId: 0n,
+          initialCaller: NULL_CONTRACT_ADDRESS
         },
         signer: minter,
       }), collection.address, 7)
@@ -2333,7 +2327,8 @@ describe('integration tests', () => {
       collection.transact.withdrawChainFees({
         args: {
           amount: 15n * ONE_ALPH,
-          eventId: 0n
+          eventId: 0n,
+          initialCaller: NULL_CONTRACT_ADDRESS
         },
         signer: signer,
       }), poapDataAddress, 9)
@@ -2342,7 +2337,8 @@ describe('integration tests', () => {
       collection.transact.withdrawStorageFees({
         args: {
           amount: 11n * ONE_ALPH,
-          eventId: 0n
+          eventId: 0n,
+          initialCaller: NULL_CONTRACT_ADDRESS
         },
         signer: signer,
       }), poapDataAddress, 9)
@@ -2358,7 +2354,8 @@ describe('integration tests', () => {
     await collection.transact.withdrawChainFees({
       args: {
         amount: poapDataState.fields.amountForChainFees,
-        eventId: 0n
+        eventId: 0n,
+        initialCaller: NULL_CONTRACT_ADDRESS
       },
       attoAlphAmount: DUST_AMOUNT,
       signer: signer
@@ -2367,7 +2364,8 @@ describe('integration tests', () => {
     await collection.transact.withdrawStorageFees({
       args: {
         amount: poapDataState.fields.amountForStorageFees,
-        eventId: 0n
+        eventId: 0n,
+        initialCaller: NULL_CONTRACT_ADDRESS
       },
       attoAlphAmount: DUST_AMOUNT,
       signer: signer
@@ -2423,8 +2421,7 @@ describe('integration tests', () => {
 
     const now = BigInt(Date.now())
 
-     await NewPresenceNewEvent.execute({
-      signer,
+     await NewPresenceNewEvent.execute(signer,{
       initialFields: {
         factory: factory.contractId,
         eventImage: stringToHex('https://arweave.net/hoxK8xC9wRjD_6HiOzhdY2jW0ZnJoF2f0N4FcSLXqzQ'),
@@ -2541,8 +2538,7 @@ describe('integration tests', () => {
 
 
 
-     await NewPresenceNewEvent.execute({
-      signer,
+     await NewPresenceNewEvent.execute(signer,{
       initialFields: {
         factory: factory.contractId,
         eventImage: stringToHex('https://arweave.net/hoxK8xC9wRjD_6HiOzhdY2jW0ZnJoF2f0N4FcSLXqzQ'),
@@ -2670,8 +2666,7 @@ describe('integration tests', () => {
       throw new Error('Factory is undefined')
     }
 
-    await NewPresenceNewEvent.execute({
-      signer,
+    await NewPresenceNewEvent.execute(signer,{
       initialFields: {
         factory: factory.contractId,
         eventImage: stringToHex('https://arweave.net/hoxK8xC9wRjD_6HiOzhdY2jW0ZnJoF2f0N4FcSLXqzQ'),
@@ -2723,7 +2718,8 @@ describe('integration tests', () => {
       args: {
         eventId: 0n,
         amount: 0n,
-        password: ''
+        password: '',
+        initialCaller: NULL_CONTRACT_ADDRESS
       }
     })
 
@@ -2733,7 +2729,8 @@ describe('integration tests', () => {
       args: {
         eventId: 0n,
         amount: 0n,
-        password: ''
+        password: '',
+        initialCaller: NULL_CONTRACT_ADDRESS
       }
     })
 
@@ -2745,7 +2742,8 @@ describe('integration tests', () => {
       args: {
         eventId: 0n,
         amount: 0n,
-        password: ''
+        password: '',
+        initialCaller: NULL_CONTRACT_ADDRESS
       }
     }), addressFromContractId(poapCollectionMinted), 3)
 
@@ -2763,8 +2761,7 @@ describe('integration tests', () => {
       throw new Error('Factory is undefined')
     }
 
-    await NewPresenceNewEvent.execute({
-      signer,
+    await NewPresenceNewEvent.execute(signer,{
       initialFields: {
         factory: factory.contractId,
         eventImage: stringToHex('https://arweave.net/hoxK8xC9wRjD_6HiOzhdY2jW0ZnJoF2f0N4FcSLXqzQ'),
@@ -2816,7 +2813,8 @@ describe('integration tests', () => {
       args: {
         eventId: 0n,
         amount: 0n,
-        password: ''
+        password: '',
+        initialCaller: NULL_CONTRACT_ADDRESS
       }
     }), addressFromContractId(poapCollectionMinted), 5)
 
@@ -2834,8 +2832,7 @@ describe('integration tests', () => {
       throw new Error('Factory is undefined')
     }
 
-     await NewPresenceNewEvent.execute({
-      signer,
+     await NewPresenceNewEvent.execute(signer,{
       initialFields: {
         factory: factory.contractId,
         eventImage: stringToHex('https://arweave.net/hoxK8xC9wRjD_6HiOzhdY2jW0ZnJoF2f0N4FcSLXqzQ'),
@@ -2888,7 +2885,8 @@ describe('integration tests', () => {
       args: {
         eventId: 0n,
         amount: 0n,
-        password: ''
+        password: '',
+        initialCaller: NULL_CONTRACT_ADDRESS
       }
     }), addressFromContractId(poapCollectionMinted), 4)
 
@@ -2907,8 +2905,7 @@ describe('integration tests', () => {
     }
 
 
-    await NewPresenceNewEvent.execute({
-      signer,
+    await NewPresenceNewEvent.execute(signer,{
       initialFields: {
         factory: factory.contractId,
         eventImage: stringToHex('https://arweave.net/hoxK8xC9wRjD_6HiOzhdY2jW0ZnJoF2f0N4FcSLXqzQ'),
@@ -2961,7 +2958,8 @@ describe('integration tests', () => {
       args: {
         eventId: 0n,
         amount: 0n,
-        password: stringToHex('password')
+        password: stringToHex('password'),
+        initialCaller: NULL_CONTRACT_ADDRESS
       }
     })
 

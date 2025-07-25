@@ -41,6 +41,7 @@ import { RalphMap } from "@alephium/web3";
 // Custom types for the contract
 export namespace PoapSerieCollectionV2Types {
   export type Fields = {
+    factoryId: HexString;
     nftTemplateId: HexString;
     poapDataTemplateId: HexString;
     organizer: Address;
@@ -95,6 +96,7 @@ export namespace PoapSerieCollectionV2Types {
         eventId: bigint;
         amount: bigint;
         password: HexString;
+        initialCaller: Address;
       }>;
       result: CallContractResult<HexString>;
     };
@@ -122,6 +124,7 @@ export namespace PoapSerieCollectionV2Types {
         amountAirdrop: bigint;
         amountForStorageFees: bigint;
         amountForChainFees: bigint;
+        initialCaller: Address;
       }>;
       result: CallContractResult<HexString>;
     };
@@ -138,19 +141,35 @@ export namespace PoapSerieCollectionV2Types {
       result: CallContractResult<null>;
     };
     withdrawStorageFees: {
-      params: CallContractParams<{ eventId: bigint; amount: bigint }>;
+      params: CallContractParams<{
+        eventId: bigint;
+        amount: bigint;
+        initialCaller: Address;
+      }>;
       result: CallContractResult<null>;
     };
     withdrawChainFees: {
-      params: CallContractParams<{ eventId: bigint; amount: bigint }>;
+      params: CallContractParams<{
+        eventId: bigint;
+        amount: bigint;
+        initialCaller: Address;
+      }>;
       result: CallContractResult<null>;
     };
     depositStorageFees: {
-      params: CallContractParams<{ eventId: bigint; amount: bigint }>;
+      params: CallContractParams<{
+        eventId: bigint;
+        amount: bigint;
+        initialCaller: Address;
+      }>;
       result: CallContractResult<null>;
     };
     depositChainFees: {
-      params: CallContractParams<{ eventId: bigint; amount: bigint }>;
+      params: CallContractParams<{
+        eventId: bigint;
+        amount: bigint;
+        initialCaller: Address;
+      }>;
       result: CallContractResult<null>;
     };
     withdrawAirdrop: {
@@ -227,6 +246,7 @@ export namespace PoapSerieCollectionV2Types {
         eventId: bigint;
         amount: bigint;
         password: HexString;
+        initialCaller: Address;
       }>;
       result: SignExecuteScriptTxResult;
     };
@@ -254,6 +274,7 @@ export namespace PoapSerieCollectionV2Types {
         amountAirdrop: bigint;
         amountForStorageFees: bigint;
         amountForChainFees: bigint;
+        initialCaller: Address;
       }>;
       result: SignExecuteScriptTxResult;
     };
@@ -279,6 +300,7 @@ export namespace PoapSerieCollectionV2Types {
       params: SignExecuteContractMethodParams<{
         eventId: bigint;
         amount: bigint;
+        initialCaller: Address;
       }>;
       result: SignExecuteScriptTxResult;
     };
@@ -286,6 +308,7 @@ export namespace PoapSerieCollectionV2Types {
       params: SignExecuteContractMethodParams<{
         eventId: bigint;
         amount: bigint;
+        initialCaller: Address;
       }>;
       result: SignExecuteScriptTxResult;
     };
@@ -293,6 +316,7 @@ export namespace PoapSerieCollectionV2Types {
       params: SignExecuteContractMethodParams<{
         eventId: bigint;
         amount: bigint;
+        initialCaller: Address;
       }>;
       result: SignExecuteScriptTxResult;
     };
@@ -300,6 +324,7 @@ export namespace PoapSerieCollectionV2Types {
       params: SignExecuteContractMethodParams<{
         eventId: bigint;
         amount: bigint;
+        initialCaller: Address;
       }>;
       result: SignExecuteScriptTxResult;
     };
@@ -369,7 +394,7 @@ class Factory extends ContractFactory<
           never,
           PoapSerieCollectionV2Types.Maps
         >,
-        "args"
+        "testArgs"
       >
     ): Promise<
       TestContractResult<HexString, PoapSerieCollectionV2Types.Maps>
@@ -388,7 +413,7 @@ class Factory extends ContractFactory<
           never,
           PoapSerieCollectionV2Types.Maps
         >,
-        "args"
+        "testArgs"
       >
     ): Promise<TestContractResult<bigint, PoapSerieCollectionV2Types.Maps>> => {
       return testMethod(this, "totalSupply", params, getContractByCodeHash);
@@ -427,7 +452,12 @@ class Factory extends ContractFactory<
     mint: async (
       params: TestContractParams<
         PoapSerieCollectionV2Types.Fields,
-        { eventId: bigint; amount: bigint; password: HexString },
+        {
+          eventId: bigint;
+          amount: bigint;
+          password: HexString;
+          initialCaller: Address;
+        },
         PoapSerieCollectionV2Types.Maps
       >
     ): Promise<
@@ -461,6 +491,7 @@ class Factory extends ContractFactory<
           amountAirdrop: bigint;
           amountForStorageFees: bigint;
           amountForChainFees: bigint;
+          initialCaller: Address;
         },
         PoapSerieCollectionV2Types.Maps
       >
@@ -490,7 +521,7 @@ class Factory extends ContractFactory<
           never,
           PoapSerieCollectionV2Types.Maps
         >,
-        "args"
+        "testArgs"
       >
     ): Promise<TestContractResult<bigint, PoapSerieCollectionV2Types.Maps>> => {
       return testMethod(
@@ -512,7 +543,7 @@ class Factory extends ContractFactory<
     withdrawStorageFees: async (
       params: TestContractParams<
         PoapSerieCollectionV2Types.Fields,
-        { eventId: bigint; amount: bigint },
+        { eventId: bigint; amount: bigint; initialCaller: Address },
         PoapSerieCollectionV2Types.Maps
       >
     ): Promise<TestContractResult<null, PoapSerieCollectionV2Types.Maps>> => {
@@ -526,7 +557,7 @@ class Factory extends ContractFactory<
     withdrawChainFees: async (
       params: TestContractParams<
         PoapSerieCollectionV2Types.Fields,
-        { eventId: bigint; amount: bigint },
+        { eventId: bigint; amount: bigint; initialCaller: Address },
         PoapSerieCollectionV2Types.Maps
       >
     ): Promise<TestContractResult<null, PoapSerieCollectionV2Types.Maps>> => {
@@ -540,7 +571,7 @@ class Factory extends ContractFactory<
     depositStorageFees: async (
       params: TestContractParams<
         PoapSerieCollectionV2Types.Fields,
-        { eventId: bigint; amount: bigint },
+        { eventId: bigint; amount: bigint; initialCaller: Address },
         PoapSerieCollectionV2Types.Maps
       >
     ): Promise<TestContractResult<null, PoapSerieCollectionV2Types.Maps>> => {
@@ -554,7 +585,7 @@ class Factory extends ContractFactory<
     depositChainFees: async (
       params: TestContractParams<
         PoapSerieCollectionV2Types.Fields,
-        { eventId: bigint; amount: bigint },
+        { eventId: bigint; amount: bigint; initialCaller: Address },
         PoapSerieCollectionV2Types.Maps
       >
     ): Promise<TestContractResult<null, PoapSerieCollectionV2Types.Maps>> => {
@@ -581,7 +612,7 @@ class Factory extends ContractFactory<
           never,
           PoapSerieCollectionV2Types.Maps
         >,
-        "args"
+        "testArgs"
       >
     ): Promise<
       TestContractResult<Address, PoapSerieCollectionV2Types.Maps>
@@ -595,7 +626,7 @@ class Factory extends ContractFactory<
           never,
           PoapSerieCollectionV2Types.Maps
         >,
-        "args"
+        "testArgs"
       >
     ): Promise<
       TestContractResult<boolean, PoapSerieCollectionV2Types.Maps>
@@ -678,8 +709,8 @@ class Factory extends ContractFactory<
 export const PoapSerieCollectionV2 = new Factory(
   Contract.fromJson(
     PoapSerieCollectionV2ContractJson,
-    "=30-2+c1=2-2=2-2=2-2+52=2-1+95=2-3+dd=2+2=1-1=2-2+6d=2-1=1+0=2-2+e3=2-5+f=2-1=1-1+ff=2-1=1+a=2+7546a=1+46=1+7=1539-1+e=224+7a7e0214696e73657274206174206d617020706174683a2000=1720",
-    "b2d1b3b1cf53bd04ee529887388fd2436db408e24bcf5d0a9f1ffae4e4892af6",
+    "=30-2+e3=2+66=1-1=1-3+7=2-1=1+bd=2-1=1+a=2+774=2+2=1-3+638=2+8=1-1=2-1=1+f=2-2+9d=2+d=2+713=1-3+7=1-2=3-6+85=1567-1+a=256+7a7e0214696e73657274206174206d617020706174683a2000=1976",
+    "9fb86edc3297a3b999b0902baa507599abaf49e8cc7ad17d572ab5f282eaeda1",
     AllStructs
   )
 );

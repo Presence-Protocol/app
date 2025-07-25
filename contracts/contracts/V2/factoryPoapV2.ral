@@ -48,6 +48,7 @@ Contract PoapFactoryV2(
             let caller = callerAddress!()
 
             let (initialImmState, initialMutState) = PoapCollectionV2.encodeFields!(
+                selfContractId!(),
                 poapTemplateId,
                 maxSupply,
                 mintStartAt,
@@ -74,7 +75,7 @@ Contract PoapFactoryV2(
                 amountForChainFees,
                 amountPoapFees,
                 totalSupply,
-                amountAirdrop    
+                amountAirdrop  
             )
             
             let mut amountForStorageFeesInContract = minimalContractDeposit!()
@@ -100,7 +101,7 @@ Contract PoapFactoryV2(
         
         }
     
-        @using(preapprovedAssets = true, checkExternalCaller = false, updateFields = true, preserveCaller = true)
+        @using(preapprovedAssets = true, checkExternalCaller = false, updateFields = true)
         pub fn mintNewCollectionWithSerie(
             eventImage: ByteVec,
             eventName: ByteVec,
@@ -110,6 +111,7 @@ Contract PoapFactoryV2(
              let caller = callerAddress!()
 
              let (initialImmState, initialMutState) = PoapSerieCollectionV2.encodeFields!(
+                selfContractId!(),
                 poapTemplateSeriesId,
                 poapTemplateDataId,
                 caller,
@@ -137,7 +139,7 @@ Contract PoapFactoryV2(
 
         }
 
-    @using(preapprovedAssets = true, preserveCaller = true)
+    @using(preapprovedAssets = true)
     pub fn createNewEvent(
         collection: PoapSerieCollectionV2,
         maxSupply: U256,
@@ -177,7 +179,7 @@ Contract PoapFactoryV2(
             totalAlphAmount = totalAlphAmount + amountForChainFees
         }
 
-       let contractId = collection.addNewEvent{caller -> ALPH: totalAlphAmount , tokenIdAirdrop: amountAirdrop}(
+       let contractId = collection.addNewEvent{caller -> ALPH: totalAlphAmount, tokenIdAirdrop: amountAirdrop}(
             maxSupply,
             mintStartAt,
             mintEndAt,
@@ -199,7 +201,8 @@ Contract PoapFactoryV2(
             hashedPassword,
             amountAirdrop,
             amountForStorageFees,
-            amountForChainFees
+            amountForChainFees,
+            caller
         )
 
         emit SerieAdded(collection, contractId, eventName, caller, isPublic, blockTimeStamp!())
@@ -207,12 +210,11 @@ Contract PoapFactoryV2(
 
     }
 
-    @using(preapprovedAssets = true, checkExternalCaller = false, preserveCaller = true)
+    @using(preapprovedAssets = true, checkExternalCaller = false)
     pub fn mintPoapSerie(collection: PoapSerieCollectionV2, eventId: U256, amount: U256, password: ByteVec) -> (){
         let caller = callerAddress!()
-        
-        let (poapPrice, poapTokenId, isOpenPrice) = collection.getPoapPrice(eventId)
 
+        let (poapPrice, poapTokenId, isOpenPrice) = collection.getPoapPrice(eventId)
 
         let mut poapPriceAmount = poapPrice // when isOpenPrice true just set the amount the user wants to pay
         if(isOpenPrice){
@@ -227,7 +229,7 @@ Contract PoapFactoryV2(
         if(collectionAmountAlphInContract > 0){
             feesStorageAmount = 0
         }
-        let poapContractId = collection.mint{caller -> ALPH: feesStorageAmount, poapTokenId: poapPriceAmount}(eventId, poapPriceAmount, password)
+        let poapContractId = collection.mint{caller -> ALPH: feesStorageAmount, poapTokenId: poapPriceAmount}(eventId, poapPriceAmount, password, caller)
         let collectionTotalSupply = collection.totalSupply()
 
         emit PoapSerieMinted(poapContractId, collection, eventId, collectionTotalSupply ,caller, collection.getEventPublic(eventId), blockTimeStamp!())
@@ -236,7 +238,7 @@ Contract PoapFactoryV2(
     }
 
 
-    @using(preapprovedAssets = true, checkExternalCaller = false, preserveCaller = true)
+    @using(preapprovedAssets = true, checkExternalCaller = false)
     pub fn mintPoap(collection: PoapCollectionV2, amount: U256, password: ByteVec) -> (){
         let caller = callerAddress!()
 
@@ -254,14 +256,14 @@ Contract PoapFactoryV2(
             poapPriceAmount = amount
         }
 
-        let poapContractId = collection.mint{caller -> ALPH: feesStorageAmount, poapTokenId: poapPriceAmount}(poapPriceAmount, password)
+        let poapContractId = collection.mint{caller -> ALPH: feesStorageAmount, poapTokenId: poapPriceAmount}(poapPriceAmount, password, caller)
         let collectionTotalSupply = collection.totalSupply()
 
         emit PoapMinted(poapContractId, collection, collectionTotalSupply, caller, collection.getIsPublic(), blockTimeStamp!())
 
     }
 
-    @using(preapprovedAssets = true, preserveCaller = true)
+    @using(preapprovedAssets = true)
     pub fn setParticipatedPresence(collection: PoapCollectionV2, nftIndex: U256, presenceAddressValidate: Address) -> (){
         let caller = callerAddress!()
 
@@ -273,7 +275,7 @@ Contract PoapFactoryV2(
             amountDust = dustAmount!()
         }
         
-        collection.setParticipatedPresence{organizer -> ALPH: amountDust}(nftIndex, presenceAddressValidate)
+        collection.setParticipatedPresence{organizer -> ALPH: amountDust}(nftIndex, presenceAddressValidate, caller)
 
         emit PoapParticipatedIn(caller, collection, nftIndex, presenceAddressValidate)
     }

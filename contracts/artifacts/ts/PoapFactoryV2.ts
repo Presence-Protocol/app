@@ -463,7 +463,7 @@ class Factory extends ContractFactory<
     getNumEventsCreated: async (
       params: Omit<
         TestContractParamsWithoutMaps<PoapFactoryV2Types.Fields, never>,
-        "args"
+        "testArgs"
       >
     ): Promise<TestContractResultWithoutMaps<bigint>> => {
       return testMethod(
@@ -489,7 +489,7 @@ export const PoapFactoryV2 = new Factory(
   Contract.fromJson(
     PoapFactoryV2ContractJson,
     "",
-    "f57ec78d6f89462ece3749cc14fdb284a29f4984f99565cbeca21b5230ffce67",
+    "0b23b0e0ec8ba02da06e4e07fe8ab7c9e0ba2650d4ff8cdf11dc37cec55d8d75",
     AllStructs
   )
 );

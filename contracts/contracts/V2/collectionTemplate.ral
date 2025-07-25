@@ -1,5 +1,6 @@
 import "std/nft_collection_interface"
 Contract PoapCollectionV2(
+    factoryId: ByteVec,
     nftTemplateId: ByteVec,
     maxSupply: U256,
     mintStartAt: U256,
@@ -37,12 +38,15 @@ Contract PoapCollectionV2(
    event PoapParticipated(organizerAddress: Address, nftIndex: U256, presenceAddressValidate: Address)
 
    @using(preapprovedAssets = true, updateFields = true, checkExternalCaller = false, assetsInContract = true)
-   pub fn mint(amount: U256, password: ByteVec) -> (ByteVec) {
+   pub fn mint(amount: U256, password: ByteVec, initialCaller: Address) -> (ByteVec) {
      assert!(totalSupply < maxSupply, ErrorCodes.MaxSupplyReached)
      assert!(blockTimeStamp!() >= mintStartAt, ErrorCodes.MintNotStarted)
      assert!(blockTimeStamp!() <= mintEndAt, ErrorCodes.MintEnded)
 
-     let caller = callerAddress!()
+     let mut caller = callerAddress!()
+     if(isContractAddress!(caller)){
+        caller = initialCaller
+     }
      
      let organizerAddressHex = convert(toByteVec!(organizer))
      let (initialImmState, initialMutState) = PoapNFTV2.encodeFields!(selfContractId!(), totalSupply, eventImage, eventName, description, organizerAddressHex, location, eventStartAt, eventEndAt, isPublic, caller, isBurnable, lockPresenceUntil, false)
@@ -118,8 +122,14 @@ Contract PoapCollectionV2(
    }
 
    @using(checkExternalCaller = true, preapprovedAssets = true)
-   pub fn setParticipatedPresence(nftIndex: U256, presenceAddressValidate: Address) -> (){
-      let caller = callerAddress!()
+   pub fn setParticipatedPresence(nftIndex: U256, presenceAddressValidate: Address, initialCaller: Address) -> (){
+      let mut caller = callerAddress!()
+
+        if(isContractAddress!(caller)){
+          assert!(callerContractId!() == factoryId, ErrorCodes.InvalidCaller)
+          caller = initialCaller
+        }
+        checkCaller!(caller == organizer, ErrorCodes.InvalidCaller)
      
       checkCaller!(caller == organizer, ErrorCodes.InvalidCaller)
       let mut poapContractId = #00

@@ -52,8 +52,11 @@ Contract PoapData(
    }
 
    @using(assetsInContract = true, updateFields = true, preapprovedAssets = true, checkExternalCaller = false)
-    pub fn depositPaidPoap(amount: U256) -> () { // todo: need to use externalCallerAddress
-      let caller = callerAddress!()
+    pub fn depositPaidPoap(amount: U256, initialCaller: Address) -> () { // todo: need to use externalCallerAddress
+      let mut caller = callerAddress!()
+      if(isContractAddress!(caller)){
+        caller = initialCaller
+     }
 
       assert!(poapPrice > 0 || isOpenPrice, ErrorCodes.PoapPriceNotSet)
         let mut priceToPay = poapPrice
@@ -69,8 +72,13 @@ Contract PoapData(
 
   
   @using(assetsInContract = true, updateFields = true)
-  pub fn claimFunds(amountToClaim: U256) -> () {
-    checkCaller!(callerAddress!() == organizer,ErrorCodes.InvalidCaller)
+  pub fn claimFunds(amountToClaim: U256, initialCaller: Address) -> () {
+    let mut caller = callerAddress!()
+     if(isContractAddress!(caller)){
+        caller = initialCaller
+     }
+
+    checkCaller!(caller == organizer,ErrorCodes.InvalidCaller)
     assert!(amountToClaim <= amountPoapFees, ErrorCodes.NotEnoughAlph)
 
     transferTokenFromSelf!(organizer, tokenIdPoap, amountToClaim)
@@ -89,8 +97,16 @@ Contract PoapData(
 
   // this function keep track of the storage fees, collection stores ALPH
   @using(updateFields = true)
-  pub fn addStorageFees(amount: U256) -> () {
-        checkCaller!(callerAddress!() == organizer, ErrorCodes.InvalidCaller)
+  pub fn addStorageFees(amount: U256, initialCaller: Address) -> () {
+
+        let mut caller = callerAddress!()
+
+        if(isContractAddress!(caller)){
+          assert!(callerContractId!() == collectionId, ErrorCodes.InvalidCaller)
+          caller = initialCaller
+        }
+
+        checkCaller!(caller == organizer, ErrorCodes.InvalidCaller)
         assert!(amount >= minimalContractDeposit!(), ErrorCodes.NotEnoughAlph)
 
         amountForStorageFees = amountForStorageFees + amount
@@ -115,8 +131,14 @@ Contract PoapData(
 
   // this function keep track of the storage fees, collection stores ALPH
   @using(updateFields = true)
-    pub fn addChainFees(amount: U256) -> () {
-        checkCaller!(callerAddress!() == organizer, ErrorCodes.InvalidCaller)
+    pub fn addChainFees(amount: U256, initialCaller: Address) -> () {
+      let mut caller = callerAddress!()
+
+        if(isContractAddress!(caller)){
+          assert!(callerContractId!() == collectionId, ErrorCodes.InvalidCaller)
+          caller = initialCaller
+        }
+        checkCaller!(caller == organizer, ErrorCodes.InvalidCaller)
 
         amountForChainFees = amountForChainFees + amount
     }
@@ -133,8 +155,16 @@ Contract PoapData(
 
 
   @using(assetsInContract = true, updateFields = true)
-  pub fn withdrawAirdrop(amount: U256) -> () {
-    checkCaller!(callerAddress!() == organizer, ErrorCodes.InvalidCaller)
+  pub fn withdrawAirdrop(amount: U256, initialCaller: Address) -> () {
+
+    let mut caller = callerAddress!()
+
+    if(isContractAddress!(caller)){
+        assert!(callerContractId!() == collectionId, ErrorCodes.InvalidCaller)
+        caller = initialCaller
+    }
+    checkCaller!(caller == organizer, ErrorCodes.InvalidCaller)
+
     assert!(amount <= amountAirdrop, ErrorCodes.NotEnoughAlph)
 
     transferTokenFromSelf!(organizer, tokenIdAirdrop, amount)

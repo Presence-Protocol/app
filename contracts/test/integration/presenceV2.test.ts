@@ -152,7 +152,8 @@ describe('integration tests', () => {
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT,
       args: {
         amount: 0n,
-        password: ''
+        password: '',
+        initialCaller: NULL_CONTRACT_ADDRESS
       }
     })
 
@@ -243,7 +244,8 @@ describe('integration tests', () => {
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT,
       args: {
         amount: 0n,
-        password: stringToHex('password')
+        password: stringToHex('password'),
+        initialCaller: NULL_CONTRACT_ADDRESS
       }
     })
 
@@ -346,7 +348,8 @@ describe('integration tests', () => {
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT,
       args: {
         amount: 0n,
-        password: ''
+        password: '',
+        initialCaller: NULL_CONTRACT_ADDRESS
       }
     })
 
@@ -437,7 +440,8 @@ describe('integration tests', () => {
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT,
       args: {
         amount: 0n,
-        password: ''
+        password: '',
+        initialCaller: NULL_CONTRACT_ADDRESS
       }
     })
 
@@ -517,7 +521,8 @@ describe('integration tests', () => {
       attoAlphAmount: DUST_AMOUNT,
       args: {
         amount: 0n,
-        password: ''
+        password: '',
+        initialCaller: NULL_CONTRACT_ADDRESS
       }
     })
 
@@ -532,7 +537,8 @@ describe('integration tests', () => {
       attoAlphAmount: DUST_AMOUNT,
       args: {
         amount: 0n,
-        password: ''
+        password: '',
+        initialCaller: NULL_CONTRACT_ADDRESS
       }
     })
 
@@ -546,7 +552,8 @@ describe('integration tests', () => {
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT,
       args: {
         amount: 0n,
-        password: ''
+        password: '',
+        initialCaller: NULL_CONTRACT_ADDRESS
       }
     })
 
@@ -556,7 +563,8 @@ describe('integration tests', () => {
       attoAlphAmount: DUST_AMOUNT,
       args: {
         amount: 0n,
-        password: ''
+        password: '',
+        initialCaller: NULL_CONTRACT_ADDRESS
       }
     })).rejects.toThrowError()
 
@@ -629,7 +637,8 @@ describe('integration tests', () => {
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT,
       args: {
         amount: 0n,
-        password: ''
+        password: '',
+        initialCaller: NULL_CONTRACT_ADDRESS
       }
     })
 
@@ -640,7 +649,8 @@ describe('integration tests', () => {
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT,
       args: {
         amount: 0n,
-        password: ''
+        password: '',
+        initialCaller: NULL_CONTRACT_ADDRESS
       }
     }), addressFromContractId(poapCollectionMinted), 3)
 
@@ -705,7 +715,8 @@ describe('integration tests', () => {
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT,
       args: {
         amount: 0n,
-        password: ''
+        password: '',
+        initialCaller: NULL_CONTRACT_ADDRESS
       }
     }), addressFromContractId(poapCollectionMinted), 5)
 
@@ -770,7 +781,8 @@ describe('integration tests', () => {
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT,
       args: {
         amount: 0n,
-        password: ''
+        password: '',
+        initialCaller: NULL_CONTRACT_ADDRESS
       }
     }), addressFromContractId(poapCollectionMinted), 4)
 
@@ -836,7 +848,8 @@ describe('integration tests', () => {
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT,
       args: {
         amount: 0n,
-        password: ''
+        password: '',
+        initialCaller: NULL_CONTRACT_ADDRESS
       }
     })
 
@@ -846,7 +859,8 @@ describe('integration tests', () => {
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT,
       args: {
         amount: 0n,
-        password: ''
+        password: '',
+        initialCaller: NULL_CONTRACT_ADDRESS
       }
     }), addressFromContractId(poapCollectionMinted), 6)
 
@@ -856,7 +870,8 @@ describe('integration tests', () => {
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT,
       args: {
         amount: 0n,
-        password: ''
+        password: '',
+        initialCaller: NULL_CONTRACT_ADDRESS
       }
     })
 
@@ -1009,7 +1024,8 @@ describe('integration tests', () => {
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT,
       args: {
         amount: 0n,
-        password: ''
+        password: '',
+        initialCaller: NULL_CONTRACT_ADDRESS
       }
     })
 
@@ -2207,7 +2223,8 @@ describe('integration tests', () => {
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT,
       args: {
         amount: 0n,
-        password: ''
+        password: '',
+        initialCaller: NULL_CONTRACT_ADDRESS
       }
     })
 
@@ -2231,6 +2248,7 @@ describe('integration tests', () => {
       args: {
         nftIndex: 0n,
         presenceAddressValidate: NULL_CONTRACT_ADDRESS,
+        initialCaller: NULL_CONTRACT_ADDRESS
       },
       signer: signer,
       attoAlphAmount: 10n * DUST_AMOUNT
@@ -2273,6 +2291,7 @@ describe('integration tests', () => {
       args: {
         nftIndex: 1n,
         presenceAddressValidate: NULL_CONTRACT_ADDRESS,
+        initialCaller: NULL_CONTRACT_ADDRESS
       },
       signer: signer,
       attoAlphAmount: DUST_AMOUNT
@@ -2299,6 +2318,7 @@ describe('integration tests', () => {
         args: {
           nftIndex: 2n,
           presenceAddressValidate: NULL_CONTRACT_ADDRESS,
+          initialCaller: NULL_CONTRACT_ADDRESS
         },
         signer: minter,
         attoAlphAmount: DUST_AMOUNT
@@ -2383,7 +2403,8 @@ describe('integration tests', () => {
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT,
       args: {
         amount: 0n,
-        password: ''
+        password: '',
+        initialCaller: NULL_CONTRACT_ADDRESS
       }
     })
 
@@ -2411,6 +2432,7 @@ describe('integration tests', () => {
       args: {
         nftIndex: 0n,
         presenceAddressValidate: NULL_CONTRACT_ADDRESS,
+        initialCaller: NULL_CONTRACT_ADDRESS
       },
       signer: signer,
       attoAlphAmount: 3n * DUST_AMOUNT
@@ -2453,6 +2475,7 @@ describe('integration tests', () => {
       args: {
         nftIndex: 1n,
         presenceAddressValidate: NULL_CONTRACT_ADDRESS,
+        initialCaller: NULL_CONTRACT_ADDRESS
       },
       signer: signer,
       attoAlphAmount: DUST_AMOUNT
@@ -2482,6 +2505,7 @@ describe('integration tests', () => {
         args: {
           nftIndex: 2n,
           presenceAddressValidate: NULL_CONTRACT_ADDRESS,
+          initialCaller: NULL_CONTRACT_ADDRESS
         },
         signer: minter,
         attoAlphAmount: DUST_AMOUNT
@@ -2558,7 +2582,8 @@ describe('integration tests', () => {
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT,
       args: {
         amount: 0n,
-        password: ''
+        password: '',
+        initialCaller: NULL_CONTRACT_ADDRESS
       }
     })
 
@@ -2586,6 +2611,7 @@ describe('integration tests', () => {
       args: {
         nftIndex: 0n,
         presenceAddressValidate: minter.address,
+        initialCaller: NULL_CONTRACT_ADDRESS
       },
       signer: signer,
       attoAlphAmount: DUST_AMOUNT
@@ -2632,6 +2658,7 @@ describe('integration tests', () => {
       args: {
         nftIndex: 0n,
         presenceAddressValidate: minter2.address,
+        initialCaller: NULL_CONTRACT_ADDRESS
       },
       attoAlphAmount: DUST_AMOUNT,
       signer: signer
@@ -2644,6 +2671,7 @@ describe('integration tests', () => {
       args: {
         nftIndex: 0n,
         presenceAddressValidate: minter2.address,
+        initialCaller: NULL_CONTRACT_ADDRESS
       },
       attoAlphAmount: DUST_AMOUNT,
       signer: signer
@@ -2667,6 +2695,7 @@ describe('integration tests', () => {
         args: {
           nftIndex: 0n,
           presenceAddressValidate: minter3.address,
+          initialCaller: NULL_CONTRACT_ADDRESS
         },
         signer: minter,
         attoAlphAmount: DUST_AMOUNT
@@ -2735,7 +2764,8 @@ describe('integration tests', () => {
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT,
       args: {
         amount: 0n,
-        password: ''
+        password: '',
+        initialCaller: NULL_CONTRACT_ADDRESS
       }
     })
 
@@ -2922,7 +2952,8 @@ describe('integration tests', () => {
       attoAlphAmount: 0n,
       args: {
         amount: 0n,
-        password: ''
+        password: '',
+        initialCaller: NULL_CONTRACT_ADDRESS
       }
     })
 
@@ -2937,7 +2968,8 @@ describe('integration tests', () => {
       attoAlphAmount: 0n,
       args: {
         amount: 0n,
-        password: ''
+        password: '',
+        initialCaller: NULL_CONTRACT_ADDRESS
       }
     })
 
@@ -2951,7 +2983,8 @@ describe('integration tests', () => {
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT,
       args: {
         amount: 0n,
-        password: ''
+        password: '',
+        initialCaller: NULL_CONTRACT_ADDRESS
       }
     })
 
@@ -2961,7 +2994,8 @@ describe('integration tests', () => {
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT,
       args: {
         amount: 0n,
-        password: ''
+        password: '',
+        initialCaller: NULL_CONTRACT_ADDRESS
       }
     })
 
@@ -3035,7 +3069,8 @@ describe('integration tests', () => {
       attoAlphAmount: DUST_AMOUNT,
       args: {
         amount: 0n,
-        password: ''
+        password: '',
+        initialCaller: NULL_CONTRACT_ADDRESS
       }
     })
 
@@ -3099,7 +3134,8 @@ describe('integration tests', () => {
       attoAlphAmount: 0n,
       args: {
         amount: 0n,
-        password: ''
+        password: '',
+        initialCaller: NULL_CONTRACT_ADDRESS
       }
     })
 
@@ -3179,7 +3215,8 @@ describe('integration tests', () => {
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT,
       args: {
         amount: 0n,
-        password: ''
+        password: '',
+        initialCaller: NULL_CONTRACT_ADDRESS
       }
     })
 

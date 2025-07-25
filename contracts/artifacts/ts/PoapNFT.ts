@@ -206,7 +206,7 @@ class Factory extends ContractFactory<PoapNFTInstance, PoapNFTTypes.Fields> {
     getTokenUri: async (
       params: Omit<
         TestContractParamsWithoutMaps<PoapNFTTypes.Fields, never>,
-        "args"
+        "testArgs"
       >
     ): Promise<TestContractResultWithoutMaps<HexString>> => {
       return testMethod(this, "getTokenUri", params, getContractByCodeHash);
@@ -214,7 +214,7 @@ class Factory extends ContractFactory<PoapNFTInstance, PoapNFTTypes.Fields> {
     getCollectionIndex: async (
       params: Omit<
         TestContractParamsWithoutMaps<PoapNFTTypes.Fields, never>,
-        "args"
+        "testArgs"
       >
     ): Promise<TestContractResultWithoutMaps<[HexString, bigint]>> => {
       return testMethod(
@@ -227,7 +227,7 @@ class Factory extends ContractFactory<PoapNFTInstance, PoapNFTTypes.Fields> {
     getNFTIndex: async (
       params: Omit<
         TestContractParamsWithoutMaps<PoapNFTTypes.Fields, never>,
-        "args"
+        "testArgs"
       >
     ): Promise<TestContractResultWithoutMaps<bigint>> => {
       return testMethod(this, "getNFTIndex", params, getContractByCodeHash);
@@ -235,7 +235,7 @@ class Factory extends ContractFactory<PoapNFTInstance, PoapNFTTypes.Fields> {
     getName: async (
       params: Omit<
         TestContractParamsWithoutMaps<PoapNFTTypes.Fields, never>,
-        "args"
+        "testArgs"
       >
     ): Promise<TestContractResultWithoutMaps<HexString>> => {
       return testMethod(this, "getName", params, getContractByCodeHash);
@@ -243,7 +243,7 @@ class Factory extends ContractFactory<PoapNFTInstance, PoapNFTTypes.Fields> {
     getDescription: async (
       params: Omit<
         TestContractParamsWithoutMaps<PoapNFTTypes.Fields, never>,
-        "args"
+        "testArgs"
       >
     ): Promise<TestContractResultWithoutMaps<HexString>> => {
       return testMethod(this, "getDescription", params, getContractByCodeHash);
@@ -251,7 +251,7 @@ class Factory extends ContractFactory<PoapNFTInstance, PoapNFTTypes.Fields> {
     getImage: async (
       params: Omit<
         TestContractParamsWithoutMaps<PoapNFTTypes.Fields, never>,
-        "args"
+        "testArgs"
       >
     ): Promise<TestContractResultWithoutMaps<HexString>> => {
       return testMethod(this, "getImage", params, getContractByCodeHash);
@@ -259,7 +259,7 @@ class Factory extends ContractFactory<PoapNFTInstance, PoapNFTTypes.Fields> {
     getTraits: async (
       params: Omit<
         TestContractParamsWithoutMaps<PoapNFTTypes.Fields, never>,
-        "args"
+        "testArgs"
       >
     ): Promise<
       TestContractResultWithoutMaps<
@@ -271,7 +271,7 @@ class Factory extends ContractFactory<PoapNFTInstance, PoapNFTTypes.Fields> {
     getTraitCount: async (
       params: Omit<
         TestContractParamsWithoutMaps<PoapNFTTypes.Fields, never>,
-        "args"
+        "testArgs"
       >
     ): Promise<TestContractResultWithoutMaps<bigint>> => {
       return testMethod(this, "getTraitCount", params, getContractByCodeHash);
@@ -287,7 +287,7 @@ class Factory extends ContractFactory<PoapNFTInstance, PoapNFTTypes.Fields> {
     getHasParticipated: async (
       params: Omit<
         TestContractParamsWithoutMaps<PoapNFTTypes.Fields, never>,
-        "args"
+        "testArgs"
       >
     ): Promise<TestContractResultWithoutMaps<boolean>> => {
       return testMethod(
@@ -300,7 +300,7 @@ class Factory extends ContractFactory<PoapNFTInstance, PoapNFTTypes.Fields> {
     getMinter: async (
       params: Omit<
         TestContractParamsWithoutMaps<PoapNFTTypes.Fields, never>,
-        "args"
+        "testArgs"
       >
     ): Promise<TestContractResultWithoutMaps<Address>> => {
       return testMethod(this, "getMinter", params, getContractByCodeHash);
@@ -308,7 +308,7 @@ class Factory extends ContractFactory<PoapNFTInstance, PoapNFTTypes.Fields> {
     burn: async (
       params: Omit<
         TestContractParamsWithoutMaps<PoapNFTTypes.Fields, never>,
-        "args"
+        "testArgs"
       >
     ): Promise<TestContractResultWithoutMaps<null>> => {
       return testMethod(this, "burn", params, getContractByCodeHash);
@@ -316,7 +316,7 @@ class Factory extends ContractFactory<PoapNFTInstance, PoapNFTTypes.Fields> {
     setParticipated: async (
       params: Omit<
         TestContractParamsWithoutMaps<PoapNFTTypes.Fields, never>,
-        "args"
+        "testArgs"
       >
     ): Promise<TestContractResultWithoutMaps<null>> => {
       return testMethod(this, "setParticipated", params, getContractByCodeHash);
