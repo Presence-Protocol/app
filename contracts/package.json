@@ -25,17 +25,17 @@
     "test": "jest -i --config ./jest-config.json"
   },
   "dependencies": {
-    "@alephium/cli": "^2.0.0-rc.3",
-    "@alephium/web3": "^2.0.0-rc.3",
-    "@alephium/web3-test": "^2.0.0-rc.3",
-    "@alephium/web3-wallet": "^2.0.0-rc.3",
+    "@alephium/cli": "^2.0.0",
+    "@alephium/web3": "^2.0.0",
+    "@alephium/web3-test": "^2.0.0",
+    "@alephium/web3-wallet": "^2.0.0",
     "node-fetch": "^3.3.2",
     "keccak256": "^1.0.6"
   },
   "devDependencies": {
-    "@alephium/cli": "^2.0.0-rc.3",
-    "@alephium/web3-test": "^2.0.0-rc.3",
-    "@alephium/web3-wallet": "^2.0.0-rc.3",
+    "@alephium/cli": "^2.0.0",
+    "@alephium/web3-test": "^2.0.0",
+    "@alephium/web3-wallet": "^2.0.0",
     "@types/jest": "^27.5.1",
     "@types/node": "^16.18.23",
     "@typescript-eslint/eslint-plugin": "^5.57.0",
