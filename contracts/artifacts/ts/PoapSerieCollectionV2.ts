@@ -35,7 +35,7 @@ import {
 } from "@alephium/web3";
 import { default as PoapSerieCollectionV2ContractJson } from "../V2/series/PoapSerieCollectionV2.ral.json";
 import { getContractByCodeHash, registerContract } from "./contracts";
-import { Trait, AllStructs } from "./types";
+import * as types from "./types";
 import { RalphMap } from "@alephium/web3";
 
 // Custom types for the contract
@@ -126,7 +126,7 @@ export namespace PoapSerieCollectionV2Types {
         amountForChainFees: bigint;
         initialCaller: Address;
       }>;
-      result: CallContractResult<HexString>;
+      result: CallContractResult<[HexString, bigint]>;
     };
     setParticipatedPresence: {
       params: CallContractParams<{ eventId: bigint; nftIndex: bigint }>;
@@ -376,7 +376,7 @@ class Factory extends ContractFactory<
     return encodeContractFields(
       addStdIdToFields(this.contract, fields),
       this.contract.fieldsSig,
-      AllStructs
+      types.AllStructs
     );
   }
 
@@ -394,7 +394,7 @@ class Factory extends ContractFactory<
           never,
           PoapSerieCollectionV2Types.Maps
         >,
-        "testArgs"
+        "args"
       >
     ): Promise<
       TestContractResult<HexString, PoapSerieCollectionV2Types.Maps>
@@ -413,7 +413,7 @@ class Factory extends ContractFactory<
           never,
           PoapSerieCollectionV2Types.Maps
         >,
-        "testArgs"
+        "args"
       >
     ): Promise<TestContractResult<bigint, PoapSerieCollectionV2Types.Maps>> => {
       return testMethod(this, "totalSupply", params, getContractByCodeHash);
@@ -496,7 +496,7 @@ class Factory extends ContractFactory<
         PoapSerieCollectionV2Types.Maps
       >
     ): Promise<
-      TestContractResult<HexString, PoapSerieCollectionV2Types.Maps>
+      TestContractResult<[HexString, bigint], PoapSerieCollectionV2Types.Maps>
     > => {
       return testMethod(this, "addNewEvent", params, getContractByCodeHash);
     },
@@ -521,7 +521,7 @@ class Factory extends ContractFactory<
           never,
           PoapSerieCollectionV2Types.Maps
         >,
-        "testArgs"
+        "args"
       >
     ): Promise<TestContractResult<bigint, PoapSerieCollectionV2Types.Maps>> => {
       return testMethod(
@@ -612,7 +612,7 @@ class Factory extends ContractFactory<
           never,
           PoapSerieCollectionV2Types.Maps
         >,
-        "testArgs"
+        "args"
       >
     ): Promise<
       TestContractResult<Address, PoapSerieCollectionV2Types.Maps>
@@ -626,7 +626,7 @@ class Factory extends ContractFactory<
           never,
           PoapSerieCollectionV2Types.Maps
         >,
-        "testArgs"
+        "args"
       >
     ): Promise<
       TestContractResult<boolean, PoapSerieCollectionV2Types.Maps>
@@ -709,9 +709,9 @@ class Factory extends ContractFactory<
 export const PoapSerieCollectionV2 = new Factory(
   Contract.fromJson(
     PoapSerieCollectionV2ContractJson,
-    "=30-2+e3=2+66=1-1=1-3+7=2-1=1+bd=2-1=1+a=2+774=2+2=1-3+638=2+8=1-1=2-1=1+f=2-2+9d=2+d=2+713=1-3+7=1-2=3-6+85=1567-1+a=256+7a7e0214696e73657274206174206d617020706174683a2000=1976",
-    "9fb86edc3297a3b999b0902baa507599abaf49e8cc7ad17d572ab5f282eaeda1",
-    AllStructs
+    "=30-1=1+7=2-2+6a=2-2+78=2-2+c1=2-2+1e=2-2+7b=2-3+e=1-2=2-1+3=3-5=1+5=2-1+9=3-2+a146dc=2-2+17=2+4e4=1-1+89=1567-1+d=256+7a7e0214696e73657274206174206d617020706174683a2000=1984",
+    "30601a7908f27215b657301cc5159375ab9900194bd508c0bd6182d99f2dc46d",
+    types.AllStructs
   )
 );
 registerContract(PoapSerieCollectionV2);

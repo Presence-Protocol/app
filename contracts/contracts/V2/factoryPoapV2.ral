@@ -11,7 +11,7 @@ Contract PoapFactoryV2(
     event PoapMinted(contractId: ByteVec, collectionId: PoapCollectionV2, nftIndex: U256 ,caller: Address, isPublic: Bool, timestamp: U256)
     event PoapSerieMinted(contractId: ByteVec, collectionId: PoapSerieCollectionV2, eventId: U256, nftIndex: U256 ,caller: Address, isPublic: Bool, timestamp: U256)
     event PoapParticipatedIn(organizerAddress: Address, collectionId: PoapCollectionV2, nftIndex: U256, presenceAddressValidate: Address)
-    event SerieAdded(collectionId: PoapSerieCollectionV2, eventContractId: ByteVec ,eventName: ByteVec, organizer: Address ,isPublic: Bool, timestamp: U256)
+    event SerieAdded(collectionId: PoapSerieCollectionV2, eventContractId: ByteVec ,eventName: ByteVec, eventId: U256, organizer: Address ,isPublic: Bool, timestamp: U256)
 
 
     @using(preapprovedAssets = true, checkExternalCaller = false, updateFields = true)
@@ -179,7 +179,7 @@ Contract PoapFactoryV2(
             totalAlphAmount = totalAlphAmount + amountForChainFees
         }
 
-       let contractId = collection.addNewEvent{caller -> ALPH: totalAlphAmount, tokenIdAirdrop: amountAirdrop}(
+       let (contractId, eventId) = collection.addNewEvent{caller -> ALPH: totalAlphAmount, tokenIdAirdrop: amountAirdrop}(
             maxSupply,
             mintStartAt,
             mintEndAt,
@@ -205,7 +205,7 @@ Contract PoapFactoryV2(
             caller
         )
 
-        emit SerieAdded(collection, contractId, eventName, caller, isPublic, blockTimeStamp!())
+        emit SerieAdded(collection, contractId, eventName, eventId, caller, isPublic, blockTimeStamp!())
 
 
     }

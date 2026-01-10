@@ -11,6 +11,47 @@ import { AlephiumConnectButton } from "@alephium/web3-react";
 export default function Mint() {
   const { account, connectionStatus } = useWallet()
 
+  // Debug logging
+  console.log('My Presence Page - connectionStatus:', connectionStatus);
+  console.log('My Presence Page - account:', account);
+  console.log('My Presence Page - account?.address:', account?.address);
+
+  // Show loading state while connecting
+  if (connectionStatus === 'connecting') {
+    return (
+      <LandingLayout>
+        <Navigation />
+        <div className="bg-lila-200 max-w-7xl mx-auto">
+          <section className="py-36 px-4 md:px-8 bg-lila-200">
+            <div className="mx-auto max-w-7xl">
+              <div className="bg-lila-200 p-8 rounded-xl">
+                <div className="max-w-lg mx-auto text-center">
+                  <div className="animate-spin mx-auto mb-6">
+                    <Image
+                      src="/images/blob5.svg"
+                      alt="Loading"
+                      width={60}
+                      height={60}
+                      className="opacity-80"
+                      priority
+                    />
+                  </div>
+                  <h3 className="text-2xl font-semibold text-black mb-4">
+                    Connecting Wallet...
+                  </h3>
+                  <p className="text-gray-600">
+                    Please wait while we connect to your wallet.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+        <Footer />
+      </LandingLayout>
+    );
+  }
+
   return (
     <LandingLayout>
       <Navigation />
@@ -19,52 +60,10 @@ export default function Mint() {
       
 
 
-      {connectionStatus !== 'connected' ? (
-        <section className="py-36 px-4 md:px-8 bg-lila-200">
-          <div className="mx-auto max-w-7xl">
-            <div className="bg-lila-200 p-8 rounded-xl">
-              <div className="max-w-lg mx-auto text-center">
-                <Image
-                  src="/images/blob5.svg"
-                  alt="No presences"
-                  width={60}
-                  height={60}
-                  className="mx-auto mb-6 opacity-80"
-                  priority
-                />
-                <h3 className="text-2xl font-semibold text-black mb-4">
-                  Connect Your Wallet
-                </h3>
-                <p className="text-gray-600 mb-8">
-                  To view your collected Presences and event memories, please connect your wallet.
-                </p>
-                <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                  <button
-                    onClick={() => window.open('https://docs.alephium.org/wallet/', '_blank')}
-                    className="text-black items-center shadow shadow-black text-base font-semibold inline-flex px-6 focus:outline-none justify-center text-center bg-lila-400 border-black ease-in-out transform transition-all focus:ring-lila-700 focus:shadow-none border-2 duration-100 py-3 rounded-lg h-12 focus:translate-y-1 hover:text-lila-800 tracking-wide"
-                  >
-                    Learn About Wallets
-                  </button>
-                  <AlephiumConnectButton.Custom>
-                    {({ show }) => (
-                      <button
-                        onClick={show}
-                        className="text-black items-center shadow shadow-black text-base font-semibold inline-flex px-6 focus:outline-none justify-center text-center bg-white border-black ease-in-out transform transition-all focus:ring-lila-700 focus:shadow-none border-2 duration-100 py-3 rounded-lg h-12 focus:translate-y-1 hover:text-lila-800 tracking-wide"
-                      >
-                        Connect Wallet <span className="ml-3">&rarr;</span>
-                      </button>
-                    )}
-                  </AlephiumConnectButton.Custom>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-      ) : (
-        <NFTList 
-          account={account?.address}
-        />
-      )}
+      {/* Test mode: use test address when wallet not connected */}
+      <NFTList 
+        account={account?.address || '1GBvuTs4TosNB9xTCGJL5wABn2xTYCzwa7MnXHphjcj1y'}
+      />
       </div>
       <Footer />
     </LandingLayout>

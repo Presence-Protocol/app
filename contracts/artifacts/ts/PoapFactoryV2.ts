@@ -35,7 +35,7 @@ import {
 } from "@alephium/web3";
 import { default as PoapFactoryV2ContractJson } from "../V2/PoapFactoryV2.ral.json";
 import { getContractByCodeHash, registerContract } from "./contracts";
-import { Trait, AllStructs } from "./types";
+import * as types from "./types";
 
 // Custom types for the contract
 export namespace PoapFactoryV2Types {
@@ -85,6 +85,7 @@ export namespace PoapFactoryV2Types {
     collectionId: HexString;
     eventContractId: HexString;
     eventName: HexString;
+    eventId: bigint;
     organizer: Address;
     isPublic: boolean;
     timestamp: bigint;
@@ -316,7 +317,7 @@ class Factory extends ContractFactory<
     return encodeContractFields(
       addStdIdToFields(this.contract, fields),
       this.contract.fieldsSig,
-      AllStructs
+      types.AllStructs
     );
   }
 
@@ -463,7 +464,7 @@ class Factory extends ContractFactory<
     getNumEventsCreated: async (
       params: Omit<
         TestContractParamsWithoutMaps<PoapFactoryV2Types.Fields, never>,
-        "testArgs"
+        "args"
       >
     ): Promise<TestContractResultWithoutMaps<bigint>> => {
       return testMethod(
@@ -489,8 +490,8 @@ export const PoapFactoryV2 = new Factory(
   Contract.fromJson(
     PoapFactoryV2ContractJson,
     "",
-    "0b23b0e0ec8ba02da06e4e07fe8ab7c9e0ba2650d4ff8cdf11dc37cec55d8d75",
-    AllStructs
+    "798e1e62dfac139c2a29770eba94199178b50b8f4a49356ca52dd695a6f38406",
+    types.AllStructs
   )
 );
 registerContract(PoapFactoryV2);

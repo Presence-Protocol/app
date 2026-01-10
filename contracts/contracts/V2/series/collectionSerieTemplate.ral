@@ -139,7 +139,7 @@ Contract PoapSerieCollectionV2(
     amountForStorageFees: U256,
     amountForChainFees: U256,
     initialCaller: Address
-    ) -> (ByteVec){
+    ) -> (ByteVec, U256) {
       let mut caller = callerAddress!()
 
       if(isContractAddress!(caller)){
@@ -195,7 +195,7 @@ Contract PoapSerieCollectionV2(
       totalSupplySeries = totalSupplySeries + 1
 
 
-      return contract
+      return (contract, totalSupplySeries-1) // reduce 1 to return the correct eventId
 
    }
 

@@ -13,7 +13,7 @@ import {
 } from "@alephium/web3";
 import { getContractByCodeHash } from "./contracts";
 import { default as NewPresenceNewEventScriptJson } from "../V2/series/scripts/NewPresenceNewEvent.ral.json";
-import { Trait, AllStructs } from "./types";
+import * as types from "./types";
 
 export const NewPresenceNewEvent = new ExecutableScript<{
   factory: HexString;
@@ -44,6 +44,6 @@ export const NewPresenceNewEvent = new ExecutableScript<{
   amountForStorageFees: bigint;
   amountForChainFees: bigint;
 }>(
-  Script.fromJson(NewPresenceNewEventScriptJson, "", AllStructs),
+  Script.fromJson(NewPresenceNewEventScriptJson, "", types.AllStructs),
   getContractByCodeHash
 );

@@ -1,8 +1,8 @@
 "use client"
 
-import { addressFromContractId, ALPH_TOKEN_ID, contractIdFromAddress, DUST_AMOUNT, hexToString, MINIMAL_CONTRACT_DEPOSIT, NetworkId, number256ToNumber, stringToHex, waitForTxConfirmation, web3, hashMessage } from '@alephium/web3';
+import { addressFromContractId, ALPH_TOKEN_ID, contractIdFromAddress, DUST_AMOUNT, hexToString, MINIMAL_CONTRACT_DEPOSIT, NetworkId, number256ToNumber, stringToHex, waitForTxConfirmation, web3, hashMessage, ContractFactory } from '@alephium/web3';
 import { useWallet } from '@alephium/web3-react';
-import { PoapFactoryV2, PoapCollectionV2, PoapFactoryV2Instance, PoapCollectionV2Instance, PoapCollection, PoapFactoryInstance , PoapFactory, PoapCollectionInstance } from 'my-contracts';
+import { PoapFactoryV2, PoapCollectionV2, PoapFactoryV2Instance, PoapCollectionV2Instance, PoapCollection, PoapFactoryInstance , PoapFactory, PoapCollectionInstance, PoapSerieCollectionV2, PoapSerieCollectionV2Instance, PoapNFTSerieV2, PoapData, PoapDataInstance } from 'my-contracts';
 import { loadDeployments } from 'my-contracts/deployments';
 import React, { useEffect, useState, useRef } from 'react';
 import Image from 'next/image';
@@ -86,8 +86,10 @@ export default function MintNFTSimple() {
   const { connectionStatus } = useWallet();
   const [quantity, setQuantity] = useState(1);
   const [contractId, setContractId] = useState<string | null>(null);
+  const [eventId, setEventId] = useState<bigint | null>(null);
+  const [isSeries, setIsSeries] = useState(false);
   const [factoryContract, setFactoryContract] = useState<PoapFactoryV2Instance | PoapFactoryInstance | null>(null);
-  const [poapCollection, setPoapCollection] = useState<PoapCollectionV2Instance | PoapCollectionInstance | null>(null);
+  const [poapCollection, setPoapCollection] = useState<PoapCollectionV2Instance | PoapCollectionInstance | PoapSerieCollectionV2Instance | null>(null);
   const { account, signer } = useWallet();
   const [isMinting, setIsMinting] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -162,6 +164,12 @@ export default function MintNFTSimple() {
       const idMatch = hash.match(/id=([^&]*)/);
       const id = idMatch ? idMatch[1] : null;
       setContractId(id);
+
+      // Parse eventId for series events
+      const eventIdMatch = hash.match(/eventId=([^&]*)/);
+      if (eventIdMatch) {
+        setEventId(BigInt(eventIdMatch[1]));
+      }
     }
   }, []);
 
@@ -192,7 +200,6 @@ export default function MintNFTSimple() {
     }
     setFactoryContract(PoapFactoryV2.at(deployment.contracts.PoapFactoryV2.contractInstance.address));
 
-
     if (contractId) {
       const collectionAddress = contractId;
       setIsLoading(true);
@@ -202,9 +209,12 @@ export default function MintNFTSimple() {
       try {
         const collectionV2 = PoapCollectionV2.at(collectionAddress);
         setPoapCollection(collectionV2);
+        console.log('Trying PoapCollectionV2 at address:', collectionAddress);
 
         collectionV2.fetchState()
           .then(async (collectionMetadata) => {
+            console.log('Fetched collection metadata (V2):', collectionMetadata);
+            
             // Get token name from token list
             let tokenName = 'ALPH';
             let token
@@ -250,40 +260,101 @@ export default function MintNFTSimple() {
             setNftCollection(collectionData);
             setIsLoading(false);
           })
-          .catch((error) => {
-            // If V2 fails, try original PoapCollection
-            let factoryAddress = undefined
-            if (!deployment.contracts.PoapFactory) {
-              console.error('PoapFactory contract not found in deployments, ');
-              factoryAddress = process.env.NEXT_PUBLIC_FACTORYV1_ADDRESS;
-            }
-            
-            if (!factoryAddress) {
-              throw new Error('PoapFactory not found. Set it with NEXT_PUBLIC_FACTORYV1_ADDRESS');
-            }
+          .catch(async (error) => {
+            console.error('Error fetching collection state (V2):', error);
 
-            // Use a safe fallback address if PoapFactory is undefined
-            const poapFactoryAddress = deployment.contracts?.PoapFactory?.contractInstance?.address || factoryAddress || '';
-            setFactoryContract(PoapFactory.at(poapFactoryAddress));
+            // If V2 fails, try PoapSerieCollectionV2 (for series events)
+            try {
+              console.log('Trying PoapSerieCollectionV2 at address:', collectionAddress);
+              const serieCollection = PoapSerieCollectionV2.at(collectionAddress);
+              const serieMetadata = await serieCollection.fetchState();
+              console.log('Fetched series collection metadata:', serieMetadata);
 
-            const collection = PoapCollection.at(collectionAddress);
-            setPoapCollection(collection);
+              // For series, we need an eventId to get the PoapData
+              if (eventId === null) {
+                throw new Error('Series collection requires eventId parameter');
+              }
 
-            collection.fetchState()
-              .then(async (collectionMetadata) => {
+              // Get PoapData contract address for this event
+              const poapDataResult = await serieCollection.view.getPoapDataByEvent({ args: { eventId } });
+              const poapDataAddress = addressFromContractId(poapDataResult.returns);
+              console.log('PoapData address:', poapDataAddress);
+
+              // Fetch the PoapData state
+              const poapDataContract = PoapData.at(poapDataAddress);
+              const poapDataState = await poapDataContract.fetchState();
+              console.log('Fetched PoapData state:', poapDataState);
+
+              // Mark as series and set the collection
+              setIsSeries(true);
+              setPoapCollection(serieCollection);
+
+              // Get token name from token list
+              let tokenName = 'ALPH';
+              let token;
+              if (poapDataState.fields.tokenIdPoap !== ALPH_TOKEN_ID) {
+                token = findTokenFromId(tokenList, poapDataState.fields.tokenIdPoap);
+                if (token) {
+                  tokenName = token.symbol || token.name;
+                } else {
+                  tokenName = poapDataState.fields.tokenIdPoap.slice(0, 6) + '...';
+                }
+              }
+
+              // Check if password is required
+              const hasPassword = poapDataState.fields.hashedPassword !== '00';
+              setPasswordRequired(hasPassword);
+
+              const collectionData: NFTCollectionV2 = {
+                title: hexToString(poapDataState.fields.eventName),
+                description: hexToString(poapDataState.fields.description),
+                image: hexToString(poapDataState.fields.eventImage),
+                price: poapDataState.fields.amountForStorageFees >= 10n**17n ? 0 : 0.1,
+                maxSupply: poapDataState.fields.maxSupply,
+                currentSupply: poapDataState.fields.totalSupply,
+                isPublic: poapDataState.fields.isPublic,
+                location: hexToString(poapDataState.fields.location),
+                mintStartDate: poapDataState.fields.mintStartAt,
+                mintEndDate: poapDataState.fields.mintEndAt,
+                eventStartDate: poapDataState.fields.eventStartAt,
+                eventEndDate: poapDataState.fields.eventEndAt,
+                amountForStorageFees: poapDataState.fields.amountForStorageFees,
+                amountForChainFees: poapDataState.fields.amountForChainFees,
+                oneMintPerAddress: false, // Series doesn't have this per-event
+                tokenIdPaidPoap: poapDataState.fields.tokenIdPoap,
+                tokenPricePaidPoap: poapDataState.fields.poapPrice,
+                tokenNamePaidPoap: tokenName,
+                tokenDecimalsPaidPoap: token?.decimals,
+                isOpenPrice: poapDataState.fields.isOpenPrice,
+                hashedPassword: poapDataState.fields.hashedPassword,
+                organizer: poapDataState.fields.organizer,
+                lockPresenceUntil: poapDataState.fields.lockedUntil
+              };
+              setNftCollection(collectionData);
+              setIsLoading(false);
+            } catch (serieError) {
+              console.error('Error fetching series collection state:', serieError);
+
+              // If series also fails, try original PoapCollection (V1)
+              try {
+                console.log('Trying PoapCollection (V1) at address:', collectionAddress);
+                const collection = PoapCollection.at(collectionAddress);
+                setPoapCollection(collection);
+
+                const collectionMetadata = await collection.fetchState();
+
                 // Get token name from token list
                 let tokenName = 'ALPH';
-                let token
+                let token;
                 if (collectionMetadata.fields.tokenIdPoap !== ALPH_TOKEN_ID) {
                   token = findTokenFromId(tokenList, collectionMetadata.fields.tokenIdPoap);
                   if (token) {
                     tokenName = token.symbol || token.name;
                   } else {
-                    // Fallback to shortened ID if token not found in list
                     tokenName = collectionMetadata.fields.tokenIdPoap.slice(0, 6) + '...';
                   }
                 }
-                
+
                 // Check if password is required
                 const hasPassword = collectionMetadata.fields.hashedPassword !== '00';
                 setPasswordRequired(hasPassword);
@@ -292,7 +363,7 @@ export default function MintNFTSimple() {
                   title: hexToString(collectionMetadata.fields.eventName),
                   description: hexToString(collectionMetadata.fields.description),
                   image: hexToString(collectionMetadata.fields.eventImage),
-                  price:  collectionMetadata.fields.amountForStorageFees >= 10n**17n ? 0 : 0.1,
+                  price: collectionMetadata.fields.amountForStorageFees >= 10n**17n ? 0 : 0.1,
                   maxSupply: collectionMetadata.fields.maxSupply,
                   currentSupply: collectionMetadata.fields.totalSupply,
                   isPublic: collectionMetadata.fields.isPublic,
@@ -308,18 +379,18 @@ export default function MintNFTSimple() {
                   tokenPricePaidPoap: collectionMetadata.fields.poapPrice,
                   tokenNamePaidPoap: tokenName,
                   tokenDecimalsPaidPoap: token?.decimals,
-                  isOpenPrice: collectionMetadata.fields.isOpenPrice, 
+                  isOpenPrice: collectionMetadata.fields.isOpenPrice,
                   hashedPassword: collectionMetadata.fields.hashedPassword,
                   organizer: collectionMetadata.fields.organizer
                 };
                 setNftCollection(collectionData);
                 setIsLoading(false);
-              })
-              .catch((innerError) => {
-                console.error('Error fetching collection state:', innerError);
+              } catch (v1Error) {
+                console.error('Error fetching V1 collection state:', v1Error);
                 setError('Failed to load event details. Please try again later.');
                 setIsLoading(false);
-              });
+              }
+            }
           });
       } catch (error) {
         console.error('Error initializing collection:', error);
@@ -476,16 +547,34 @@ export default function MintNFTSimple() {
         }
       }
       
-      const result = await factoryContract.transact.mintPoap({
-        args: {
-          collection: poapCollection.contractId,
-          amount: nftCollection.isOpenPrice ? customPriceAmount : 0n,
-          password: passwordRequired ? stringToHex(password) : '00',
-        },
-        signer: signer,
-        attoAlphAmount: finalAttoAmount,
-        tokens: tokens
-      });
+      let result;
+      if (isSeries && eventId !== null) {
+        // Use mintPoapSerie for series events (only available on PoapFactoryV2)
+        const factoryV2 = factoryContract as PoapFactoryV2Instance;
+        result = await factoryV2.transact.mintPoapSerie({
+          args: {
+            collection: poapCollection.contractId,
+            eventId: eventId,
+            amount: nftCollection.isOpenPrice ? customPriceAmount : 0n,
+            password: passwordRequired ? stringToHex(password) : '00',
+          },
+          signer: signer,
+          attoAlphAmount: finalAttoAmount,
+          tokens: tokens
+        });
+      } else {
+        // Use mintPoap for regular collections
+        result = await factoryContract.transact.mintPoap({
+          args: {
+            collection: poapCollection.contractId,
+            amount: nftCollection.isOpenPrice ? customPriceAmount : 0n,
+            password: passwordRequired ? stringToHex(password) : '00',
+          },
+          signer: signer,
+          attoAlphAmount: finalAttoAmount,
+          tokens: tokens
+        });
+      }
 
       await waitForTxConfirmation(result.txId, 1, 5 * 1000);
       setShowConfetti(true)

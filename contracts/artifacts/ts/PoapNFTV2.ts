@@ -35,7 +35,7 @@ import {
 } from "@alephium/web3";
 import { default as PoapNFTV2ContractJson } from "../V2/PoapNFTV2.ral.json";
 import { getContractByCodeHash, registerContract } from "./contracts";
-import { Trait, AllStructs } from "./types";
+import * as types from "./types";
 
 // Custom types for the contract
 export namespace PoapNFTV2Types {
@@ -86,7 +86,17 @@ export namespace PoapNFTV2Types {
     getTraits: {
       params: Omit<CallContractParams<{}>, "args">;
       result: CallContractResult<
-        [Trait, Trait, Trait, Trait, Trait, Trait, Trait, Trait, Trait]
+        [
+          types.Trait,
+          types.Trait,
+          types.Trait,
+          types.Trait,
+          types.Trait,
+          types.Trait,
+          types.Trait,
+          types.Trait,
+          types.Trait
+        ]
       >;
     };
     getTraitCount: {
@@ -95,7 +105,7 @@ export namespace PoapNFTV2Types {
     };
     getTraitAtIndex: {
       params: CallContractParams<{ index: bigint }>;
-      result: CallContractResult<Trait>;
+      result: CallContractResult<types.Trait>;
     };
     getHasParticipated: {
       params: Omit<CallContractParams<{}>, "args">;
@@ -212,7 +222,7 @@ class Factory extends ContractFactory<
     return encodeContractFields(
       addStdIdToFields(this.contract, fields),
       this.contract.fieldsSig,
-      AllStructs
+      types.AllStructs
     );
   }
 
@@ -224,7 +234,7 @@ class Factory extends ContractFactory<
     getTokenUri: async (
       params: Omit<
         TestContractParamsWithoutMaps<PoapNFTV2Types.Fields, never>,
-        "testArgs"
+        "args"
       >
     ): Promise<TestContractResultWithoutMaps<HexString>> => {
       return testMethod(this, "getTokenUri", params, getContractByCodeHash);
@@ -232,7 +242,7 @@ class Factory extends ContractFactory<
     getCollectionIndex: async (
       params: Omit<
         TestContractParamsWithoutMaps<PoapNFTV2Types.Fields, never>,
-        "testArgs"
+        "args"
       >
     ): Promise<TestContractResultWithoutMaps<[HexString, bigint]>> => {
       return testMethod(
@@ -245,7 +255,7 @@ class Factory extends ContractFactory<
     getNFTIndex: async (
       params: Omit<
         TestContractParamsWithoutMaps<PoapNFTV2Types.Fields, never>,
-        "testArgs"
+        "args"
       >
     ): Promise<TestContractResultWithoutMaps<bigint>> => {
       return testMethod(this, "getNFTIndex", params, getContractByCodeHash);
@@ -253,7 +263,7 @@ class Factory extends ContractFactory<
     getName: async (
       params: Omit<
         TestContractParamsWithoutMaps<PoapNFTV2Types.Fields, never>,
-        "testArgs"
+        "args"
       >
     ): Promise<TestContractResultWithoutMaps<HexString>> => {
       return testMethod(this, "getName", params, getContractByCodeHash);
@@ -261,7 +271,7 @@ class Factory extends ContractFactory<
     getDescription: async (
       params: Omit<
         TestContractParamsWithoutMaps<PoapNFTV2Types.Fields, never>,
-        "testArgs"
+        "args"
       >
     ): Promise<TestContractResultWithoutMaps<HexString>> => {
       return testMethod(this, "getDescription", params, getContractByCodeHash);
@@ -269,7 +279,7 @@ class Factory extends ContractFactory<
     getImage: async (
       params: Omit<
         TestContractParamsWithoutMaps<PoapNFTV2Types.Fields, never>,
-        "testArgs"
+        "args"
       >
     ): Promise<TestContractResultWithoutMaps<HexString>> => {
       return testMethod(this, "getImage", params, getContractByCodeHash);
@@ -277,11 +287,21 @@ class Factory extends ContractFactory<
     getTraits: async (
       params: Omit<
         TestContractParamsWithoutMaps<PoapNFTV2Types.Fields, never>,
-        "testArgs"
+        "args"
       >
     ): Promise<
       TestContractResultWithoutMaps<
-        [Trait, Trait, Trait, Trait, Trait, Trait, Trait, Trait, Trait]
+        [
+          types.Trait,
+          types.Trait,
+          types.Trait,
+          types.Trait,
+          types.Trait,
+          types.Trait,
+          types.Trait,
+          types.Trait,
+          types.Trait
+        ]
       >
     > => {
       return testMethod(this, "getTraits", params, getContractByCodeHash);
@@ -289,7 +309,7 @@ class Factory extends ContractFactory<
     getTraitCount: async (
       params: Omit<
         TestContractParamsWithoutMaps<PoapNFTV2Types.Fields, never>,
-        "testArgs"
+        "args"
       >
     ): Promise<TestContractResultWithoutMaps<bigint>> => {
       return testMethod(this, "getTraitCount", params, getContractByCodeHash);
@@ -299,13 +319,13 @@ class Factory extends ContractFactory<
         PoapNFTV2Types.Fields,
         { index: bigint }
       >
-    ): Promise<TestContractResultWithoutMaps<Trait>> => {
+    ): Promise<TestContractResultWithoutMaps<types.Trait>> => {
       return testMethod(this, "getTraitAtIndex", params, getContractByCodeHash);
     },
     getHasParticipated: async (
       params: Omit<
         TestContractParamsWithoutMaps<PoapNFTV2Types.Fields, never>,
-        "testArgs"
+        "args"
       >
     ): Promise<TestContractResultWithoutMaps<boolean>> => {
       return testMethod(
@@ -318,7 +338,7 @@ class Factory extends ContractFactory<
     getMinter: async (
       params: Omit<
         TestContractParamsWithoutMaps<PoapNFTV2Types.Fields, never>,
-        "testArgs"
+        "args"
       >
     ): Promise<TestContractResultWithoutMaps<Address>> => {
       return testMethod(this, "getMinter", params, getContractByCodeHash);
@@ -326,7 +346,7 @@ class Factory extends ContractFactory<
     burn: async (
       params: Omit<
         TestContractParamsWithoutMaps<PoapNFTV2Types.Fields, never>,
-        "testArgs"
+        "args"
       >
     ): Promise<TestContractResultWithoutMaps<null>> => {
       return testMethod(this, "burn", params, getContractByCodeHash);
@@ -334,7 +354,7 @@ class Factory extends ContractFactory<
     setParticipated: async (
       params: Omit<
         TestContractParamsWithoutMaps<PoapNFTV2Types.Fields, never>,
-        "testArgs"
+        "args"
       >
     ): Promise<TestContractResultWithoutMaps<null>> => {
       return testMethod(this, "setParticipated", params, getContractByCodeHash);
@@ -364,7 +384,7 @@ export const PoapNFTV2 = new Factory(
     PoapNFTV2ContractJson,
     "",
     "5eafdf51e14a05eb56f826a111b5cbd4e4cf3ffec834b8c5d3ce813dd7b9b9f0",
-    AllStructs
+    types.AllStructs
   )
 );
 registerContract(PoapNFTV2);

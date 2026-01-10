@@ -35,7 +35,7 @@ import {
 } from "@alephium/web3";
 import { default as PoapCollectionV2ContractJson } from "../V2/PoapCollectionV2.ral.json";
 import { getContractByCodeHash, registerContract } from "./contracts";
-import { Trait, AllStructs } from "./types";
+import * as types from "./types";
 
 // Custom types for the contract
 export namespace PoapCollectionV2Types {
@@ -316,7 +316,7 @@ class Factory extends ContractFactory<
     return encodeContractFields(
       addStdIdToFields(this.contract, fields),
       this.contract.fieldsSig,
-      AllStructs
+      types.AllStructs
     );
   }
 
@@ -330,7 +330,7 @@ class Factory extends ContractFactory<
     getCollectionUri: async (
       params: Omit<
         TestContractParamsWithoutMaps<PoapCollectionV2Types.Fields, never>,
-        "testArgs"
+        "args"
       >
     ): Promise<TestContractResultWithoutMaps<HexString>> => {
       return testMethod(
@@ -343,7 +343,7 @@ class Factory extends ContractFactory<
     totalSupply: async (
       params: Omit<
         TestContractParamsWithoutMaps<PoapCollectionV2Types.Fields, never>,
-        "testArgs"
+        "args"
       >
     ): Promise<TestContractResultWithoutMaps<bigint>> => {
       return testMethod(this, "totalSupply", params, getContractByCodeHash);
@@ -429,7 +429,7 @@ class Factory extends ContractFactory<
     getIsPublic: async (
       params: Omit<
         TestContractParamsWithoutMaps<PoapCollectionV2Types.Fields, never>,
-        "testArgs"
+        "args"
       >
     ): Promise<TestContractResultWithoutMaps<boolean>> => {
       return testMethod(this, "getIsPublic", params, getContractByCodeHash);
@@ -437,7 +437,7 @@ class Factory extends ContractFactory<
     getAmountForStorageFees: async (
       params: Omit<
         TestContractParamsWithoutMaps<PoapCollectionV2Types.Fields, never>,
-        "testArgs"
+        "args"
       >
     ): Promise<TestContractResultWithoutMaps<bigint>> => {
       return testMethod(
@@ -450,7 +450,7 @@ class Factory extends ContractFactory<
     getAirdropWhenHasParticipated: async (
       params: Omit<
         TestContractParamsWithoutMaps<PoapCollectionV2Types.Fields, never>,
-        "testArgs"
+        "args"
       >
     ): Promise<TestContractResultWithoutMaps<boolean>> => {
       return testMethod(
@@ -463,7 +463,7 @@ class Factory extends ContractFactory<
     getAmountPoapFees: async (
       params: Omit<
         TestContractParamsWithoutMaps<PoapCollectionV2Types.Fields, never>,
-        "testArgs"
+        "args"
       >
     ): Promise<TestContractResultWithoutMaps<bigint>> => {
       return testMethod(
@@ -544,7 +544,7 @@ class Factory extends ContractFactory<
     getPoapPrice: async (
       params: Omit<
         TestContractParamsWithoutMaps<PoapCollectionV2Types.Fields, never>,
-        "testArgs"
+        "args"
       >
     ): Promise<TestContractResultWithoutMaps<[bigint, HexString, boolean]>> => {
       return testMethod(this, "getPoapPrice", params, getContractByCodeHash);
@@ -552,7 +552,7 @@ class Factory extends ContractFactory<
     getOrganizer: async (
       params: Omit<
         TestContractParamsWithoutMaps<PoapCollectionV2Types.Fields, never>,
-        "testArgs"
+        "args"
       >
     ): Promise<TestContractResultWithoutMaps<Address>> => {
       return testMethod(this, "getOrganizer", params, getContractByCodeHash);
@@ -574,7 +574,7 @@ export const PoapCollectionV2 = new Factory(
     PoapCollectionV2ContractJson,
     "",
     "51762012c8a61099bd9a1d2aca234709cce484402147fb87124049dfe9ac1a20",
-    AllStructs
+    types.AllStructs
   )
 );
 registerContract(PoapCollectionV2);

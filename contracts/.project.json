@@ -1,5 +1,5 @@
 {
-  "fullNodeVersion": "v4.0.0",
+  "fullNodeVersion": "v4.2.5",
   "compilerOptionsUsed": {
     "ignoreUnusedConstantsWarnings": false,
     "ignoreUnusedVariablesWarnings": false,
@@ -8,7 +8,8 @@
     "ignoreUpdateFieldsCheckWarnings": false,
     "ignoreCheckExternalCallerWarnings": false,
     "ignoreUnusedFunctionReturnWarnings": false,
-    "skipAbstractContractCheck": false
+    "skipAbstractContractCheck": false,
+    "skipTests": true
   },
   "infos": {
     "IDynamicNFT": {
@@ -61,9 +62,9 @@
     },
     "PoapFactoryV2": {
       "sourceFile": "V2/factoryPoapV2.ral",
-      "sourceCodeHash": "046c4721718ef446a245cd6b8e32247c3ea527283b5294b4063ac09c3ad7a26d",
+      "sourceCodeHash": "b47647369e14b3c792fcaea27be254eb9a7c65257c1d374688b708fb23f2de5c",
       "bytecodeDebugPatch": "",
-      "codeHashDebug": "0b23b0e0ec8ba02da06e4e07fe8ab7c9e0ba2650d4ff8cdf11dc37cec55d8d75"
+      "codeHashDebug": "798e1e62dfac139c2a29770eba94199178b50b8f4a49356ca52dd695a6f38406"
     },
     "PoapNFT": {
       "sourceFile": "nftTemplate.ral",
@@ -85,9 +86,9 @@
     },
     "PoapSerieCollectionV2": {
       "sourceFile": "V2/series/collectionSerieTemplate.ral",
-      "sourceCodeHash": "c5cced396c6788268077870cce3b595cb7176d566a06f1f3eee9bc986617fb29",
-      "bytecodeDebugPatch": "=30-2+e3=2+66=1-1=1-3+7=2-1=1+bd=2-1=1+a=2+774=2+2=1-3+638=2+8=1-1=2-1=1+f=2-2+9d=2+d=2+713=1-3+7=1-2=3-6+85=1567-1+a=256+7a7e0214696e73657274206174206d617020706174683a2000=1976",
-      "codeHashDebug": "9fb86edc3297a3b999b0902baa507599abaf49e8cc7ad17d572ab5f282eaeda1"
+      "sourceCodeHash": "d0797fbb4527859455757e28477eb295c2deeb4f5fa1cae149835f9561e607c2",
+      "bytecodeDebugPatch": "=30-1=1+7=2-2+6a=2-2+78=2-2+c1=2-2+1e=2-2+7b=2-3+e=1-2=2-1+3=3-5=1+5=2-1+9=3-2+a146dc=2-2+17=2+4e4=1-1+89=1567-1+d=256+7a7e0214696e73657274206174206d617020706174683a2000=1984",
+      "codeHashDebug": "30601a7908f27215b657301cc5159375ab9900194bd508c0bd6182d99f2dc46d"
     },
     "Trait": {
       "sourceFile": "dynamic_nft_standard.ral",

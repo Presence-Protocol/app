@@ -74,7 +74,7 @@ export default function MintNFTSimple() {
       
       collection.fetchState()
         .then((collectionMetadata) => {
-          // console.log(collectionMetadata);
+          console.log(collectionMetadata);
           setNftCollection({ 
             title: hexToString(collectionMetadata.fields.eventName),
             description: hexToString(collectionMetadata.fields.description),

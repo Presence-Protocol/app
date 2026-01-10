@@ -1,8 +1,8 @@
 "use client"
 
 import React, { useEffect, useState } from 'react';
-import { web3, Contract, MINIMAL_CONTRACT_DEPOSIT, DUST_AMOUNT, Subscription, contractIdFromAddress, addressFromContractId, NetworkId, ALPH_TOKEN_ID, ONE_ALPH, NodeProvider, number256ToNumber, hashMessage } from '@alephium/web3'
-import { PoapFactoryV2, PoapFactoryV2Types } from '../../../../contracts/artifacts/ts/PoapFactoryV2'
+import { web3, Contract, MINIMAL_CONTRACT_DEPOSIT, DUST_AMOUNT, Subscription, contractIdFromAddress, addressFromContractId, NetworkId, ALPH_TOKEN_ID, ONE_ALPH, NodeProvider, number256ToNumber, hashMessage, hexToString } from '@alephium/web3'
+import { PoapFactoryV2, PoapFactoryV2Types, PoapSerieCollectionV2, NewPresenceNewEvent } from 'my-contracts'
 import { toast } from 'react-hot-toast'
 import { useWallet } from '@alephium/web3-react'
 import { stringToHex } from '@alephium/web3'
@@ -145,6 +145,19 @@ export default function NewEvent() {
   const [password, setPassword] = useState('');
   const [usePassword, setUsePassword] = useState(false);
 
+  // Series/Collection states
+  const [isSeriesEvent, setIsSeriesEvent] = useState(false);
+  const [seriesName, setSeriesName] = useState('');
+  const [seriesDescription, setSeriesDescription] = useState('');
+  const [seriesImageUrl, setSeriesImageUrl] = useState('');
+  const [seriesPreviewImage, setSeriesPreviewImage] = useState<string | null>(null);
+  const [seriesImageString, setSeriesImageString] = useState<string | null>(null);
+  const [seriesActiveTab, setSeriesActiveTab] = useState<'upload' | 'url'>('url');
+  const [useExistingSeries, setUseExistingSeries] = useState(false);
+  const [selectedSeriesId, setSelectedSeriesId] = useState('');
+  const [userSeries, setUserSeries] = useState<Array<{id: string, name: string, description: string}>>([]);
+  const [addFirstEvent, setAddFirstEvent] = useState(true);
+
   // Add this state to the main component
   const [globalTokenList, setGlobalTokenList] = useState<Token[]>([]);
   const [isTokenListLoading, setIsTokenListLoading] = useState(false);
@@ -274,8 +287,98 @@ export default function NewEvent() {
     setImageUrl('');
   };
 
+  const fetchSeriesImageFromUrl = async (url: string) => {
+    try {
+      const response = await fetch(url);
+      const blob = await response.blob();
+      
+      if (!blob.type.startsWith('image/')) {
+        throw new Error('URL must point to an image');
+      }
+  
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setSeriesPreviewImage(reader.result as string);
+      };
+      reader.readAsDataURL(blob);
+    } catch (error) {
+      toast.error('Failed to load image from URL');
+    }
+  };
+
+  const handleSeriesUrlSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!seriesImageUrl) return;
+    
+    if (!seriesImageUrl.match(/^https?:\/\/.+/)) {
+      toast.error('Please enter a valid URL');
+      return;
+    }
+    
+    await fetchSeriesImageFromUrl(seriesImageUrl);
+  };
+
+  const handleSeriesImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 3072) {
+        setIsLargeImageWarningOpen(true);
+        return;
+      }
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setSeriesPreviewImage(reader.result as string);
+        setSeriesImageString(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleRemoveSeriesImage = () => {
+    setSeriesPreviewImage(null);
+    setSeriesImageString(null);
+    setSeriesImageUrl('');
+  };
+
   const isFormValid = () => {
-    const now = new Date().getTime();
+    // For creating a new series (without adding an event yet)
+    if (isSeriesEvent && !useExistingSeries && !addFirstEvent) {
+      return (
+        (seriesName.length > 0 && seriesName.length <= MAX_TITLE_LENGTH) ||
+        (title.length > 0 && title.length <= MAX_TITLE_LENGTH)
+      );
+    }
+
+    // For creating a new series WITH first event
+    if (isSeriesEvent && !useExistingSeries && addFirstEvent) {
+      const eventStart = new Date(eventStartDate).getTime();
+      const eventEnd = new Date(eventEndDate).getTime();
+      const mintStart = new Date(startDate).getTime();
+      const mintEnd = new Date(endDate).getTime();
+
+      return (
+        seriesName.length > 0 &&
+        seriesName.length <= MAX_TITLE_LENGTH &&
+        title.length > 0 &&
+        title.length <= MAX_TITLE_LENGTH &&
+        description.length > 0 &&
+        description.length <= MAX_DESCRIPTION_LENGTH &&
+        amount > 0 &&
+        startDate.length > 0 &&
+        endDate.length > 0 &&
+        eventStartDate.length > 0 &&
+        eventEndDate.length > 0 &&
+        location.length > 0 &&
+        eventEnd >= eventStart &&
+        mintEnd >= mintStart
+      );
+    }
+
+    // For adding to existing series
+    if (isSeriesEvent && useExistingSeries) {
+      if (!selectedSeriesId) return false;
+    }
+
     const eventStart = new Date(eventStartDate).getTime();
     const eventEnd = new Date(eventEndDate).getTime();
     const mintStart = new Date(startDate).getTime();
@@ -332,13 +435,131 @@ export default function NewEvent() {
         throw new Error('Signer not available')
       }
 
-      // Final sanitization before submission
+      // Initialize contract
+      const deployment = loadDeployments(process.env.NEXT_PUBLIC_NETWORK as NetworkId ?? 'testnet');
+      if (!deployment.contracts.PoapFactoryV2) {
+        throw new Error('PoapFactoryV2 contract not found in deployments');
+      }
+      const factoryContract = PoapFactoryV2.at(deployment.contracts.PoapFactoryV2.contractInstance.address);
+
+      // Check if this is creating a new series (no event details needed)
+      if (isSeriesEvent && !useExistingSeries && !addFirstEvent) {
+        // Convert strings to hex format for series
+        const seriesImageUri = stringToHex(seriesImageString || seriesImageUrl || '');
+
+        // Create new series collection
+        const result = await factoryContract.transact.mintNewCollectionWithSerie({
+          args: {
+            eventImage: seriesImageUri,
+            eventName: stringToHex(seriesName),
+            description: stringToHex(seriesDescription),
+            isPublic: isPublicEvent,
+          },
+          signer: signer,
+          attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT,
+        });
+
+        setProgressState({
+          currentStep: 'submitted',
+          txHash: result.txId
+        });
+        await pollForEvents(web3.getCurrentNodeProvider(), result.txId);
+        toast.success('Series created! Now select "Add Presence to Series" to add presences.');
+        return;
+      }
+
+      // Check if this is creating a new series WITH first event
+      if (isSeriesEvent && !useExistingSeries && addFirstEvent) {
+        const sanitizedTitle = sanitizeInput(title);
+        const sanitizedDescription = sanitizeInput(description);
+
+        // Validate input lengths
+        if (sanitizedTitle.length > MAX_TITLE_LENGTH) {
+          throw new Error(`Presence name must be ${MAX_TITLE_LENGTH} characters or less`)
+        }
+
+        if (sanitizedDescription.length > MAX_DESCRIPTION_LENGTH) {
+          throw new Error(`Description must be ${MAX_DESCRIPTION_LENGTH} characters or less`)
+        }
+
+        // Add date validation
+        const eventStart = new Date(eventStartDate).getTime();
+        const eventEnd = new Date(eventEndDate).getTime();
+        const mintStart = new Date(startDate).getTime();
+        const mintEnd = new Date(endDate).getTime();
+
+        if (eventEnd < eventStart) {
+          throw new Error('Event end date must be after event start date');
+        }
+
+        if (mintEnd < mintStart) {
+          throw new Error('Minting end date must be after minting start date');
+        }
+
+        // Convert dates to millisecond timestamps
+        const eventStartAt = BigInt(eventStart);
+        const eventEndAt = BigInt(eventEnd);
+        const mintStartAt = BigInt(mintStart);
+        const mintEndAt = BigInt(mintEnd);
+
+        // Convert strings to hex format
+        const eventImageUri = stringToHex(imageString || imageUrl);
+        const seriesImageUri = stringToHex(seriesImageString || seriesImageUrl || '');
+        const eventName = stringToHex(sanitizedTitle);
+        const descriptionHex = stringToHex(sanitizedDescription);
+        const locationHex = stringToHex(location);
+
+        // Create series with first event in one transaction
+        const result = await NewPresenceNewEvent.execute({
+          initialFields: {
+            factory: deployment.contracts.PoapFactoryV2!.contractInstance.contractId,
+            eventImage: seriesImageUri,
+            eventName: stringToHex(seriesName),
+            description: stringToHex(seriesDescription),
+            isPublic: isPublicEvent,
+            maxSupply: BigInt(amount),
+            mintStartAt,
+            mintEndAt,
+            poapPrice: isOpenPrice ? 0n : poapPrice,
+            tokenIdPoap: paidPoapTokenId,
+            isOpenPrice: isOpenPrice,
+            tokenIdAirdrop: ALPH_TOKEN_ID,
+            amountAirdropPerUser: 0n,
+            airdropWhenHasParticipated: false,
+            image: eventImageUri,
+            name: eventName,
+            eventDescription: descriptionHex,
+            location: locationHex,
+            eventStartAt,
+            eventEndAt,
+            eventIsPublic: isPublicEvent,
+            isBurnable: isBurnable,
+            lockedUntil: lockPresenceUntil ? BigInt(new Date(lockPresenceUntil).getTime()) : 0n,
+            hashedPassword: usePassword && password ? keccak256(password).toString('hex') : '00',
+            amountAirdrop: 0n,
+            amountForStorageFees: coverMintFees ? storageFees : 0n,
+            amountForChainFees: coverMintFees ? chainFees : 0n,
+          },
+          signer: signer,
+          attoAlphAmount: 3n * MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT,
+        });
+
+        setProgressState({
+          currentStep: 'submitted',
+          txHash: result.txId
+        });
+        await pollForEvents(web3.getCurrentNodeProvider(), result.txId);
+        toast.success('Series and first presence created successfully!');
+        return;
+      }
+
+      // For events (adding to series or standalone), validate and prepare event data
       const sanitizedTitle = sanitizeInput(title);
       const sanitizedDescription = sanitizeInput(description);
 
       // Validate input lengths
       if (sanitizedTitle.length > MAX_TITLE_LENGTH) {
-        throw new Error(`Event name must be ${MAX_TITLE_LENGTH} characters or less`)
+        throw new Error(`Presence name must be ${MAX_TITLE_LENGTH} characters or less`)
       }
 
       if (sanitizedDescription.length > MAX_DESCRIPTION_LENGTH) {
@@ -346,7 +567,6 @@ export default function NewEvent() {
       }
 
       // Add date validation
-      const now = new Date().getTime();
       const eventStart = new Date(eventStartDate).getTime();
       const eventEnd = new Date(eventEndDate).getTime();
       const mintStart = new Date(startDate).getTime();
@@ -360,38 +580,60 @@ export default function NewEvent() {
         throw new Error('Minting end date must be after minting start date');
       }
 
-      /*
-      if (mintStart < now) {
-        throw new Error('Minting start date cannot be in the past');
-      }
-
-      if (eventStart < now) {
-        throw new Error('Event start date cannot be in the past');
-      }*/
-
-      // Convert dates to millisecond timestamps (no need to multiply by 1000)
-      const eventStartAt = BigInt(new Date(eventStartDate).getTime());
-      const eventEndAt = BigInt(new Date(eventEndDate).getTime());
-      const mintStartAt = BigInt(new Date(startDate).getTime());
-      const mintEndAt = BigInt(new Date(endDate).getTime());
-
-      // Initialize contract
-      const deployment = loadDeployments(process.env.NEXT_PUBLIC_NETWORK as NetworkId ?? 'testnet');
-      if (!deployment.contracts.PoapFactoryV2) {
-        throw new Error('PoapFactoryV2 contract not found in deployments');
-      }
-      const factoryContract = PoapFactoryV2.at(deployment.contracts.PoapFactoryV2.contractInstance.address);
+      // Convert dates to millisecond timestamps
+      const eventStartAt = BigInt(eventStart);
+      const eventEndAt = BigInt(eventEnd);
+      const mintStartAt = BigInt(mintStart);
+      const mintEndAt = BigInt(mintEnd);
 
       // Convert strings to hex format
       const imageUri = stringToHex(imageString || imageUrl);
-      const imageSvg = stringToHex(''); // If you have SVG version
       const eventName = stringToHex(sanitizedTitle);
       const descriptionHex = stringToHex(sanitizedDescription);
       const locationHex = stringToHex(location);
-      // Call contract method using transact
 
-      // console.log(usePassword)
-      
+      if (isSeriesEvent && useExistingSeries && selectedSeriesId) {
+        // Add event to existing series
+        const result = await factoryContract.transact.createNewEvent({
+          args: {
+            collection: selectedSeriesId,
+            maxSupply: BigInt(amount),
+            mintStartAt,
+            mintEndAt,
+            poapPrice: isOpenPrice ? 0n : poapPrice,
+            tokenIdPoap: paidPoapTokenId,
+            isOpenPrice: isOpenPrice,
+            tokenIdAirdrop: ALPH_TOKEN_ID,
+            amountAirdropPerUser: 0n,
+            airdropWhenHasParticipated: false,
+            eventImage: imageUri,
+            eventName,
+            description: descriptionHex,
+            location: locationHex,
+            eventStartAt,
+            eventEndAt,
+            isPublic: isPublicEvent,
+            isBurnable: isBurnable,
+            lockedUntil: lockPresenceUntil ? BigInt(new Date(lockPresenceUntil).getTime()) : 0n,
+            hashedPassword: usePassword && password ? keccak256(password).toString('hex') : '00',
+            amountAirdrop: 0n,
+            amountForStorageFees: coverMintFees ? storageFees : 0n,
+            amountForChainFees: coverMintFees ? chainFees : 0n,
+          },
+          signer: signer,
+          attoAlphAmount: 2n * MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT,
+        });
+
+        setProgressState({
+          currentStep: 'submitted',
+          txHash: result.txId
+        });
+        await pollForEvents(web3.getCurrentNodeProvider(), result.txId);
+        toast.success('Presence added to series successfully!');
+        return;
+      }
+
+      // Standard single event creation
       const result = await factoryContract.transact.mintNewCollection({
         args: {
           eventImage: imageUri,
@@ -425,13 +667,13 @@ export default function NewEvent() {
       });
       
 
-      setProgressState({ 
-        currentStep: 'submitted', 
-        txHash: result.txId 
+      setProgressState({
+        currentStep: 'submitted',
+        txHash: result.txId
       });
       await pollForEvents(web3.getCurrentNodeProvider(), result.txId);
 
-      toast.success('Transaction submitted! Waiting for confirmation...');
+      toast.success('Presence created successfully!');
     } catch (error) {
       console.error('Error creating event:', error);
       toast.error(error instanceof Error ? error.message : 'Failed to create event. Please try again.');
@@ -470,6 +712,10 @@ export default function NewEvent() {
     setPassword('');
     setUsePassword(false);
     setLockPresenceUntil('');
+    setSeriesImageUrl('');
+    setSeriesPreviewImage(null);
+    setSeriesImageString(null);
+    setSeriesActiveTab('url');
   }, []);
 
   useEffect(() => {
@@ -495,9 +741,60 @@ export default function NewEvent() {
         setIsTokenListLoading(false);
       }
     };
-    
+
     loadTokenList();
   }, []);
+
+  // Load all available series collections for the dropdown
+  useEffect(() => {
+    const loadUserSeries = async () => {
+      if (!account?.address) return;
+
+      try {
+        // Fetch series collections created by the user using the organizer endpoint
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL ?? 'https://presenceprotocol.notrustverify.ch'}/api/series/organizer/${account.address}?limit=100`
+        );
+
+        if (response.ok) {
+          const seriesData = await response.json();
+
+          // Enrich with contract state data
+          const enrichedSeries = await Promise.all(
+            seriesData.map(async (series: any) => {
+              try {
+                const seriesContract = PoapSerieCollectionV2.at(addressFromContractId(series.contractId));
+                const state = await seriesContract.fetchState();
+
+                return {
+                  id: series.contractId,
+                  name: hexToString(state.fields.collectionName),
+                  description: '',
+                  eventCount: Number(state.fields.totalSupplySeries || 0)
+                };
+              } catch (error) {
+                console.error('Error fetching series contract state:', error);
+                // Fallback to API data if contract fetch fails
+                return {
+                  id: series.contractId,
+                  name: series.eventName || 'Unknown Series',
+                  description: '',
+                  eventCount: 0
+                };
+              }
+            })
+          );
+
+          setUserSeries(enrichedSeries);
+        }
+      } catch (error) {
+        console.error('Failed to load user series:', error);
+        // Silently fail - user can still create new series
+      }
+    };
+
+    loadUserSeries();
+  }, [account?.address]);
 
   const pollForEvents = async (provider: NodeProvider, txId: string, retries = 0): Promise<void> => {
     if (retries >= 2000) {
@@ -1067,8 +1364,16 @@ export default function NewEvent() {
                 <div className="w-full h-[calc(100vh-82px)] flex flex-col items-center justify-center">
                   <div className="w-full max-w-lg p-8 text-center fixed">
                     <div className="relative w-64 h-64 mx-auto rounded-2xl border-2 border-black shadow bg-white">
-                      {previewImage ? (
-                        <img src={previewImage} alt="Preview" className="w-full h-full object-cover rounded-2xl" />
+                      {(isSeriesEvent && !useExistingSeries && !addFirstEvent 
+                        ? seriesPreviewImage 
+                        : previewImage) ? (
+                        <img 
+                          src={(isSeriesEvent && !useExistingSeries && !addFirstEvent 
+                            ? seriesPreviewImage 
+                            : previewImage) || ''} 
+                          alt="Preview" 
+                          className="w-full h-full object-cover rounded-2xl" 
+                        />
                       ) : (
                         <div className="w-full h-full flex flex-col items-center justify-center text-gray-400">
                           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1} stroke="currentColor" className="w-12 h-12 mb-2">
@@ -1078,85 +1383,84 @@ export default function NewEvent() {
                         </div>
                       )}
                     </div>
-                    <h3 className="mt-6 text-2xl font-medium text-black">{title || 'Event Title Preview'}</h3>
-                    <p className="mt-2 text-sm text-black">{description || 'Description Preview'}</p>
+                    <h3 className="mt-6 text-2xl font-medium text-black">
+                      {isSeriesEvent && !useExistingSeries && !addFirstEvent
+                        ? (seriesName || 'Series Name Preview')
+                        : (title || 'Presence Title Preview')}
+                    </h3>
+                    <p className="mt-2 text-sm text-black">
+                      {isSeriesEvent && !useExistingSeries && !addFirstEvent
+                        ? (seriesDescription || 'Series Description Preview')
+                        : (description || 'Description Preview')}
+                    </p>
 
                     <div className="mt-4 flex flex-col gap-4">
-                      <div className="flex justify-center gap-4">
-                      <Tooltip text="Total amount of Presence that can be minted">
-
-                        <div className="text-black items-center shadow shadow-lila-600 text-xs font-semibold inline-flex px-4 bg-lila-300 border-lila-600 border-2 py-2 rounded-lg h-8 tracking-wide">
-                          0 / {amount || 0}
-                        </div>
-                        </Tooltip>
-                        {/* {Number(poapPrice) > 0 && (
-                          <div className="text-black items-center shadow shadow-lila-600 text-xs font-semibold inline-flex px-4 bg-lila-300 border-lila-600 border-2 py-2 rounded-lg h-8 tracking-wide">
-                            {Number(poapPrice) / 10**18} ALPH
+                      {/* Only show presence-specific preview when not creating series only */}
+                      {(!isSeriesEvent || useExistingSeries || addFirstEvent) ? (
+                        <>
+                          <div className="flex justify-center gap-4">
+                            <Tooltip text="Total amount of Presence that can be minted">
+                              <div className="text-black items-center shadow shadow-lila-600 text-xs font-semibold inline-flex px-4 bg-lila-300 border-lila-600 border-2 py-2 rounded-lg h-8 tracking-wide">
+                                0 / {amount || 0}
+                              </div>
+                            </Tooltip>
+                            <Tooltip text="Cost to mint this Presence">
+                              <div className="text-black items-center shadow shadow-lila-600 text-xs font-semibold inline-flex px-4 bg-lila-300 border-lila-600 border-2 py-2 rounded-lg h-8 tracking-wide">
+                                0.1 ALPH
+                              </div>
+                            </Tooltip>
                           </div>
-                        )} */}
-                                               <Tooltip text="Cost to mint this Presence">
 
-                          <div className="text-black items-center shadow shadow-lila-600 text-xs font-semibold inline-flex px-4 bg-lila-300 border-lila-600 border-2 py-2 rounded-lg h-8 tracking-wide">
-                            0.1 ALPH
+                          <div className="flex flex-col gap-2">
+                            <div className="flex items-center justify-center gap-2 text-sm">
+                              <span className="text-gray-600">{location}</span>
+                              {location && <span className="text-gray-400">•</span>}
+                              <span className="text-gray-600">
+                                {isPublicEvent ? 'Public Event' : 'Private Event'}
+                              </span>
+                              {(eventStartDate || eventEndDate) && <span className="text-gray-400">•</span>}
+                              <span className="text-gray-600">
+                                {eventStartDate && new Date(eventStartDate).toLocaleDateString()} -
+                                {eventEndDate && new Date(eventEndDate).toLocaleDateString()}
+                              </span>
+                            </div>
                           </div>
-                          </Tooltip>
-                        
-                      </div>
 
-                      <div className="flex flex-col gap-2">
-                        <div className="flex items-center justify-center gap-2 text-sm">
-                          <span className="text-gray-600">{location}</span>
-                          {location && <span className="text-gray-400">•</span>}
-                          <span className="text-gray-600">
-                            {isPublicEvent ? 'Public Event' : 'Private Event'}
-                          </span>
-                          {(eventStartDate || eventEndDate) && <span className="text-gray-400">•</span>}
-                          <span className="text-gray-600">
-                            {eventStartDate && new Date(eventStartDate).toLocaleDateString()} - 
-                            {eventEndDate && new Date(eventEndDate).toLocaleDateString()}
-                          </span>
-                        </div>
-                      </div>
+                          <div className="flex justify-center gap-2">
+                            {Number(storageFees) > 0 && (
+                              <Tooltip text="Storage fees for this Presence">
+                                <div className="text-black items-center shadow shadow-lila-600 text-xs font-semibold inline-flex px-4 bg-lila-300 border-lila-600 border-2 py-2 rounded-lg h-8 tracking-wide">
+                                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="h-4 w-4 mr-1">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="m20.25 7.5-.625 10.632a2.25 2.25 0 0 1-2.247 2.118H6.622a2.25 2.25 0 0 1-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z" />
+                                  </svg>
+                                  <span>{(Number(storageFees) / 10**18).toFixed(2)} ALPH</span>
+                                </div>
+                              </Tooltip>
+                            )}
 
-                      <div className="flex justify-center gap-2">
-                        {/* <Tooltip text="Total amount of Presence that can be minted">
-                          <div className="text-black items-center shadow shadow-lila-600 text-xs font-semibold inline-flex px-4 bg-lila-300 border-lila-600 border-2 py-2 rounded-lg h-8 tracking-wide">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="h-4 w-4 mr-1">
-                              <path strokeLinecap="round" strokeLinejoin="round" d="M5.25 8.25h15m-16.5 7.5h15m-1.8-13.5-3.9 19.5m-2.1-19.5-3.9 19.5" />
-                            </svg>
-                            <span>Mint Amount: {amount}</span>
-                            {mintLimit && (
-                              <span className="ml-2 bg-lila-400 text-black text-[10px] px-1.5 py-0.5 rounded">1 per wallet</span>
+                            {isBurnable && (
+                              <Tooltip text="This Presence can be burned by its owner">
+                                <div className="text-black items-center shadow shadow-lila-600 text-xs font-semibold inline-flex px-3 bg-lila-300 border-lila-600 border-2 py-2 rounded-lg h-8 tracking-wide">
+                                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="h-4 w-4">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M15.362 5.214A8.252 8.252 0 0 1 12 21 8.25 8.25 0 0 1 6.038 7.047 8.287 8.287 0 0 0 9 9.601a8.983 8.983 0 0 1 3.361-6.867 8.21 8.21 0 0 0 3 2.48Z" />
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 18a3.75 3.75 0 0 0 .495-7.468 5.99 5.99 0 0 0-1.925 3.547 5.975 5.975 0 0 1-2.133-1.001A3.75 3.75 0 0 0 12 18Z" />
+                                  </svg>
+                                </div>
+                              </Tooltip>
                             )}
                           </div>
-                        </Tooltip> */}
 
-                        {Number(storageFees) > 0 && (
-                          <Tooltip text="Storage fees for this Presence">
-                            <div className="text-black items-center shadow shadow-lila-600 text-xs font-semibold inline-flex px-4 bg-lila-300 border-lila-600 border-2 py-2 rounded-lg h-8 tracking-wide">
-                              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="h-4 w-4 mr-1">
-                                <path strokeLinecap="round" strokeLinejoin="round" d="m20.25 7.5-.625 10.632a2.25 2.25 0 0 1-2.247 2.118H6.622a2.25 2.25 0 0 1-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z" />
-                              </svg>
-                              <span>{(Number(storageFees) / 10**18).toFixed(2)} ALPH</span>
-                            </div>
-                          </Tooltip>
-                        )}
-
-                        {isBurnable && (
-                          <Tooltip text="This Presence can be burned by its owner">
-                            <div className="text-black items-center shadow shadow-lila-600 text-xs font-semibold inline-flex px-3 bg-lila-300 border-lila-600 border-2 py-2 rounded-lg h-8 tracking-wide">
-                              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="h-4 w-4">
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M15.362 5.214A8.252 8.252 0 0 1 12 21 8.25 8.25 0 0 1 6.038 7.047 8.287 8.287 0 0 0 9 9.601a8.983 8.983 0 0 1 3.361-6.867 8.21 8.21 0 0 0 3 2.48Z" />
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M12 18a3.75 3.75 0 0 0 .495-7.468 5.99 5.99 0 0 0-1.925 3.547 5.975 5.975 0 0 1-2.133-1.001A3.75 3.75 0 0 0 12 18Z" />
-                              </svg>
-                            </div>
-                          </Tooltip>
-                        )}
-                      </div>
-                    </div>
-
-                    <div className="text-xs text-gray-500 mt-5">
-                      Minting available: {startDate && new Date(startDate).toLocaleDateString()} - {endDate && new Date(endDate).toLocaleDateString()}
+                          <div className="text-xs text-gray-500 mt-1">
+                            Minting available: {startDate && new Date(startDate).toLocaleDateString()} - {endDate && new Date(endDate).toLocaleDateString()}
+                          </div>
+                        </>
+                      ) : (
+                        <div className="flex justify-center">
+                          <span className="text-gray-600 text-sm">
+                            {isPublicEvent ? 'Public Series' : 'Private Series'}
+                          </span>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -1179,7 +1483,7 @@ export default function NewEvent() {
                         onClick={() => setIsProgressOpen(false)}
                         className="mt-8 text-black items-center shadow shadow-black text-lg font-semibold inline-flex px-6 focus:outline-none justify-center text-center bg-white border-black ease-in-out transform transition-all focus:ring-lila-700 focus:shadow-none border-2 duration-100   py-3 rounded-2xl h-16 tracking-wide focus:translate-y-1 w-full hover:text-lila-800"
                       >
-                        Create New Event
+                        Create Another
                       </button>
                     )}
                   </div>
@@ -1187,10 +1491,22 @@ export default function NewEvent() {
               ) : (
                 <div className="max-w-xl mx-auto lg:min-w-[500px] md:px-0 sm:px-4 text-center">
                   <h2 className="text-2xl lg:text-3xl font-semibold text-black max-w-4xl mb-1">
-                    Create Presence Event
+                    {isSeriesEvent && !useExistingSeries && !addFirstEvent
+                      ? 'Create Presence Series'
+                      : isSeriesEvent && !useExistingSeries && addFirstEvent
+                        ? 'Create Series with Presence'
+                        : isSeriesEvent && useExistingSeries
+                          ? 'Add Presence to Series'
+                          : 'Create Presence'}
                   </h2>
                   <p className="text-sm text-gray-500 mb-6">
-                    Create a New Event & Share your Presence
+                    {isSeriesEvent && !useExistingSeries && !addFirstEvent
+                      ? 'Create a series container for multiple presences'
+                      : isSeriesEvent && !useExistingSeries && addFirstEvent
+                        ? 'Create a new series with the first presence in one transaction'
+                        : isSeriesEvent && useExistingSeries
+                          ? 'Add a new presence to your existing series'
+                          : 'Create a standalone presence for your event'}
                   </p>
 
                   <div className="space-y-2">
@@ -1208,160 +1524,368 @@ export default function NewEvent() {
                   {selectedTemplate && (
                     <form className="mt-6" onSubmit={handleSubmit}>
                       <div className="space-y-6">
-                        <div className="border-2 border-black divide-black shadow rounded-2xl overflow-hidden">
-                          <div>
-                            <label htmlFor="title" className="sr-only">Title</label>
-                            <input
-                              id="title"
-                              type="text"
-                              placeholder="Event Title"
-                              value={title}
-                              maxLength={MAX_TITLE_LENGTH}
-                              onChange={handleTitleChange}
-                              className="block w-full px-3 py-3 text-xl text-black border-2 border-transparent appearance-none placeholder-black focus:border-black focus:bg-lila-500 focus:outline-none focus:ring-black sm:text-sm rounded-2xl"
-                            />
-                            <div className="px-3 py-1 text-sm text-gray-500">
-                              {title.length}/{MAX_TITLE_LENGTH} characters
-                            </div>
-                          </div>
-                        </div>
-
-                        <div className="border-2 border-black divide-black shadow rounded-2xl overflow-hidden">
-                          <div>
-                            <label htmlFor="description" className="sr-only">Description</label>
-                            <textarea
-                              id="description"
-                              placeholder="Event Description"
-                              value={description}
-                              maxLength={MAX_DESCRIPTION_LENGTH}
-                              onChange={handleDescriptionChange}
-                              rows={3}
-                              className="block w-full px-3 py-3 text-xl text-black border-2 border-transparent appearance-none placeholder-black focus:border-black focus:bg-lila-500 focus:outline-none focus:ring-black sm:text-sm rounded-2xl"
-                            />
-                            <div className="px-3 py-1 text-sm text-gray-500">
-                              {description.length}/{MAX_DESCRIPTION_LENGTH} characters
-                            </div>
-                          </div>
-                        </div>
-
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                          <div className="border-2 border-black divide-black shadow rounded-2xl overflow-hidden">
+                        {/* Series/Collection Toggle */}
+                        <div className="space-y-2">
+                          <div className="flex items-center text-left justify-between p-4">
                             <div>
-                              <label htmlFor="location" className="sr-only">Location</label>
-                              <input
-                                id="location"
-                                type="text"
-                                placeholder="Event Location"
-                                value={location}
-                                onChange={(e) => setLocation(e.target.value)}
-                                className="block w-full px-3 py-3 text-xl text-black border-2 border-transparent appearance-none rounded-2xl placeholder-black focus:border-black focus:bg-lila-500 focus:outline-none focus:ring-black sm:text-sm"
-                              />
+                              <h3 className="text-sm font-medium text-black">Presence Series</h3>
+                              <p className="text-xs text-gray-500">Group multiple presences under a series</p>
                             </div>
-                          </div>
-
-                          <div className="border-2 border-black divide-black shadow rounded-2xl overflow-hidden">
-                            <div className="relative">
-                              <label htmlFor="amount" className="sr-only">Amount</label>
-                              <input
-                                id="amount"
-                                type="number"
-                                min="1"
-                                placeholder="Presence Amount"
-                                value={amount || ''}
-                                onChange={(e) => {
-                                  const newAmount = parseInt(e.target.value) || 0;
-                                  setAmount(newAmount);
-                                  // Set storage fees to 0.1 ALPH * amount when amount changes
-                                  setStorageFees(BigInt(Math.floor(0.1 * newAmount * 10**18)));
-                                }}
-                                className="block w-full px-3 py-3 text-xl text-black border-2 border-transparent appearance-none placeholder-black  focus:border-black focus:bg-lila-500 focus:outline-none focus:ring-black sm:text-sm rounded-2xl pr-10"
-                              />
+                            <div className="items-center inline-flex">
                               <button
                                 type="button"
-                                onClick={() => setIsMintAmountInfoOpen(true)}
-                                className="absolute right-3 top-1/2 -translate-y-1/2"
+                                role="switch"
+                                aria-checked={isSeriesEvent}
+                                onClick={() => setIsSeriesEvent(!isSeriesEvent)}
+                                className={`relative inline-flex w-10 rounded-full py-1 transition border-2 shadow-small border-black ${
+                                  isSeriesEvent ? 'bg-lila-400' : 'bg-white'
+                                }`}
                               >
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  className="h-5 w-5 text-gray-800 hover:text-black"
-                                  viewBox="0 0 24 24"
-                                  strokeWidth="2"
-                                  stroke="currentColor"
-                                  fill="none"
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                >
-                                  <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                                  <path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" />
-                                  <path d="M12 8l.01 0" />
-                                  <path d="M11 12l1 0l0 4l1 0" />
-                                </svg>
+                                <span
+                                  className={`h-2 w-2 rounded-full transition shadow-md ${
+                                    isSeriesEvent ? 'translate-x-6 bg-lila-800' : 'translate-x-1 bg-gray-500'
+                                  }`}
+                                  aria-hidden="true"
+                                />
                               </button>
                             </div>
                           </div>
+
+                          {isSeriesEvent && (
+                            <div className="border-2 border-black divide-black shadow rounded-2xl overflow-hidden">
+                              <div className="p-4 bg-white space-y-4">
+                                <div className="flex flex-row gap-4">
+                                  <label className="flex items-center gap-2 cursor-pointer">
+                                    <input
+                                      type="radio"
+                                      name="seriesOption"
+                                      checked={!useExistingSeries}
+                                      onChange={() => setUseExistingSeries(false)}
+                                      className="w-4 h-4"
+                                    />
+                                    <span className="text-sm text-black">Create New Series</span>
+                                  </label>
+                                  <label className="flex items-center gap-2 cursor-pointer">
+                                    <input
+                                      type="radio"
+                                      name="seriesOption"
+                                      checked={useExistingSeries}
+                                      onChange={() => setUseExistingSeries(true)}
+                                      className="w-4 h-4"
+                                    />
+                                    <span className="text-sm text-black">Add to Existing Series</span>
+                                  </label>
+                                </div>
+
+                                {!useExistingSeries ? (
+                                  <div className="space-y-3">
+                                    <div>
+                                      <label className="text-sm font-medium text-black">Series Name</label>
+                                      <input
+                                        type="text"
+                                        placeholder="e.g., Alephium Meetups 2024"
+                                        value={seriesName}
+                                        onChange={(e) => setSeriesName(e.target.value)}
+                                        className="mt-1 block w-full px-3 py-2 text-sm text-black border-2 border-black appearance-none placeholder-gray-400 focus:border-black focus:bg-lila-500 focus:outline-none focus:ring-black rounded-lg"
+                                      />
+                                    </div>
+                                    <div>
+                                      <label className="text-sm font-medium text-black">Series Description</label>
+                                      <textarea
+                                        placeholder="Describe your event series..."
+                                        value={seriesDescription}
+                                        onChange={(e) => setSeriesDescription(e.target.value)}
+                                        rows={2}
+                                        className="mt-1 block w-full px-3 py-2 text-sm text-black border-2 border-black appearance-none placeholder-gray-400 focus:border-black focus:bg-lila-500 focus:outline-none focus:ring-black rounded-lg"
+                                      />
+                                    </div>
+
+                                    {/* Series Image */}
+                                    <div className={`border-2 border-black ${seriesPreviewImage !== null ? 'bg-lila-100' : 'bg-white'} divide-black shadow rounded-2xl overflow-hidden`}>
+                                      <div className="flex items-center justify-center border-b-2 border-black">
+                                        <button
+                                          type="button"
+                                          onClick={() => setSeriesActiveTab('url')}
+                                          disabled={seriesPreviewImage !== null && seriesActiveTab !== 'url'}
+                                          className={`flex-1 py-3 px-6 focus:outline-none block text-sm ${
+                                            seriesActiveTab === 'url' 
+                                              ? 'bg-lila-100 border-r-2 border-black text-black' 
+                                              : 'bg-white text-gray-600'
+                                          } ${seriesPreviewImage !== null && seriesActiveTab !== 'url' ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                        >
+                                          Series Image from URL
+                                        </button>
+                                      </div>
+
+                                      <div className="p-4">
+                                        {seriesPreviewImage ? (
+                                          <div className="relative w-full bg-lila-100">
+                                            <img 
+                                              src={seriesPreviewImage} 
+                                              alt="Series Preview" 
+                                              className="w-full h-[100px] object-contain"
+                                            />
+                                            <button
+                                              type="button"
+                                              onClick={handleRemoveSeriesImage}
+                                              className="absolute top-2 right-2 bg-red-800 -mt-2 -mr-2 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-700 transition-colors"
+                                            >
+                                              ×
+                                            </button>
+                                          </div>
+                                        ) : seriesActiveTab === 'url' ? (
+                                          <div className="flex flex-col justify-center min-h-[120px] max-h-[120px] space-y-3.5">
+                                            <input
+                                              type="text"
+                                              value={seriesImageUrl}
+                                              onChange={(e) => setSeriesImageUrl(e.target.value)}
+                                              placeholder="Paste series image URL here"
+                                              className="w-full p-2 text-sm border-2 border-black rounded-lg focus:outline-none focus:ring-2 focus:ring-lila-500"
+                                            />
+                                            <button 
+                                              type="button"
+                                              onClick={handleSeriesUrlSubmit}
+                                              disabled={!seriesImageUrl}
+                                              className={`w-full px-3 py-2 text-sm text-black border-2 border-black rounded-lg hover:bg-lila-500 focus:outline-none focus:ring-2 focus:ring-lila-500 shadow ${
+                                                !seriesImageUrl ? 'opacity-50 cursor-not-allowed' : ''
+                                              }`}
+                                            >
+                                              {seriesImageUrl ? 'Load from URL' : 'Add URL to Load Image'}
+                                            </button>
+                                          </div>
+                                        ) : (
+                                          <label htmlFor="series-file-upload" className="relative cursor-pointer w-full">
+                                            <div className="flex flex-col items-center justify-center p-6 min-h-[120px] max-h-[120px]">
+                                              <svg xmlns="http://www.w3.org/2000/svg" className="w-8 h-8 text-black mb-2" viewBox="0 0 24 24" strokeWidth="1" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
+                                                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                                <path d="M14 3v4a1 1 0 0 0 1 1h4"></path>
+                                                <path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z"></path>
+                                                <path d="M12 11v6"></path>
+                                                <path d="M9.5 13.5l2.5 -2.5l2.5 2.5"></path>
+                                              </svg>
+                                              <p className="text-sm text-black">Upload Series Image (PNG, JPG, GIF up to 2KB)</p>
+                                            </div>
+                                            <input 
+                                              id="series-file-upload" 
+                                              name="series-file-upload" 
+                                              type="file" 
+                                              className="sr-only" 
+                                              accept="image/*"
+                                              onChange={handleSeriesImageUpload}
+                                            />
+                                          </label>
+                                        )}
+                                      </div>
+                                    </div>
+
+                                    {/* Add First Event Toggle */}
+                                    <div className="flex items-center justify-between p-3 bg-lila-100 rounded-lg">
+                                      <div>
+                                        <h4 className="text-sm font-medium text-black">Add First Presence</h4>
+                                        <p className="text-xs text-gray-500">Create the series with the first presence in one transaction</p>
+                                      </div>
+                                      <button
+                                        type="button"
+                                        role="switch"
+                                        aria-checked={addFirstEvent}
+                                        onClick={() => setAddFirstEvent(!addFirstEvent)}
+                                        className={`relative inline-flex w-10 rounded-full py-1 transition border-2 shadow-small border-black ${
+                                          addFirstEvent ? 'bg-lila-400' : 'bg-white'
+                                        }`}
+                                      >
+                                        <span
+                                          className={`h-2 w-2 rounded-full transition shadow-md ${
+                                            addFirstEvent ? 'translate-x-6 bg-lila-800' : 'translate-x-1 bg-gray-500'
+                                          }`}
+                                          aria-hidden="true"
+                                        />
+                                      </button>
+                                    </div>
+                                  </div>
+                                ) : (
+                                  <div>
+                                    <label className="text-sm font-medium text-black">Select Series</label>
+                                    <select
+                                      value={selectedSeriesId}
+                                      onChange={(e) => setSelectedSeriesId(e.target.value)}
+                                      className="mt-1 block w-full px-3 py-2 text-sm text-black border-2 border-black appearance-none focus:border-black focus:bg-lila-500 focus:outline-none focus:ring-black rounded-lg"
+                                    >
+                                      <option value="">Select a series...</option>
+                                      {userSeries.map((series: any) => (
+                                        <option key={series.id} value={series.id}>
+                                          {series.name} {series.eventCount !== undefined ? `(${series.eventCount} presences)` : ''}
+                                        </option>
+                                      ))}
+                                    </select>
+                                    {userSeries.length === 0 && (
+                                      <p className="mt-1 text-xs text-gray-500">No series found. Create a new series first.</p>
+                                    )}
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          )}
                         </div>
 
-                        <div className="space-y-4">
-                          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                        {/* Event-specific fields - shown when: not series, adding to existing series, or creating series with first event */}
+                        {(!isSeriesEvent || useExistingSeries || addFirstEvent) && (
+                          <>
                             <div className="border-2 border-black divide-black shadow rounded-2xl overflow-hidden">
                               <div>
-                                <label htmlFor="eventStartDate" className="block px-3 pt-2 pb-2 text-sm text-gray-600">Event Start Date</label>
+                                <label htmlFor="title" className="sr-only">Title</label>
                                 <input
-                                  id="eventStartDate"
-                                  type="datetime-local"
-                                  placeholder="Event Start Date"
-                                  value={eventStartDate}
-                                  onChange={(e) => setEventStartDate(e.target.value)}
-                                  className="block w-full px-3 py-2 text-xl text-black border-2 border-transparent appearance-none placeholder-black focus:border-black focus:bg-lila-500 focus:outline-none focus:ring-black sm:text-sm rounded-2xl"
+                                  id="title"
+                                  type="text"
+                                  placeholder="Presence Title"
+                                  value={title}
+                                  maxLength={MAX_TITLE_LENGTH}
+                                  onChange={handleTitleChange}
+                                  className="block w-full px-3 py-3 text-xl text-black border-2 border-transparent appearance-none placeholder-black focus:border-black focus:bg-lila-500 focus:outline-none focus:ring-black sm:text-sm rounded-2xl"
                                 />
+                                <div className="px-3 py-1 text-sm text-gray-500">
+                                  {title.length}/{MAX_TITLE_LENGTH} characters
+                                </div>
                               </div>
                             </div>
 
                             <div className="border-2 border-black divide-black shadow rounded-2xl overflow-hidden">
                               <div>
-                                <label htmlFor="eventEndDate" className="block px-3 pt-2 pb-2 text-sm text-gray-600">Event End Date</label>
-                                <input
-                                  id="eventEndDate"
-                                  type="datetime-local"
-                                  placeholder="Event End Date"
-                                  value={eventEndDate}
-                                  onChange={(e) => setEventEndDate(e.target.value)}
-                                  className="block w-full px-3 py-2 text-xl text-black border-2 border-transparent appearance-none placeholder-black focus:border-black focus:bg-lila-500 focus:outline-none focus:ring-black sm:text-sm rounded-2xl"
+                                <label htmlFor="description" className="sr-only">Description</label>
+                                <textarea
+                                  id="description"
+                                  placeholder="Presence Description"
+                                  value={description}
+                                  maxLength={MAX_DESCRIPTION_LENGTH}
+                                  onChange={handleDescriptionChange}
+                                  rows={3}
+                                  className="block w-full px-3 py-3 text-xl text-black border-2 border-transparent appearance-none placeholder-black focus:border-black focus:bg-lila-500 focus:outline-none focus:ring-black sm:text-sm rounded-2xl"
                                 />
-                              </div>
-                            </div>
-                          </div>
-
-                          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                            <div className="border-2 border-black divide-black shadow rounded-2xl overflow-hidden">
-                              <div>
-                                <label htmlFor="startDate" className="block px-3 pt-2 pb-2 text-sm text-gray-600">Start Minting Date & Time</label>
-                                <input
-                                  id="startDate"
-                                  type="datetime-local"
-                                  placeholder="Start Minting Date"
-                                  value={startDate}
-                                  onChange={(e) => setStartDate(e.target.value)}
-                                  className="block w-full px-3 py-2 text-xl text-black border-2 border-transparent appearance-none placeholder-black focus:border-black focus:bg-lila-500 focus:outline-none focus:ring-black sm:text-sm rounded-2xl"
-                                />
+                                <div className="px-3 py-1 text-sm text-gray-500">
+                                  {description.length}/{MAX_DESCRIPTION_LENGTH} characters
+                                </div>
                               </div>
                             </div>
 
-                            <div className="border-2 border-black divide-black shadow rounded-2xl overflow-hidden">
-                              <div>
-                                <label htmlFor="endDate" className="block px-3 pt-2 pb-2 text-sm text-gray-600">End Minting Date & Time</label>
-                                <input
-                                  id="endDate"
-                                  type="datetime-local"
-                                  placeholder="End Minting Date"
-                                  value={endDate}
-                                  onChange={(e) => setEndDate(e.target.value)}
-                                  className="block w-full px-3 py-2 text-xl text-black border-2 border-transparent appearance-none placeholder-black focus:border-black focus:bg-lila-500 focus:outline-none focus:ring-black sm:text-sm rounded-2xl"
-                                />
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                              <div className="border-2 border-black divide-black shadow rounded-2xl overflow-hidden">
+                                <div>
+                                  <label htmlFor="location" className="sr-only">Location</label>
+                                  <input
+                                    id="location"
+                                    type="text"
+                                    placeholder="Event Location"
+                                    value={location}
+                                    onChange={(e) => setLocation(e.target.value)}
+                                    className="block w-full px-3 py-3 text-xl text-black border-2 border-transparent appearance-none rounded-2xl placeholder-black focus:border-black focus:bg-lila-500 focus:outline-none focus:ring-black sm:text-sm"
+                                  />
+                                </div>
+                              </div>
+
+                              <div className="border-2 border-black divide-black shadow rounded-2xl overflow-hidden">
+                                <div className="relative">
+                                  <label htmlFor="amount" className="sr-only">Amount</label>
+                                  <input
+                                    id="amount"
+                                    type="number"
+                                    min="1"
+                                    placeholder="Presence Amount"
+                                    value={amount || ''}
+                                    onChange={(e) => {
+                                      const newAmount = parseInt(e.target.value) || 0;
+                                      setAmount(newAmount);
+                                      // Set storage fees to 0.1 ALPH * amount when amount changes
+                                      setStorageFees(BigInt(Math.floor(0.1 * newAmount * 10**18)));
+                                    }}
+                                    className="block w-full px-3 py-3 text-xl text-black border-2 border-transparent appearance-none placeholder-black  focus:border-black focus:bg-lila-500 focus:outline-none focus:ring-black sm:text-sm rounded-2xl pr-10"
+                                  />
+                                  <button
+                                    type="button"
+                                    onClick={() => setIsMintAmountInfoOpen(true)}
+                                    className="absolute right-3 top-1/2 -translate-y-1/2"
+                                  >
+                                    <svg
+                                      xmlns="http://www.w3.org/2000/svg"
+                                      className="h-5 w-5 text-gray-800 hover:text-black"
+                                      viewBox="0 0 24 24"
+                                      strokeWidth="2"
+                                      stroke="currentColor"
+                                      fill="none"
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                    >
+                                      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                      <path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" />
+                                      <path d="M12 8l.01 0" />
+                                      <path d="M11 12l1 0l0 4l1 0" />
+                                    </svg>
+                                  </button>
+                                </div>
                               </div>
                             </div>
-                          </div>
-                        </div>
+
+                            <div className="space-y-4">
+                              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                                <div className="border-2 border-black divide-black shadow rounded-2xl overflow-hidden">
+                                  <div>
+                                    <label htmlFor="eventStartDate" className="block px-3 pt-2 pb-2 text-sm text-gray-600">Event Start Date</label>
+                                    <input
+                                      id="eventStartDate"
+                                      type="datetime-local"
+                                      placeholder="Event Start Date"
+                                      value={eventStartDate}
+                                      onChange={(e) => setEventStartDate(e.target.value)}
+                                      className="block w-full px-3 py-2 text-xl text-black border-2 border-transparent appearance-none placeholder-black focus:border-black focus:bg-lila-500 focus:outline-none focus:ring-black sm:text-sm rounded-2xl"
+                                    />
+                                  </div>
+                                </div>
+
+                                <div className="border-2 border-black divide-black shadow rounded-2xl overflow-hidden">
+                                  <div>
+                                    <label htmlFor="eventEndDate" className="block px-3 pt-2 pb-2 text-sm text-gray-600">Event End Date</label>
+                                    <input
+                                      id="eventEndDate"
+                                      type="datetime-local"
+                                      placeholder="Event End Date"
+                                      value={eventEndDate}
+                                      onChange={(e) => setEventEndDate(e.target.value)}
+                                      className="block w-full px-3 py-2 text-xl text-black border-2 border-transparent appearance-none placeholder-black focus:border-black focus:bg-lila-500 focus:outline-none focus:ring-black sm:text-sm rounded-2xl"
+                                    />
+                                  </div>
+                                </div>
+                              </div>
+
+                              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                                <div className="border-2 border-black divide-black shadow rounded-2xl overflow-hidden">
+                                  <div>
+                                    <label htmlFor="startDate" className="block px-3 pt-2 pb-2 text-sm text-gray-600">Start Minting Date & Time</label>
+                                    <input
+                                      id="startDate"
+                                      type="datetime-local"
+                                      placeholder="Start Minting Date"
+                                      value={startDate}
+                                      onChange={(e) => setStartDate(e.target.value)}
+                                      className="block w-full px-3 py-2 text-xl text-black border-2 border-transparent appearance-none placeholder-black focus:border-black focus:bg-lila-500 focus:outline-none focus:ring-black sm:text-sm rounded-2xl"
+                                    />
+                                  </div>
+                                </div>
+
+                                <div className="border-2 border-black divide-black shadow rounded-2xl overflow-hidden">
+                                  <div>
+                                    <label htmlFor="endDate" className="block px-3 pt-2 pb-2 text-sm text-gray-600">End Minting Date & Time</label>
+                                    <input
+                                      id="endDate"
+                                      type="datetime-local"
+                                      placeholder="End Minting Date"
+                                      value={endDate}
+                                      onChange={(e) => setEndDate(e.target.value)}
+                                      className="block w-full px-3 py-2 text-xl text-black border-2 border-transparent appearance-none placeholder-black focus:border-black focus:bg-lila-500 focus:outline-none focus:ring-black sm:text-sm rounded-2xl"
+                                    />
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </>
+                        )}
 
                         <div className={`border-2 border-black ${previewImage !== null ? 'bg-lila-100' : 'bg-white'} divide-black shadow rounded-2xl overflow-hidden`}>
                           <div className="flex items-center justify-center border-b-2 border-black">
@@ -1454,8 +1978,8 @@ export default function NewEvent() {
                         <div className="space-y-2">
                           <div className="flex items-center text-left justify-between p-4">
                             <div>
-                              <h3 className="text-sm font-medium text-black">Public Event</h3>
-                              <p className="text-xs text-gray-500">Anyone will be able to see your Presence in <Link href="/events" target="_blank" rel="noopener noreferrer" className="text-lila-800">Explorer</Link></p>
+                              <h3 className="text-sm font-medium text-black">{isSeriesEvent && !useExistingSeries && !addFirstEvent ? 'Public Series' : 'Public Event'}</h3>
+                              <p className="text-xs text-gray-500">Anyone will be able to see your {isSeriesEvent && !useExistingSeries && !addFirstEvent ? 'Series' : 'Presence'} in <Link href="/events" target="_blank" rel="noopener noreferrer" className="text-lila-800">Explorer</Link></p>
                             </div>
                             <div className="items-center inline-flex">
                               <button
@@ -1477,41 +2001,49 @@ export default function NewEvent() {
                             </div>
                           </div>
 
-                          <div className="flex items-center text-left justify-between p-4">
-                            <div>
-                              <h3 className="text-sm font-medium text-black">Limit Address Presence</h3>
-                              <p className="text-xs text-gray-500">This will limit the number of Presence per address to 1</p>
-                            </div>
-                            <div className="items-center inline-flex">
-                              <button
-                                type="button"
-                                role="switch"
-                                aria-checked={mintLimit}
-                                onClick={() => setMintLimit(!mintLimit)}
-                                className={`relative inline-flex w-10 rounded-full py-1 transition border-2 shadow-small border-black ${
-                                  mintLimit ? 'bg-lila-400' : 'bg-white'
-                                }`}
-                              >
-                                <span
-                                  className={`h-2 w-2 rounded-full transition shadow-md ${
-                                    mintLimit ? 'translate-x-6 bg-lila-800' : 'translate-x-1 bg-gray-500'
+                          {/* Limit Address - only for events, not series-only creation */}
+                          {(!isSeriesEvent || useExistingSeries || addFirstEvent) && (
+                            <div className="flex items-center text-left justify-between p-4">
+                              <div>
+                                <h3 className="text-sm font-medium text-black">Limit Address Presence</h3>
+                                <p className="text-xs text-gray-500">This will limit the number of Presence per address to 1</p>
+                              </div>
+                              <div className="items-center inline-flex">
+                                <button
+                                  type="button"
+                                  role="switch"
+                                  aria-checked={mintLimit}
+                                  onClick={() => setMintLimit(!mintLimit)}
+                                  className={`relative inline-flex w-10 rounded-full py-1 transition border-2 shadow-small border-black ${
+                                    mintLimit ? 'bg-lila-400' : 'bg-white'
                                   }`}
-                                  aria-hidden="true"
-                                />
-                              </button>
+                                >
+                                  <span
+                                    className={`h-2 w-2 rounded-full transition shadow-md ${
+                                      mintLimit ? 'translate-x-6 bg-lila-800' : 'translate-x-1 bg-gray-500'
+                                    }`}
+                                    aria-hidden="true"
+                                  />
+                                </button>
+                              </div>
                             </div>
-                          </div>
+                          )}
                         </div>
 
-                        {passwordSection}
-                        {paidPresenceSection}
-                        {advancedSettingsSection}
+                        {/* Event-specific sections - shown when creating event or series with first event */}
+                        {(!isSeriesEvent || useExistingSeries || addFirstEvent) && (
+                          <>
+                            {passwordSection}
+                            {paidPresenceSection}
+                            {advancedSettingsSection}
+                          </>
+                        )}
 
                         {renderProgress()}
 
                         {createdContractAddress && (
                           <div className="border-2 border-black divide-black shadow rounded-2xl overflow-hidden bg-lila-100 p-4">
-                            <p className="text-sm font-medium text-black">Event Created Successfully!</p>
+                            <p className="text-sm font-medium text-black">Created Successfully!</p>
                             <div className="text-xs break-all mt-1 flex items-center gap-2">
                               <span>Share this link with your attendees:</span>
                               <button
@@ -1530,7 +2062,17 @@ export default function NewEvent() {
                             disabled={isSubmitting || !isFormValid()}
                             className={`text-black items-center shadow shadow-black text-lg font-semibold inline-flex px-6 focus:outline-none justify-center text-center bg-white border-black ease-in-out transform transition-all focus:ring-lila-700 focus:shadow-none border-2 duration-100   py-3 rounded-2xl h-16 tracking-wide focus:translate-y-1 w-full hover:text-lila-800 ${(isSubmitting || creationProgress !== false || !isFormValid()) ? 'opacity-50 cursor-not-allowed' : ''}`}
                           >
-                            {isSubmitting ? 'Creating...' : isFormValid() ? 'Create Event' : 'Please fill out all fields'}
+                            {isSubmitting
+                              ? 'Creating...'
+                              : !isFormValid()
+                                ? 'Please fill out all fields'
+                                : isSeriesEvent && !useExistingSeries && !addFirstEvent
+                                  ? 'Create Series'
+                                  : isSeriesEvent && !useExistingSeries && addFirstEvent
+                                    ? 'Create Series with Presence'
+                                    : isSeriesEvent && useExistingSeries
+                                      ? 'Add Presence to Series'
+                                      : 'Create Presence'}
                           </button>
                         </div>
                       </div>

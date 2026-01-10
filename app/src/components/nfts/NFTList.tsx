@@ -6,7 +6,7 @@ import { AlephiumConnectButton, useWallet } from '@alephium/web3-react'
 import { useWalletLoading } from '@/context/WalletLoadingContext';
 import Image from 'next/image';
 import { addressFromContractId, DUST_AMOUNT, hexToString, number256ToNumber, ONE_ALPH, waitForTxConfirmation, web3 } from '@alephium/web3';
-import { PoapCollection, PoapNFT } from 'my-contracts';
+import { PoapCollection, PoapCollectionV2, PoapData, PoapNFT, PoapNFTSerieV2, PoapNFTV2, PoapSerieCollectionV2 } from 'my-contracts';
 import Snackbar from '../ui/Snackbar';
 import { findTokenFromId, getTokenList, Token } from '@/services/utils';
 import { truncateAddress } from '@/utils/stringUtils';
@@ -15,36 +15,41 @@ import CollectionModal, { Collection, NFTMetadata } from '../CollectionModal';
 interface POAPResponse {
   contractId: string;
   collectionContractId: string;
+  eventId?: number; // Present for series POAPs
   nftIndex: number;
   caller: string;
   createdAt: string;
-  updatedAt: string;
-  collectionId: string;
+  updatedAt?: string;
+  isPublic?: boolean;
+  hasParticipated?: boolean;
+  collectionId?: string; // Legacy field, use collectionContractId instead
 }
 
 interface EventResponse {
   contractId: string;
+  collectionContractId?: string; // Present for single events
   eventName: string;
   caller: string;
   createdAt: string;
   updatedAt: string;
-  image?: string;
-  description?: string;
-  eventDateStart?: string;
-  eventDateEnd?: string;
-  amountPaidPoap?: bigint;
-  pricePoap?: bigint;
-  isOpenPrice?: boolean;
-  tokenSymbol?: string;
-  tokenMetadata?: Token;
+  isPublic?: boolean; // From API response
+  disabled?: boolean; // From API response
+  image?: string; // Added by metadata fetch
+  description?: string; // Added by metadata fetch
+  eventDateStart?: string; // Added by metadata fetch
+  eventDateEnd?: string; // Added by metadata fetch
+  amountPaidPoap?: bigint; // Added by metadata fetch
+  pricePoap?: bigint; // Added by metadata fetch
+  isOpenPrice?: boolean; // Added by metadata fetch
+  tokenSymbol?: string; // Added by metadata fetch
+  tokenMetadata?: Token; // Added by metadata fetch
+  // Series-specific fields
+  seriesContractId?: string; // Present for series events
+  eventId?: number; // Event index within series
+  isSeries?: boolean; // Flag to distinguish series events
 }
 
-interface Collection {
-  id: string;
-  name: string;
-  description: string;
-  nfts: NFTMetadata[];
-}
+// Collection interface is now imported from CollectionModal
 
 // Helper function to humanize amounts with K, M, B suffixes for large numbers
 const humanizeAmount = (amount: bigint, decimals: number = 18): string => {
@@ -76,8 +81,11 @@ const humanizeAmount = (amount: bigint, decimals: number = 18): string => {
   return formatted.replace(/\.?0+$/, '');
 };
 
-export default function NFTList({ account: connectedAccount }: { account: string }) {
-  const truncatedAccount = connectedAccount.slice(0, 4) + '...' + connectedAccount.slice(-4);
+export default function NFTList({ account: connectedAccount }: { account: string | undefined }) {
+  // Test mode: use test address if no account provided
+  const testAddress = '1GBvuTs4TosNB9xTCGJL5wABn2xTYCzwa7MnXHphjcj1y';
+  const actualAccount = connectedAccount || testAddress;
+  const truncatedAccount = actualAccount ? actualAccount.slice(0, 4) + '...' + actualAccount.slice(-4) : '';
   const [showAllNFTs, setShowAllNFTs] = useState(false);
   const [nfts, setNfts] = useState<NFTMetadata[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -91,6 +99,34 @@ export default function NFTList({ account: connectedAccount }: { account: string
   const [showAllCollections, setShowAllCollections] = useState(false);
   const [selectedCollection, setSelectedCollection] = useState<Collection | null>(null);
   const [isAnimatingOut, setIsAnimatingOut] = useState(false)
+
+  // Early return if no account is provided (but we have test address, so skip this)
+  if (!actualAccount) {
+    return (
+      <section className="py-36 px-4 md:px-8 bg-lila-200">
+        <div className="mx-auto max-w-7xl">
+          <div className="bg-lila-200 p-8 rounded-xl">
+            <div className="max-w-lg mx-auto text-center">
+              <Image
+                src="/images/blob5.svg"
+                alt="No account"
+                width={60}
+                height={60}
+                className="mx-auto mb-6 opacity-80"
+                priority
+              />
+              <h3 className="text-2xl font-semibold text-black mb-4">
+                Account Not Available
+              </h3>
+              <p className="text-gray-600 mb-8">
+                Please connect your wallet to view your Presence NFTs.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   const handleCollectionShare = async (e: React.MouseEvent, collectionId: string) => {
     e.stopPropagation();
@@ -159,6 +195,101 @@ export default function NFTList({ account: connectedAccount }: { account: string
       setIsSnackbarOpen(true);
     }
   }
+
+  // Fetch series collections from user's owned series contracts
+  useEffect(() => {
+    const fetchSeriesCollections = async () => {
+      if (!actualAccount) return;
+
+      try {
+        // Fetch user's series from API
+        // According to API docs (line 484-502): GET /series/organizer/:address?limit=20
+        // Returns all series collections created by a specific organizer
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL ?? 'https://presenceprotocol.notrustverify.ch'}/api/series/organizer/${actualAccount}`
+        );
+
+        if (response.ok) {
+          const seriesData = await response.json();
+
+          // For each series, fetch its events/presences and stats
+          const collectionsWithNFTs = await Promise.all(
+            seriesData.map(async (series: any) => {
+              try {
+                // Fetch events in this series
+                const eventsResponse = await fetch(
+                  `${process.env.NEXT_PUBLIC_API_URL ?? 'https://presenceprotocol.notrustverify.ch'}/api/series/${series.id}/events`
+                );
+
+                // Fetch presence stats for this series
+                let statsMap: Record<number, { totalPresences: number; uniqueAttendees: number }> = {};
+                try {
+                  const statsResponse = await fetch(
+                    `${process.env.NEXT_PUBLIC_API_URL ?? 'https://presenceprotocol.notrustverify.ch'}/api/poap-serie/${series.contractId}/stats/events`
+                  );
+                  if (statsResponse.ok) {
+                    const statsData = await statsResponse.json();
+                    if (statsData.events) {
+                      statsData.events.forEach((stat: any) => {
+                        statsMap[stat.eventId] = {
+                          totalPresences: stat.totalPresences || 0,
+                          uniqueAttendees: stat.uniqueAttendees || 0
+                        };
+                      });
+                    }
+                  }
+                } catch (statsError) {
+                  console.error('Error fetching series stats:', statsError);
+                }
+
+                if (eventsResponse.ok) {
+                  const events = await eventsResponse.json();
+
+                  const nftMetadata = events.map((event: any) => {
+                    const eventStats = statsMap[event.eventId] || { totalPresences: 0, uniqueAttendees: 0 };
+                    return {
+                      title: event.eventName,
+                      description: event.description || '',
+                      image: event.image || '',
+                      tokenId: `#${event.eventId}`,
+                      eventDateStart: event.eventDateStart || '',
+                      eventDateEnd: event.eventDateEnd || '',
+                      collectionId: event.contractId,
+                      eventId: event.eventId,
+                      totalPresences: eventStats.totalPresences,
+                      uniqueAttendees: eventStats.uniqueAttendees
+                    };
+                  });
+
+                  return {
+                    id: series.contractId,
+                    name: series.name,
+                    description: series.description,
+                    nfts: nftMetadata,
+                    isSeries: true
+                  };
+                }
+              } catch (error) {
+                console.error('Error fetching series events:', error);
+              }
+
+              return null;
+            })
+          );
+
+          // Filter out null values and set collections
+          const validCollections = collectionsWithNFTs.filter((c): c is Collection => c !== null);
+          setCollections(validCollections);
+        }
+      } catch (error) {
+        console.error('Error fetching series collections:', error);
+        // Fall back to demo collections if API fails
+        setCollections(demoCollections);
+      }
+    };
+
+    fetchSeriesCollections();
+  }, [actualAccount]);
 
   const demoCollections: Collection[] = [
     {
@@ -232,36 +363,149 @@ export default function NFTList({ account: connectedAccount }: { account: string
   ];
 
   useEffect(() => {
-    setCollections(demoCollections)
-  }, [])
-
-  useEffect(() => {
-    // console.log('Setting up node provider...');
+    if (!actualAccount) {
+      setIsLoading(false);
+      return;
+    }
+    
     web3.setCurrentNodeProvider(
       process.env.NEXT_PUBLIC_NODE_URL ?? "https://node.testnet.alephium.org",
       undefined,
       undefined
     );
-    // console.log('Node provider setup complete');
 
-    // Fetching all events for the account
+    // Fetching all events for the account (both single events and series events)
     const fetchEvents = async () => {
       try {
         const minLoadingTime = new Promise(resolve => setTimeout(resolve, 1000));
+        // Use localhost in development if env var not set
+        const baseUrl = process.env.NEXT_PUBLIC_API_URL ?? 
+          (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+            ? 'http://127.0.0.1:3000' 
+            : 'https://presenceprotocol.notrustverify.ch');
 
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL ?? 'https://presenceprotocol.notrustverify.ch'}/api/events/${connectedAccount}?limit=10`);
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
+        // Fetch single events
+        const singleEventsUrl = `${baseUrl}/api/events/${actualAccount}?limit=50`;
+        let singleEventsData: EventResponse[] = [];
+        try {
+          const singleResponse = await fetch(singleEventsUrl);
+          if (singleResponse.ok) {
+            const rawSingleEvents = await singleResponse.json();
+            if (Array.isArray(rawSingleEvents)) {
+              singleEventsData = rawSingleEvents.map((event: any) => ({
+                ...event,
+                isSeries: false,
+                eventType: 'single',
+              }));
+            }
+          }
+        } catch (error) {
+          console.error('Error fetching single events:', error);
         }
-        const eventsData: EventResponse[] = await response.json();
 
-        const tokenList = await getTokenList();
+        // Fetch series events
+        const seriesEventsUrl = `${baseUrl}/api/series/events/organizer/${actualAccount}?limit=50`;
+        let seriesEventsData: EventResponse[] = [];
+        try {
+          const seriesResponse = await fetch(seriesEventsUrl);
+          if (seriesResponse.ok) {
+            const rawSeriesEvents = await seriesResponse.json();
+            if (Array.isArray(rawSeriesEvents)) {
+              seriesEventsData = rawSeriesEvents.map((event: any) => ({
+                ...event,
+                caller: event.organizer || event.caller,
+                isSeries: true,
+              }));
+            }
+          }
+        } catch (error) {
+          console.error('Error fetching series events:', error);
+        }
+
+        // Merge both event types
+        const eventsData: EventResponse[] = [...singleEventsData, ...seriesEventsData];
+        
+        if (eventsData.length === 0) {
+          setEvents([]);
+          await minLoadingTime;
+          return;
+        }
+
+        // Get token list - if it fails, continue with empty array
+        let tokenList: Token[] = [];
+        try {
+          tokenList = await getTokenList();
+        } catch (error) {
+          // Continue with empty token list - events will still work, just without token metadata
+        }
+
+        // Helper to add timeout to contract state fetches
+        const fetchWithTimeout = async <T,>(promise: Promise<T>, timeoutMs: number = 10000): Promise<T> => {
+          const timeout = new Promise<T>((_, reject) => 
+            setTimeout(() => reject(new Error(`Contract fetch timeout after ${timeoutMs}ms`)), timeoutMs)
+          );
+          return Promise.race([promise, timeout]);
+        };
 
         // Fetch collection metadata for each event
-        const eventsWithMetadata = await Promise.all(eventsData.map(async (event) => {
+        const eventsWithMetadataResults = await Promise.allSettled(eventsData.map(async (event) => {
+          // For series events, try multiple contract types
+          if (event.isSeries) {
+            try {
+              const poapData = PoapData.at(addressFromContractId(event.contractId));
+              const poapDataState = await fetchWithTimeout(poapData.fetchState(), 10000);
+              return {
+                ...event,
+                contractId: event.contractId,
+                amountPaidPoap: poapDataState.fields.amountPoapFees,
+                pricePoap: poapDataState.fields.poapPrice,
+                image: hexToString(poapDataState.fields.eventImage),
+                description: hexToString(poapDataState.fields.description),
+                eventDateStart: new Date(Number(poapDataState.fields.eventStartAt)).toLocaleDateString(),
+                eventDateEnd: new Date(Number(poapDataState.fields.eventEndAt)).toLocaleDateString(),
+                isOpenPrice: poapDataState.fields.isOpenPrice,
+                tokenSymbol: poapDataState.fields.tokenIdPoap,
+                tokenMetadata: findTokenFromId(tokenList, poapDataState.fields.tokenIdPoap),
+              };
+            } catch (poapDataError) {
+              // Try PoapSerieCollectionV2
+              try {
+                const seriesContractId = event.seriesContractId || event.collectionContractId || event.contractId;
+                const seriesCollection = PoapSerieCollectionV2.at(addressFromContractId(seriesContractId));
+                const seriesState = await fetchWithTimeout(seriesCollection.fetchState(), 10000);
+                return {
+                  ...event,
+                  contractId: event.contractId,
+                  image: hexToString(seriesState.fields.collectionImage),
+                  description: hexToString(seriesState.fields.collectionDescription),
+                };
+              } catch (seriesCollectionError) {
+                // Try PoapNFTSerieV2
+                try {
+                  const seriesNFT = PoapNFTSerieV2.at(addressFromContractId(event.contractId));
+                  const nftState = await fetchWithTimeout(seriesNFT.fetchState(), 10000);
+                  return {
+                    ...event,
+                    contractId: event.contractId,
+                    image: hexToString(nftState.fields.eventImage),
+                    description: hexToString(nftState.fields.description),
+                    eventDateStart: new Date(Number(nftState.fields.eventStartAt)).toLocaleDateString(),
+                    eventDateEnd: new Date(Number(nftState.fields.eventEndAt)).toLocaleDateString(),
+                  };
+                } catch (nftError) {
+                  return event;
+                }
+              }
+            }
+          }
+
+          // For single events, try PoapCollectionV2 first
           try {
-            const collection = PoapCollection.at(addressFromContractId(event.contractId));
-            const collectionMetadata = await collection.fetchState();
+            const contractId = event.collectionContractId || event.contractId;
+            const collectionV2 = PoapCollectionV2.at(addressFromContractId(contractId));
+            const collectionMetadata = await fetchWithTimeout(collectionV2.fetchState(), 10000);
+            const hasLockPresenceUntil = 'lockPresenceUntil' in collectionMetadata.fields;
+
             return {
               ...event,
               contractId: event.contractId,
@@ -274,19 +518,56 @@ export default function NFTList({ account: connectedAccount }: { account: string
               isOpenPrice: collectionMetadata.fields.isOpenPrice,
               tokenSymbol: collectionMetadata.fields.tokenIdPoap,
               tokenMetadata: findTokenFromId(tokenList, collectionMetadata.fields.tokenIdPoap),
+              ...(hasLockPresenceUntil && { lockPresenceUntil: collectionMetadata.fields.lockPresenceUntil }),
             };
-          } catch (error) {
-            console.error('Error fetching collection metadata:', error);
-            return event;
+          } catch (v2Error) {
+            // Try original PoapCollection
+            try {
+              const contractId = event.collectionContractId || event.contractId;
+              const collection = PoapCollection.at(addressFromContractId(contractId));
+              const collectionMetadata = await fetchWithTimeout(collection.fetchState(), 10000);
+              return {
+                ...event,
+                contractId: event.contractId,
+                amountPaidPoap: collectionMetadata.fields.amountPoapFees,
+                pricePoap: collectionMetadata.fields.poapPrice,
+                image: hexToString(collectionMetadata.fields.eventImage),
+                description: hexToString(collectionMetadata.fields.description),
+                eventDateStart: new Date(Number(collectionMetadata.fields.eventStartAt)).toLocaleDateString(),
+                eventDateEnd: new Date(Number(collectionMetadata.fields.eventEndAt)).toLocaleDateString(),
+                isOpenPrice: collectionMetadata.fields.isOpenPrice,
+                tokenSymbol: collectionMetadata.fields.tokenIdPoap,
+                tokenMetadata: findTokenFromId(tokenList, collectionMetadata.fields.tokenIdPoap),
+              };
+            } catch (v1Error) {
+              return event;
+            }
           }
         }));
 
-        setEvents(eventsWithMetadata);
+        // Process Promise.allSettled results
+        const eventsWithMetadata = eventsWithMetadataResults.map((result, index) => {
+          if (result.status === 'fulfilled') {
+            return result.value;
+          } else {
+            return eventsData[index] || null;
+          }
+        }).filter((e): e is EventResponse => e !== null && e !== undefined);
+
+        // Filter valid events - require contractId
+        const validEvents = eventsWithMetadata.filter((e): e is EventResponse => 
+          e !== null && e !== undefined && !!e.contractId
+        );
+        
+        // Set events - use validEvents if available, otherwise use eventsData
+        const eventsToSet = validEvents.length > 0 ? validEvents : 
+          eventsData.filter((e): e is EventResponse => e !== null && e !== undefined && !!e.contractId);
+        
+        setEvents(eventsToSet);
         await minLoadingTime;
       } catch (error) {
         console.error('Error fetching events:', error);
-      } finally {
-        setIsLoading(false);
+        setEvents([]);
       }
     };
 
@@ -294,59 +575,186 @@ export default function NFTList({ account: connectedAccount }: { account: string
       try {
         // Create a minimum loading time promise
         const minLoadingTime = new Promise(resolve => setTimeout(resolve, 1000));
+        const baseUrl = process.env.NEXT_PUBLIC_API_URL ?? 'https://presenceprotocol.notrustverify.ch';
 
-        // Fetch POAP data
-        const response = await fetch(`https://presenceprotocol.notrustverify.ch/api/poap/${connectedAccount}`);
-        const poapData: POAPResponse[] = await response.json();
-        // Fetch metadata for each POAP
-        const nftPromises = poapData.map(async (poap) => {
-          const collection = PoapNFT.at(addressFromContractId(poap.contractId));
-          const collectionMetadata = await collection.fetchState();
+        // Fetch single event POAPs
+        const singlePoapUrl = `${baseUrl}/api/poap/${actualAccount}?limit=50`;
+        let singlePoapData: POAPResponse[] = [];
+        try {
+          const singleResponse = await fetch(singlePoapUrl);
+          if (singleResponse.ok) {
+            singlePoapData = await singleResponse.json();
+          }
+        } catch (e) {
+          // Silently fail - will show empty state
+        }
 
+        // Fetch series POAPs
+        const seriesPoapUrl = `${baseUrl}/api/poap-serie/${actualAccount}`;
+        let seriesPoapData: POAPResponse[] = [];
+        try {
+          const seriesResponse = await fetch(seriesPoapUrl);
+          if (seriesResponse.ok) {
+            seriesPoapData = await seriesResponse.json();
+          }
+        } catch (e) {
+          // Silently fail - will show empty state
+        }
+
+        // Merge both POAP types
+        const poapData: POAPResponse[] = [...singlePoapData, ...seriesPoapData];
+
+        if (poapData.length === 0) {
+          setNfts([]);
+          await minLoadingTime;
+          return;
+        }
+        
+        // Helper to add timeout to contract state fetches
+        const fetchWithTimeout = async <T,>(promise: Promise<T>, timeoutMs: number = 10000): Promise<T> => {
+          const timeout = new Promise<T>((_, reject) => 
+            setTimeout(() => reject(new Error(`Contract fetch timeout after ${timeoutMs}ms`)), timeoutMs)
+          );
+          return Promise.race([promise, timeout]);
+        };
+        
+        // Helper to safely convert hex to string
+        const safeHexToString = (hex: any): string => {
+          if (!hex || typeof hex !== 'string') return '';
+          try {
+            return hexToString(hex);
+          } catch (e) {
+            return '';
+          }
+        };
+
+        // Helper to extract NFT metadata from any contract state
+        const extractNftMetadata = (fields: any, poap: POAPResponse) => {
           return {
-            title: hexToString(collectionMetadata.fields.eventName),
-            description: hexToString(collectionMetadata.fields.description),
-            image: hexToString(collectionMetadata.fields.eventImage),
+            title: safeHexToString(fields.eventName) || `POAP #${poap.nftIndex}`,
+            description: safeHexToString(fields.description),
+            image: safeHexToString(fields.eventImage),
             tokenId: `#${poap.nftIndex}`,
-            eventDateStart: new Date(Number(collectionMetadata.fields.eventStartAt)).toLocaleDateString(),
-            eventDateEnd: new Date(Number(collectionMetadata.fields.eventEndAt)).toLocaleDateString(),
-            // contractAddress: addressFromContractId(collectionMetadata.contractId),
+            eventDateStart: fields.eventStartAt ? new Date(Number(fields.eventStartAt)).toLocaleDateString() : '',
+            eventDateEnd: fields.eventEndAt ? new Date(Number(fields.eventEndAt)).toLocaleDateString() : '',
+            collectionId: addressFromContractId(poap.contractId)
+          };
+        };
+
+        // Fetch metadata for each POAP
+        // Try different PoapNFT versions to find which one works
+        const nftPromises = poapData.map(async (poap) => {
+          const poapAddress = addressFromContractId(poap.contractId);
+
+          // Try PoapNFTV2 first
+          try {
+            const nftV2 = PoapNFTV2.at(poapAddress);
+            const metadataV2 = await fetchWithTimeout(nftV2.fetchState(), 10000);
+            return extractNftMetadata(metadataV2.fields, poap);
+          } catch (v2Error) {
+            // Try original PoapNFT
+            try {
+              const nft = PoapNFT.at(poapAddress);
+              const metadata = await fetchWithTimeout(nft.fetchState(), 10000);
+              return extractNftMetadata(metadata.fields, poap);
+            } catch (v1Error) {
+              // Try PoapNFTSerieV2 (series NFT)
+              try {
+                const serieNFT = PoapNFTSerieV2.at(poapAddress);
+                const serieMetadata = await fetchWithTimeout(serieNFT.fetchState(), 10000);
+                return extractNftMetadata(serieMetadata.fields, poap);
+              } catch (serieError) {
+                // All types failed, return minimal object
+              }
+            }
+          }
+
+          // Return a minimal NFT object so the fetch doesn't fail completely
+          return {
+            title: `POAP #${poap.nftIndex}`,
+            description: '',
+            image: '',
+            tokenId: `#${poap.nftIndex}`,
+            eventDateStart: '',
+            eventDateEnd: '',
             collectionId: addressFromContractId(poap.collectionContractId)
           };
         });
 
         const nftMetadata = await Promise.all(nftPromises);
         // Wait for both the data and minimum loading time
-        await Promise.all([minLoadingTime]);
+        await minLoadingTime;
         setNfts(nftMetadata);
       } catch (error) {
         console.error('Error fetching NFTs:', error);
-      } finally {
-        setIsLoading(false);
+        setNfts([]);
       }
     };
 
-    fetchNFTs();
-    fetchEvents();
-  }, [connectedAccount]);
+    // Wrap fetch functions to ensure they always resolve
+    const safeFetchNFTs = async () => {
+      try {
+        await fetchNFTs();
+      } catch (error) {
+        console.error('Unhandled error in fetchNFTs:', error);
+        setNfts([]);
+      }
+    };
+
+    const safeFetchEvents = async () => {
+      try {
+        await fetchEvents();
+      } catch (error) {
+        console.error('Unhandled error in fetchEvents:', error);
+        setEvents([]);
+      }
+    };
+
+    // Wait for both fetches to complete before setting loading to false
+    // Add a timeout to ensure loading never gets stuck
+    const timeoutPromise = new Promise<void>((resolve) => {
+      setTimeout(() => {
+        resolve();
+      }, 30000); // 30 second timeout
+    });
+
+    Promise.race([
+      Promise.all([safeFetchNFTs(), safeFetchEvents()]),
+      timeoutPromise
+    ])
+      .finally(() => {
+        setIsLoading(false);
+      });
+  }, [actualAccount]);
+
 
   // Helper function to truncate token address when no token metadata is available
   const getDisplayToken = (event: EventResponse) => {
     if (event.tokenMetadata) {
       return event.tokenMetadata.symbol;
     } else if (event.tokenSymbol) {
+      // Don't show token if it's "0000"
+      if (event.tokenSymbol === '0000' || event.tokenSymbol === '0000000000000000000000000000000000000000000000000000000000000000') {
+        return '';
+      }
       return truncateAddress(event.tokenSymbol)
     } else {
       return '';
     }
   };
 
+  // Filter valid events
+  const allEvents = events.filter(event => event && event.contractId);
+
   const displayedNFTs = showAllNFTs ? nfts : nfts.slice(0, 6);
-  const displayedEvents = showAllEvents ? events : events.slice(0, 6);
+  const displayedEvents = showAllEvents ? allEvents : allEvents.slice(0, 6);
   const displayedCollections = showAllCollections ? collections : collections.slice(0, 4);
 
-  const handleShare = async (contractId: string) => {
-    const url = `${window.location.origin}/mint-presence/#id=${contractId}`;
+  const handleShare = async (contractId: string, eventId?: number) => {
+    let url = `${window.location.origin}/mint-presence/#id=${contractId}`;
+    if (eventId !== undefined) {
+      url += `&eventId=${eventId}`;
+    }
     await navigator.clipboard.writeText(url);
     setIsSnackbarOpen(true);
   };
@@ -376,10 +784,8 @@ export default function NFTList({ account: connectedAccount }: { account: string
     );
   }
 
-  // console.log('nfts', nfts);
-  // console.log('events', events);
 
-  if (nfts.length === 0 && events.length === 0 && collections.length === 0) {
+  if (nfts.length === 0 && allEvents.length === 0 && collections.length === 0) {
     return (
       <section className="py-36 px-4 md:px-8 bg-lila-200">
         <div className="mx-auto max-w-7xl">
@@ -550,7 +956,7 @@ export default function NFTList({ account: connectedAccount }: { account: string
             <div className="flex items-center gap-4">
               <h3 className="text-2xl font-semibold text-black">Your Events</h3>
               <div className="text-black items-center bg-lila-300 shadow shadow-lila-600 text-xs font-semibold inline-flex px-2  border-lila-600 border-2 py-1 rounded-lg tracking-wide">
-                {events.length} {events.length === 1 ? 'Event' : 'Events'}
+                {allEvents.length} {allEvents.length === 1 ? 'Event' : 'Events'}
               </div>
             </div>
             {/* <Link
@@ -561,7 +967,7 @@ export default function NFTList({ account: connectedAccount }: { account: string
             </Link> */}
           </div>
 
-          {events.length === 0 ? (
+          {allEvents.length === 0 ? (
             <div className="bg-lila-200 p-8 rounded-xl">
               <div className="max-w-lg mx-auto text-center">
                 <Image
@@ -591,7 +997,7 @@ export default function NFTList({ account: connectedAccount }: { account: string
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 {displayedEvents.map((event, index) => (
                   <div
-                    key={index}
+                    key={event.contractId || index}
                     className="border-2 border-black rounded-xl overflow-hidden bg-white shadow"
                   >
                     <div className="relative aspect-square overflow-hidden border-b-2 border-black">
@@ -630,8 +1036,17 @@ export default function NFTList({ account: connectedAccount }: { account: string
                         <p className="text-xs text-black mb-3 line-clamp-2">{event.description}</p>
                       )}
                       <div className="flex justify-between items-center pt-3 border-t-2 border-black">
-                        <div className="text-black items-center shadow shadow-lila-600 text-[10px] font-semibold inline-flex px-2 bg-lila-300 border-lila-600 border-2 py-1 rounded-lg tracking-wide">
-                          {getDisplayToken(event)}
+                        <div className="flex items-center gap-2">
+                          {getDisplayToken(event) && (
+                            <div className="text-black items-center shadow shadow-lila-600 text-[10px] font-semibold inline-flex px-2 bg-lila-300 border-lila-600 border-2 py-1 rounded-lg tracking-wide">
+                              {getDisplayToken(event)}
+                            </div>
+                          )}
+                          {event.isSeries && (
+                            <div className="text-black items-center shadow shadow-blue-400 text-[10px] font-semibold inline-flex px-2 bg-blue-100 border-blue-400 border-2 py-1 rounded-lg tracking-wide">
+                              Series
+                            </div>
+                          )}
                         </div>
                         <div className="text-xs text-black font-medium">
                           {event.eventDateStart && event.eventDateEnd ? (
@@ -643,7 +1058,14 @@ export default function NFTList({ account: connectedAccount }: { account: string
                       </div>
                       <div className="flex justify-between items-center gap-4 ">
                         <button
-                          onClick={(e) => handleCollectionShare(e, event.contractId)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (event.isSeries && event.seriesContractId) {
+                              handleShare(event.seriesContractId, event.eventId);
+                            } else {
+                              handleCollectionShare(e, event.contractId);
+                            }
+                          }}
                           className="mt-4 w-full text-black items-center shadow shadow-black text-xs font-semibold inline-flex px-4 justify-center bg-white border-black ease-in-out transform transition-all focus:ring-lila-700 focus:shadow-none border-2 duration-100   py-2 rounded-lg h-10 focus:translate-y-1 hover:text-lila-800 tracking-wide"
                         >
                           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-3 h-3 mr-1">
@@ -653,7 +1075,10 @@ export default function NFTList({ account: connectedAccount }: { account: string
                         </button>
 
                         <Link
-                          href={`/mint-presence/#id=${addressFromContractId(event.contractId)}`}
+                          href={event.isSeries && event.seriesContractId
+                            ? `/mint-presence/#id=${addressFromContractId(event.seriesContractId)}&eventId=${event.eventId}`
+                            : `/mint-presence/#id=${addressFromContractId(event.contractId)}`
+                          }
                           target="_blank"
                           rel="noopener noreferrer"
                           className="mt-4 w-full text-black items-center shadow shadow-black text-xs font-semibold inline-flex px-4 justify-center bg-white border-black ease-in-out transform transition-all focus:ring-lila-700 focus:shadow-none border-2 duration-100   py-2 rounded-lg h-10 focus:translate-y-1 hover:text-lila-800 tracking-wide"
@@ -682,7 +1107,7 @@ export default function NFTList({ account: connectedAccount }: { account: string
                 ))}
               </div>
 
-              {events.length > 6 && (
+              {allEvents.length > 6 && (
                 <div className="flex justify-center mt-8">
                   <button
                     onClick={() => setShowAllEvents(!showAllEvents)}
@@ -722,8 +1147,8 @@ export default function NFTList({ account: connectedAccount }: { account: string
             <>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
                 {displayedCollections.map((collection) => {
-                  const topCardNft = collection.nfts[0];
-                  const backgroundNfts = collection.nfts.slice(1, 3);
+                  const topCardNft = collection.nfts?.[0];
+                  const backgroundNfts = collection.nfts?.slice(1, 3) || [];
                   return (
                     <div
                       key={collection.id}
@@ -750,10 +1175,12 @@ export default function NFTList({ account: connectedAccount }: { account: string
                           style={{ zIndex: backgroundNfts.length }}
                         >
                            <div className="aspect-square w-full border-b-2 border-black overflow-hidden">
-                              {topCardNft.image ? (
+                              {topCardNft?.image ? (
                                   <img src={topCardNft.image} alt={collection.name} className="w-full h-full object-cover" />
                               ) : (
-                                  <div className="w-full h-full flex flex-col items-center justify-center p-4 bg-gradient-to-br from-lila-100 to-lila-300"></div>
+                                  <div className="w-full h-full flex flex-col items-center justify-center p-4 bg-gradient-to-br from-lila-100 to-lila-300">
+                                    <span className="text-gray-500 text-sm text-center">No presences yet</span>
+                                  </div>
                               )}
                             </div>
                             <div className="p-4 flex flex-col flex-grow">

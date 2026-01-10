@@ -35,7 +35,7 @@ import {
 } from "@alephium/web3";
 import { default as PoapFactoryContractJson } from "../PoapFactory.ral.json";
 import { getContractByCodeHash, registerContract } from "./contracts";
-import { Trait, AllStructs } from "./types";
+import * as types from "./types";
 
 // Custom types for the contract
 export namespace PoapFactoryTypes {
@@ -201,7 +201,7 @@ class Factory extends ContractFactory<
     return encodeContractFields(
       addStdIdToFields(this.contract, fields),
       this.contract.fieldsSig,
-      AllStructs
+      types.AllStructs
     );
   }
 
@@ -278,7 +278,7 @@ class Factory extends ContractFactory<
     getNumEventsCreated: async (
       params: Omit<
         TestContractParamsWithoutMaps<PoapFactoryTypes.Fields, never>,
-        "testArgs"
+        "args"
       >
     ): Promise<TestContractResultWithoutMaps<bigint>> => {
       return testMethod(
@@ -305,7 +305,7 @@ export const PoapFactory = new Factory(
     PoapFactoryContractJson,
     "",
     "d8a33daa9e49797cf7649f4c78d877fb453aff6bdddccce32ef80245e77d58bb",
-    AllStructs
+    types.AllStructs
   )
 );
 registerContract(PoapFactory);
