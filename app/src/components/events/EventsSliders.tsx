@@ -49,6 +49,39 @@ interface EventMetadata {
 
 type ViewMode = 'events' | 'series';
 
+// Helper function to check if a URL is a video
+const isVideoMedia = (src: string | null | undefined) => {
+  if (!src) return false;
+  const lower = src.toLowerCase();
+  return (
+    lower.startsWith('blob:') ||
+    lower.startsWith('data:video') ||
+    lower.endsWith('.mp4') ||
+    lower.endsWith('.webm') ||
+    lower.endsWith('.ogg') ||
+    lower.includes('video/mp4') ||
+    lower.includes('video/webm') ||
+    lower.includes('video/ogg')
+  );
+};
+
+// Helper function to determine media type (video or image)
+const getMediaType = async (url: string): Promise<'video' | 'image'> => {
+  try {
+    const response = await fetch(url, { method: 'HEAD' });
+    const contentType = response.headers.get('content-type');
+    if (contentType?.startsWith('video/')) {
+      return 'video';
+    }
+    // If content-type header is missing or not video, check the URL
+    return isVideoMedia(response.url) ? 'video' : 'image';
+  } catch (error) {
+    console.error('Error checking media type:', error);
+    // Fallback to checking the original URL
+    return isVideoMedia(url) ? 'video' : 'image';
+  }
+};
+
 export default function EventsSliders() {
   const [events, setEvents] = useState<Event[]>([]);
   const [seriesCollections, setSeriesCollections] = useState<SeriesCollection[]>([]);

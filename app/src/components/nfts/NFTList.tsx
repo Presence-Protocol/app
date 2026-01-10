@@ -8,6 +8,7 @@ import Image from 'next/image';
 import { addressFromContractId, DUST_AMOUNT, hexToString, number256ToNumber, ONE_ALPH, waitForTxConfirmation, web3 } from '@alephium/web3';
 import { PoapCollection, PoapCollectionV2, PoapData, PoapNFT, PoapNFTSerieV2, PoapNFTV2, PoapSerieCollectionV2 } from 'my-contracts';
 import Snackbar from '../ui/Snackbar';
+import MediaDisplay from '../ui/MediaDisplay';
 import { findTokenFromId, getTokenList, Token } from '@/services/utils';
 import { truncateAddress } from '@/utils/stringUtils';
 import CollectionModal, { Collection, NFTMetadata } from '../CollectionModal';

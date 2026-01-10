@@ -2,7 +2,9 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { contractIdFromAddress, web3 } from '@alephium/web3';
+import { contractIdFromAddress, addressFromContractId, hexToString, web3 } from '@alephium/web3';
+import { PoapSerieCollectionV2, PoapData } from 'my-contracts';
+import MediaDisplay from '../ui/MediaDisplay';
 
 interface SeriesData {
   contractId: string;
@@ -126,10 +128,40 @@ export default function SeriesDetail() {
           if (eventsResponse.ok) {
             const rawEvents = await eventsResponse.json();
             // Add eventId if not present (use array index)
-            eventsData = rawEvents.map((event: EventData, index: number) => ({
+            const eventsWithIds = rawEvents.map((event: EventData, index: number) => ({
               ...event,
               eventId: event.eventId ?? index
             }));
+            
+            // Enrich events with contract state (image, description, dates)
+            eventsData = await Promise.all(
+              eventsWithIds.map(async (event: EventData) => {
+                try {
+                  // For series events, fetch from PoapData contract
+                  if (event.contractId) {
+                    try {
+                      const poapData = PoapData.at(addressFromContractId(event.contractId));
+                      const poapDataState = await poapData.fetchState();
+                      return {
+                        ...event,
+                        image: hexToString(poapDataState.fields.eventImage) || event.image || '',
+                        description: hexToString(poapDataState.fields.description) || event.description || '',
+                        eventDateStart: event.eventDateStart || new Date(Number(poapDataState.fields.eventStartAt)).toLocaleDateString(),
+                        eventDateEnd: event.eventDateEnd || new Date(Number(poapDataState.fields.eventEndAt)).toLocaleDateString(),
+                      };
+                    } catch (poapDataError) {
+                      console.warn('Error fetching PoapData for event:', event.eventName, poapDataError);
+                      return event;
+                    }
+                  }
+                  return event;
+                } catch (error) {
+                  console.warn('Error enriching event data:', error);
+                  return event;
+                }
+              })
+            );
+            
             setEvents(eventsData);
           }
         } catch (eventsErr) {
@@ -145,6 +177,52 @@ export default function SeriesDetail() {
           }
         } catch (seriesErr) {
           console.warn('Could not fetch series details:', seriesErr);
+        }
+
+        // Enrich series data with contract state (image, name, description)
+        if (seriesId) {
+          try {
+            const seriesAddress = addressFromContractId(seriesId);
+            const seriesContract = PoapSerieCollectionV2.at(seriesAddress);
+            const state = await seriesContract.fetchState();
+            
+            const contractImage = hexToString(state.fields.collectionImage);
+            const contractName = hexToString(state.fields.collectionName);
+            const contractDescription = hexToString(state.fields.collectionDescription);
+            
+            console.log('Series contract state:', {
+              contractId: seriesId,
+              address: seriesAddress,
+              image: contractImage,
+              name: contractName,
+              apiImage: seriesData?.image
+            });
+            
+            seriesData = {
+              ...(seriesData || {}),
+              contractId: seriesId,
+              eventName: contractName || seriesData?.eventName || 'Series Collection',
+              description: contractDescription || seriesData?.description || '',
+              image: contractImage || seriesData?.image || '',
+              caller: seriesData?.caller || '',
+              isPublic: seriesData?.isPublic ?? true,
+              createdAt: seriesData?.createdAt || new Date().toISOString(),
+              eventsCount: eventsData.length
+            };
+          } catch (contractErr) {
+            console.warn('Could not fetch series contract state:', contractErr);
+            // If contract fetch fails, use API data or create fallback
+            if (!seriesData && eventsData.length > 0) {
+              seriesData = {
+                contractId: seriesId,
+                eventName: 'Series Collection',
+                caller: eventsData[0]?.organizer || '',
+                isPublic: true,
+                createdAt: eventsData[0]?.createdAt || new Date().toISOString(),
+                eventsCount: eventsData.length
+              };
+            }
+          }
         }
 
         // If series details failed but we have events, create a fallback series object
@@ -334,11 +412,11 @@ export default function SeriesDetail() {
           <div className="md:flex">
             {/* Series Image */}
             <div className="md:w-1/3 aspect-square md:aspect-auto border-b-2 md:border-b-0 md:border-r-2 border-black">
-              {series.image ? (
-                <img
-                  src={series.image}
+              {series.image && series.image.trim() ? (
+                <MediaDisplay
+                  url={series.image}
                   alt={series.eventName}
-                  className="w-full h-full object-cover"
+                  title={series.eventName}
                 />
               ) : (
                 <div className="w-full h-full min-h-[200px] flex items-center justify-center bg-gradient-to-br from-lila-100 to-lila-300">
@@ -398,11 +476,15 @@ export default function SeriesDetail() {
             <div className="p-6 border-b-2 border-black bg-lila-50">
               <div className="flex items-center gap-4">
                 {selectedEvent.image && (
-                  <img
-                    src={selectedEvent.image}
-                    alt={selectedEvent.eventName}
-                    className="w-16 h-16 rounded-xl border-2 border-black object-cover"
-                  />
+                  <div className="w-16 h-16 rounded-xl border-2 border-black overflow-hidden flex-shrink-0">
+                    <MediaDisplay
+                      url={selectedEvent.image}
+                      alt={selectedEvent.eventName}
+                      title={selectedEvent.eventName}
+                      eventDateStart={selectedEvent.eventDateStart}
+                      eventDateEnd={selectedEvent.eventDateEnd}
+                    />
+                  </div>
                 )}
                 <div>
                   <h2 className="text-xl font-bold text-black">{selectedEvent.eventName}</h2>
@@ -507,10 +589,12 @@ export default function SeriesDetail() {
                       {/* Event Image */}
                       <div className="relative aspect-square border-b-2 border-black">
                         {event.image ? (
-                          <img
-                            src={event.image}
+                          <MediaDisplay
+                            url={event.image}
                             alt={event.eventName}
-                            className="w-full h-full object-cover"
+                            title={event.eventName}
+                            eventDateStart={event.eventDateStart}
+                            eventDateEnd={event.eventDateEnd}
                           />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-lila-100 to-lila-300">
