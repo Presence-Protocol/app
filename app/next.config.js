@@ -10,6 +10,9 @@ const nextConfig = {
   },
   images: { unoptimized: true },
   optimizeFonts: true,
+  // Add empty turbopack config to silence the warning
+  // We'll use webpack explicitly via --webpack flag in dev script
+  turbopack: {},
   webpack: (config, { isServer }) => {
     if (!isServer) {
       config.resolve.fallback.fs = false
