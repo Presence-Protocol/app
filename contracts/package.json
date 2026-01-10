@@ -22,20 +22,21 @@
     "deploy": "npx cli deploy",
     "lint": "eslint . --ext ts",
     "lint:fix": "eslint . --fix --ext ts",
-    "test": "jest -i --config ./jest-config.json"
+    "test": "jest -i --config ./jest-config.json",
+    "withdraw": "tsc actions/withdraw.ts && node actions/withdraw.js"
   },
   "dependencies": {
-    "@alephium/cli": "^2.0.1",
-    "@alephium/web3": "^2.0.1",
-    "@alephium/web3-test": "^2.0.1",
-    "@alephium/web3-wallet": "^2.0.1",
-    "node-fetch": "^3.3.2",
-    "keccak256": "^1.0.6"
+    "@alephium/cli": "^2.0.8",
+    "@alephium/web3": "^2.0.8",
+    "@alephium/web3-test": "^2.0.8",
+    "@alephium/web3-wallet": "^2.0.8",
+    "keccak256": "^1.0.6",
+    "node-fetch": "^3.3.2"
   },
   "devDependencies": {
-    "@alephium/cli": "^2.0.1",
-    "@alephium/web3-test": "^2.0.1",
-    "@alephium/web3-wallet": "^2.0.1",
+    "@alephium/cli": "^2.0.8",
+    "@alephium/web3-test": "^2.0.8",
+    "@alephium/web3-wallet": "^2.0.8",
     "@types/jest": "^27.5.1",
     "@types/node": "^16.18.23",
     "@typescript-eslint/eslint-plugin": "^5.57.0",

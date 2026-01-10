@@ -62,11 +62,9 @@ export default function MintNFTSimple() {
       undefined
     );
     const deployment = loadDeployments(process.env.NEXT_PUBLIC_NETWORK as NetworkId ?? 'testnet');
-    if (!deployment.contracts.PoapFactory) {
-      throw new Error('PoapFactory contract not found in deployments');
+    if (deployment.contracts.PoapFactory) {
+      setFactoryContract(PoapFactory.at(deployment.contracts.PoapFactory.contractInstance.address));
     }
-    setFactoryContract(PoapFactory.at(deployment.contracts.PoapFactory.contractInstance.address));
-    
 
     if (contractId) {
       const collectionAddress = contractId;
@@ -76,7 +74,7 @@ export default function MintNFTSimple() {
       
       collection.fetchState()
         .then((collectionMetadata) => {
-          // console.log(collectionMetadata);
+          console.log(collectionMetadata);
           setNftCollection({ 
             title: hexToString(collectionMetadata.fields.eventName),
             description: hexToString(collectionMetadata.fields.description),

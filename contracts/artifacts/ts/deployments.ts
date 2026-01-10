@@ -14,6 +14,18 @@ import {
   PoapCollectionInstance,
   PoapFactory,
   PoapFactoryInstance,
+  PoapNFTV2,
+  PoapNFTV2Instance,
+  PoapCollectionV2,
+  PoapCollectionV2Instance,
+  PoapData,
+  PoapDataInstance,
+  PoapSerieCollectionV2,
+  PoapSerieCollectionV2Instance,
+  PoapNFTSerieV2,
+  PoapNFTSerieV2Instance,
+  PoapFactoryV2,
+  PoapFactoryV2Instance,
 } from ".";
 import { default as mainnetDeployments } from "../../deployments/.deployments.mainnet.json";
 import { default as testnetDeployments } from "../../deployments/.deployments.testnet.json";
@@ -22,32 +34,83 @@ import { default as devnetDeployments } from "../../deployments/.deployments.dev
 export type Deployments = {
   deployerAddress: string;
   contracts: {
-    PoapNFT: DeployContractExecutionResult<PoapNFTInstance>;
-    PoapCollection: DeployContractExecutionResult<PoapCollectionInstance>;
-    PoapFactory: DeployContractExecutionResult<PoapFactoryInstance>;
+    PoapNFTV2: DeployContractExecutionResult<PoapNFTV2Instance>;
+    PoapCollectionV2: DeployContractExecutionResult<PoapCollectionV2Instance>;
+    PoapData: DeployContractExecutionResult<PoapDataInstance>;
+    PoapSerieCollectionV2: DeployContractExecutionResult<PoapSerieCollectionV2Instance>;
+    PoapNFTSerieV2: DeployContractExecutionResult<PoapNFTSerieV2Instance>;
+    PoapFactoryV2: DeployContractExecutionResult<PoapFactoryV2Instance>;
+    PoapNFT?: DeployContractExecutionResult<PoapNFTInstance>;
+    PoapCollection?: DeployContractExecutionResult<PoapCollectionInstance>;
+    PoapFactory?: DeployContractExecutionResult<PoapFactoryInstance>;
   };
 };
 
 function toDeployments(json: any): Deployments {
   const contracts = {
-    PoapNFT: {
-      ...json.contracts["PoapNFT"],
-      contractInstance: PoapNFT.at(
-        json.contracts["PoapNFT"].contractInstance.address
+    PoapNFTV2: {
+      ...json.contracts["PoapNFTV2"],
+      contractInstance: PoapNFTV2.at(
+        json.contracts["PoapNFTV2"].contractInstance.address
       ),
     },
-    PoapCollection: {
-      ...json.contracts["PoapCollection"],
-      contractInstance: PoapCollection.at(
-        json.contracts["PoapCollection"].contractInstance.address
+    PoapCollectionV2: {
+      ...json.contracts["PoapCollectionV2"],
+      contractInstance: PoapCollectionV2.at(
+        json.contracts["PoapCollectionV2"].contractInstance.address
       ),
     },
-    PoapFactory: {
-      ...json.contracts["PoapFactory"],
-      contractInstance: PoapFactory.at(
-        json.contracts["PoapFactory"].contractInstance.address
+    PoapData: {
+      ...json.contracts["PoapData"],
+      contractInstance: PoapData.at(
+        json.contracts["PoapData"].contractInstance.address
       ),
     },
+    PoapSerieCollectionV2: {
+      ...json.contracts["PoapSerieCollectionV2"],
+      contractInstance: PoapSerieCollectionV2.at(
+        json.contracts["PoapSerieCollectionV2"].contractInstance.address
+      ),
+    },
+    PoapNFTSerieV2: {
+      ...json.contracts["PoapNFTSerieV2"],
+      contractInstance: PoapNFTSerieV2.at(
+        json.contracts["PoapNFTSerieV2"].contractInstance.address
+      ),
+    },
+    PoapFactoryV2: {
+      ...json.contracts["PoapFactoryV2"],
+      contractInstance: PoapFactoryV2.at(
+        json.contracts["PoapFactoryV2"].contractInstance.address
+      ),
+    },
+    PoapNFT:
+      json.contracts["PoapNFT"] === undefined
+        ? undefined
+        : {
+            ...json.contracts["PoapNFT"],
+            contractInstance: PoapNFT.at(
+              json.contracts["PoapNFT"].contractInstance.address
+            ),
+          },
+    PoapCollection:
+      json.contracts["PoapCollection"] === undefined
+        ? undefined
+        : {
+            ...json.contracts["PoapCollection"],
+            contractInstance: PoapCollection.at(
+              json.contracts["PoapCollection"].contractInstance.address
+            ),
+          },
+    PoapFactory:
+      json.contracts["PoapFactory"] === undefined
+        ? undefined
+        : {
+            ...json.contracts["PoapFactory"],
+            contractInstance: PoapFactory.at(
+              json.contracts["PoapFactory"].contractInstance.address
+            ),
+          },
   };
   return {
     ...json,

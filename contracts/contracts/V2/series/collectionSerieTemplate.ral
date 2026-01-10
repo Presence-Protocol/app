@@ -1,0 +1,394 @@
+import "std/nft_collection_interface"
+Contract PoapSerieCollectionV2(
+    factoryId: ByteVec,
+    nftTemplateId: ByteVec,
+    poapDataTemplateId: ByteVec,
+    organizer: Address,
+
+    //event properties
+    isPublicCollection: Bool,
+    collectionImage: ByteVec,
+    collectionName: ByteVec,
+    collectionDescription: ByteVec,
+
+    mut totalSupply: U256,
+    mut totalSupplySeries: U256
+  )  extends Utils() implements INFTCollection {
+
+   mapping[U256, PoapData] nftMetadata
+
+   event SerieAdded(collectionId: ByteVec, eventId: U256)
+   event PoapMinted(contractId: ByteVec, nftIndex: U256, caller: Address, timestamp: U256)
+   event PoapParticipated(organizerAddress: Address, nftIndex: U256)
+
+   @using(preapprovedAssets = true, updateFields = true, checkExternalCaller = false, assetsInContract = true)
+   pub fn mint(eventId: U256, amount: U256, password: ByteVec, initialCaller: Address) -> (ByteVec) {
+     assert!(nftMetadata.contains!(eventId), ErrorCodes.IncorrectEventIndex)
+     let eventData = nftMetadata[eventId]
+
+
+     assert!(eventData.getCurrentSupply() < eventData.getMaxSupply(), ErrorCodes.MaxSupplyReached)
+     assert!(blockTimeStamp!() >= eventData.getMintStartAt(), ErrorCodes.MintNotStarted)
+     assert!(blockTimeStamp!() <= eventData.getMintEndAt(), ErrorCodes.MintEnded)
+
+     let mut caller = callerAddress!()
+     if(isContractAddress!(caller)){
+        caller = initialCaller
+     }
+     
+     let organizerAddressHex = convert(toByteVec!(eventData.getOrganizer()))
+     let (poapPrice, tokenIdPoap, isOpenPrice)  = eventData.getPoapPrice()
+ 
+     let airdropWhenHasParticipated = eventData.getAirdropWhenHasParticipated()
+     let hashedPassword = eventData.getHashedPassword()
+     let lockPresenceUntil = eventData.getLockedUntil()
+
+     // todo change nftindex to include eventId
+     let (initialImmState, initialMutState) = PoapNFTSerieV2.encodeFields!(selfContractId!(), totalSupply, eventData.getImage(), eventData.getName(), eventData.getDescription(), organizerAddressHex, eventData.getLocation(), eventData.getEventStartAt(), eventData.getEventEndAt(), eventData.getIsPublic(), caller, eventData.getIsBurnable(), eventData.getLockedUntil(), false)
+     
+     let contractPath = toByteVec!(totalSupply)
+     let (amountForStorageFees, amountForChainFees) = eventData.getPrepaidFeesAmount()
+
+     let mut payer = caller
+     // pay storage fees if there's alph in contract
+     if(amountForStorageFees > 0){
+        eventData.useStorageFees()
+        payer = selfAddress!()
+     }
+     
+     if(poapPrice > 0 || isOpenPrice){
+
+        let mut priceToPay = poapPrice
+        if(isOpenPrice){
+          assert!(amount >= 1, ErrorCodes.NotEnoughAlph)
+          priceToPay = amount
+        }
+        eventData.depositPaidPoap{caller -> tokenIdPoap: priceToPay}(priceToPay, caller)
+        
+     }
+
+     if(!airdropWhenHasParticipated){
+        eventData.sendAirdrop{caller -> ALPH: 0}(caller)
+     }
+
+     if(hashedPassword != #00){
+      assert!(hashedPassword == keccak256!(password), ErrorCodes.InvalidPassword)
+     }
+
+
+     let gasFees = txGasFee!()
+     if(amountForChainFees >= gasFees){
+      payGasFee!(selfAddress!(), gasFees)
+      eventData.useChainFees(gasFees)
+     }
+
+    let mut contractId = #00
+    if(lockPresenceUntil > 0){
+
+    contractId = copyCreateSubContractWithToken!{payer -> ALPH: minimalContractDeposit!()}(
+      contractPath,
+      nftTemplateId,
+      initialImmState,
+      initialMutState,
+      1)
+
+      PoapNFTV2(contractId).lock(caller, lockPresenceUntil)
+
+    } else {
+
+      contractId = copyCreateSubContractWithToken!{payer -> ALPH: minimalContractDeposit!()}(
+        contractPath,
+        nftTemplateId,
+        initialImmState,
+        initialMutState,
+        1,
+        caller)
+
+    }
+      
+
+      emit PoapMinted(contractId, totalSupply, caller, blockTimeStamp!())
+      eventData.incrementTotalSupply()
+      totalSupply = totalSupply + 1
+      
+      return contractId
+   }
+
+   @using(preapprovedAssets = true, updateFields = true)
+   pub fn addNewEvent(
+    maxSupply: U256,
+    mintStartAt: U256,
+    mintEndAt: U256,
+    poapPrice: U256,
+    tokenIdPoap: ByteVec,
+    isOpenPrice: Bool,
+    tokenIdAirdrop: ByteVec,
+    amountAirdropPerUser: U256,
+    airdropWhenHasParticipated: Bool,
+    eventImage: ByteVec,
+    eventName: ByteVec,
+    description: ByteVec,
+    location: ByteVec,
+    eventStartAt: U256,
+    eventEndAt: U256,
+    isPublic: Bool,
+    isBurnable: Bool,
+    lockedUntil: U256,
+    hashedPassword: ByteVec,
+    amountAirdrop: U256,
+    amountForStorageFees: U256,
+    amountForChainFees: U256,
+    initialCaller: Address
+    ) -> (ByteVec, U256) {
+      let mut caller = callerAddress!()
+
+      if(isContractAddress!(caller)){
+        assert!(callerContractId!() == factoryId, ErrorCodes.InvalidCaller)
+        caller = initialCaller
+      }
+
+      checkCaller!(caller == organizer, ErrorCodes.InvalidCaller)
+
+      let (initialImmState, initialMutState) = PoapData.encodeFields!(
+        selfContractId!(),
+        maxSupply,
+        mintStartAt,
+        mintEndAt,
+        poapPrice,
+        tokenIdPoap,
+        isOpenPrice,
+        tokenIdAirdrop,
+        amountAirdropPerUser,
+        airdropWhenHasParticipated,
+        eventImage,
+        eventName,
+        description,
+        organizer,
+        location,
+        eventStartAt,
+        eventEndAt,
+        isPublic,
+        isBurnable,
+        lockedUntil,
+        hashedPassword,
+        0,
+        0,
+        0,
+        0,
+        amountAirdrop
+      )
+     
+      let contract = copyCreateContract!{caller -> ALPH: minimalContractDeposit!(), tokenIdAirdrop: amountAirdrop}(poapDataTemplateId, initialImmState, initialMutState)
+      nftMetadata.insert!(caller, totalSupplySeries, PoapData(contract))                  
+
+
+      if(amountForStorageFees > 0){
+        depositStorageFees{caller -> ALPH: amountForStorageFees}(totalSupplySeries, amountForStorageFees, caller)
+      }
+
+      if(amountForChainFees > 0){
+        depositChainFees{caller -> ALPH: amountForChainFees}(totalSupplySeries, amountForChainFees, caller)
+      }
+
+      emit SerieAdded(selfContractId!(), totalSupplySeries)
+
+      totalSupplySeries = totalSupplySeries + 1
+
+
+      return (contract, totalSupplySeries-1) // reduce 1 to return the correct eventId
+
+   }
+
+   @using(checkExternalCaller = true, preapprovedAssets = true)
+   pub fn setParticipatedPresence(eventId: U256, nftIndex: U256) -> (){
+      assert!(nftMetadata.contains!(eventId), ErrorCodes.IncorrectEventIndex)
+      let eventData = nftMetadata[eventId]
+
+      let caller = callerAddress!()
+     
+      checkCaller!(caller == organizer, ErrorCodes.InvalidCaller)
+      let poapContractId = subContractId!(toByteVec!(nftIndex))
+  
+
+      assert!(contractExists!(poapContractId), ErrorCodes.IncorrectTokenIndex)
+      PoapNFTSerieV2(poapContractId).setParticipated()
+
+      let airdropWhenHasParticipated = eventData.getAirdropWhenHasParticipated()
+
+      if(airdropWhenHasParticipated){
+        let minter = PoapNFTSerieV2(poapContractId).getMinter()
+        eventData.sendAirdrop{organizer -> ALPH: dustAmount!()}(minter)
+      }
+
+      emit PoapParticipated(caller, nftIndex)
+
+   }
+
+    pub fn getCollectionUri() -> ByteVec {
+      return b`data:application/json,{"name": "` ++ collectionName ++ b`", "description": "`++ collectionDescription ++ b`", "image": "` ++     collectionImage ++ b`"}`
+    }
+    
+    pub fn totalSupply() -> U256 {
+        return totalSupply
+    }
+
+    pub fn totalSupplySeries() -> U256 {
+        return totalSupplySeries
+    }
+
+
+    pub fn nftByIndex(index: U256) -> INFT {
+        assert!(index < totalSupply, ErrorCodes.IncorrectTokenIndex)
+    
+        let nftTokenId = subContractId!(toByteVec!(index))
+        assert!(contractExists!(nftTokenId), ErrorCodes.NFTNotFound)
+    
+        return INFT(nftTokenId)
+    }
+
+   // pub fn nftByAddress(caller: Address) -> INFT {
+   //   let nftToken = INFT(subContractId!(toByteVec!(caller)))
+   //   assert!(nftTokenId.isOneMintPerAddress(), ErrorCodes.LimitedMintPerAddress) 
+   // assert!(contractExists!(nftTokenId), ErrorCodes.NFTNotFound)
+  
+   //   return nftTokenId
+   //}
+
+    pub fn validateNFT(nftId: ByteVec, nftIndex: U256) -> () {
+
+      let expectedTokenContract =  nftByIndex(nftIndex)
+      
+      //todo: find a way to validate if limited to one mint per address
+      //if (PoapNFTSerieV2(subContractId!(toByteVec!(index))).isOneMintPerAddress()){
+      //    expectedTokenContract =  nftByAddress(callerAddress!())
+      //
+
+        assert!(nftId == contractId!(expectedTokenContract), ErrorCodes.NFTNotPartOfCollection)
+    }
+
+    //pub fn validateNFTAddress(nftId: ByteVec, address: Address) -> () {
+      //assert!(oneMintPerAddress, ErrorCodes.LimitedMintPerAddress)
+      //let expectedTokenContract =  nftByAddress(address)
+
+      //assert!(nftId == contractId!(expectedTokenContract), ErrorCodes.NFTNotPartOfCollection)
+    //}
+
+
+
+    pub fn claimFunds(eventId: U256, amountToClaim: U256) -> () {
+        let caller = callerAddress!()
+      
+        checkCaller!(caller == organizer, ErrorCodes.InvalidCaller)
+
+        assert!(nftMetadata.contains!(eventId), ErrorCodes.IncorrectEventIndex)
+        nftMetadata[eventId].claimFunds(amountToClaim, caller)
+
+    }
+
+    @using(assetsInContract = true)
+    pub fn withdrawStorageFees(eventId: U256, amount: U256, initialCaller: Address) -> () {
+        let mut caller = callerAddress!()
+
+        if(isContractAddress!(caller)){
+          assert!(callerContractId!() == factoryId, ErrorCodes.InvalidCaller)
+          caller = initialCaller
+        }
+
+        checkCaller!(caller == organizer, ErrorCodes.InvalidCaller)
+        
+        assert!(nftMetadata.contains!(eventId), ErrorCodes.IncorrectEventIndex)
+        nftMetadata[eventId].withdrawStorageFees(amount)
+        transferTokenFromSelf!(organizer, ALPH, amount)
+
+    }
+
+    @using(assetsInContract = true)
+    pub fn withdrawChainFees(eventId: U256, amount: U256, initialCaller: Address) -> () {
+
+      let mut caller = callerAddress!()
+
+        if(isContractAddress!(caller)){
+          assert!(callerContractId!() == factoryId, ErrorCodes.InvalidCaller)
+          caller = initialCaller
+        }
+        checkCaller!(caller == organizer, ErrorCodes.InvalidCaller)
+        
+        assert!(nftMetadata.contains!(eventId), ErrorCodes.IncorrectEventIndex)
+        nftMetadata[eventId].withdrawChainFees(amount)
+        transferTokenFromSelf!(organizer, ALPH, amount)
+
+    }
+
+    @using(preapprovedAssets = true, assetsInContract = true)
+    pub fn depositStorageFees(eventId: U256, amount: U256, initialCaller: Address) -> () {
+        let mut caller = callerAddress!()
+
+        if(isContractAddress!(caller)){
+          let callerId = callerContractId!()
+          assert!(callerId == factoryId || callerId == selfContractId!(), ErrorCodes.InvalidCaller)
+          caller = initialCaller
+        }
+        checkCaller!(caller == organizer, ErrorCodes.InvalidCaller)
+        assert!(nftMetadata.contains!(eventId), ErrorCodes.IncorrectEventIndex)
+        nftMetadata[eventId].addStorageFees(amount, caller) // this function will only keep track of the storage fees, collection stores ALPH
+        transferTokenToSelf!(organizer, ALPH, amount)
+    }
+
+    @using(preapprovedAssets = true, assetsInContract = true)
+    pub fn depositChainFees(eventId: U256, amount: U256, initialCaller: Address) -> () {
+        let mut caller = callerAddress!()
+
+        if(isContractAddress!(caller)){
+          let callerId = callerContractId!()
+          assert!(callerId == factoryId || callerId == selfContractId!(), ErrorCodes.InvalidCaller)
+          caller = initialCaller
+        }
+        checkCaller!(caller == organizer, ErrorCodes.InvalidCaller)
+        
+        nftMetadata[eventId].addChainFees(amount, caller) // this function will only keep track of the storage fees, collection stores ALPH
+        transferTokenToSelf!(organizer, ALPH, amount)
+    }
+
+
+    pub fn withdrawAirdrop(eventId: U256, amount: U256) -> () {
+        let caller = callerAddress!()
+        checkCaller!(caller == organizer, ErrorCodes.InvalidCaller)
+
+        assert!(nftMetadata.contains!(eventId), ErrorCodes.IncorrectEventIndex)
+        nftMetadata[eventId].withdrawAirdrop(amount, caller)
+    }
+
+
+    pub fn getOrganizer() -> (Address){
+      return organizer
+    }
+
+    pub fn isCollectionPublic() -> (Bool){
+      return isPublicCollection
+    }
+
+    pub fn getEventPublic(eventId: U256) -> (Bool){
+      assert!(nftMetadata.contains!(eventId), ErrorCodes.IncorrectEventIndex)
+      return nftMetadata[eventId].getIsPublic()
+    }
+
+    pub fn getPoapPrice(eventId: U256) -> (U256, ByteVec, Bool){
+      assert!(nftMetadata.contains!(eventId), ErrorCodes.IncorrectEventIndex)
+      return nftMetadata[eventId].getPoapPrice()
+
+    }
+
+    pub fn getPoapDataByEvent(eventId: U256) -> (ByteVec) {
+      assert!(nftMetadata.contains!(eventId), ErrorCodes.IncorrectEventIndex)
+      return contractId!(nftMetadata[eventId])
+    }
+
+   
+    pub fn getAmountForStorageFees(eventId: U256) -> U256 {
+      assert!(nftMetadata.contains!(eventId), ErrorCodes.IncorrectEventIndex)
+      return nftMetadata[eventId].getAmountForStorageFees()
+    }
+
+
+
+}

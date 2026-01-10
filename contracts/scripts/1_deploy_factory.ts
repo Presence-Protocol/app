@@ -8,7 +8,7 @@ const deployFaucet: DeployFunction<Settings> = async (
   deployer: Deployer,
   network: Network<Settings>
 ): Promise<void> => {
-  
+  /*
   const poapNftTemplateId = deployer.getDeployContractResult('PoapNFT')
   const poapCollectionTemplateId = deployer.getDeployContractResult('PoapCollection')
 
@@ -19,6 +19,7 @@ const deployFaucet: DeployFunction<Settings> = async (
       numMintedCollection: 0n
     }
   })
+    */
 }
 
 export default deployFaucet

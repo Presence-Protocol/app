@@ -27,7 +27,7 @@ describe('integration tests', () => {
     await transferAlphTo(minter2.address, 100n * ONE_ALPH);
     await transferAlphTo(minter3.address, 100n * ONE_ALPH);
 
-  },20000)
+  }, 20000)
 
 
   it('deploy collection', async () => {
@@ -264,8 +264,8 @@ describe('integration tests', () => {
       },
       signer: minter,
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT
-    }),collection.address, 11)
-     
+    }), collection.address, 11)
+
 
 
     expect((await collection.view.totalSupply()).returns).toBe(2n)
@@ -489,7 +489,7 @@ describe('integration tests', () => {
         hashedPassword: '00'
       },
       signer: signer,
-      attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + 2n*10n ** 17n + DUST_AMOUNT
+      attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + 2n * 10n ** 17n + DUST_AMOUNT
     })
 
     // Check that event is emitted
@@ -501,12 +501,12 @@ describe('integration tests', () => {
     const creationEvent = events[0]
     const poapCollectionMinted = creationEvent.fields[0].value as string
 
-    
+
 
     const collection = PoapCollection.at(addressFromContractId(poapCollectionMinted))
     let collectionState = await collection.fetchState()
     expect((await alphBalanceOf(collection.address))).toEqual(collectionState.fields.amountForStorageFees + MINIMAL_CONTRACT_DEPOSIT)
-    expect((await alphBalanceOf(collection.address))).toEqual(3n*10n**17n)
+    expect((await alphBalanceOf(collection.address))).toEqual(3n * 10n ** 17n)
 
     await collection.transact.mint({
       signer: minter,
@@ -520,7 +520,7 @@ describe('integration tests', () => {
 
     collectionState = await collection.fetchState()
     expect((await alphBalanceOf(collection.address))).toEqual(collectionState.fields.amountForStorageFees + MINIMAL_CONTRACT_DEPOSIT)
-    expect((await alphBalanceOf(collection.address))).toEqual(2n*10n**17n)
+    expect((await alphBalanceOf(collection.address))).toEqual(2n * 10n ** 17n)
 
     expect((await collection.view.totalSupply()).returns).toBe(1n)
 
@@ -550,7 +550,7 @@ describe('integration tests', () => {
     })
 
     // should failed because there's no ALPH left in the sc to pay the storage fees
-   await expect(collection.transact.mint({
+    await expect(collection.transact.mint({
       signer: minter2,
       attoAlphAmount: DUST_AMOUNT,
       args: {
@@ -1015,10 +1015,12 @@ describe('integration tests', () => {
       }
     })
 
-   
-   expect((await collection.view.nftByAddress({ args: {
-     caller: minter.address
-   } })).returns).toBeDefined()
+
+    expect((await collection.view.nftByAddress({
+      args: {
+        caller: minter.address
+      }
+    })).returns).toBeDefined()
 
     await expectAssertionError(factory.transact.mintPoap({
       signer: minter,
@@ -1108,10 +1110,12 @@ describe('integration tests', () => {
 
     expect((await collection.view.totalSupply()).returns).toBe(1n)
 
-     
-    expectAssertionError(collection.view.nftByAddress({ args: {
-     caller: minter.address
-   } }), addressFromContractId(poapCollectionMinted), 6)
+
+    expectAssertionError(collection.view.nftByAddress({
+      args: {
+        caller: minter.address
+      }
+    }), addressFromContractId(poapCollectionMinted), 6)
 
     // get Poap    
     const poap = PoapNFT.at(addressFromContractId((await collection.view.nftByIndex({ args: { index: 0n } })).returns))
@@ -1274,14 +1278,14 @@ describe('integration tests', () => {
 
     expect((await alphBalanceOf(collection.address))).toBe(MINIMAL_CONTRACT_DEPOSIT)
 
-    await expectAssertionError( collection.transact.claimFunds({
+    await expectAssertionError(collection.transact.claimFunds({
       args: {
         amountToClaim: 100n
       },
       signer: minter
     }), addressFromContractId(collection.contractId), 7)
 
-   
+
   }, 20000)
 
   it('Mint poap, set price ALPH', async () => {
@@ -1360,14 +1364,14 @@ describe('integration tests', () => {
 
     expect((await alphBalanceOf(collection.address))).toBe(MINIMAL_CONTRACT_DEPOSIT)
 
-    await expectAssertionError( collection.transact.claimFunds({
+    await expectAssertionError(collection.transact.claimFunds({
       args: {
         amountToClaim: 100n
       },
       signer: minter
     }), addressFromContractId(collection.contractId), 7)
 
-   
+
   }, 20000)
 
 
@@ -1461,7 +1465,7 @@ describe('integration tests', () => {
     expect((await alphBalanceOf(collection.address))).toBe(MINIMAL_CONTRACT_DEPOSIT)
     expect((await balanceOf(collection.address, customTokenA.contractId)).amount).toBe("2")
 
-    
+
     await expect(factory.transact.mintPoap({
       signer: minter,
       attoAlphAmount: ONE_ALPH + MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT,
@@ -1506,7 +1510,7 @@ describe('integration tests', () => {
 
     expect(number256ToBigint((await balanceOf(collection.address, customTokenA.contractId)).amount)).toBe(0n)
 
-   
+
   }, 20000)
 
 
@@ -1570,7 +1574,7 @@ describe('integration tests', () => {
 
     await factory.transact.mintPoap({
       signer: minter,
-      attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + 2n*DUST_AMOUNT,
+      attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + 2n * DUST_AMOUNT,
       tokens: [{
         id: customTokenA.contractId,
         amount: 1n
@@ -1584,7 +1588,7 @@ describe('integration tests', () => {
 
     await factory.transact.mintPoap({
       signer: minter,
-      attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + 2n*DUST_AMOUNT,
+      attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + 2n * DUST_AMOUNT,
       tokens: [{
         id: customTokenA.contractId,
         amount: 1n
@@ -1600,10 +1604,10 @@ describe('integration tests', () => {
     expect((await alphBalanceOf(collection.address))).toBe(MINIMAL_CONTRACT_DEPOSIT)
     expect((await balanceOf(collection.address, customTokenA.contractId)).amount).toBe("2")
 
-    
+
     await expect(factory.transact.mintPoap({
       signer: minter,
-      attoAlphAmount: ONE_ALPH + MINIMAL_CONTRACT_DEPOSIT + 2n*DUST_AMOUNT,
+      attoAlphAmount: ONE_ALPH + MINIMAL_CONTRACT_DEPOSIT + 2n * DUST_AMOUNT,
       tokens: [{
         id: customTokenA.contractId,
         amount: 1n
@@ -1645,7 +1649,7 @@ describe('integration tests', () => {
 
     expect(number256ToBigint((await balanceOf(collection.address, customTokenA.contractId)).amount)).toBe(0n)
 
-   
+
   }, 20000)
 
 
@@ -1713,7 +1717,7 @@ describe('integration tests', () => {
 
     await factory.transact.mintPoap({
       signer: minter,
-      attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + 2n*DUST_AMOUNT,
+      attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + 2n * DUST_AMOUNT,
       args: {
         collection: collection.contractId,
         amount: 0n,
@@ -1727,7 +1731,7 @@ describe('integration tests', () => {
 
     await factory.transact.mintPoap({
       signer: minter2,
-      attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + 2n*DUST_AMOUNT,
+      attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + 2n * DUST_AMOUNT,
       args: {
         collection: collection.contractId,
         amount: 0n,
@@ -1753,7 +1757,7 @@ describe('integration tests', () => {
     expect(number256ToBigint((await balanceOf(minter3.account.address, customTokenA.tokenId)).amount)).toBe(0n)
 
 
-   
+
   }, 20000)
 
 
@@ -1824,7 +1828,7 @@ describe('integration tests', () => {
       },
       attoAlphAmount: DUST_AMOUNT,
       signer: signer
-    }), collection.address, 9) 
+    }), collection.address, 9)
 
     expectAssertionError(collection.transact.withdrawAirdrop({
       args: {
@@ -1832,7 +1836,7 @@ describe('integration tests', () => {
       },
       attoAlphAmount: DUST_AMOUNT,
       signer: minter2
-    }), collection.address, 7) 
+    }), collection.address, 7)
 
 
     await collection.transact.withdrawAirdrop({
@@ -1846,7 +1850,7 @@ describe('integration tests', () => {
     expect(number256ToBigint((await balanceOf(collection.address, customTokenA.contractId)).amount)).toBe(0n)
 
 
-   
+
   }, 20000)
 
   it('Mint poap, set aidrop with ALPH', async () => {
@@ -1908,7 +1912,7 @@ describe('integration tests', () => {
 
     await factory.transact.mintPoap({
       signer: minter,
-      attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + 2n*DUST_AMOUNT,
+      attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + 2n * DUST_AMOUNT,
       args: {
         collection: collection.contractId,
         amount: 0n,
@@ -1923,7 +1927,7 @@ describe('integration tests', () => {
 
     await factory.transact.mintPoap({
       signer: minter2,
-      attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + 2n*DUST_AMOUNT,
+      attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + 2n * DUST_AMOUNT,
       args: {
         collection: collection.contractId,
         amount: 0n,
@@ -1949,7 +1953,7 @@ describe('integration tests', () => {
     expect(await alphBalanceOf(minter3.address)).toBeGreaterThan(109n * ONE_ALPH)
 
 
-   
+
   }, 20000)
 
   it('Mint poap, set aidrop, test withdraw', async () => {
@@ -2007,7 +2011,7 @@ describe('integration tests', () => {
     const poapCollectionMinted = creationEvent.fields[0].value as string
 
     const collection = PoapCollection.at(addressFromContractId(poapCollectionMinted))
-    expect(number256ToBigint((await alphBalanceOf(collection.address)))).toBe(20n *ONE_ALPH + MINIMAL_CONTRACT_DEPOSIT)
+    expect(number256ToBigint((await alphBalanceOf(collection.address)))).toBe(20n * ONE_ALPH + MINIMAL_CONTRACT_DEPOSIT)
 
     await collection.transact.withdrawAirdrop({
       args: {
@@ -2020,7 +2024,7 @@ describe('integration tests', () => {
 
 
 
-   
+
   }, 20000)
 
 
@@ -2066,7 +2070,7 @@ describe('integration tests', () => {
         hashedPassword: '00'
       },
       signer: signer,
-      attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT + 2n*10n**17n,
+      attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT + 2n * 10n ** 17n,
       tokens: [{
         id: customTokenA.tokenId,
         amount: 20n
@@ -2084,12 +2088,12 @@ describe('integration tests', () => {
 
     const collection = PoapCollection.at(addressFromContractId(poapCollectionMinted))
     expect(number256ToBigint((await balanceOf(collection.address, customTokenA.contractId)).amount)).toBe(20n)
-    expect(await alphBalanceOf(collection.address)).toBe(3n*10n**17n)
+    expect(await alphBalanceOf(collection.address)).toBe(3n * 10n ** 17n)
 
 
     await factory.transact.mintPoap({
       signer: minter,
-      attoAlphAmount:  2n*DUST_AMOUNT,
+      attoAlphAmount: 2n * DUST_AMOUNT,
       args: {
         collection: collection.contractId,
         amount: 0n,
@@ -2100,13 +2104,13 @@ describe('integration tests', () => {
 
     let collectionState = await collection.fetchState()
     expect(number256ToBigint((await balanceOf(collection.address, customTokenA.contractId)).amount)).toBe(10n)
-    expect(await alphBalanceOf(collection.address)).toBe(2n*10n**17n)
-    expect(collectionState.fields.amountForStorageFees).toBe(10n**17n)
+    expect(await alphBalanceOf(collection.address)).toBe(2n * 10n ** 17n)
+    expect(collectionState.fields.amountForStorageFees).toBe(10n ** 17n)
 
 
     await factory.transact.mintPoap({
       signer: minter2,
-      attoAlphAmount: 2n*DUST_AMOUNT,
+      attoAlphAmount: 2n * DUST_AMOUNT,
       args: {
         collection: collection.contractId,
         amount: 0n,
@@ -2131,7 +2135,7 @@ describe('integration tests', () => {
     expect(number256ToBigint((await balanceOf(minter3.account.address, customTokenA.tokenId)).amount)).toBe(0n)
 
 
-   
+
   }, 20000)
 
 
@@ -2198,21 +2202,21 @@ describe('integration tests', () => {
       }
     })
 
-     // get Poap    
-     const poap = PoapNFT.at(addressFromContractId((await collection.view.nftByIndex({ args: { index: 0n } })).returns))
-     let poapState = await poap.fetchState()
-     expect(hexToString(poapState.fields.eventName)).toBe('Test 1')
-     expect((await poap.view.getTraits()).returns.length).toBe(8)
-     expect(hexToString((await poap.view.getTraitAtIndex({
+    // get Poap    
+    const poap = PoapNFT.at(addressFromContractId((await collection.view.nftByIndex({ args: { index: 0n } })).returns))
+    let poapState = await poap.fetchState()
+    expect(hexToString(poapState.fields.eventName)).toBe('Test 1')
+    expect((await poap.view.getTraits()).returns.length).toBe(8)
+    expect(hexToString((await poap.view.getTraitAtIndex({
       args: {
         index: 7n
       }
     })).returns.traitType)).toBe('Has Participated')
     expect(hexToString((await poap.view.getTraitAtIndex({
-     args: {
-       index: 7n
-     }
-   })).returns.value)).toBe("false")
+      args: {
+        index: 7n
+      }
+    })).returns.value)).toBe("false")
 
     await collection.transact.setParticipatedPresence({
       args: {
@@ -2221,7 +2225,7 @@ describe('integration tests', () => {
         callerAddr: NULL_CONTRACT_ADDRESS
       },
       signer: signer,
-      attoAlphAmount: 10n*DUST_AMOUNT
+      attoAlphAmount: 10n * DUST_AMOUNT
     })
     poapState = await poap.fetchState()
 
@@ -2230,7 +2234,7 @@ describe('integration tests', () => {
 
     expect((await collection.view.totalSupply()).returns).toBe(1n)
 
-    
+
 
     await factory.transact.mintPoap({
       args: {
@@ -2243,15 +2247,15 @@ describe('integration tests', () => {
     })
 
     const poap2 = PoapNFT.at(addressFromContractId((await collection.view.nftByIndex({ args: { index: 1n } })).returns))
-     let poapState2 = await poap2.fetchState()
-     expect(hexToString(poapState2.fields.eventName)).toBe('Test 1')
-     expect((await poap2.view.getTraits()).returns.length).toBe(8)
-     expect(hexToString((await poap2.view.getTraitAtIndex({
-       args: {
-         index: 7n
-       }
-     })).returns.traitType)).toBe('Has Participated')
-     expect(hexToString((await poap2.view.getTraitAtIndex({
+    let poapState2 = await poap2.fetchState()
+    expect(hexToString(poapState2.fields.eventName)).toBe('Test 1')
+    expect((await poap2.view.getTraits()).returns.length).toBe(8)
+    expect(hexToString((await poap2.view.getTraitAtIndex({
+      args: {
+        index: 7n
+      }
+    })).returns.traitType)).toBe('Has Participated')
+    expect(hexToString((await poap2.view.getTraitAtIndex({
       args: {
         index: 7n
       }
@@ -2261,7 +2265,7 @@ describe('integration tests', () => {
       args: {
         nftIndex: 1n,
         presenceAddressValidate: NULL_CONTRACT_ADDRESS,
-       callerAddr: NULL_CONTRACT_ADDRESS
+        callerAddr: NULL_CONTRACT_ADDRESS
       },
       signer: signer,
       attoAlphAmount: DUST_AMOUNT
@@ -2288,12 +2292,12 @@ describe('integration tests', () => {
         args: {
           nftIndex: 2n,
           presenceAddressValidate: NULL_CONTRACT_ADDRESS,
-         callerAddr: NULL_CONTRACT_ADDRESS
+          callerAddr: NULL_CONTRACT_ADDRESS
         },
         signer: minter,
         attoAlphAmount: DUST_AMOUNT
       })
-    ,collection.address, 7)
+      , collection.address, 7)
 
     const poap3 = PoapNFT.at(addressFromContractId((await collection.view.nftByIndex({ args: { index: 1n } })).returns))
     expect(
@@ -2302,7 +2306,7 @@ describe('integration tests', () => {
         attoAlphAmount: DUST_AMOUNT
       })
     ).rejects.toThrowError("ExpectAContract")
-   
+
 
   }, 20000)
 
@@ -2381,21 +2385,21 @@ describe('integration tests', () => {
     expect(number256ToBigint((await alphBalanceOf(collection.address)))).toBe(MINIMAL_CONTRACT_DEPOSIT)
 
 
-     // get Poap    
-     const poap = PoapNFT.at(addressFromContractId((await collection.view.nftByIndex({ args: { index: 0n } })).returns))
-     let poapState = await poap.fetchState()
-     expect(hexToString(poapState.fields.eventName)).toBe('Test 1')
-     expect((await poap.view.getTraits()).returns.length).toBe(8)
-     expect(hexToString((await poap.view.getTraitAtIndex({
+    // get Poap    
+    const poap = PoapNFT.at(addressFromContractId((await collection.view.nftByIndex({ args: { index: 0n } })).returns))
+    let poapState = await poap.fetchState()
+    expect(hexToString(poapState.fields.eventName)).toBe('Test 1')
+    expect((await poap.view.getTraits()).returns.length).toBe(8)
+    expect(hexToString((await poap.view.getTraitAtIndex({
       args: {
         index: 7n
       }
     })).returns.traitType)).toBe('Has Participated')
     expect(hexToString((await poap.view.getTraitAtIndex({
-     args: {
-       index: 7n
-     }
-   })).returns.value)).toBe("false")
+      args: {
+        index: 7n
+      }
+    })).returns.value)).toBe("false")
 
     await collection.transact.setParticipatedPresence({
       args: {
@@ -2404,7 +2408,7 @@ describe('integration tests', () => {
         callerAddr: NULL_CONTRACT_ADDRESS
       },
       signer: signer,
-      attoAlphAmount: 3n*DUST_AMOUNT
+      attoAlphAmount: 3n * DUST_AMOUNT
     })
     poapState = await poap.fetchState()
 
@@ -2413,7 +2417,7 @@ describe('integration tests', () => {
 
     expect((await collection.view.totalSupply()).returns).toBe(1n)
 
-    
+
 
     await factory.transact.mintPoap({
       args: {
@@ -2426,15 +2430,15 @@ describe('integration tests', () => {
     })
 
     const poap2 = PoapNFT.at(addressFromContractId((await collection.view.nftByIndex({ args: { index: 1n } })).returns))
-     let poapState2 = await poap2.fetchState()
-     expect(hexToString(poapState2.fields.eventName)).toBe('Test 1')
-     expect((await poap2.view.getTraits()).returns.length).toBe(8)
-     expect(hexToString((await poap2.view.getTraitAtIndex({
-       args: {
-         index: 7n
-       }
-     })).returns.traitType)).toBe('Has Participated')
-     expect(hexToString((await poap2.view.getTraitAtIndex({
+    let poapState2 = await poap2.fetchState()
+    expect(hexToString(poapState2.fields.eventName)).toBe('Test 1')
+    expect((await poap2.view.getTraits()).returns.length).toBe(8)
+    expect(hexToString((await poap2.view.getTraitAtIndex({
+      args: {
+        index: 7n
+      }
+    })).returns.traitType)).toBe('Has Participated')
+    expect(hexToString((await poap2.view.getTraitAtIndex({
       args: {
         index: 7n
       }
@@ -2444,7 +2448,7 @@ describe('integration tests', () => {
       args: {
         nftIndex: 1n,
         presenceAddressValidate: NULL_CONTRACT_ADDRESS,
-       callerAddr: NULL_CONTRACT_ADDRESS
+        callerAddr: NULL_CONTRACT_ADDRESS
       },
       signer: signer,
       attoAlphAmount: DUST_AMOUNT
@@ -2474,12 +2478,12 @@ describe('integration tests', () => {
         args: {
           nftIndex: 2n,
           presenceAddressValidate: NULL_CONTRACT_ADDRESS,
-         callerAddr: NULL_CONTRACT_ADDRESS
+          callerAddr: NULL_CONTRACT_ADDRESS
         },
         signer: minter,
         attoAlphAmount: DUST_AMOUNT
       })
-    ,collection.address, 7)
+      , collection.address, 7)
 
     const poap3 = PoapNFT.at(addressFromContractId((await collection.view.nftByIndex({ args: { index: 1n } })).returns))
     expect(
@@ -2488,7 +2492,7 @@ describe('integration tests', () => {
         attoAlphAmount: DUST_AMOUNT
       })
     ).rejects.toThrowError("ExpectAContract")
-   
+
 
   }, 20000)
 
@@ -2555,31 +2559,31 @@ describe('integration tests', () => {
       }
     })
 
-     // get Poap for minter  
-     const poap = PoapNFT.at(addressFromContractId((await collection.view.nftByAddress({
-       args: {
-         caller: minter.address
-       }
-     })).returns))
-     let poapState = await poap.fetchState()
-     expect(hexToString(poapState.fields.eventName)).toBe('Test 1')
-     expect((await poap.view.getTraits()).returns.length).toBe(8)
-     expect(hexToString((await poap.view.getTraitAtIndex({
+    // get Poap for minter  
+    const poap = PoapNFT.at(addressFromContractId((await collection.view.nftByAddress({
+      args: {
+        caller: minter.address
+      }
+    })).returns))
+    let poapState = await poap.fetchState()
+    expect(hexToString(poapState.fields.eventName)).toBe('Test 1')
+    expect((await poap.view.getTraits()).returns.length).toBe(8)
+    expect(hexToString((await poap.view.getTraitAtIndex({
       args: {
         index: 7n
       }
     })).returns.traitType)).toBe('Has Participated')
     expect(hexToString((await poap.view.getTraitAtIndex({
-     args: {
-       index: 7n
-     }
-   })).returns.value)).toBe("false")
+      args: {
+        index: 7n
+      }
+    })).returns.value)).toBe("false")
 
     await collection.transact.setParticipatedPresence({
       args: {
         nftIndex: 0n,
         presenceAddressValidate: minter.address,
-       callerAddr: NULL_CONTRACT_ADDRESS
+        callerAddr: NULL_CONTRACT_ADDRESS
       },
       signer: signer,
       attoAlphAmount: DUST_AMOUNT
@@ -2591,7 +2595,7 @@ describe('integration tests', () => {
 
     expect((await collection.view.totalSupply()).returns).toBe(1n)
 
-    
+
     // get Poap for minter2
     await factory.transact.mintPoap({
       args: {
@@ -2608,15 +2612,15 @@ describe('integration tests', () => {
         caller: minter2.address
       }
     })).returns))
-     let poapState2 = await poap2.fetchState()
-     expect(hexToString(poapState2.fields.eventName)).toBe('Test 1')
-     expect((await poap2.view.getTraits()).returns.length).toBe(8)
-     expect(hexToString((await poap2.view.getTraitAtIndex({
-       args: {
-         index: 7n
-       }
-     })).returns.traitType)).toBe('Has Participated')
-     expect(hexToString((await poap2.view.getTraitAtIndex({
+    let poapState2 = await poap2.fetchState()
+    expect(hexToString(poapState2.fields.eventName)).toBe('Test 1')
+    expect((await poap2.view.getTraits()).returns.length).toBe(8)
+    expect(hexToString((await poap2.view.getTraitAtIndex({
+      args: {
+        index: 7n
+      }
+    })).returns.traitType)).toBe('Has Participated')
+    expect(hexToString((await poap2.view.getTraitAtIndex({
       args: {
         index: 7n
       }
@@ -2626,7 +2630,7 @@ describe('integration tests', () => {
       args: {
         nftIndex: 0n,
         presenceAddressValidate: minter2.address,
-       callerAddr: NULL_CONTRACT_ADDRESS
+        callerAddr: NULL_CONTRACT_ADDRESS
       },
       attoAlphAmount: DUST_AMOUNT,
       signer: signer
@@ -2639,7 +2643,7 @@ describe('integration tests', () => {
       args: {
         nftIndex: 0n,
         presenceAddressValidate: minter2.address,
-       callerAddr: NULL_CONTRACT_ADDRESS
+        callerAddr: NULL_CONTRACT_ADDRESS
       },
       attoAlphAmount: DUST_AMOUNT,
       signer: signer
@@ -2663,13 +2667,13 @@ describe('integration tests', () => {
         args: {
           nftIndex: 0n,
           presenceAddressValidate: minter3.address,
-         callerAddr: NULL_CONTRACT_ADDRESS
+          callerAddr: NULL_CONTRACT_ADDRESS
         },
         signer: minter,
         attoAlphAmount: DUST_AMOUNT
       })
-    ,collection.address, 7)
-   
+      , collection.address, 7)
+
 
   }, 20000)
 
@@ -2736,25 +2740,25 @@ describe('integration tests', () => {
       }
     })
 
-     // get Poap for minter  
-     const poap = PoapNFT.at(addressFromContractId((await collection.view.nftByAddress({
-       args: {
-         caller: minter.address
-       }
-     })).returns))
-     let poapState = await poap.fetchState()
-     expect(hexToString(poapState.fields.eventName)).toBe('Test 1')
-     expect((await poap.view.getTraits()).returns.length).toBe(8)
-     expect(hexToString((await poap.view.getTraitAtIndex({
+    // get Poap for minter  
+    const poap = PoapNFT.at(addressFromContractId((await collection.view.nftByAddress({
+      args: {
+        caller: minter.address
+      }
+    })).returns))
+    let poapState = await poap.fetchState()
+    expect(hexToString(poapState.fields.eventName)).toBe('Test 1')
+    expect((await poap.view.getTraits()).returns.length).toBe(8)
+    expect(hexToString((await poap.view.getTraitAtIndex({
       args: {
         index: 7n
       }
     })).returns.traitType)).toBe('Has Participated')
     expect(hexToString((await poap.view.getTraitAtIndex({
-     args: {
-       index: 7n
-     }
-   })).returns.value)).toBe("false")
+      args: {
+        index: 7n
+      }
+    })).returns.value)).toBe("false")
 
     await factory.transact.setParticipatedPresence({
       args: {
@@ -2772,7 +2776,7 @@ describe('integration tests', () => {
 
     expect((await collection.view.totalSupply()).returns).toBe(1n)
 
-    
+
     // get Poap for minter2
     await factory.transact.mintPoap({
       args: {
@@ -2789,15 +2793,15 @@ describe('integration tests', () => {
         caller: minter2.address
       }
     })).returns))
-     let poapState2 = await poap2.fetchState()
-     expect(hexToString(poapState2.fields.eventName)).toBe('Test 1')
-     expect((await poap2.view.getTraits()).returns.length).toBe(8)
-     expect(hexToString((await poap2.view.getTraitAtIndex({
-       args: {
-         index: 7n
-       }
-     })).returns.traitType)).toBe('Has Participated')
-     expect(hexToString((await poap2.view.getTraitAtIndex({
+    let poapState2 = await poap2.fetchState()
+    expect(hexToString(poapState2.fields.eventName)).toBe('Test 1')
+    expect((await poap2.view.getTraits()).returns.length).toBe(8)
+    expect(hexToString((await poap2.view.getTraitAtIndex({
+      args: {
+        index: 7n
+      }
+    })).returns.traitType)).toBe('Has Participated')
+    expect(hexToString((await poap2.view.getTraitAtIndex({
       args: {
         index: 7n
       }
@@ -2849,8 +2853,8 @@ describe('integration tests', () => {
         signer: minter,
         attoAlphAmount: DUST_AMOUNT
       })
-    ,factory.address, 7)
-   
+      , factory.address, 7)
+
 
   }, 20000)
 
@@ -2894,7 +2898,7 @@ describe('integration tests', () => {
         hashedPassword: '00'
       },
       signer: signer,
-      attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + 2n*10n ** 17n + DUST_AMOUNT  + 10n * ONE_ALPH
+      attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + 2n * 10n ** 17n + DUST_AMOUNT + 10n * ONE_ALPH
     })
 
     // Check that event is emitted
@@ -2906,12 +2910,12 @@ describe('integration tests', () => {
     const creationEvent = events[0]
     const poapCollectionMinted = creationEvent.fields[0].value as string
 
-    
+
 
     const collection = PoapCollection.at(addressFromContractId(poapCollectionMinted))
     let collectionState = await collection.fetchState()
     expect((await alphBalanceOf(collection.address))).toEqual(collectionState.fields.amountForStorageFees + MINIMAL_CONTRACT_DEPOSIT + collectionState.fields.amountForChainFees)
-    expect((await alphBalanceOf(collection.address))).toEqual(3n*10n**17n + 10n * ONE_ALPH)
+    expect((await alphBalanceOf(collection.address))).toEqual(3n * 10n ** 17n + 10n * ONE_ALPH)
 
     await collection.transact.mint({
       signer: minter,
@@ -2955,7 +2959,7 @@ describe('integration tests', () => {
     })
 
     // should failed because there's no ALPH left in the sc to pay the storage fees
-   await collection.transact.mint({
+    await collection.transact.mint({
       signer: minter2,
       attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT,
       args: {
@@ -2972,7 +2976,7 @@ describe('integration tests', () => {
 
     expect((await poap.view.getTraits()).returns.length).toBe(8)
 
-  }, 20000) 
+  }, 20000)
 
   it('Deposit withdraw gas + storage fees', async () => {
     const signer = await testNodeWallet()
@@ -3028,7 +3032,7 @@ describe('integration tests', () => {
     const collection = PoapCollection.at(addressFromContractId(poapCollectionMinted))
     let collectionState = await collection.fetchState()
     expect((await alphBalanceOf(collection.address))).toEqual(collectionState.fields.amountForStorageFees + MINIMAL_CONTRACT_DEPOSIT)
-    
+
     await collection.transact.mint({
       signer: minter,
       attoAlphAmount: DUST_AMOUNT,
@@ -3052,8 +3056,8 @@ describe('integration tests', () => {
     })
 
     collectionState = await collection.fetchState()
-    expect(collectionState.fields.amountForStorageFees).toBe(10n * ONE_ALPH - 2n * 10n **17n)
-    expect((await alphBalanceOf(collection.address))).toEqual(MINIMAL_CONTRACT_DEPOSIT + 10n * ONE_ALPH - 2n * 10n **17n)
+    expect(collectionState.fields.amountForStorageFees).toBe(10n * ONE_ALPH - 2n * 10n ** 17n)
+    expect((await alphBalanceOf(collection.address))).toEqual(MINIMAL_CONTRACT_DEPOSIT + 10n * ONE_ALPH - 2n * 10n ** 17n)
 
     await collection.transact.withdrawStorageFees({
       args: {
@@ -3116,7 +3120,7 @@ describe('integration tests', () => {
 
 
     collectionState = await collection.fetchState()
-    expect(collectionState.fields.amountForStorageFees).toBe(10n * ONE_ALPH - 2n * 10n **17n)
+    expect(collectionState.fields.amountForStorageFees).toBe(10n * ONE_ALPH - 2n * 10n ** 17n)
     expect(collectionState.fields.amountForChainFees).toBeLessThan(5n * ONE_ALPH)
 
     expectAssertionError(
@@ -3127,21 +3131,21 @@ describe('integration tests', () => {
         signer: minter,
       }), collection.address, 7)
 
-      expectAssertionError(
-        collection.transact.withdrawChainFees({
-          args: {
-            amount: 11n * ONE_ALPH
-          },
-          signer: signer,
-        }), collection.address, 9)
+    expectAssertionError(
+      collection.transact.withdrawChainFees({
+        args: {
+          amount: 11n * ONE_ALPH
+        },
+        signer: signer,
+      }), collection.address, 9)
 
-        expectAssertionError(
-          collection.transact.withdrawStorageFees({
-            args: {
-              amount: 11n * ONE_ALPH
-            },
-            signer: signer,
-          }), collection.address, 9)
+    expectAssertionError(
+      collection.transact.withdrawStorageFees({
+        args: {
+          amount: 11n * ONE_ALPH
+        },
+        signer: signer,
+      }), collection.address, 9)
 
     // get Poap    
     const poap = PoapNFT.at(addressFromContractId((await collection.view.nftByIndex({ args: { index: 0n } })).returns))

@@ -8,6 +8,7 @@ export type Settings = {
 const defaultSettings: Settings = { issueTokenAmount: 100n }
 
 const configuration: Configuration<Settings> = {
+  sourceDir: 'contracts',
   networks: {
     devnet: {
       nodeUrl: 'http://127.0.0.1:22973',

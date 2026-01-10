@@ -3,6 +3,13 @@
 /* eslint-disable */
 
 export * from "./PoapCollection";
+export * from "./PoapCollectionV2";
+export * from "./PoapData";
 export * from "./PoapFactory";
+export * from "./PoapFactoryV2";
 export * from "./PoapNFT";
+export * from "./PoapNFTSerieV2";
+export * from "./PoapNFTV2";
+export * from "./PoapSerieCollectionV2";
+export * from "./contracts";
 export * from "./scripts";

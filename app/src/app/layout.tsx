@@ -3,7 +3,7 @@ import clsx from 'clsx'
 import { Bricolage_Grotesque } from 'next/font/google'
 import '@/styles/globals.css'
 import { AlephiumWalletProvider } from '@alephium/web3-react'
-import { tokenFaucetConfig } from '@/services/utils'
+import { getNetwork } from '@/services/utils'
 import { WalletLoadingProvider } from '@/context/WalletLoadingContext'
 import { ThemeProvider } from 'next-themes'
 
@@ -62,8 +62,8 @@ export default function RootLayout({
           <WalletLoadingProvider>
             <AlephiumWalletProvider 
               theme="retro" 
-              network={tokenFaucetConfig.network} 
-              addressGroup={tokenFaucetConfig.groupIndex}
+              network={getNetwork()} 
+              addressGroup={0}
             >
               {children}
             </AlephiumWalletProvider>

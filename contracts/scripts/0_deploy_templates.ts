@@ -1,7 +1,7 @@
 import { Deployer, DeployFunction, Network } from '@alephium/cli'
 import { Settings } from '../alephium.config'
 import { ALPH_TOKEN_ID, NULL_CONTRACT_ADDRESS, stringToHex, web3, ZERO_ADDRESS } from '@alephium/web3'
-import { PoapCollection, PoapNFT } from '../artifacts/ts'
+import { PoapCollection } from '../artifacts/ts'
 import { PrivateKeyWallet } from '@alephium/web3-wallet'
 
 
@@ -9,6 +9,7 @@ const deployTemplates: DeployFunction<Settings> = async (
   deployer: Deployer,
   network: Network<Settings>
 ): Promise<void> => {
+  /*
   PrivateKeyWallet.Random(0, web3.getCurrentNodeProvider())
 
   await deployer.deployContract(PoapNFT,{
@@ -60,7 +61,7 @@ const deployTemplates: DeployFunction<Settings> = async (
       hashedPassword: '00'
     }
   })
-
+*/
 
 }
 

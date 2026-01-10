@@ -1,0 +1,280 @@
+import "std/nft_interface"
+
+Contract PoapData(
+  collectionId: ByteVec,
+  maxSupply: U256,
+  mintStartAt: U256,
+  mintEndAt: U256,
+  poapPrice: U256,
+  tokenIdPoap: ByteVec,
+  isOpenPrice: Bool,
+  tokenIdAirdrop: ByteVec,
+  amountAirdropPerUser: U256,
+  airdropWhenHasParticipated: Bool,
+  eventImage: ByteVec,
+  eventName: ByteVec,
+  description: ByteVec,
+  organizer: Address,
+  location: ByteVec,
+  eventStartAt: U256,
+  eventEndAt: U256,
+  isPublic: Bool,
+  isBurnable: Bool,
+  lockedUntil: U256,
+  hashedPassword: ByteVec,
+  mut totalSupply: U256,
+  mut amountForStorageFees: U256,
+  mut amountForChainFees: U256,
+  mut amountPoapFees: U256,
+  mut amountAirdrop: U256
+) {
+  
+  @using(updateFields = true)
+  pub fn incrementTotalSupply() -> (){
+    checkCaller!(callerContractId!() == collectionId, ErrorCodes.InvalidCaller)
+    totalSupply = totalSupply + 1
+  }
+
+
+   @using(assetsInContract = true, updateFields = true, preapprovedAssets = true)
+   pub fn sendAirdrop(addressToAirdrop: Address) -> (){
+    checkCaller!(callerContractId!() == collectionId, ErrorCodes.InvalidCaller)
+    if(amountAirdrop >= amountAirdropPerUser){
+
+      // dustamount is needed for minimal
+      if(airdropWhenHasParticipated){
+        transferToken!(organizer, addressToAirdrop, ALPH, dustAmount!())
+      }
+
+      transferTokenFromSelf!(addressToAirdrop, tokenIdAirdrop, amountAirdropPerUser)
+      amountAirdrop = amountAirdrop - amountAirdropPerUser
+    }
+   }
+
+   @using(assetsInContract = true, updateFields = true, preapprovedAssets = true, checkExternalCaller = false)
+    pub fn depositPaidPoap(amount: U256, initialCaller: Address) -> () { // todo: need to use externalCallerAddress
+      let mut caller = callerAddress!()
+      if(isContractAddress!(caller)){
+        caller = initialCaller
+     }
+
+      assert!(poapPrice > 0 || isOpenPrice, ErrorCodes.PoapPriceNotSet)
+        let mut priceToPay = poapPrice
+        if(isOpenPrice){
+          assert!(amount >= 1, ErrorCodes.NotEnoughAlph)
+          priceToPay = amount
+        }
+
+        transferTokenToSelf!(caller, tokenIdPoap, priceToPay)
+        amountPoapFees = amountPoapFees + priceToPay
+      
+    }
+
+  
+  @using(assetsInContract = true, updateFields = true)
+  pub fn claimFunds(amountToClaim: U256, initialCaller: Address) -> () {
+    let mut caller = callerAddress!()
+     if(isContractAddress!(caller)){
+        caller = initialCaller
+     }
+
+    checkCaller!(caller == organizer,ErrorCodes.InvalidCaller)
+    assert!(amountToClaim <= amountPoapFees, ErrorCodes.NotEnoughAlph)
+
+    transferTokenFromSelf!(organizer, tokenIdPoap, amountToClaim)
+    amountPoapFees = amountPoapFees - amountToClaim
+
+  }
+
+  @using(updateFields = true)
+  pub fn withdrawStorageFees(amount: U256) -> () {
+    checkCaller!(callerContractId!() == collectionId, ErrorCodes.InvalidCaller)
+    assert!(amount <= amountForStorageFees, ErrorCodes.NotEnoughAlph)
+        
+    amountForStorageFees = amountForStorageFees - amount
+  }
+
+
+  // this function keep track of the storage fees, collection stores ALPH
+  @using(updateFields = true)
+  pub fn addStorageFees(amount: U256, initialCaller: Address) -> () {
+
+        let mut caller = callerAddress!()
+
+        if(isContractAddress!(caller)){
+          assert!(callerContractId!() == collectionId, ErrorCodes.InvalidCaller)
+          caller = initialCaller
+        }
+
+        checkCaller!(caller == organizer, ErrorCodes.InvalidCaller)
+        assert!(amount >= minimalContractDeposit!(), ErrorCodes.NotEnoughAlph)
+
+        amountForStorageFees = amountForStorageFees + amount
+
+  }
+
+  @using(updateFields = true)
+  pub fn useStorageFees() -> () {
+        checkCaller!(callerContractId!() == collectionId, ErrorCodes.InvalidCaller)
+        assert!(amountForStorageFees >= minimalContractDeposit!(), ErrorCodes.NotEnoughAlph)
+
+        amountForStorageFees = amountForStorageFees - minimalContractDeposit!()
+  }
+
+  @using(updateFields = true)
+  pub fn withdrawChainFees(amount: U256) -> () {
+    checkCaller!(callerContractId!() == collectionId, ErrorCodes.InvalidCaller)
+    assert!(amount <= amountForChainFees, ErrorCodes.NotEnoughAlph)
+
+    amountForChainFees = amountForChainFees - amount
+  }
+
+  // this function keep track of the storage fees, collection stores ALPH
+  @using(updateFields = true)
+    pub fn addChainFees(amount: U256, initialCaller: Address) -> () {
+      let mut caller = callerAddress!()
+
+        if(isContractAddress!(caller)){
+          assert!(callerContractId!() == collectionId, ErrorCodes.InvalidCaller)
+          caller = initialCaller
+        }
+        checkCaller!(caller == organizer, ErrorCodes.InvalidCaller)
+
+        amountForChainFees = amountForChainFees + amount
+    }
+
+
+     @using(updateFields = true)
+  pub fn useChainFees(amount: U256) -> () {
+        checkCaller!(callerContractId!() == collectionId, ErrorCodes.InvalidCaller)
+        assert!(amountForChainFees > 0, ErrorCodes.NotEnoughAlph)
+
+        amountForChainFees = amountForChainFees - amount
+  }
+
+
+
+  @using(assetsInContract = true, updateFields = true)
+  pub fn withdrawAirdrop(amount: U256, initialCaller: Address) -> () {
+
+    let mut caller = callerAddress!()
+
+    if(isContractAddress!(caller)){
+        assert!(callerContractId!() == collectionId, ErrorCodes.InvalidCaller)
+        caller = initialCaller
+    }
+    checkCaller!(caller == organizer, ErrorCodes.InvalidCaller)
+
+    assert!(amount <= amountAirdrop, ErrorCodes.NotEnoughAlph)
+
+    transferTokenFromSelf!(organizer, tokenIdAirdrop, amount)
+
+    amountAirdrop = amountAirdrop - amount
+  }
+
+  pub fn getAmountForStorageFees() -> U256 {
+    return amountForStorageFees
+  }
+
+  pub fn getAmountForChainFees() -> U256 {
+    return amountForChainFees
+  }
+
+  pub fn getAmountPoapFees() -> U256 {
+    return amountPoapFees
+  }
+
+  pub fn getAmountAirdrop() -> U256 {
+    return amountAirdrop
+  }
+
+  pub fn getName() -> ByteVec {
+    return eventName
+  }
+
+  pub fn getDescription() -> ByteVec {
+    return description
+  }
+
+  pub fn getImage() -> ByteVec {
+      return eventImage
+  }
+
+
+  pub fn getCurrentSupply() -> U256 {
+    return totalSupply
+  }
+
+  pub fn getMaxSupply() -> U256 {
+    return maxSupply
+  }
+
+  pub fn getMintStartAt() -> U256 {
+    return mintStartAt
+  }
+
+  pub fn getMintEndAt() -> U256 {
+    return mintEndAt
+  }
+
+  pub fn getOrganizer() -> Address {
+    return organizer
+  }
+
+  pub fn getLocation() -> ByteVec {
+    return location
+  }
+
+  pub fn getEventStartAt() -> U256 {
+    return eventStartAt
+  }
+
+  pub fn getEventEndAt() -> U256 {
+    return eventEndAt
+  }
+
+  pub fn getIsPublic() -> Bool {
+    return isPublic
+  }
+
+  pub fn getIsBurnable() -> Bool {
+    return isBurnable
+  }
+
+  pub fn getLockedUntil() -> U256 {
+    return lockedUntil
+  }
+
+  pub fn getIsOpenPrice() -> Bool {
+    return isOpenPrice
+  }
+
+  pub fn getPoapPrice() -> (U256, ByteVec, Bool) {
+    return poapPrice, tokenIdPoap, isOpenPrice
+  }
+
+  pub fn getTokenIdPoap() -> ByteVec {
+    return tokenIdPoap
+  }
+
+  pub fn getTokenIdAirdrop() -> ByteVec {
+    return tokenIdAirdrop
+  }
+
+  pub fn getAmountAirdropPerUser() -> U256 {
+    return amountAirdropPerUser
+  }
+
+  pub fn getAirdropWhenHasParticipated() -> Bool {
+    return airdropWhenHasParticipated
+  }
+
+  pub fn getHashedPassword() -> ByteVec {
+    return hashedPassword
+  }
+
+  pub fn getPrepaidFeesAmount() -> (U256, U256) {
+    return amountForStorageFees, amountForChainFees
+  }
+
+}

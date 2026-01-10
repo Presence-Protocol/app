@@ -1,5 +1,5 @@
 {
-  "fullNodeVersion": "v3.12.4",
+  "fullNodeVersion": "v4.3.0",
   "compilerOptionsUsed": {
     "ignoreUnusedConstantsWarnings": false,
     "ignoreUnusedVariablesWarnings": false,
@@ -8,7 +8,8 @@
     "ignoreUpdateFieldsCheckWarnings": false,
     "ignoreCheckExternalCallerWarnings": false,
     "ignoreUnusedFunctionReturnWarnings": false,
-    "skipAbstractContractCheck": false
+    "skipAbstractContractCheck": false,
+    "skipTests": true
   },
   "infos": {
     "IDynamicNFT": {
@@ -29,11 +30,29 @@
       "bytecodeDebugPatch": "",
       "codeHashDebug": ""
     },
+    "NewPresenceNewEvent": {
+      "sourceFile": "V2/series/scripts/collection.ral",
+      "sourceCodeHash": "819f824755a3160f431a04ffbaf5a3d77a889e4bc2ddf50e2bd998b847bd1f8e",
+      "bytecodeDebugPatch": "",
+      "codeHashDebug": ""
+    },
     "PoapCollection": {
       "sourceFile": "collectionTemplate.ral",
       "sourceCodeHash": "3cf6ef349bd07dc085a765833d0038b714a5d87f29e498607e0447b7d5dc8fb8",
       "bytecodeDebugPatch": "",
-      "codeHashDebug": "6de379cff422273f8c45e92b67175854e08b6eb610f55b350c0a1a07d8881e54"
+      "codeHashDebug": "8f4260b71ca702a8f112dc752756e960cd04ba852a15441417d895754165b1d5"
+    },
+    "PoapCollectionV2": {
+      "sourceFile": "V2/collectionTemplate.ral",
+      "sourceCodeHash": "ecbc70087dec808923a9310845822a88c4be4bf36ce63b798c3d9d4d6b81c66b",
+      "bytecodeDebugPatch": "",
+      "codeHashDebug": "51762012c8a61099bd9a1d2aca234709cce484402147fb87124049dfe9ac1a20"
+    },
+    "PoapData": {
+      "sourceFile": "V2/series/nftData.ral",
+      "sourceCodeHash": "f3426d5fad78a8c56f343e20a9ba41deec7585c0924cae274c485f3f4d98efba",
+      "bytecodeDebugPatch": "",
+      "codeHashDebug": "8021e01aa6e8611627dcc43378f9f487a48cf3691c068b84a7abfdcc35063527"
     },
     "PoapFactory": {
       "sourceFile": "factoryPoap.ral",
@@ -41,11 +60,35 @@
       "bytecodeDebugPatch": "",
       "codeHashDebug": "d8a33daa9e49797cf7649f4c78d877fb453aff6bdddccce32ef80245e77d58bb"
     },
+    "PoapFactoryV2": {
+      "sourceFile": "V2/factoryPoapV2.ral",
+      "sourceCodeHash": "b47647369e14b3c792fcaea27be254eb9a7c65257c1d374688b708fb23f2de5c",
+      "bytecodeDebugPatch": "",
+      "codeHashDebug": "798e1e62dfac139c2a29770eba94199178b50b8f4a49356ca52dd695a6f38406"
+    },
     "PoapNFT": {
       "sourceFile": "nftTemplate.ral",
       "sourceCodeHash": "113e050fa4ad1028084edb438eb3ddd88b72149fe4fcaacb0849ca6ca43cc2d9",
       "bytecodeDebugPatch": "",
       "codeHashDebug": "c741e48f100b220e90d7e6e79c1f9b435351316a70a257d369d98ed713637049"
+    },
+    "PoapNFTSerieV2": {
+      "sourceFile": "V2/series/nftSeriesTemplateV2.ral",
+      "sourceCodeHash": "a4b3042786619cd052bdd30f74d80d1cd7d2771ff7265222fe639280ee7b6795",
+      "bytecodeDebugPatch": "",
+      "codeHashDebug": "5eafdf51e14a05eb56f826a111b5cbd4e4cf3ffec834b8c5d3ce813dd7b9b9f0"
+    },
+    "PoapNFTV2": {
+      "sourceFile": "V2/nftTemplateV2.ral",
+      "sourceCodeHash": "e672e743ecfc5aea95a8e23d92dd7f44682699cbd09b3e00d34441fb3ad6ded6",
+      "bytecodeDebugPatch": "",
+      "codeHashDebug": "5eafdf51e14a05eb56f826a111b5cbd4e4cf3ffec834b8c5d3ce813dd7b9b9f0"
+    },
+    "PoapSerieCollectionV2": {
+      "sourceFile": "V2/series/collectionSerieTemplate.ral",
+      "sourceCodeHash": "d0797fbb4527859455757e28477eb295c2deeb4f5fa1cae149835f9561e607c2",
+      "bytecodeDebugPatch": "=30-1=1+7=2-2+6a=2-2+78=2-2+c1=2-2+1e=2-2+7b=2-3+e=1-2=2-1+3=3-5=1+5=2-1+9=3-2+a146dc=2-2+17=2+4e4=1-1+89=1567-1+d=256+7a7e0214696e73657274206174206d617020706174683a2000=1984",
+      "codeHashDebug": "30601a7908f27215b657301cc5159375ab9900194bd508c0bd6182d99f2dc46d"
     },
     "Trait": {
       "sourceFile": "dynamic_nft_standard.ral",
@@ -61,7 +104,7 @@
     },
     "constants": {
       "sourceFile": "constants.ral",
-      "sourceCodeHash": "92f7fe7bded1fd052540b1bd2b5c527aa39a19a60b6b9db60c809b4e86cea630",
+      "sourceCodeHash": "04ebf5399929b97b1828f876e66953bfb7e37f35dfd6b56ab1b19774786689c6",
       "bytecodeDebugPatch": "",
       "codeHashDebug": ""
     }

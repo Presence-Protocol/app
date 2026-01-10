@@ -1,0 +1,392 @@
+{
+  "version": "v4.2.5",
+  "name": "PoapFactoryV2",
+  "bytecode": "060740a540f9418d4204427142c042ce0103191e014057d3a9292676b41719b1ce021600160116021603160416051606160716081609160a160b160c160d160e1619160f16101611161216131406414c5048000213186416141615161616171618130564171b171ad1171c16140c334c091614d13413097b161c16142a171c16150c334c04161c16152a171c16197a161ca216071618a3ce00161a161baf171da0000d2aa10005161d160d16191612560474161d020103040801402ad35de9b20cb41704b1ce03ce04160416031600160116021406414c504800021309640c0c130264170617051604d1a2ce0116051606af1707a0000d2aa1000516071601160416035603741607020103171b004051d3f94c82e0b4171716170c0d1600010f4513077b0ed12c171816150c334c091615d13413097b161816152a171816160c334c04161816162a171816177a1618a216071614a3160116021603160416051606160716081609160a160b160c160d160e160f1610161116121613161416151616161713170e16000106171a17190916001619160b161a1617161056750103040d004041d3f610a0beb4170416010d0f160001121707170617051605170816074c021602170816010d0d160001141709d1170a16090c334c020c170a16047a160aa216061608a31601160816031604100d16000105170b0c0d16000101170c07160b16001601160c160416010d0d1600011156750103030c00403cd3cefd0ea8b417030c0d1600010b1704d1170516040c334c020c17050c0f160001141708170717061606170916084c021601170916037a1605a216071609a31609160216030f0d16000105170a0c0d16000101170b06160a1600160b16030c0d1600010a567401030306004026d3d381feafb417030c0d160001151704b416044513077b0c17050c0d1600010c4c0213c3038d7ea4c68000170516041605a21601160216030f0c1600010608160316001601160261010000000103d3c2aa9c01a00002",
+  "codeHash": "798e1e62dfac139c2a29770eba94199178b50b8f4a49356ca52dd695a6f38406",
+  "fieldsSig": {
+    "names": [
+      "collectionTemplateId",
+      "collectionTemplateSeriesId",
+      "poapTemplateId",
+      "poapTemplateSeriesId",
+      "poapTemplateDataId",
+      "numMintedCollection"
+    ],
+    "types": [
+      "ByteVec",
+      "ByteVec",
+      "ByteVec",
+      "ByteVec",
+      "ByteVec",
+      "U256"
+    ],
+    "isMutable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      true
+    ]
+  },
+  "eventsSig": [
+    {
+      "name": "EventCreated",
+      "fieldNames": [
+        "contractId",
+        "eventName",
+        "organizer",
+        "isPublic",
+        "timestamp",
+        "isSeries"
+      ],
+      "fieldTypes": [
+        "ByteVec",
+        "ByteVec",
+        "Address",
+        "Bool",
+        "U256",
+        "Bool"
+      ]
+    },
+    {
+      "name": "PoapMinted",
+      "fieldNames": [
+        "contractId",
+        "collectionId",
+        "nftIndex",
+        "caller",
+        "isPublic",
+        "timestamp"
+      ],
+      "fieldTypes": [
+        "ByteVec",
+        "PoapCollectionV2",
+        "U256",
+        "Address",
+        "Bool",
+        "U256"
+      ]
+    },
+    {
+      "name": "PoapSerieMinted",
+      "fieldNames": [
+        "contractId",
+        "collectionId",
+        "eventId",
+        "nftIndex",
+        "caller",
+        "isPublic",
+        "timestamp"
+      ],
+      "fieldTypes": [
+        "ByteVec",
+        "PoapSerieCollectionV2",
+        "U256",
+        "U256",
+        "Address",
+        "Bool",
+        "U256"
+      ]
+    },
+    {
+      "name": "PoapParticipatedIn",
+      "fieldNames": [
+        "organizerAddress",
+        "collectionId",
+        "nftIndex",
+        "presenceAddressValidate"
+      ],
+      "fieldTypes": [
+        "Address",
+        "PoapCollectionV2",
+        "U256",
+        "Address"
+      ]
+    },
+    {
+      "name": "SerieAdded",
+      "fieldNames": [
+        "collectionId",
+        "eventContractId",
+        "eventName",
+        "eventId",
+        "organizer",
+        "isPublic",
+        "timestamp"
+      ],
+      "fieldTypes": [
+        "PoapSerieCollectionV2",
+        "ByteVec",
+        "ByteVec",
+        "U256",
+        "Address",
+        "Bool",
+        "U256"
+      ]
+    }
+  ],
+  "functions": [
+    {
+      "name": "mintNewCollection",
+      "paramNames": [
+        "maxSupply",
+        "mintStartAt",
+        "mintEndAt",
+        "oneMintPerAddress",
+        "poapPrice",
+        "tokenIdPoap",
+        "isOpenPrice",
+        "tokenIdAirdrop",
+        "amountAirdropPerUser",
+        "airdropWhenHasParticipated",
+        "hashedPassword",
+        "lockPresenceUntil",
+        "eventImage",
+        "eventName",
+        "description",
+        "location",
+        "eventStartAt",
+        "eventEndAt",
+        "isPublic",
+        "isBurnable",
+        "amountForStorageFees",
+        "amountForChainFees",
+        "amountPoapFees",
+        "totalSupply",
+        "amountAirdrop"
+      ],
+      "paramTypes": [
+        "U256",
+        "U256",
+        "U256",
+        "Bool",
+        "U256",
+        "ByteVec",
+        "Bool",
+        "ByteVec",
+        "U256",
+        "Bool",
+        "ByteVec",
+        "U256",
+        "ByteVec",
+        "ByteVec",
+        "ByteVec",
+        "ByteVec",
+        "U256",
+        "U256",
+        "Bool",
+        "Bool",
+        "U256",
+        "U256",
+        "U256",
+        "U256",
+        "U256"
+      ],
+      "paramIsMutable": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "returnTypes": [
+        "ByteVec"
+      ]
+    },
+    {
+      "name": "mintNewCollectionWithSerie",
+      "paramNames": [
+        "eventImage",
+        "eventName",
+        "description",
+        "isPublic"
+      ],
+      "paramTypes": [
+        "ByteVec",
+        "ByteVec",
+        "ByteVec",
+        "Bool"
+      ],
+      "paramIsMutable": [
+        false,
+        false,
+        false,
+        false
+      ],
+      "returnTypes": [
+        "ByteVec"
+      ]
+    },
+    {
+      "name": "createNewEvent",
+      "paramNames": [
+        "collection",
+        "maxSupply",
+        "mintStartAt",
+        "mintEndAt",
+        "poapPrice",
+        "tokenIdPoap",
+        "isOpenPrice",
+        "tokenIdAirdrop",
+        "amountAirdropPerUser",
+        "airdropWhenHasParticipated",
+        "eventImage",
+        "eventName",
+        "description",
+        "location",
+        "eventStartAt",
+        "eventEndAt",
+        "isPublic",
+        "isBurnable",
+        "lockedUntil",
+        "hashedPassword",
+        "amountAirdrop",
+        "amountForStorageFees",
+        "amountForChainFees"
+      ],
+      "paramTypes": [
+        "PoapSerieCollectionV2",
+        "U256",
+        "U256",
+        "U256",
+        "U256",
+        "ByteVec",
+        "Bool",
+        "ByteVec",
+        "U256",
+        "Bool",
+        "ByteVec",
+        "ByteVec",
+        "ByteVec",
+        "ByteVec",
+        "U256",
+        "U256",
+        "Bool",
+        "Bool",
+        "U256",
+        "ByteVec",
+        "U256",
+        "U256",
+        "U256"
+      ],
+      "paramIsMutable": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "returnTypes": []
+    },
+    {
+      "name": "mintPoapSerie",
+      "paramNames": [
+        "collection",
+        "eventId",
+        "amount",
+        "password"
+      ],
+      "paramTypes": [
+        "PoapSerieCollectionV2",
+        "U256",
+        "U256",
+        "ByteVec"
+      ],
+      "paramIsMutable": [
+        false,
+        false,
+        false,
+        false
+      ],
+      "returnTypes": []
+    },
+    {
+      "name": "mintPoap",
+      "paramNames": [
+        "collection",
+        "amount",
+        "password"
+      ],
+      "paramTypes": [
+        "PoapCollectionV2",
+        "U256",
+        "ByteVec"
+      ],
+      "paramIsMutable": [
+        false,
+        false,
+        false
+      ],
+      "returnTypes": []
+    },
+    {
+      "name": "setParticipatedPresence",
+      "paramNames": [
+        "collection",
+        "nftIndex",
+        "presenceAddressValidate"
+      ],
+      "paramTypes": [
+        "PoapCollectionV2",
+        "U256",
+        "Address"
+      ],
+      "paramIsMutable": [
+        false,
+        false,
+        false
+      ],
+      "returnTypes": []
+    },
+    {
+      "name": "getNumEventsCreated",
+      "paramNames": [],
+      "paramTypes": [],
+      "paramIsMutable": [],
+      "returnTypes": [
+        "U256"
+      ]
+    }
+  ],
+  "constants": [],
+  "enums": []
+}
