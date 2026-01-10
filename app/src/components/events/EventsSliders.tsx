@@ -367,7 +367,25 @@ function SeriesSection({ title, series }: {
 function EventCard({ event }: { event: Event }) {
   const router = useRouter();
   const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
+  const [mediaType, setMediaType] = useState<'video' | 'image'>('image');
+  const [mediaError, setMediaError] = useState(false);
   
+  useEffect(() => {
+    const checkMediaType = async () => {
+      if (event.image) {
+        try {
+          const type = await getMediaType(event.image);
+          setMediaType(type);
+        } catch (error) {
+          console.error('Error determining media type:', error);
+          setMediaType('image');
+        }
+      }
+    };
+    
+    checkMediaType();
+  }, [event.image]);
+
   const handleClick = () => {
     if (event.eventType === 'series' && event.seriesContractId !== undefined && event.eventId !== undefined) {
       router.push(`/mint-presence/#id=${addressFromContractId(event.seriesContractId)}&eventId=${event.eventId}`);
@@ -387,25 +405,64 @@ function EventCard({ event }: { event: Event }) {
     setIsSnackbarOpen(true);
   };
 
+  const renderMedia = () => {
+    const fallbackContent = (
+      <div className="w-full h-full bg-lila-500 flex flex-col items-center justify-center p-2">
+        <span className="text-sm font-medium text-black">
+          {event.eventName}
+        </span>
+        <span className="text-xs text-black mt-1">
+          {event.eventDateStart} - {event.eventDateEnd}
+        </span>
+      </div>
+    );
+
+    if (!event.image) {
+      return fallbackContent;
+    }
+
+    if (mediaType === 'video') {
+      return (
+        <div className="relative w-full h-full">
+          <video
+            key={event.image}
+            src={event.image}
+            className="w-full h-full object-cover"
+            autoPlay={true}
+            loop={true}
+            muted
+            playsInline
+            controls={false}
+            onError={(e) => {
+              console.error('Video error:', e);
+              setMediaError(true);
+            }}
+          />
+          {mediaError && fallbackContent}
+        </div>
+      );
+    }
+
+    return (
+      <div className="relative w-full h-full">
+        <img
+          src={event.image}
+          alt={event.eventName}
+          className="w-full h-full object-cover"
+          onError={(e) => {
+            console.error('Image error:', e);
+            setMediaError(true);
+          }}
+        />
+        {mediaError && fallbackContent}
+      </div>
+    );
+  };
+
   return (
     <div className="border-2 border-black rounded-xl overflow-hidden bg-white shadow">
       <div className="relative aspect-square overflow-hidden border-b-2 border-black">
-        {event.image ? (
-          <img
-            src={event.image}
-            alt={event.eventName}
-            className="w-full h-full object-cover"
-          />
-        ) : (
-          <div className="w-full h-full bg-lila-500 flex flex-col items-center justify-center p-2">
-            <span className="text-sm font-medium text-black">
-              {event.eventName}
-            </span>
-            <span className="text-xs text-black mt-1">
-            {event.eventDateStart} - {event.eventDateEnd}
-            </span>
-          </div>
-        )}
+        {renderMedia()}
         <button
           onClick={handleShare}
           className="absolute top-2 right-2 text-black items-center shadow-small shadow-black text-[10px] font-semibold inline-flex px-2 bg-white border-black ease-in-out transform transition-all focus:ring-lila-700 focus:shadow-none border-2 duration-100 py-1 rounded-lg h-6 focus:translate-y-1 hover:text-lila-800 tracking-wide"

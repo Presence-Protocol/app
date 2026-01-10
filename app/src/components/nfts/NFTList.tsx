@@ -889,10 +889,12 @@ export default function NFTList({ account: connectedAccount }: { account: string
                   >
                     <div className="relative aspect-square overflow-hidden border-b-2 border-black">
                       {nft.image ? (
-                        <img
-                          src={nft.image}
+                        <MediaDisplay
+                          url={nft.image}
                           alt={nft.title}
-                          className="w-full h-full object-cover"
+                          title={nft.title}
+                          eventDateStart={nft.eventDateStart}
+                          eventDateEnd={nft.eventDateEnd}
                         />
                       ) : (
                         <div className="w-full h-full flex flex-col items-center justify-center p-4 bg-gradient-to-br from-lila-100 to-lila-300">
@@ -1002,19 +1004,21 @@ export default function NFTList({ account: connectedAccount }: { account: string
                   >
                     <div className="relative aspect-square overflow-hidden border-b-2 border-black">
                       {event.image ? (
-                        <img
-                          src={event.image}
+                        <MediaDisplay
+                          url={event.image}
                           alt={event.eventName}
-                          className="w-full h-full object-cover"
+                          title={event.eventName}
+                          eventDateStart={event.eventDateStart}
+                          eventDateEnd={event.eventDateEnd}
                         />
                       ) : (
-                        <div className="w-full h-full flex flex-col items-center justify-center p-4 bg-gradient-to-br from-lila-100 to-lila-300">
-                          <h4 className="text-xl font-semibold text-black text-center mb-2">{event.eventName}</h4>
-                          {event.eventDateStart && event.eventDateEnd && (
-                            <p className="text-sm text-gray-600 text-center">
-                              {`${event.eventDateStart} - ${event.eventDateEnd}`}
-                            </p>
-                          )}
+                        <div className="w-full h-full bg-lila-500 flex flex-col items-center justify-center p-2">
+                          <span className="text-sm font-medium text-black">
+                            {event.eventName}
+                          </span>
+                          <span className="text-xs text-black mt-1">
+                            {event.eventDateStart} - {event.eventDateEnd}
+                          </span>
                         </div>
                       )}
                       {(event.pricePoap && event.pricePoap > 0n || event.isOpenPrice) && (

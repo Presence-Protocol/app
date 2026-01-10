@@ -20,6 +20,7 @@ interface NFTCollectionV1 {
   title: string;
   description: string;
   image: string | null;
+  mediaType?: 'image' | 'video';
   price: number;
   maxSupply: bigint;
   mintEndDate: bigint;
@@ -81,6 +82,38 @@ const ConnectButton = () => (
     )}
   </AlephiumConnectButton.Custom>
 );
+
+// Add this helper function near the top of the component
+const isVideoMedia = (src: string | null | undefined) => {
+  if (!src) return false;
+  const lower = src.toLowerCase();
+  return (
+    lower.startsWith('blob:') ||
+    lower.startsWith('data:video') ||
+    lower.endsWith('.mp4') ||
+    lower.endsWith('.webm') ||
+    lower.endsWith('.ogg') ||
+    lower.includes('video/mp4') ||
+    lower.includes('video/webm') ||
+    lower.includes('video/ogg')
+  );
+};
+
+const getMediaType = async (url: string): Promise<'video' | 'image'> => {
+  try {
+    const response = await fetch(url, { method: 'HEAD' });
+    const contentType = response.headers.get('content-type');
+    if (contentType?.startsWith('video/')) {
+      return 'video';
+    }
+    // If content-type header is missing or not video, check the URL
+    return isVideoMedia(response.url) ? 'video' : 'image';
+  } catch (error) {
+    console.error('Error checking media type:', error);
+    // Fallback to checking the original URL
+    return isVideoMedia(url) ? 'video' : 'image';
+  }
+};
 
 export default function MintNFTSimple() {
   const { connectionStatus } = useWallet();
@@ -831,6 +864,28 @@ export default function MintNFTSimple() {
     return account.address === nftCollection.organizer;
   };
 
+  // Add this state to track media types
+  const [mediaTypes, setMediaTypes] = useState<Record<string, 'video' | 'image'>>({});
+
+  // Add this effect to check media types when image changes
+  useEffect(() => {
+    const checkMediaType = async () => {
+      if (nftCollection.image && !nftCollection.image.startsWith('data:')) {
+        try {
+          const mediaType = await getMediaType(nftCollection.image);
+          setMediaTypes(prev => ({
+            ...prev,
+            [nftCollection.image!]: mediaType
+          }));
+        } catch (error) {
+          console.error('Error determining media type:', error);
+        }
+      }
+    };
+    
+    checkMediaType();
+  }, [nftCollection.image]);
+
   return (
     <section className="bg-lila-200 pt-16 pb-16 sm:pt-0 sm:pb-0">
       {showConfetti && (
@@ -886,11 +941,59 @@ export default function MintNFTSimple() {
                 <>
                   <div className="w-64 h-64 mx-auto rounded-2xl border-2 border-black shadow bg-white nft-image">
                     {nftCollection.image ? (
-                      <img
-                        src={nftCollection.image}
-                        alt={nftCollection.title}
-                        className="w-full h-full object-cover rounded-xl"
-                      />
+                      (mediaTypes[nftCollection.image] === 'video' || isVideoMedia(nftCollection.image)) ? (
+                        <video 
+                          key={nftCollection.image}
+                          src={nftCollection.image}
+                          className="w-full h-full object-cover rounded-xl"
+                          loop={true}
+                          autoPlay={true}
+                          muted
+                          playsInline
+                          onError={(e) => {
+                            const target = e.target as HTMLVideoElement;
+                            console.error('Video loading error:', {
+                              error: e,
+                              src: nftCollection.image?.substring(0, 100),
+                              element: target,
+                              mediaType: mediaTypes[nftCollection.image!]
+                            });
+                            target.style.display = 'none';
+                            target.parentElement?.classList.add('bg-gradient-to-br', 'from-lila-100', 'to-lila-300');
+                          }}
+                          onLoadedData={(e) => {
+                            console.log('Video loaded successfully:', {
+                              src: nftCollection.image?.substring(0, 50),
+                              mediaType: mediaTypes[nftCollection.image!]
+                            });
+                            const target = e.target as HTMLVideoElement;
+                            target.style.display = 'block';
+                          }}
+                        />
+                      ) : (
+                        <img
+                          src={nftCollection.image}
+                          alt={nftCollection.title}
+                          className="w-full h-full object-cover rounded-xl"
+                          onError={(e) => {
+                            const target = e.target as HTMLImageElement;
+                            console.error('Image loading error:', {
+                              error: e,
+                              src: nftCollection.image?.substring(0, 100),
+                              element: target,
+                              mediaType: mediaTypes[nftCollection.image!]
+                            });
+                            target.style.display = 'none';
+                            target.parentElement?.classList.add('bg-gradient-to-br', 'from-lila-100', 'to-lila-300');
+                          }}
+                          onLoad={(e) => {
+                            console.log('Image loaded successfully:', {
+                              src: nftCollection.image?.substring(0, 50),
+                              mediaType: mediaTypes[nftCollection.image!]
+                            });
+                          }}
+                        />
+                      )
                     ) : (
                       <div className="w-full h-full flex flex-col items-center justify-center p-4 rounded-xl bg-gradient-to-br from-lila-100 to-lila-300">
                         <h4 className="text-xl font-semibold text-black text-center mb-2">{nftCollection.title}</h4>
